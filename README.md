@@ -1,4 +1,4 @@
-# KS Clients Project Manager
+# App Comuna - Next.js Starter
 
 ## Overview
 

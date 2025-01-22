@@ -4,26 +4,39 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { createClient } from '@/utils/supabase/server';
+import apiCommunity from '@/utils/communityApi';
+import { cookies } from 'next/headers';
 
 export async function login(formData: FormData) {
-  const supabase = await createClient();
+    const data = {
+        email: formData.get('email') as string,
+        password: formData.get('password') as string,
+    };
+    let redirectPath = '/dashboard/overview';
 
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
-  const data = {
-    email: formData.get('email') as string,
-    password: formData.get('password') as string
-  };
-
-  const { error, data: userData } =
-    await supabase.auth.signInWithPassword(data);
-  if (error || !userData.user) {
-    redirect('/error');
-  }
-  // redirect to dashboard/overview
-  revalidatePath('/', 'layout');
-  redirect('/dashboard/overview');
+    try {
+        const response: {  token: string ,refreshToken:string } = await apiCommunity.post('/auth/login', {}, {
+            headers: {
+                Authorization: `Bearer ${btoa(`${data.email}:${data.password}`)}`,
+            },
+        });
+        const token = response.token;
+        // Guardar el token en una cookie
+        cookies().set('token', token);
+        cookies().set('refreshToken', response.refreshToken);
+        return {
+            ok: true,
+        };
+    } catch (error) {
+        // Opcional: redirigir a una página de error
+        return {
+          ok: false,
+        };
+    }finally{
+        revalidatePath(redirectPath, 'layout');
+    }
 }
+
 
 export async function signup(formData: FormData) {
   const supabase = await createClient();
@@ -46,8 +59,21 @@ export async function signup(formData: FormData) {
 }
 
 export async function logout() {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
-  revalidatePath('/auth/login', 'layout');
-  redirect('/auth/login');
+  let redirectPath = '/';
+  try {
+    await apiCommunity.get('/auth/logout', {
+      headers: {
+        Authorization: `Bearer ${cookies().get('token')?.value}`
+      }
+    });
+    cookies().set('token', '');
+    redirectPath = '/auth/login';
+  } catch (error) {
+    // Opcional: redirigir a una página de error
+    redirectPath = '/error';
+    
+  } finally {
+    revalidatePath(redirectPath, 'layout');
+    redirect(redirectPath);
+  }
 }

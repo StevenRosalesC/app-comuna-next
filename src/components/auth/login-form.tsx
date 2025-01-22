@@ -11,6 +11,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -26,6 +28,7 @@ const formSchema = z.object({
 type UserFormValue = z.infer<typeof formSchema>;
 
 export default function LoginForm() {
+  const router = useRouter();
   const [loading, startTransition] = useTransition();
   const defaultValues = {
     email: '',
@@ -41,8 +44,14 @@ export default function LoginForm() {
       const formData = new FormData();
       formData.append('email', data.email);
       formData.append('password', data.password);
-      login(formData);
+      const { ok } = await login(formData);
+      if (!ok) {
+        toast.error('Login failed');
+        return;
+      }
       toast.success('Login successful');
+      router.push('/dashboard/overview');
+
     });
   };
 
@@ -89,7 +98,9 @@ export default function LoginForm() {
               </FormItem>
             )}
           />
-
+          <Link href='/auth/forgot-password' className='text-sm text-muted-foreground text-end'>
+            ¿Olvidaste tu contraseña?
+          </Link>
           <Button disabled={loading} className='ml-auto w-full' type='submit'>
             Iniciar sesión
           </Button>

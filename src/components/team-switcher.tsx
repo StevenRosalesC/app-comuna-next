@@ -43,7 +43,7 @@ export function TeamSwitcher({
             >
               <div className='flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground'>
                 <Image
-                  src='https://ik.imagekit.io/stevenrosales/app-comuna/icon.png?updatedAt=1736217178070'
+                  src='https://kickersoft.com/wp-content/uploads/2024/03/kickersoft-150x150-1-png.avif'
                   width={32}
                   height={32}
                   className='rounded-lg'
@@ -76,7 +76,7 @@ export function TeamSwitcher({
               >
                 <div className='flex size-6 items-center justify-center rounded-sm border'>
                   <Image
-                    src='https://ik.imagekit.io/stevenrosales/app-comuna/icon.png?updatedAt=1736217178070'
+                    src='https://kickersoft.com/wp-content/uploads/2024/03/kickersoft-150x150-1-png.avif'
                     width={24}
                     height={24}
                     className='rounded-lg'

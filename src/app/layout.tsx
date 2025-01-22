@@ -1,5 +1,5 @@
-import { auth } from '@/lib/auth';
-import Providers from '@/components/layout/providers';
+// import { auth } from '@/lib/auth';
+// import Providers from '@/components/layout/providers';
 import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
@@ -23,7 +23,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await auth();
+  // const session = await auth();
   return (
     <html
       lang='en'
@@ -33,10 +33,10 @@ export default async function RootLayout({
       <body>
         <NextTopLoader showSpinner={false} />
         <NuqsAdapter>
-          <Providers session={session}>
-            <Toaster />
-            {children}
-          </Providers>
+          {/* <Providers session={session}> */}
+          <Toaster />
+          {children}
+          {/* </Providers> */}
         </NuqsAdapter>
       </body>
     </html>

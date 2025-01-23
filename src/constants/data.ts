@@ -37,3 +37,21 @@ export const navItems: NavItem[] = [
     shortcut: ['u', 'u']
   }
 ];
+
+export const pageNavItems: NavItem[] = [
+  {
+    title: 'Inicio',
+    url: '/',
+    isActive: false,
+  },
+  {
+    title: 'Acerca de',
+    url: '/about',
+    isActive: false,
+  },
+  {
+    title: 'Contacto',
+    url: '/contact',
+    isActive: false,
+  }
+];

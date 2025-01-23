@@ -1,11 +1,15 @@
+"use client";
 import Image from 'next/image'
 import React from 'react'
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '../ui/table'
 import { SubTitle } from '../ui/atoms/sub-title'
+import Slider from '../slider'
+import { GalleryCard } from '../gallery-card'
 
 export const OthersSection = () => {
   return (
     <section className="bg-white dark:bg-gray-900 items-center py-8  ">
+
       <SubTitle className='text-center'>Dirigentes de la comuna bambil collao</SubTitle>
       <div className='flex-col md:flex-row w-full flex gap-4 items-center lg:py-16 lg:px-6 px-4 mx-auto max-w-screen-xl' >
 
@@ -50,6 +54,16 @@ export const OthersSection = () => {
 
         </Table>
       </div>
+      <Slider
+        delay={5500}
+      >
+        {
+          Array.from({ length: 5 }).map((_, index) => (
+            <GalleryCard key={index} />
+          ))
+        }
+
+      </Slider>
 
     </section>
   )

@@ -1,3 +1,4 @@
+import { FooterSection } from "@/components/page/footer-section";
 import { NavBar } from "@/components/page/nav-bar"
 import { Metadata } from "next";
 import React from "react"
@@ -19,6 +20,8 @@ export default function Layout({ children }: Props) {
       <div className="container mx-auto px-5">
         {children}
       </div>
+      <FooterSection />
+
     </>
   )
 }

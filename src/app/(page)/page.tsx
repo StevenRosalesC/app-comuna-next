@@ -1,8 +1,6 @@
-import { FooterSection } from '@/components/page/footer-section'
 import { HeroSection } from '@/components/page/hero-section'
 import { NoticesSection } from '@/components/page/notices-section'
 import { OthersSection } from '@/components/page/others-section'
-import Image from 'next/image'
 
 export default function page() {
   return (
@@ -19,7 +17,6 @@ export default function page() {
           referrerPolicy="no-referrer-when-downgrade"
         ></iframe>
       </section>
-      <FooterSection />
     </>
   )
 }

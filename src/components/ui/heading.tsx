@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useSessionContext } from '../providers/session-Provider';
-import { UserProjectsWithProjects } from 'types';
 
 interface HeadingProps {
   title: string;
@@ -18,13 +17,7 @@ export const Heading: React.FC<HeadingProps> = ({
   const [titleContent, setTitleContent] = useState<string>(title);
   const { session } = useSessionContext();
   useEffect(() => {
-    (session?.user_projects as UserProjectsWithProjects[]).forEach(
-      (userProject: UserProjectsWithProjects) => {
-        if (userProject.projects.jira_key.trim() === project?.trim()) {
-          setTitleContent(userProject.projects.name);
-        }
-      }
-    );
+
   }, [session, project, title]);
 
   return (

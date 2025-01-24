@@ -3,37 +3,13 @@ import { useEffect, useState } from 'react';
 import { NavButton } from './nav-button'
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { NavItem } from 'types';
+import { pageNavItems } from '@/constants/data';
 
 export const NavBar = () => {
   const [currentPage, setCurrentPage] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [navItems] = useState([
-    {
-      name: 'Inicio',
-      href: '/',
-      current: false,
-    },
-    {
-      name: 'Aceca de',
-      href: '/about',
-      current: false,
-    },
-    {
-      name: 'Noticias',
-      href: '/notices',
-      current: false,
-    },
-    {
-      name: 'Contacto',
-      href: '/contact',
-      current: false,
-    },
-    {
-      name: 'Iniciar Sesión',
-      href: '/auth/login',
-      current: false
-    }
-  ]);
+  const [navItems] = useState<NavItem[]>(pageNavItems);
   const pathname = usePathname();
   useEffect(() => {
     setCurrentPage(pathname);
@@ -83,10 +59,10 @@ export const NavBar = () => {
               navItems.map((item, index) => (
                 <li key={index}>
                   <NavButton
-                    name={item.name}
-                    href={item.href}
+                    name={item.title}
+                    href={item.url}
                     // className={checkActive(item.href) ? 'text-blue-700 font-bold' : 'text-gray-700'}
-                    className={`${checkActive(item.href) ? 'text-blue-700 font-bold' : 'text-gray-700'} 
+                    className={`${checkActive(item.url) ? 'text-blue-700 font-bold' : 'text-gray-700'} 
                     
                     `}
                     onClick={() => setIsMenuOpen(false)}

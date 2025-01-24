@@ -8,7 +8,7 @@ export default function ContactView() {
           <h2 className="text-4xl font-bold leading-tight lg:text-5xl">Let&apos;s talk!</h2>
           <div className="dark:text-gray-600">Vivamus in nisl metus? Phasellus.</div>
         </div>
-        <Image width={100} height={100} src="assets/svg/doodle.svg" alt="" className="p-6 h-52 md:h-64" />
+        <Image width={1080} height={720} src="/not-found.webp" alt="" className="w-full h-full object-cover" />
       </div>
       <form className="space-y-6">
         <div>

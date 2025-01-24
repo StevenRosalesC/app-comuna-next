@@ -27,8 +27,8 @@ export const HeroSection = () => {
         </div>
         <div className="hidden lg:mt-0 lg:col-span-5 lg:flex">
           <Image src="https://ik.imagekit.io/stevenrosales/app-comuna/comuna.webp?updatedAt=1737254562322"
-            width={600}
-            height={400}
+            width={1920}
+            height={1080}
             className="object-cover rounded-lg shadow-lg"
             alt="mockup" />
         </div>

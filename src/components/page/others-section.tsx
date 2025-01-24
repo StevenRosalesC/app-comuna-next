@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHeader, TableRow } from '../ui/table'
 import { SubTitle } from '../ui/atoms/sub-title'
 import Slider from '../slider'
 import { GalleryCard } from '../gallery-card'
+import { Paragraph } from '../ui/atoms/paragraph';
 
 export const OthersSection = () => {
   return (
@@ -59,7 +60,15 @@ export const OthersSection = () => {
       >
         {
           Array.from({ length: 5 }).map((_, index) => (
-            <GalleryCard key={index} />
+            <>
+              <GalleryCard key={index} />
+              <Paragraph
+                className='text-center'
+              >
+                Barrio {index + 1}
+              </Paragraph>
+            </>
+
           ))
         }
 

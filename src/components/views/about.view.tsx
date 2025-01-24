@@ -10,7 +10,7 @@ export default function AboutView() {
             <p className="font-normal text-base leading-6 text-gray-600 ">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum.In the first place we have granted to God, and by this our present charter confirmed for us and our heirs forever that the English Church shall be free, and shall have her rights entire, and her liberties inviolate; and we will that it be thus observed; which is apparent from</p>
           </div>
           <div className="w-full lg:w-8/12 ">
-            <Image width={100} height={100} className="w-full h-full" src="https://i.ibb.co/FhgPJt8/Rectangle-116.png" alt="A group of People" />
+            <Image width={1920} height={1080} className="w-full h-full" src="https://ik.imagekit.io/stevenrosales/app-comuna/bambil.jpg?updatedAt=1737682578946" alt="A group of People" />
           </div>
         </div>
 
@@ -56,8 +56,8 @@ export default function AboutView() {
             <p>We are strategists, designers and developers. Innovators and problem solvers. Small enough to be simple and quick.</p>
           </div>
           <div className="grid grid-cols-2 gap-4 mt-8">
-            <Image width={100} height={100} className="w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/content/office-long-2.png" alt="office content 1" />
-            <Image width={100} height={100} className="mt-4 w-full lg:mt-10 rounded-lg" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/content/office-long-1.png" alt="office content 2" />
+            <Image width={1920} height={1080} className="w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/content/office-long-2.png" alt="office content 1" />
+            <Image width={1920} height={1080} className="mt-4 w-full lg:mt-10 rounded-lg" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/content/office-long-1.png" alt="office content 2" />
           </div>
         </div>
       </section>

@@ -10,10 +10,7 @@ export default function KanbanViewPage() {
       <div className='space-y-4'>
         <div className='flex items-start justify-between'>
           <Heading title={`Kanban`} description='Manage tasks by dnd' />
-          <NewTaskDialog
-            onTaskAdd={() => { }}
-            project={''}
-          />
+          <NewTaskDialog onTaskAdd={() => {}} project={''} />
         </div>
         <KanbanBoard />
       </div>

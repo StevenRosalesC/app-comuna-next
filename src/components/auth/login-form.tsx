@@ -51,7 +51,6 @@ export default function LoginForm() {
       }
       toast.success('Login successful');
       router.push('/dashboard/overview');
-
     });
   };
 
@@ -98,7 +97,10 @@ export default function LoginForm() {
               </FormItem>
             )}
           />
-          <Link href='/auth/forgot-password' className='text-sm text-muted-foreground text-end'>
+          <Link
+            href='/auth/forgot-password'
+            className='text-end text-sm text-muted-foreground'
+          >
             ¿Olvidaste tu contraseña?
           </Link>
           <Button disabled={loading} className='ml-auto w-full' type='submit'>

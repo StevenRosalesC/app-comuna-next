@@ -3,60 +3,63 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-import { createClient } from '@/utils/supabase/server';
 import apiCommunity from '@/utils/communityApi';
 import { cookies } from 'next/headers';
 
 export async function login(formData: FormData) {
-    const data = {
-        email: formData.get('email') as string,
-        password: formData.get('password') as string,
-    };
-    let redirectPath = '/dashboard/overview';
-
-    try {
-        const response: {  token: string ,refreshToken:string } = await apiCommunity.post('/auth/login', {}, {
-            headers: {
-                Authorization: `Bearer ${btoa(`${data.email}:${data.password}`)}`,
-            },
-        });
-        const token = response.token;
-        // Guardar el token en una cookie
-        cookies().set('token', token);
-        cookies().set('refreshToken', response.refreshToken);
-        return {
-            ok: true,
-        };
-    } catch (error) {
-        // Opcional: redirigir a una página de error
-        return {
-          ok: false,
-        };
-    }finally{
-        revalidatePath(redirectPath, 'layout');
-    }
-}
-
-
-export async function signup(formData: FormData) {
-  const supabase = await createClient();
-
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
   const data = {
     email: formData.get('email') as string,
     password: formData.get('password') as string
   };
+  let redirectPath = '/dashboard/overview';
 
-  const { error } = await supabase.auth.signUp(data);
-
-  if (error) {
-    redirect('/error');
+  try {
+    const response: { token: string; refreshToken: string } =
+      await apiCommunity.post(
+        '/auth/login',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${btoa(`${data.email}:${data.password}`)}`
+          }
+        }
+      );
+    const token = response.token;
+    // Guardar el token en una cookie
+    cookies().set('token', token);
+    cookies().set('refreshToken', response.refreshToken);
+    return {
+      ok: true
+    };
+  } catch (error) {
+    // Opcional: redirigir a una página de error
+    return {
+      ok: false
+    };
+  } finally {
+    revalidatePath(redirectPath, 'layout');
   }
-
-  revalidatePath('/', 'layout');
-  redirect('/');
 }
+
+// export async function signup(formData: FormData) {
+//   const supabase = await createClient();
+
+//   // type-casting here for convenience
+//   // in practice, you should validate your inputs
+//   const data = {
+//     email: formData.get('email') as string,
+//     password: formData.get('password') as string
+//   };
+
+//   const { error } = await supabase.auth.signUp(data);
+
+//   if (error) {
+//     redirect('/error');
+//   }
+
+//   revalidatePath('/', 'layout');
+//   redirect('/');
+// }
 
 export async function logout() {
   let redirectPath = '/';
@@ -71,7 +74,6 @@ export async function logout() {
   } catch (error) {
     // Opcional: redirigir a una página de error
     redirectPath = '/error';
-    
   } finally {
     revalidatePath(redirectPath, 'layout');
     redirect(redirectPath);

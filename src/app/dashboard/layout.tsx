@@ -24,7 +24,6 @@ export default async function DashboardLayout({
 
   return (
     <Providers session={session}>
-
       <KBar>
         <SidebarProvider defaultOpen={defaultOpen}>
           <AppSidebar />
@@ -37,6 +36,5 @@ export default async function DashboardLayout({
         </SidebarProvider>
       </KBar>
     </Providers>
-
   );
 }

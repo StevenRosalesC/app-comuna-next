@@ -39,24 +39,24 @@ export const navItems: NavItem[] = [
 ];
 
 export const pageNavItems: NavItem[] = [
-    {
-      title: 'Inicio',
-     url: '/',
-    },
-    {
-      title: 'Aceca de',
-     url: '/about',
-    },
-    {
-      title: 'Noticias',
-     url: '/notices',
-    },
-    {
-      title: 'Contacto',
-     url: '/contact',
-    },
-    {
-      title: 'Iniciar Sesión',
-     url: '/auth/login',
-    }
-  ]
+  {
+    title: 'Inicio',
+    url: '/'
+  },
+  {
+    title: 'Aceca de',
+    url: '/about'
+  },
+  {
+    title: 'Noticias',
+    url: '/notices'
+  },
+  {
+    title: 'Contacto',
+    url: '/contact'
+  },
+  {
+    title: 'Iniciar Sesión',
+    url: '/auth/login'
+  }
+];

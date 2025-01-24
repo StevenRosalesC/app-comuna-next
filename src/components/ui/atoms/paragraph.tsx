@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 
@@ -58,8 +58,6 @@ import { cn } from '@/lib/utils';
 
 // export { Button, buttonVariants };
 
-
-
 const paragraphVariants = cva(
   'mb-5 font-light text-gray-500 dark:text-gray-400',
   {
@@ -68,21 +66,21 @@ const paragraphVariants = cva(
         default: 'mb-5 font-light text-gray-500 dark:text-gray-400',
         secondary: 'mb-5 font-light text-gray-500 dark:text-gray-400',
         destructive: 'mb-5 font-light text-gray-500 dark:text-gray-400',
-        outline: 'mb-5 font-light text-gray-500 dark:text-gray-400',
+        outline: 'mb-5 font-light text-gray-500 dark:text-gray-400'
       },
       size: {
         default: 'text-base lg:text-lg xl:text-xl',
         sm: 'text-sm lg:text-base xl:text-lg',
         lg: 'text-lg lg:text-xl xl:text-2xl',
-        xl: 'text-xl lg:text-2xl xl:text-3xl',
+        xl: 'text-xl lg:text-2xl xl:text-3xl'
       }
-    },
+    }
   }
 );
 
 export interface ParagraphProps
   extends React.HTMLAttributes<HTMLParagraphElement>,
-  VariantProps<typeof paragraphVariants> {
+    VariantProps<typeof paragraphVariants> {
   asChild?: boolean;
 }
 
@@ -98,8 +96,6 @@ const Paragraph = React.forwardRef<HTMLParagraphElement, ParagraphProps>(
     );
   }
 );
-
-
 
 Paragraph.displayName = 'Paragraph';
 

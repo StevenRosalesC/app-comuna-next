@@ -9,8 +9,8 @@ import { Database } from './supabase';
 //       status: 1,
 //       role: 'Admin'
 //     },
-//     token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIzMzg2OTAwZS05NjM2LTRmNjAtOTljMS1mZjYxNDYyZWMxMjIiLCJpYXQiOjE3MzczMDQxMTQsImV4cCI6MTczNzMwNzcxNH0.I3ke2fatSd1FoJBMgDs64a4_JfkHc81NMKdzjSXeV6Y',        
-//     refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIzMzg2OTAwZS05NjM2LTRmNjAtOTljMS1mZjYxNDYyZWMxMjIiLCJpYXQiOjE3MzczMDQxMTQsImV4cCI6MTczNzkwODkxNH0.7Dqx4WD6HzXVFNlbVmw1lE1anUet7u5rIX6eX7UUWrc' 
+//     token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIzMzg2OTAwZS05NjM2LTRmNjAtOTljMS1mZjYxNDYyZWMxMjIiLCJpYXQiOjE3MzczMDQxMTQsImV4cCI6MTczNzMwNzcxNH0.I3ke2fatSd1FoJBMgDs64a4_JfkHc81NMKdzjSXeV6Y',
+//     refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIzMzg2OTAwZS05NjM2LTRmNjAtOTljMS1mZjYxNDYyZWMxMjIiLCJpYXQiOjE3MzczMDQxMTQsImV4cCI6MTczNzkwODkxNH0.7Dqx4WD6HzXVFNlbVmw1lE1anUet7u5rIX6eX7UUWrc'
 //   }
 interface User {
   id: string;
@@ -21,7 +21,7 @@ interface User {
   status: number;
   role: string;
 }
-export interface Session{
+export interface Session {
   user: User;
   token: string;
   refreshToken: string;

@@ -9,11 +9,15 @@ export const signIn = async ({
   email: string;
   password: string;
 }) => {
-  const response = await apiCommunity.post<{ token: string }>('/auth/login', {}, {
-    headers: {
-      Authorization: `Bearer ${btoa(`${email}:${password}`)}`
+  const response = await apiCommunity.post<{ token: string }>(
+    '/auth/login',
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${btoa(`${email}:${password}`)}`
+      }
     }
-  });
+  );
   const token = response.token;
   cookies().set('token', token);
 };
@@ -27,7 +31,6 @@ export const signOut = async () => {
 };
 
 export const auth = async (): Promise<Session | null> => {
-
   // Obtén el usuario autenticado de forma segura
   const token = cookies().get('token')?.value;
   try {

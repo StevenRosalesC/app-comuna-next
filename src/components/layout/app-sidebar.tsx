@@ -103,7 +103,7 @@ export default function AppSidebar() {
               src='https://ik.imagekit.io/stevenrosales/app-comuna/icon.png?updatedAt=1736217178070'
               width={32}
               height={32}
-              className='rounded-lg object-cover bg-sidebar'
+              className='rounded-lg bg-sidebar object-cover'
               alt='Team logo'
             />
           </div>
@@ -187,7 +187,8 @@ export default function AppSidebar() {
                       alt={session?.user.last_name || ''}
                     /> */}
                     <AvatarFallback className='rounded-lg'>
-                      {session?.user.last_name?.slice(0, 2)?.toUpperCase() || 'CB'}
+                      {session?.user.last_name?.slice(0, 2)?.toUpperCase() ||
+                        'CB'}
                     </AvatarFallback>
                   </Avatar>
                   <div className='grid flex-1 text-left text-sm leading-tight'>
@@ -211,7 +212,8 @@ export default function AppSidebar() {
                   <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
                     <Avatar className='h-8 w-8 rounded-lg'>
                       <AvatarFallback className='rounded-lg'>
-                        {session?.user.last_name?.slice(0, 2)?.toUpperCase() || 'CN'}
+                        {session?.user.last_name?.slice(0, 2)?.toUpperCase() ||
+                          'CN'}
                       </AvatarFallback>
                     </Avatar>
                     <div className='grid flex-1 text-left text-sm leading-tight'>

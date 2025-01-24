@@ -1,5 +1,11 @@
-"use client";
-import { Navigation, Pagination, Scrollbar, A11y, Autoplay } from 'swiper/modules';
+'use client';
+import {
+  Navigation,
+  Pagination,
+  Scrollbar,
+  A11y,
+  Autoplay
+} from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 // Import Swiper styles
 import 'swiper/css';
@@ -21,17 +27,17 @@ type SliderProps = {
 const defaultBreakpoints = {
   640: {
     slidesPerView: 1,
-    spaceBetween: 10,
+    spaceBetween: 10
   },
   768: {
     slidesPerView: 2,
-    spaceBetween: 20,
+    spaceBetween: 20
   },
   1024: {
     slidesPerView: 3,
-    spaceBetween: 30,
-  },
-}
+    spaceBetween: 30
+  }
+};
 
 export default function Slider({
   children,
@@ -42,7 +48,7 @@ export default function Slider({
   autoplay = true,
   pagination = true,
   navigation = true,
-  delay = 2500,
+  delay = 2500
 }: SliderProps) {
   return (
     <Swiper
@@ -53,17 +59,17 @@ export default function Slider({
       loop={loop}
       autoplay={{
         delay,
-        disableOnInteraction: false,
+        disableOnInteraction: false
       }}
       pagination={{ clickable: true }}
       scrollbar={{ draggable: true }}
-      effect="fade"
+      effect='fade'
       breakpoints={customBreakpoints ?? defaultBreakpoints}
     >
       {Array.isArray(children)
         ? children.map((child, index) => (
-          <SwiperSlide key={index}>{child}</SwiperSlide>
-        ))
+            <SwiperSlide key={index}>{child}</SwiperSlide>
+          ))
         : children}
     </Swiper>
   );

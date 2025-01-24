@@ -10,12 +10,6 @@ const envSchema = z.object({
   }),
   API_URL: z.string({
     required_error: 'API_URL is required'
-  }),
-  SUPABASE_URL: z.string({
-    required_error: 'SUPABASE_URL is required'
-  }),
-  SUPABASE_ANON_KEY: z.string({
-    required_error: 'SUPABASE_ANON_KEY is required'
   })
 });
 
@@ -26,10 +20,4 @@ if (!env.success) {
 }
 
 // Exportar las variables validadas
-export const {
-  GITHUB_ID,
-  GITHUB_SECRET,
-  API_URL,
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-} = env.data;
+export const { GITHUB_ID, GITHUB_SECRET, API_URL } = env.data;

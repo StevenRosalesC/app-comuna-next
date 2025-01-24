@@ -34,9 +34,7 @@ export default function UserAuthForm() {
     defaultValues
   });
 
-  const onSubmit = async (data: UserFormValue) => {
-
-  };
+  const onSubmit = async (data: UserFormValue) => {};
 
   return (
     <>

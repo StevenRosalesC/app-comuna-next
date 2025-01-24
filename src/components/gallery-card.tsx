@@ -14,21 +14,19 @@ export const GalleryCard = ({ images }: GalleryCardProps) => {
 
   const galleryImages = images?.length ? images : placeholderImages;
 
-
-
   return (
     <>
-      <div className="w-full h-full p-4 mb-10 bg-gray-100 dark:bg-gray-800 rounded-lg grid grid-cols-3 gap-2">
+      <div className='mb-10 grid h-full w-full grid-cols-3 gap-2 rounded-lg bg-gray-100 p-4 dark:bg-gray-800'>
         {galleryImages.map((src, index) => (
           <div
             key={index}
-            className="relative w-full h-24 overflow-hidden rounded-lg"
+            className='relative h-24 w-full overflow-hidden rounded-lg'
           >
             <Image
               src={src}
               alt={`Image ${index + 1}`}
               fill
-              className="object-cover aspect-video"
+              className='aspect-video object-cover'
             />
           </div>
         ))}

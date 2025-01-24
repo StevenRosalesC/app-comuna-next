@@ -1,6 +1,6 @@
 // import Swiper core and required modules
 // Import Swiper styles
-"use client";
+'use client';
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -25,9 +25,9 @@ export const SwiperSlider = () => {
       onSlideChange={() => console.log('slide change')}
       className='h-96 w-[100dvw] bg-gray-100 dark:bg-gray-800'
     >
-      <SwiperSlide
-        className='h-96 bg-gray-100 dark:bg-gray-800'
-      >Slide 1</SwiperSlide>
+      <SwiperSlide className='h-96 bg-gray-100 dark:bg-gray-800'>
+        Slide 1
+      </SwiperSlide>
       <SwiperSlide>Slide 2</SwiperSlide>
       <SwiperSlide>Slide 3</SwiperSlide>
       <SwiperSlide>Slide 4</SwiperSlide>

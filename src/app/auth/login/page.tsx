@@ -2,8 +2,8 @@ import LoginViewPage from '@/features/auth/components/login-view';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Authentication | Sign In',
-  description: 'Sign In page for authentication.'
+  title: 'Authentication | Iniciar sesión',
+  description: 'Inicia sesión para acceder a tu cuenta.'
 };
 
 export default function Page() {

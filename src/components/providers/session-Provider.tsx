@@ -1,13 +1,10 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { SupabaseClient } from '@supabase/supabase-js';
-import supabaseServer from '@/utils/db-server';
-import { CustomSession } from 'types';
+import { Session } from 'types';
 
 interface SessionContextProps {
-  supabase: SupabaseClient;
-  session: CustomSession | null;
+  session: Session | null;
   loading: boolean;
 }
 
@@ -20,20 +17,20 @@ export const SessionProvider = ({
   initialSession
 }: {
   children: React.ReactNode;
-  initialSession?: CustomSession | null;
+  initialSession?: Session | null;
 }) => {
-  const [supabase] = useState(() => supabaseServer);
-  const [session, setSession] = useState<CustomSession | null>(
+  const [session, setSession] = useState<Session | null>(
     initialSession || null
   );
   const [loading, setLoading] = useState(!initialSession);
 
   useEffect(() => {
+    console.log('initialSession', initialSession);
     setSession(initialSession || null);
-  }, [supabase, initialSession]);
+  }, [initialSession]);
 
   return (
-    <SessionContext.Provider value={{ supabase, session, loading }}>
+    <SessionContext.Provider value={{ session, loading }}>
       {children}
     </SessionContext.Provider>
   );

@@ -57,12 +57,12 @@ export const company = {
 export default function AppSidebar() {
   const { session } = useSessionContext();
   // const { data: session } = useSession();
-  const [userAccess, setUserAccess] = useState<NavItem[]>(navItems);
+  const [userAccess] = useState<NavItem[]>(navItems);
   const pathname = usePathname();
   // const { state, isMobile } = useSidebar();
 
   const handleAccess = (userProjects: UserProjectsWithProjects[]) => {
-    const access: NavItem[] = [];
+    // const access: NavItem[] = [];
     // userProjects.forEach((userProject) => {
     //   access.push({
     //     title: userProject.projects.name,
@@ -88,11 +88,11 @@ export default function AppSidebar() {
     //   return prev;
     // });
   };
-  useEffect(() => {
-    if (session) {
-      handleAccess(session.user_projects as UserProjectsWithProjects[]);
-    }
-  }, [session]);
+  // useEffect(() => {
+  //   if (session) {
+  //     handleAccess(session.user_projects as UserProjectsWithProjects[]);
+  //   }
+  // }, [session]);
 
   return (
     <Sidebar collapsible='icon'>
@@ -103,7 +103,7 @@ export default function AppSidebar() {
               src='https://ik.imagekit.io/stevenrosales/app-comuna/icon.png?updatedAt=1736217178070'
               width={32}
               height={32}
-              className='rounded-lg object-cover bg-sidebar'
+              className='rounded-lg bg-sidebar object-cover'
               alt='Team logo'
             />
           </div>
@@ -184,15 +184,16 @@ export default function AppSidebar() {
                   <Avatar className='h-8 w-8 rounded-lg'>
                     {/* <AvatarImage
                       src={session?.user?.id || ''}
-                      alt={session?.username || ''}
+                      alt={session?.user.last_name || ''}
                     /> */}
                     <AvatarFallback className='rounded-lg'>
-                      {session?.username?.slice(0, 2)?.toUpperCase() || 'CN'}
+                      {session?.user.last_name?.slice(0, 2)?.toUpperCase() ||
+                        'CB'}
                     </AvatarFallback>
                   </Avatar>
                   <div className='grid flex-1 text-left text-sm leading-tight'>
                     <span className='truncate font-semibold'>
-                      {session?.username || ''}
+                      {session?.user.last_name || ''}
                     </span>
                     <span className='truncate text-xs'>
                       {session?.user?.email || ''}
@@ -211,12 +212,13 @@ export default function AppSidebar() {
                   <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
                     <Avatar className='h-8 w-8 rounded-lg'>
                       <AvatarFallback className='rounded-lg'>
-                        {session?.username?.slice(0, 2)?.toUpperCase() || 'CN'}
+                        {session?.user.last_name?.slice(0, 2)?.toUpperCase() ||
+                          'CN'}
                       </AvatarFallback>
                     </Avatar>
                     <div className='grid flex-1 text-left text-sm leading-tight'>
                       <span className='truncate font-semibold'>
-                        {session?.username || ''}
+                        {session?.user.last_name || ''}
                       </span>
                       <span className='truncate text-xs'>
                         {' '}
@@ -244,7 +246,7 @@ export default function AppSidebar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => logout()}>
                   <LogOut />
-                  Cerrar sesión
+                  Log out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

@@ -2,39 +2,18 @@
 const nextConfig = {
   images: {
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'utfs.io',
-        port: ''
+  {
+        protocol: 'https', 
+        hostname: '**', 
       },
       {
-        protocol: 'https',
-        hostname: 'api.slingacademy.com',
-        port: ''
+        protocol: 'http',
+        hostname: '**',
       },
-      {
-        protocol: 'https',
-        hostname: 'secure.gravatar.com',
-        port: ''
-      },
-      {
-        protocol: 'https',
-        hostname: 'avatar-management--avatars.us-west-2.prod.public.atl-paas.net',
-        port: ''
-      },
-      {
-        protocol: 'https',
-        hostname: 'ik.imagekit.io',
-        port: ''
-      },
-      {
-        protocol: 'https',
-        hostname: 'kickersoft.com',
-        port: ''
-      }
     ]
   },
   transpilePackages: ['geist'],
+  output:'standalone',
 };
 
 module.exports = nextConfig;

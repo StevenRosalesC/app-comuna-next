@@ -1,5 +1,6 @@
-import { createClient } from '@/utils/supabase/server';
-import { CustomSession } from 'types';
+import apiCommunity from '@/utils/communityApi';
+import { cookies } from 'next/headers';
+import { Session } from 'types';
 
 export const signIn = async ({
   email,
@@ -8,62 +9,38 @@ export const signIn = async ({
   email: string;
   password: string;
 }) => {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  });
-  if (error) {
-    throw new Error(error.message);
-  }
-  return data;
+  const response = await apiCommunity.post<{ token: string }>(
+    '/auth/login',
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${btoa(`${email}:${password}`)}`
+      }
+    }
+  );
+  const token = response.token;
+  cookies().set('token', token);
 };
 
 export const signOut = async () => {
-  const supabase = await createClient();
-  const { error } = await supabase.auth.signOut();
-  if (error) {
-    throw new Error(error.message);
-  }
+  await apiCommunity.get('/auth/logout', {
+    headers: {
+      Authorization: `Bearer ${cookies().get('token')?.value}`
+    }
+  });
 };
 
-export const auth = async (): Promise<CustomSession | null> => {
-  const supabase = await createClient();
-
+export const auth = async (): Promise<Session | null> => {
   // Obtén el usuario autenticado de forma segura
-  const { data: userData, error: userError } = await supabase.auth.getUser();
-  if (userError || !userData?.user) {
+  const token = cookies().get('token')?.value;
+  try {
+    const response = await apiCommunity.get<Session>('/auth/user', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response;
+  } catch (error) {
     return null;
   }
-
-  const userId = userData.user.id;
-
-  // Obtén datos adicionales del usuario desde la base de datos
-  const { data: allUserData, error: dataError } = await supabase
-    .from('users')
-    .select(
-      `
-        *,
-        roles(*),
-        user_projects(*,
-          projects(*)
-        )
-      `
-    )
-    .eq('id', userId)
-    .single();
-  if (
-    dataError ||
-    !allUserData ||
-    !allUserData.roles ||
-    !allUserData.user_projects
-  ) {
-    return null;
-  }
-  return {
-    ...userData,
-    username: allUserData.name,
-    roles: allUserData.roles,
-    user_projects: allUserData.user_projects
-  };
 };

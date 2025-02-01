@@ -107,11 +107,7 @@ export const ForgotPasswordForm = () => {
                   >
                     Acepto los
                     <a
-                      className='text-primary-600 dark:text-primary-500 font-medium hover:underline'
-                      href='#'
-                    >
-                      términos y condiciones
-                    </a>
+                      e.preventDefault()}>términos y condiciones
                   </label>
                 </div>
               </div>

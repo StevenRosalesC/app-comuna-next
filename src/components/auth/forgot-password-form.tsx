@@ -39,8 +39,17 @@ export const ForgotPasswordForm = () => {
     defaultValues
   });
 
+  const [isLoading, setIsLoading] = useState(false);
   const onSubmit = async (data: UserFormValue) => {
-    console.log(data);
+    try {
+      setIsLoading(true);
+      // API call here
+      // Show success message
+    } catch (error) {
+      // Show error message
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

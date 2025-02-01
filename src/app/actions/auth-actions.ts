@@ -14,16 +14,18 @@ export async function login(formData: FormData) {
   let redirectPath = '/dashboard/overview';
 
   try {
-    const response: { token: string; refreshToken: string } =
-      await apiCommunity.post(
-        '/auth/login',
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${btoa(`${data.email}:${data.password}`)}`
-          }
+    const response = await apiCommunity.post<{ token: string; refreshToken: string }>(
+      '/auth/login',
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${btoa(`${email}:${password}`)}`
         }
-      );
+      }
+    );
+    if (!response?.token) {
+      throw new Error('Invalid token response');
+    }
     const token = response.token;
     // Guardar el token en una cookie
     cookies().set('token', token);

@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  console.log({ url: request.nextUrl.pathname });
+// Remove or replace with proper logging service if needed
   if (request.nextUrl.pathname === '/') {
     return NextResponse.next();
   }

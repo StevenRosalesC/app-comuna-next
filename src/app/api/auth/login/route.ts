@@ -5,8 +5,8 @@ import { NextRequest } from 'next/server';
 export async function POST(request: NextRequest) {
   const { email, password } = await request.json();
 
-  if (email === ''){
-    return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+  if (email === '' || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)){
+    return NextResponse.json({ error: 'Valid email is required' }, { status: 400 });
   }
 
   if (password === ''){

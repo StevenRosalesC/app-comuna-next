@@ -70,6 +70,7 @@ export async function logout() {
       }
     });
     cookies().set('token', '');
+    cookies().set('refreshToken', '');
     redirectPath = '/auth/login';
   } catch (error) {
     // Opcional: redirigir a una página de error

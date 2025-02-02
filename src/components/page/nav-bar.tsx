@@ -67,11 +67,10 @@ export const NavBar = () => {
                   name={item.title}
                   href={item.url}
                   // className={checkActive(item.href) ? 'text-blue-700 font-bold' : 'text-gray-700'}
-                  className={`${
-                    checkActive(item.url)
+                  className={`${checkActive(item.url)
                       ? 'font-bold text-blue-700'
                       : 'text-gray-700'
-                  } 
+                    } 
                     
                     `}
                   onClick={() => setIsMenuOpen(false)}

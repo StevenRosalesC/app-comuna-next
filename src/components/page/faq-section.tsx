@@ -30,9 +30,8 @@ export default function FaqSection() {
                 variant='unstyled'
                 className='w-full justify-start text-left font-semibold'
               >
-                Can I upgrade my plan later?
-              </Button>
-            </CollapsibleTrigger>
+
+                  ¿Cómo puedo participar en la comuna?
             <CollapsibleContent asChild>
               <p className='text-sm leading-loose text-gray-500 dark:text-gray-400 md:text-base'>
                 Yes. You can start or stop your plan at any time.

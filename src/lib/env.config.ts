@@ -2,12 +2,7 @@ import * as z from 'zod';
 
 // Esquema de validación para las variables de entorno
 const envSchema = z.object({
-  GITHUB_ID: z.string({
-    required_error: 'GITHUB_ID is required'
-  }),
-  GITHUB_SECRET: z.string({
-    required_error: 'GITHUB_SECRET is required'
-  }),
+
   API_URL: z.string({
     required_error: 'API_URL is required'
   })
@@ -20,4 +15,4 @@ if (!env.success) {
 }
 
 // Exportar las variables validadas
-export const { GITHUB_ID, GITHUB_SECRET, API_URL } = env.data;
+export const {  API_URL } = env.data;

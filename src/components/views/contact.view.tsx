@@ -2,14 +2,14 @@ import Image from 'next/image';
 
 export default function ContactView() {
   return (
-    <div className='mx-auto grid max-w-screen-xl grid-cols-1 gap-8 rounded-lg px-8 py-16 dark:bg-gray-100 dark:text-gray-800 md:grid-cols-2 md:px-12 lg:px-16 xl:px-32'>
+    <section className='mx-auto grid max-w-screen-xl grid-cols-1 gap-8 rounded-lg px-8 py-16 dark:bg-gray-100 dark:text-gray-800 md:grid-cols-2 md:px-12 lg:px-16 xl:px-32'>
       <div className='flex flex-col justify-between'>
         <div className='space-y-2'>
           <h2 className='text-4xl font-bold leading-tight lg:text-5xl'>
-            Let&apos;s talk!
+            Contactanos
           </h2>
           <div className='dark:text-gray-600'>
-            Vivamus in nisl metus? Phasellus.
+            Habla con nosotros, estamos aquí para ayudarte.
           </div>
         </div>
         <Image
@@ -17,13 +17,13 @@ export default function ContactView() {
           height={720}
           src='/not-found.webp'
           alt=''
-          className='h-full w-full object-cover'
+          className='h-full w-full object-cover rounded-lg'
         />
       </div>
       <form className='space-y-6'>
         <div>
           <label htmlFor='name' className='text-sm'>
-            Full name
+            Ingrese su nombre
           </label>
           <input
             id='name'
@@ -34,7 +34,7 @@ export default function ContactView() {
         </div>
         <div>
           <label htmlFor='email' className='text-sm'>
-            Email
+            Ingrese su correo
           </label>
           <input
             id='email'
@@ -44,7 +44,7 @@ export default function ContactView() {
         </div>
         <div>
           <label htmlFor='message' className='text-sm'>
-            Message
+            Mensaje
           </label>
           <textarea
             id='message'
@@ -56,9 +56,9 @@ export default function ContactView() {
           type='submit'
           className='w-full rounded p-3 text-sm font-bold uppercase tracking-wide dark:bg-violet-600 dark:text-gray-50'
         >
-          Send Message
+          Enviar mensaje
         </button>
       </form>
-    </div>
+    </section>
   );
 }

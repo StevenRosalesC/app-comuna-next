@@ -16,9 +16,9 @@ export const NoticesSection = () => {
           </Paragraph>
         </div>
       </div>
-      <Slider delay={5000}>
+      <Slider delay={5000} key={'notices-slider'}>
         {Array.from({ length: 5 }).map((_, index) => (
-          <NoticeMiniCard key={index} />
+          <NoticeMiniCard key={`notice-${index}`} />
         ))}
       </Slider>
     </section>

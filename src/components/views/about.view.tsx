@@ -69,11 +69,10 @@ export default function AboutView() {
           <p className='mb-4'>
             <span className='font-semibold'>Estrofa 1</span>
             <br />
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec
-            urna vitae libero scelerisque aliquet. Sed nec odio vel nulla
-            ultricies ultricies. Nulla facilisi. Integer ac nunc nec felis
-            tincidunt.
-          </p>
+
+            strofa 1
+
+              [Actual hymn lyrics in Spanish]
           <p className='mb-4'>
             <span className='font-semibold'>Estrofa 2</span>
             <br />

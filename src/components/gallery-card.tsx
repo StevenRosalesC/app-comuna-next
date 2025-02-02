@@ -1,12 +1,12 @@
 import Image from 'next/image';
 import React from 'react';
-import { Paragraph } from './ui/atoms/paragraph';
 
 type GalleryCardProps = {
   images?: string[];
+  alt?: string;
 };
 
-export const GalleryCard = ({ images }: GalleryCardProps) => {
+export const GalleryCard = ({ images, alt }: GalleryCardProps) => {
   // Si no se pasan imágenes, usa un marcador de posición por defecto
   const placeholderImages = Array.from({ length: 9 }).map(
     (_, index) => `/not-found.webp`
@@ -19,12 +19,12 @@ export const GalleryCard = ({ images }: GalleryCardProps) => {
       <div className='mb-10 grid h-full w-full grid-cols-3 gap-2 rounded-lg bg-gray-100 p-4 dark:bg-gray-800'>
         {galleryImages.map((src, index) => (
           <div
-            key={index}
+            key={`gallery-${alt}-${index}`}
             className='relative h-24 w-full overflow-hidden rounded-lg'
           >
             <Image
               src={src}
-              alt={`Image ${index + 1}`}
+              alt={`${alt}-${index}`}
               fill
               className='aspect-video object-cover'
             />

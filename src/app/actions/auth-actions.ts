@@ -14,12 +14,15 @@ export async function login(formData: FormData) {
   let redirectPath = '/dashboard/overview';
 
   try {
-    const response = await apiCommunity.post<{ token: string; refreshToken: string }>(
+    const response = await apiCommunity.post<{
+      token: string;
+      refreshToken: string;
+    }>(
       '/auth/login',
       {},
       {
         headers: {
-          Authorization: `Bearer ${btoa(`${email}:${password}`)}`
+          Authorization: `Bearer ${btoa(`${data.email}:${data.password}`)}`
         }
       }
     );

@@ -8,6 +8,7 @@ export default function page() {
       <HeroSection />
       <NoticesSection />
       <OthersSection />
+      {/* <FaqSection /> */}
       <section className='my-5 rounded-xl bg-white p-2'>
         <h2 className='text-center text-3xl font-bold'>UBICACIÓN</h2>
         <iframe

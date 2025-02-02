@@ -1,3 +1,8 @@
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/scrollbar';
+import './globals.css';
 // import { auth } from '@/lib/auth';
 // import Providers from '@/components/layout/providers';
 import { Toaster } from '@/components/ui/sonner';
@@ -5,11 +10,6 @@ import type { Metadata } from 'next';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Lato } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import 'swiper/css/scrollbar';
-import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Next Shadcn',
@@ -30,7 +30,7 @@ export default async function RootLayout({
   // const session = await auth();
   return (
     <html
-      lang='en'
+      lang='es'
       className={`${lato.className}`}
       suppressHydrationWarning={true}
     >

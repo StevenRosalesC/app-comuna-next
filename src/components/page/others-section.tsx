@@ -70,12 +70,14 @@ export const OthersSection = () => {
           </TableBody>
         </Table>
       </div>
-      <Slider delay={5500}>
+      <Slider delay={5500} key={'nei'}>
         {Array.from({ length: 5 }).map((_, index) => (
-          <>
-            <GalleryCard key={index} />
-            <Paragraph className='text-center'>Barrio {index + 1}</Paragraph>
-          </>
+          <div key={`nei-${index}`}>
+            <GalleryCard alt={`${index}`} key={`nei-${index}`} />
+            <Paragraph
+              key={`nei-${index}`}
+              className='text-center'>Barrio {index + 1}</Paragraph>
+          </div>
         ))}
       </Slider>
     </section>

@@ -21,8 +21,9 @@ export const SwiperSlider = () => {
       navigation
       pagination={{ clickable: true }}
       scrollbar={{ draggable: true }}
-onSwiper={(swiper) => {}}
-onSlideChange={() => {}}
+      // Remove the handlers if not needed, or implement proper functionality:
+      onSwiper={(swiper) => console.debug('Swiper initialized', swiper)}
+      onSlideChange={() => console.debug('Slide changed')}
       className='h-96 w-[100dvw] bg-gray-100 dark:bg-gray-800'
     >
       <SwiperSlide className='h-96 bg-gray-100 dark:bg-gray-800'>

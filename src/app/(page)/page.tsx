@@ -1,3 +1,4 @@
+import FaqSection from '@/components/page/faq-section';
 import { HeroSection } from '@/components/page/hero-section';
 import { NoticesSection } from '@/components/page/notices-section';
 import { OthersSection } from '@/components/page/others-section';
@@ -8,6 +9,7 @@ export default function page() {
       <HeroSection />
       <NoticesSection />
       <OthersSection />
+      {/* <FaqSection /> */}
       <section className='my-5 rounded-xl bg-white p-2'>
         <h2 className='text-center text-3xl font-bold'>UBICACIÓN</h2>
         <iframe

@@ -74,9 +74,9 @@ export const OthersSection = () => {
         {Array.from({ length: 5 }).map((_, index) => (
           <div key={`nei-${index}`}>
             <GalleryCard alt={`${index}`} key={`nei-${index}`} />
-            <Paragraph
-              key={`nei-${index}`}
-              className='text-center'>Barrio {index + 1}</Paragraph>
+            <Paragraph key={`nei-${index}`} className='text-center'>
+              Barrio {index + 1}
+            </Paragraph>
           </div>
         ))}
       </Slider>

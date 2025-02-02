@@ -2,7 +2,6 @@ import * as z from 'zod';
 
 // Esquema de validación para las variables de entorno
 const envSchema = z.object({
-
   API_URL: z.string({
     required_error: 'API_URL is required'
   })
@@ -15,4 +14,4 @@ if (!env.success) {
 }
 
 // Exportar las variables validadas
-export const {  API_URL } = env.data;
+export const { API_URL } = env.data;

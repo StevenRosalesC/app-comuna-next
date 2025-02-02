@@ -21,8 +21,8 @@ export const SwiperSlider = () => {
       navigation
       pagination={{ clickable: true }}
       scrollbar={{ draggable: true }}
-onSwiper={(swiper) => {}}
-onSlideChange={() => {}}
+      onSwiper={(swiper) => {}}
+      onSlideChange={() => {}}
       className='h-96 w-[100dvw] bg-gray-100 dark:bg-gray-800'
     >
       <SwiperSlide className='h-96 bg-gray-100 dark:bg-gray-800'>

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import Image from 'next/image';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,18 +10,20 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from '../ui/form';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 
 const contactSchema = z.object({
-  personName: z.string({
-    required_error: 'El nombre es requerido'
-  }).min(3, {
-    message: 'El nombre es requerido'
-  }),
+  personName: z
+    .string({
+      required_error: 'El nombre es requerido'
+    })
+    .min(3, {
+      message: 'El nombre es requerido'
+    }),
   email: z.string().email({
     message: 'El correo no es valido'
   }),
@@ -29,8 +31,6 @@ const contactSchema = z.object({
     message: 'El mensaje es requerido'
   })
 });
-
-
 
 export default function ContactView() {
   const form = useForm<z.infer<typeof contactSchema>>({
@@ -44,7 +44,7 @@ export default function ContactView() {
 
   const onSubmit = (data: z.infer<typeof contactSchema>) => {
     console.log(data);
-  }
+  };
 
   return (
     <section className='mx-auto grid max-w-screen-xl grid-cols-1 gap-8 rounded-lg px-8 py-16 dark:bg-gray-100 dark:text-gray-800 md:grid-cols-2 md:px-12 lg:px-16 xl:px-32'>
@@ -62,20 +62,17 @@ export default function ContactView() {
           height={720}
           src='https://ik.imagekit.io/stevenrosales/app-comuna/comuna4.jpg?updatedAt=1738512506714'
           alt=''
-          className='h-full w-full object-cover rounded-lg shadow-md'
+          className='h-full w-full rounded-lg object-cover shadow-md'
         />
       </div>
-      <Form {...form} >
-
+      <Form {...form}>
         <form className='space-y-6' onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
             name='personName'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  Nombre
-                </FormLabel>
+                <FormLabel>Nombre</FormLabel>
                 <FormControl>
                   <Input
                     type='text'
@@ -83,9 +80,7 @@ export default function ContactView() {
                     className='w-full rounded p-3 dark:bg-gray-100'
                   />
                 </FormControl>
-                <FormDescription>
-                  Ingrese su nombre
-                </FormDescription>
+                <FormDescription>Ingrese su nombre</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -95,9 +90,7 @@ export default function ContactView() {
             name='email'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  Correo
-                </FormLabel>
+                <FormLabel>Correo</FormLabel>
                 <FormControl>
                   <Input
                     type='email'
@@ -105,9 +98,7 @@ export default function ContactView() {
                     className='w-full rounded p-3 dark:bg-gray-100'
                   />
                 </FormControl>
-                <FormDescription>
-                  Ingrese su correo
-                </FormDescription>
+                <FormDescription>Ingrese su correo</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -117,9 +108,7 @@ export default function ContactView() {
             name='message'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  Mensaje
-                </FormLabel>
+                <FormLabel>Mensaje</FormLabel>
                 <FormControl>
                   <Textarea
                     {...field}
@@ -127,9 +116,7 @@ export default function ContactView() {
                     className='w-full rounded p-3 dark:bg-gray-100'
                   ></Textarea>
                 </FormControl>
-                <FormDescription>
-                  Dejanos tu mensaje
-                </FormDescription>
+                <FormDescription>Dejanos tu mensaje</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

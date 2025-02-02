@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import { Paragraph } from '../ui/atoms/paragraph';
 import Link from 'next/link';
 import { Button } from '../ui/button';
@@ -18,11 +18,9 @@ import {
 import { Input } from '../ui/input';
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
-  isTermsAccepted: z
-    .boolean()
-    .refine((value) => value === true, {
-      message: 'You must accept the terms and conditions'
-    })
+  isTermsAccepted: z.boolean().refine((value) => value === true, {
+    message: 'You must accept the terms and conditions'
+  })
 });
 
 type UserFormValue = z.infer<typeof formSchema>;
@@ -107,7 +105,11 @@ export const ForgotPasswordForm = () => {
                   >
                     Acepto los
                     <a
-                      e.preventDefault()}>términos y condiciones
+                      href='#'
+                      className='text-primary-600 dark:text-primary-500'
+                    >
+                      términos y condiciones
+                    </a>
                   </label>
                 </div>
               </div>

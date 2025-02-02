@@ -7,7 +7,7 @@ import Image from 'next/image';
 
 export function NavBar() {
   return (
-    <header className='sticky top-0 z-50 flex h-20 w-full shrink-0 items-center bg-white px-4 md:px-6 '>
+    <header className='sticky top-0 z-50 flex h-20 w-full shrink-0 items-center bg-white px-4 md:px-6 border'>
       <Sheet>
         <SheetTrigger asChild>
           <Button variant='outline' size='icon' className='lg:hidden'>

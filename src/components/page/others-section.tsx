@@ -48,23 +48,23 @@ export const OthersSection = () => {
           </TableHeader>
           <TableBody>
             <TableRow>
-              <TableCell>Juan Piguave</TableCell>
+              <TableCell>Edison Catuto Tomalá</TableCell>
               <TableCell>Presidente</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>Alberto Cruz</TableCell>
+              <TableCell>Karina Catuto Tomalá</TableCell>
               <TableCell>Vice Presidente</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>Veronica Rivas</TableCell>
+              <TableCell>Jessenia Quirumbay Ramírez</TableCell>
               <TableCell>Secretario</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>Jose Luis Alvarado</TableCell>
+              <TableCell>Nathaly Tomalá Pozo</TableCell>
               <TableCell>Tesorero</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>Maria Jose Alvarado</TableCell>
+              <TableCell>Ernesto Tomalá Torres</TableCell>
               <TableCell>Síndico</TableCell>
             </TableRow>
           </TableBody>

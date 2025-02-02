@@ -1,5 +1,7 @@
+"use client";
 import Image from 'next/image';
 import { Title } from '../ui/atoms/title';
+import ReactAudioPlayer from 'react-audio-player';
 
 export default function AboutView() {
   return (
@@ -103,6 +105,12 @@ export default function AboutView() {
               //DE TRANSFORMAR ESTE PUEBLO HERMOSO
               EN PARROQUIA DE MI CANTÓN//
             </p>
+            <ReactAudioPlayer
+              src="https://ik.imagekit.io/stevenrosales/app-comuna/Himno.mpeg?updatedAt=1738526401950"
+              controls
+              className='w-full h-12 background-transparent'
+
+            />
           </div>
           <div className='mt-8 grid grid-cols-2 gap-4'>
             <Image

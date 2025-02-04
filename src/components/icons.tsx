@@ -26,6 +26,7 @@ import {
   SunMedium,
   Trash,
   Twitter,
+  StickyNote,
   User,
   UserCircle2Icon,
   UserPen,
@@ -69,6 +70,7 @@ export const Icons = {
   laptop: Laptop,
   list: ListTodo,
   users: UsersRound,
+  stickyNote: StickyNote,
   userRound: UserRound,
   gitHub: ({ ...props }: LucideProps) => (
     <svg

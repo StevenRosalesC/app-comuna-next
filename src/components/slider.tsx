@@ -57,10 +57,10 @@ export default function Slider({
       slidesPerView={slidesPerView}
       navigation
       loop={loop}
-      autoplay={{
-        delay,
-        disableOnInteraction: false
-      }}
+      // autoplay={{
+      //   delay,
+      //   disableOnInteraction: false
+      // }}
       pagination={{ clickable: true }}
       scrollbar={{ draggable: true }}
       effect='fade'

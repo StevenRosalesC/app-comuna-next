@@ -30,7 +30,6 @@ export default function FaqSection() {
                 variant='unstyled'
                 className='w-full justify-start text-left font-semibold'
               >
-
                 ¿Cómo puedo participar en la comuna?
               </Button>
             </CollapsibleTrigger>

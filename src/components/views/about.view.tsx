@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import Image from 'next/image';
 import { Title } from '../ui/atoms/title';
 import ReactAudioPlayer from 'react-audio-player';
@@ -6,7 +6,7 @@ import ReactAudioPlayer from 'react-audio-player';
 export default function AboutView() {
   return (
     <>
-      <Title className='text-center w-full max-w-full'>
+      <Title className='w-full max-w-full text-center'>
         Acerca de la comuna Bambil Collao
       </Title>
       <div className='px-4 py-9 2xl:container md:px-6 md:py-12 lg:px-20 lg:py-16 2xl:mx-auto'>
@@ -16,11 +16,11 @@ export default function AboutView() {
               Misión
             </h2>
             <p className='text-base font-normal leading-6 text-gray-600 '>
-              Nuestra misión es promover la colaboración y el bienestar dentro de
-              nuestra comunidad, creando un ambiente inclusivo y solidario en el
-              que todos los miembros puedan prosperar. Nos esforzamos por mejorar
-              la calidad de vida de nuestros residentes, fomentando el respeto, la
-              empatía y la igualdad.
+              Nuestra misión es promover la colaboración y el bienestar dentro
+              de nuestra comunidad, creando un ambiente inclusivo y solidario en
+              el que todos los miembros puedan prosperar. Nos esforzamos por
+              mejorar la calidad de vida de nuestros residentes, fomentando el
+              respeto, la empatía y la igualdad.
             </p>
           </div>
           <div className='w-full lg:w-8/12 '>
@@ -40,14 +40,15 @@ export default function AboutView() {
               Vision
             </h2>
             <p className='text-base font-normal leading-6 text-gray-600 '>
-              Nuestra visión es convertir a Bambil Collao en un refugio de armonía
-              y sostenibilidad, donde los lazos entre los residentes y la
-              naturaleza se fortalezcan con el tiempo. Buscamos crear un modelo de
-              comunidad que inspire al mundo, promoviendo la coexistencia
-              pacífica, la preservación ambiental y el bienestar de todos sus
-              habitantes. Imaginamos un lugar donde las futuras generaciones
-              prosperen en equilibrio con la Tierra, compartiendo historias bajo
-              las estrellas y celebrando la riqueza de la vida en la montaña
+              Nuestra visión es convertir a Bambil Collao en un refugio de
+              armonía y sostenibilidad, donde los lazos entre los residentes y
+              la naturaleza se fortalezcan con el tiempo. Buscamos crear un
+              modelo de comunidad que inspire al mundo, promoviendo la
+              coexistencia pacífica, la preservación ambiental y el bienestar de
+              todos sus habitantes. Imaginamos un lugar donde las futuras
+              generaciones prosperen en equilibrio con la Tierra, compartiendo
+              historias bajo las estrellas y celebrando la riqueza de la vida en
+              la montaña
             </p>
           </div>
           <div className='w-full lg:w-8/12 lg:pt-8'>
@@ -67,10 +68,13 @@ export default function AboutView() {
             </h2>
             <p className='mb-4'>
               Escrito por :{' '}
-              <span className='font-semibold'>Florencio Pilai Ramirez, Nelson Dario Mendez Tomalá</span>
+              <span className='font-semibold'>
+                Florencio Pilai Ramirez, Nelson Dario Mendez Tomalá
+              </span>
             </p>
             <p className='mb-4'>
-              Música por : <span className='font-semibold'>Florencio Pilay Ramirez</span>
+              Música por :{' '}
+              <span className='font-semibold'>Florencio Pilay Ramirez</span>
             </p>
             <p className='mb-4'>Letra :</p>
             <p className='mb-4 text-center'>
@@ -78,8 +82,8 @@ export default function AboutView() {
               <br />
               CON LA MANO EN EL PECHO ESTOY, <br />
               CANTANDO ESTE HIMNO A BAMBIL, <br />
-              &quot;Y MIRANDO FLAMEAR LA BANDERA
-              CON EL VIENTO Y EL SOL QUE LO ESMERA&quot;
+              &quot;Y MIRANDO FLAMEAR LA BANDERA CON EL VIENTO Y EL SOL QUE LO
+              ESMERA&quot;
             </p>
             <p className='mb-4 text-center'>
               <span className='font-semibold'>Estrofa 2</span>
@@ -90,8 +94,8 @@ export default function AboutView() {
               SANGRE DE NUESTROS ANTES PASADOS <br />
               EN SUS MANOS AQUELL INDIO GUERRERO <br />
               UNA LANZA DE PAMBIL LLEVABA <br />
-              &quot;DEFENDIENDO SUS TIERRAS Y MUJERES
-              EN LA LLEGADA DE LOS ESPAÑOLES&quot;
+              &quot;DEFENDIENDO SUS TIERRAS Y MUJERES EN LA LLEGADA DE LOS
+              ESPAÑOLES&quot;
             </p>
             <p className='mb-4 text-center'>
               <span className='font-semibold'>Estrofa 3</span>
@@ -102,14 +106,13 @@ export default function AboutView() {
               SOBERANO DE NUESTRA NACIÓN <br />
               ADELANTE ADELANTE BAMBILINCE <br />
               QUE TRABAJA CON MUCHO AMOR <br />
-              &quot;DE TRANSFORMAR ESTE PUEBLO HERMOSO
-              EN PARROQUIA DE MI CANTÓN&quot;
+              &quot;DE TRANSFORMAR ESTE PUEBLO HERMOSO EN PARROQUIA DE MI
+              CANTÓN&quot;
             </p>
             <ReactAudioPlayer
-              src="https://ik.imagekit.io/stevenrosales/app-comuna/Himno.mpeg?updatedAt=1738526401950"
+              src='https://ik.imagekit.io/stevenrosales/app-comuna/Himno.mpeg?updatedAt=1738526401950'
               controls
-              className='w-full h-12 background-transparent'
-
+              className='background-transparent h-12 w-full'
             />
           </div>
           <div className='mt-8 grid grid-cols-2 gap-4'>

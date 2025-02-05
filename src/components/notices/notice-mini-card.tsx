@@ -1,41 +1,60 @@
 import React from 'react';
 import { Paragraph } from '../ui/atoms/paragraph';
 import Link from 'next/link';
+import { StickyNote } from 'lucide-react';
+import { getRelativeTime } from '@/utils/date';
+import Image from 'next/image';
 
-export const NoticeMiniCard = () => {
+interface Props {
+  createdAt: string;
+  title: string;
+  description: string;
+  writer: string;
+  noticeId: string;
+  image?: string;
+}
+
+export const NoticeMiniCard = ({
+  createdAt,
+  title,
+  description,
+  writer,
+  noticeId,
+  image
+}: Props) => {
+  const relativeTime = getRelativeTime(createdAt);
+
   return (
-    <article className='mb-10 rounded-lg border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-gray-800'>
+    <article className='mb-10 flex flex-col justify-between rounded-lg border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-gray-800 sm:h-[30rem]'>
       <div className='mb-5 flex items-center justify-between text-gray-500'>
         <span className='bg-primary-100 text-primary-800 dark:bg-primary-200 dark:text-primary-800 inline-flex items-center rounded px-2.5 py-0.5 text-xs font-medium'>
-          <svg
-            className='mr-1 h-3 w-3'
-            fill='currentColor'
-            viewBox='0 0 20 20'
-            xmlns='http://www.w3.org/2000/svg'
-          >
-            <path d='M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z'></path>
-          </svg>
-          Tutorial
+          <StickyNote />
+          <span className='ml-1'>Noticia</span>
         </span>
-        <span className='text-sm'>Ultima hora</span>
+        <span className='text-sm'>{relativeTime}</span>
       </div>
+      <Image
+        src={image || '/not-found.webp'}
+        alt='Notice'
+        width={600}
+        height={400}
+        className='aspect-video rounded-lg object-cover'
+      />
       <h2 className='mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white'>
-        <a href='#'>How to quickly deploy a static website</a>
+        <a href={`/notices/${noticeId}`} className='hover:underline'>
+          {title}
+        </a>
       </h2>
-      <Paragraph size={'sm'}>
-        Static websites are now used to bootstrap lots of websites and are
-        becoming the basis for a variety of tools that even influence both web
-        designers and developers influence both web designers and developers.
-      </Paragraph>
+      <Paragraph size={'sm'}>{description}</Paragraph>
       <div className='flex items-center justify-between'>
         <div className='flex items-center space-x-4'>
           <span className='font-medium dark:text-white'>Jese Leos</span>
         </div>
         <Link
-          href='/notices'
+          href={`/notices/${noticeId}`}
           className='text-primary-600 dark:text-primary-500 inline-flex items-center font-medium hover:underline'
         >
-          Read more
+          Leer más
           <svg
             className='ml-2 h-4 w-4'
             fill='currentColor'

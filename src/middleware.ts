@@ -5,6 +5,9 @@ export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname === '/') {
     return NextResponse.next();
   }
+  if(request.nextUrl.pathname === '/home') {
+    return NextResponse.redirect('/');
+  }
 
   const token = request.cookies.get('token');
   if (request.nextUrl.pathname === '/auth/login' && !token?.value) {

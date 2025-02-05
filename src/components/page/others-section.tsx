@@ -15,14 +15,14 @@ import { Paragraph } from '../ui/atoms/paragraph';
 
 export const OthersSection = () => {
   return (
-    <section className='items-center bg-white py-8 dark:bg-gray-900  '>
+    <section className='items-center bg-white py-2 dark:bg-gray-900  '>
       <SubTitle className='text-center'>
         Dirigentes de la comuna bambil collao
       </SubTitle>
-      <div className='mx-auto flex w-full max-w-screen-xl flex-col items-center gap-4 px-4 md:flex-row lg:px-6 lg:py-16'>
-        <div className='w-full basis-1/2 py-12'>
+      <div className='mx-auto flex w-full flex-col items-center gap-4 px-4 md:flex-row lg:px-6 lg:py-4'>
+        <div className='w-full basis-3/4 py-12'>
           <Image
-            className='aspect-video h-[30dvh] w-full rounded-3xl object-cover md:aspect-auto'
+            className='aspect-square  w-full rounded-3xl object-cover md:aspect-auto'
             src='https://ik.imagekit.io/stevenrosales/app-comuna/image-1.jpg?updatedAt=1735495243684'
             alt='Dirigentes de la comuna bambil collao'
             width={600}
@@ -70,6 +70,7 @@ export const OthersSection = () => {
           </TableBody>
         </Table>
       </div>
+      <SubTitle className='text-center pb-2'>Barrios de la comuna bambil collao</SubTitle>
       <Slider delay={5500} key={'nei'}>
         {Array.from({ length: 5 }).map((_, index) => (
           <div key={`nei-${index}`}>

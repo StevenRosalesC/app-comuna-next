@@ -4,6 +4,9 @@ import * as z from 'zod';
 const envSchema = z.object({
   API_URL: z.string({
     required_error: 'API_URL is required'
+  }),
+  NEXT_PUBLIC_APP_URL: z.string({
+    required_error: 'NEXT_PUBLIC_APP_URL is required'
   })
 });
 
@@ -14,4 +17,4 @@ if (!env.success) {
 }
 
 // Exportar las variables validadas
-export const { API_URL } = env.data;
+export const { API_URL,NEXT_PUBLIC_APP_URL } = env.data;

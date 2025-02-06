@@ -11,7 +11,7 @@ import TiptapRenderer from "@/components/TiptapRenderer/ClientRenderer";
 import Image from "next/image";
 
 import { getPost } from "@/services/post";
-
+import "../style.scss";
 export default function PostPage() {
   const [post, setPost] = useState<any>(null);
 

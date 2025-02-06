@@ -4,7 +4,7 @@ import EditForm from "@/app/dashboard/notices/_components/EditForm";
 import Button from "@/components/TiptapEditor/components/ui/Button";
 import Link from "next/link";
 
-
+import "../../../app/dashboard/notices/style.scss";
 
 export default function DashboardNoticesView() {
   return (

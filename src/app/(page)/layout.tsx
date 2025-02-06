@@ -6,7 +6,6 @@ export const metadata: Metadata = {
   title: 'Comuna Bambil Collao | Inicio',
   description: 'Sitio web de la comuna Bambil Collao.'
 };
-
 interface Props {
   children: React.ReactNode;
 }

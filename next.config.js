@@ -17,19 +17,19 @@ const nextConfig = {
   experimental: {
     optimizeCss: false,
   },
-  module: {
-    rules: [
-      {
-        test: /\.scss$/,
-        use: [
-          "style-loader",
-          "css-loader",
-          "sass-loader"
-        ]
-      }
-    ]
-  },
-   serverComponentsExternalPackages: ["shiki"],
+  // module: {
+  //   rules: [
+  //     {
+  //       test: /\.scss$/,
+  //       use: [
+  //         "style-loader",
+  //         "css-loader",
+  //         "sass-loader"
+  //       ]
+  //     }
+  //   ]
+  // },
+  //  serverComponentsExternalPackages: ["shiki"],
     transpilePackages: ['shiki']
 };
 

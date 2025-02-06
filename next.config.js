@@ -14,6 +14,23 @@ const nextConfig = {
   },
   transpilePackages: ['geist'],
   output:'standalone',
+  experimental: {
+    optimizeCss: false,
+  },
+  module: {
+    rules: [
+      {
+        test: /\.scss$/,
+        use: [
+          "style-loader",
+          "css-loader",
+          "sass-loader"
+        ]
+      }
+    ]
+  },
+   serverComponentsExternalPackages: ["shiki"],
+    transpilePackages: ['shiki']
 };
 
 module.exports = nextConfig;

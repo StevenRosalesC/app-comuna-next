@@ -13,7 +13,7 @@ const nextConfig = {
     ]
   },
   transpilePackages: ['geist'],
-  output:'standalone',
+  output: process.env.NODE_ENV !== 'production' ? undefined : 'standalone',
   experimental: {
     optimizeCss: false,
   },

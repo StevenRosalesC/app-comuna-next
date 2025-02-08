@@ -4,9 +4,10 @@ export interface Notice {
   description: string;
   image:       string;
   content:     string;
+  wordCount?:  number;
+  cover?:      string;
+  author?:     string;
   createdAt:   string;
-  author:      string;
-  wordCount:   number;
 }
 
 export interface ImageKitData {

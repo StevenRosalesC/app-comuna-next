@@ -10,19 +10,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: `${NEXT_PUBLIC_APP_URL}about`,
+      url: `${NEXT_PUBLIC_APP_URL}/about`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,
     },
     {
-      url: `${NEXT_PUBLIC_APP_URL}contact`,
+      url: `${NEXT_PUBLIC_APP_URL}/contact`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.5,
     },
     {
-      url: `${NEXT_PUBLIC_APP_URL}notices`,
+      url: `${NEXT_PUBLIC_APP_URL}/notices`,
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 0.5,

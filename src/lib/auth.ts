@@ -46,7 +46,6 @@ export const auth = async (): Promise<{
             Authorization: `Bearer ${token}`
           }
         });
-        console.log(response);
         return { ok: true, data: response };
       } catch (error) {
         return { ok: false, data: null };

@@ -21,12 +21,7 @@ export default async function DashboardLayout({
   // Persisting the sidebar state in the cookie.
   const cookieStore = cookies();
   const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
-  const { ok, data: session } = await auth();
-  console.log("Session Data:", session);
-  if (!ok) {
-    console.log('No session found');
-    redirect('/auth/login');
-  };
+  const { data: session } = await auth();
   return (
     <Providers session={session}>
       <KBar>

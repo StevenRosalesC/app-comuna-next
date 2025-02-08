@@ -1,5 +1,6 @@
 import apiCommunity from '@/utils/communityApi';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { Session } from 'types';
 
 export const signIn = async ({
@@ -30,17 +31,17 @@ export const signOut = async () => {
   });
 };
 
-export const auth = async (): Promise<Session | null> => {
-  // Obtén el usuario autenticado de forma segura
+export const auth = async (): Promise<Session > => {
+  // get token from cookies
   const token = cookies().get('token')?.value;
-  try {
+  if (!token) {
+    redirect('/auth/login');
+  }
     const response = await apiCommunity.get<Session>('/auth/user', {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
     return response;
-  } catch (error) {
-    return null;
-  }
+
 };

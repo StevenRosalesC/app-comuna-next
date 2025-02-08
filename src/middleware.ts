@@ -1,14 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-  // Remove or replace with proper logging service if needed
-  if (request.nextUrl.pathname === '/') {
-    return NextResponse.next();
-  }
-  if(request.nextUrl.pathname === '/home') {
-    return NextResponse.redirect('/');
-  }
-
   const token = request.cookies.get('token');
   if (request.nextUrl.pathname === '/auth/login' && !token?.value) {
     return NextResponse.next();
@@ -30,5 +22,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*']
+  matcher: ['/dashboard/:path*', '/auth/:path*'],
 };

@@ -1,0 +1,98 @@
+[
+  {
+    "id": "1",
+    "title": "Descubren un nuevo planeta habitable",
+    "description": "Astrónomos encuentran un planeta con condiciones potenciales para albergar vida.",
+    "image": "/not-found.webp",
+    "content": "<p>Los astrónomos han descubierto un nuevo planeta que podría ser habitable. Este planeta, ubicado en la zona habitable de su estrella, tiene condiciones que podrían permitir la existencia de agua líquida.</p><p>El planeta, denominado 'Kepler-452b', se encuentra a aproximadamente 1.400 años luz de la Tierra. Los científicos creen que su tamaño y composición son similares a los de nuestro planeta, lo que lo convierte en un candidato ideal para futuras investigaciones.</p>",
+    "createdAt": "2023-10-01T12:00:00Z"
+  },
+  {
+    "id": "2",
+    "title": "Avances en la inteligencia artificial",
+    "description": "Nuevos modelos de IA revolucionan la tecnología con capacidades avanzadas de procesamiento de lenguaje.",
+    "image": "/not-found.webp",
+    "content": "<p>Recientes avances en inteligencia artificial están revolucionando la industria tecnológica. Los nuevos modelos de lenguaje pueden entender y generar texto con una precisión sin precedentes.</p><p>Estos modelos, como GPT-4, están siendo utilizados en aplicaciones que van desde la traducción automática hasta la creación de contenido. Los expertos predicen que esta tecnología transformará sectores como la educación, la medicina y el entretenimiento en los próximos años.</p>",
+    "createdAt": "2023-10-02T14:30:00Z"
+  },
+  {
+    "id": "3",
+    "title": "Nuevo tratamiento para el cáncer",
+    "description": "Un innovador tratamiento combina inmunoterapia y terapia génica para combatir el cáncer.",
+    "image": "/not-found.webp",
+    "content": "<p>Un nuevo tratamiento para el cáncer ha mostrado resultados prometedores en ensayos clínicos. Este tratamiento utiliza una combinación de inmunoterapia y terapia génica.</p><p>Los pacientes que participaron en los ensayos mostraron una reducción significativa en el tamaño de los tumores. Los investigadores esperan que este tratamiento pueda estar disponible para el público en los próximos cinco años.</p>",
+    "createdAt": "2023-10-03T09:15:00Z"
+  },
+  {
+    "id": "4",
+    "title": "Lanzamiento del nuevo smartphone XYZ",
+    "description": "El nuevo smartphone XYZ ofrece una cámara de 108 MP y carga inalámbrica ultrarrápida.",
+    "image": "/not-found.webp",
+    "content": "<p>La compañía XYZ ha lanzado su nuevo smartphone con características innovadoras, incluyendo una cámara de 108 MP y carga inalámbrica ultrarrápida.</p><p>El dispositivo también cuenta con un procesador de última generación y una pantalla OLED de 120 Hz. Los expertos en tecnología lo consideran uno de los mejores smartphones del año.</p>",
+    "createdAt": "2023-10-04T16:45:00Z"
+  },
+  {
+    "id": "5",
+    "title": "Festival de cine internacional",
+    "description": "El festival de cine internacional presenta lo mejor del cine independiente este año.",
+    "image": "/not-found.webp",
+    "content": "<p>El festival de cine internacional ha comenzado, presentando una selección de las mejores películas de todo el mundo. Este año, el festival se centra en el cine independiente.</p><p>Entre las películas más esperadas se encuentra 'La sombra del viento', una producción española que ha recibido elogios de la crítica. El festival también incluirá talleres y charlas con directores y actores reconocidos.</p>",
+    "createdAt": "2023-10-05T18:00:00Z"
+  },
+  {
+    "id": "6",
+    "title": "Nueva especie marina descubierta en el Pacífico",
+    "description": "Científicos identifican una nueva especie de medusa bioluminiscente en las profundidades del océano.",
+    "image": "/not-found.webp",
+    "content": "<p>Un equipo de biólogos marinos ha descubierto una nueva especie de medusa en las profundidades del océano Pacífico. Esta medusa, llamada 'Aurelia Abyssalis', emite una luz azul brillante en la oscuridad.</p><p>El descubrimiento se realizó durante una expedición en aguas profundas cerca de las Islas Marianas. Los científicos creen que esta especie podría ayudar a entender mejor la bioluminiscencia y su papel en los ecosistemas marinos.</p>",
+    "createdAt": "2023-10-06T10:20:00Z"
+  },
+  {
+    "id": "7",
+    "title": "El cambio climático afecta a los glaciares",
+    "description": "Un informe revela que los glaciares del mundo se están derritiendo a un ritmo alarmante.",
+    "image": "/not-found.webp",
+    "content": "<p>Un informe reciente publicado por la ONU advierte que los glaciares del mundo se están derritiendo a un ritmo sin precedentes debido al cambio climático. Este fenómeno podría tener graves consecuencias para el suministro de agua dulce.</p><p>Los científicos estiman que, si no se toman medidas urgentes, muchos glaciares podrían desaparecer en las próximas décadas. Esto afectaría a millones de personas que dependen de ellos para su subsistencia.</p>",
+    "createdAt": "2023-10-07T15:40:00Z"
+  },
+  {
+    "id": "8",
+    "title": "Lanzamiento del coche eléctrico más rápido del mundo",
+    "description": "El nuevo modelo de coche eléctrico alcanza velocidades récord sin comprometer la sostenibilidad.",
+    "image": "/not-found.webp",
+    "content": "<p>La compañía de automóviles eléctricos 'VoltSpeed' ha lanzado el coche eléctrico más rápido del mundo. Este modelo, llamado 'VoltX', puede acelerar de 0 a 100 km/h en solo 1.9 segundos.</p><p>Además de su velocidad, el VoltX es 100% sostenible, utilizando materiales reciclados en su fabricación y energía renovable para su carga. Los expertos lo consideran un hito en la industria automotriz.</p>",
+    "createdAt": "2023-10-08T11:10:00Z"
+  },
+  {
+    "id": "9",
+    "title": "Descubren ruinas antiguas en Grecia",
+    "description": "Arqueólogos encuentran un templo perdido dedicado a Zeus en una excavación reciente.",
+    "image": "/not-found.webp",
+    "content": "<p>Un equipo de arqueólogos ha descubierto las ruinas de un antiguo templo dedicado a Zeus en el norte de Grecia. El templo, que data del siglo V a.C., contiene inscripciones y esculturas bien conservadas.</p><p>Este hallazgo arroja nueva luz sobre las prácticas religiosas de la antigua Grecia. Los expertos esperan que el sitio se convierta en un importante destino turístico y de estudio arqueológico.</p>",
+    "createdAt": "2023-10-09T17:55:00Z"
+  },
+  {
+    "id": "10",
+    "title": "La inteligencia artificial ayuda a predecir terremotos",
+    "description": "Un nuevo sistema de IA puede predecir terremotos con mayor precisión que los métodos tradicionales.",
+    "image": "/not-found.webp",
+    "content": "<p>Investigadores han desarrollado un sistema de inteligencia artificial capaz de predecir terremotos con una precisión sin precedentes. Este sistema analiza grandes cantidades de datos sísmicos para identificar patrones.</p><p>El modelo ya ha sido probado en varias regiones propensas a terremotos, mostrando resultados prometedores. Los científicos esperan que esta tecnología pueda salvar vidas al proporcionar advertencias tempranas.</p>",
+    "createdAt": "2023-10-10T08:30:00Z"
+  },
+  {
+    "id": "11",
+    "title": "El café podría desaparecer por el cambio climático",
+    "description": "Estudios advierten que el cambio climático podría reducir drásticamente la producción de café en el mundo.",
+    "image": "/not-found.webp",
+    "content": "<p>Un estudio reciente publicado en la revista 'Nature' advierte que el cambio climático podría reducir la producción de café en un 50% para el año 2050. Las regiones cafetaleras más afectadas serían América Latina y África.</p><p>Los expertos sugieren que los agricultores deben adoptar prácticas más sostenibles y diversificar sus cultivos para mitigar los efectos del cambio climático. De lo contrario, el café podría convertirse en un producto de lujo.</p>",
+    "createdAt": "2023-10-11T13:25:00Z"
+  },
+  {
+    "id": "12",
+    "title": "Nuevo récord en energía solar",
+    "description": "Una planta solar en España bate récords de producción de energía limpia.",
+    "image": "/not-found.webp",
+    "content": "<p>Una planta solar ubicada en el sur de España ha batido un nuevo récord mundial de producción de energía limpia. La planta generó suficiente electricidad para abastecer a una ciudad de 200,000 habitantes durante un día completo.</p><p>Este logro demuestra el potencial de la energía solar como fuente principal de energía renovable. Los expertos creen que este tipo de proyectos son clave para combatir el cambio climático.</p>",
+    "createdAt": "2023-10-12T19:05:00Z"
+  }
+]

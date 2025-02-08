@@ -1,12 +1,20 @@
+import { getRelativeTime } from '@/utils/date';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Notice } from 'types/dashboard';
 
-export const NoticeCard = () => {
+interface Props {
+  notice: Notice;
+}
+
+export const NoticeCard = (
+  { notice }: Props
+) => {
   return (
     <Link
       rel='noopener noreferrer'
-      href='/notices/test'
-      className='group mx-auto hidden max-w-sm hover:no-underline focus:no-underline dark:bg-gray-50 sm:block'
+      href={`/notices/${notice.id}`}
+      className='group mx-auto max-w-sm hover:no-underline focus:no-underline dark:bg-gray-50 sm:block'
     >
       <Image
         width={1920}
@@ -14,23 +22,17 @@ export const NoticeCard = () => {
         alt=''
         role='presentation'
         className='h-44 w-full rounded object-cover dark:bg-gray-500'
-        src='/not-found.webp'
+        src={notice.image}
       />
       <div className='space-y-2 p-6'>
         <h3 className='text-2xl font-semibold group-hover:underline group-focus:underline'>
-          In usu laoreet repudiare legendos
+          {notice.title}
         </h3>
         <span className='text-xs dark:text-gray-600'>
-          {new Date().toLocaleDateString('es-ES', {
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric'
-          })}
+          {getRelativeTime(notice.createdAt)}
         </span>
         <p>
-          Mei ex aliquid eleifend forensibus, quo ad dicta apeirian neglegentur,
-          ex has tantas percipit perfecto. At per tempor albucius perfecto, ei
-          probatus consulatu patrioque mea, ei vocent delicata indoctum pri.
+          {notice.description}
         </p>
       </div>
     </Link>

@@ -1,3 +1,4 @@
+import { getRelativeTime } from "@/utils/date";
 import Image from "next/image";
 import React from "react";
 import { LuCalendarDays, LuClock } from "react-icons/lu";
@@ -24,7 +25,7 @@ const PostHeader = ({ title, author, cover, createdAt, readingTime }: PostHeader
           <div className="flex items-center">
             <div className="flex items-center gap-2 text-sm">
               <LuCalendarDays size={18} />
-              <span>{createdAt}</span>
+              <span>{getRelativeTime(createdAt)}</span>
             </div>
             <div className="h-1.5 w-1.5 mx-3 rounded-full bg-gray-500 dark:bg-gray-300"></div>
             <div className="flex items-center gap-2 text-sm">
@@ -40,7 +41,7 @@ const PostHeader = ({ title, author, cover, createdAt, readingTime }: PostHeader
         alt={title}
         width={1932}
         height={1087}
-        className="my-10 rounded-lg"
+        className="my-10 rounded-lg aspect-video object-cover"
         priority
       />
     </div>

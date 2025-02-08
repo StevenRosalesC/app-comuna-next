@@ -5,6 +5,8 @@ export interface Notice {
   image:       string;
   content:     string;
   createdAt:   string;
+  author:      string;
+  wordCount:   number;
 }
 
 export interface ImageKitData {

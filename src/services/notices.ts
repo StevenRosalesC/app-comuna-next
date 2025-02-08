@@ -7,10 +7,10 @@ export const getAllNotices = async () :Promise<Notice[]> => {
   return notices;
 }
 
-export const getNotice = async (id: string) :Promise<Notice> => {
+export const getNotice = async (id: string) :Promise<Notice | null> => {
   const notice = testNotices.find(notice => notice.id === id);
   if (!notice) {
-    throw new Error("Notice not found");
+    return null;
   }
   return notice;
 }

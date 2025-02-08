@@ -5,12 +5,14 @@ import {
   RefObject,
   useContext,
   useRef,
-  useState,
-} from "react";
-import { EditorContent, type Editor } from "@tiptap/react";
-import useTiptapEditor, { type UseTiptapEditorOptions } from "../hooks/useTiptapEditor";
-import clsx from "clsx";
-import CodeMirrorEditor from "@/components/SourceEditor/Editor";
+  useState
+} from 'react';
+import { EditorContent, type Editor } from '@tiptap/react';
+import useTiptapEditor, {
+  type UseTiptapEditorOptions
+} from '../hooks/useTiptapEditor';
+import clsx from 'clsx';
+import CodeMirrorEditor from '@/components/SourceEditor/Editor';
 
 type TiptapContextType = {
   editor: Editor;
@@ -39,7 +41,7 @@ export const TiptapProvider = ({
   editorOptions,
   editorProps,
   slotBefore,
-  slotAfter,
+  slotAfter
 }: TiptapProviderProps) => {
   const contentElement = useRef<HTMLDivElement>(null);
   const editor = useTiptapEditor(editorOptions);
@@ -55,21 +57,30 @@ export const TiptapProvider = ({
     const target = event.target as Element;
     const content = contentElement.current;
     if (content && target.contains(content)) {
-      content.style.display = "flex";
+      content.style.display = 'flex';
       setTimeout(() => {
-        content.style.display = "";
+        content.style.display = '';
       }, 0);
     }
   };
 
   const editorContent = (
-    <div className={clsx("rte-editor", isFullScreen && "rte-editor--fullscreen")}>
+    <div
+      className={clsx('rte-editor', isFullScreen && 'rte-editor--fullscreen')}
+    >
       {slotBefore}
-      <div className="rte-editor__container" onMouseDown={focusEditorViaContainer}>
+      <div
+        className='rte-editor__container'
+        onMouseDown={focusEditorViaContainer}
+      >
         {isSourceMode ? (
-          <CodeMirrorEditor initialContent={editor.getHTML() || ""} />
+          <CodeMirrorEditor initialContent={editor.getHTML() || ''} />
         ) : (
-          <EditorContent ref={contentElement} editor={editor} className="rte-editor__content" />
+          <EditorContent
+            ref={contentElement}
+            editor={editor}
+            className='rte-editor__content'
+          />
         )}
       </div>
       {children}
@@ -87,7 +98,7 @@ export const TiptapProvider = ({
         isSourceMode,
         setIsResizing,
         toggleFullScreen: () => setIsFullScreen((prev) => !prev),
-        toggleSourceMode: () => setIsSourceMode((prev) => !prev),
+        toggleSourceMode: () => setIsSourceMode((prev) => !prev)
       }}
     >
       {editorContent}

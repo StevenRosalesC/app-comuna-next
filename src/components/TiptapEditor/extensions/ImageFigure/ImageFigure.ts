@@ -1,16 +1,19 @@
-import { JSONContent } from "@tiptap/core";
-import { NodeSelection, Plugin, TextSelection } from "@tiptap/pm/state";
+import { JSONContent } from '@tiptap/core';
+import { NodeSelection, Plugin, TextSelection } from '@tiptap/pm/state';
 // @ts-ignore : This import is necessary due to missing type definitions in the package.
-import { __serializeForClipboard as serializeForClipboard } from "@tiptap/pm/view";
+import { __serializeForClipboard as serializeForClipboard } from '@tiptap/pm/view';
 
-import Figure from "../Figure";
-import ImageCaption from "./ImageCaption";
-import Image from "../Image/Image";
+import Figure from '../Figure';
+import ImageCaption from './ImageCaption';
+import Image from '../Image/Image';
 
-declare module "@tiptap/core" {
+declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     imageFigure: {
-      setImageFigure: (options: { src: string; caption?: string }) => ReturnType;
+      setImageFigure: (options: {
+        src: string;
+        caption?: string;
+      }) => ReturnType;
       imageToFigure: () => ReturnType;
       figureToImage: () => ReturnType;
       removeImage: () => ReturnType;
@@ -19,8 +22,8 @@ declare module "@tiptap/core" {
 }
 
 export const ImageFigure = Figure.extend({
-  name: "imageFigure",
-  content: "image imageCaption?",
+  name: 'imageFigure',
+  content: 'image imageCaption?',
   //   atom: true,
 
   addExtensions() {
@@ -41,8 +44,11 @@ export const ImageFigure = Figure.extend({
               ? {}
               : {
                   type: ImageCaption.name,
-                  content: caption === "" ? undefined : [{ type: "text", text: caption }],
-                },
+                  content:
+                    caption === ''
+                      ? undefined
+                      : [{ type: 'text', text: caption }]
+                }
           ];
           return chain().insertContent({ type: this.name, content }).run();
         },
@@ -65,18 +71,18 @@ export const ImageFigure = Figure.extend({
 
           const range = {
             from: imagePos,
-            to: imagePos + imageNode.nodeSize,
+            to: imagePos + imageNode.nodeSize
           };
 
           const content: JSONContent[] = [
             { type: Image.name, attrs: imageNode.attrs },
-            { type: ImageCaption.name, content: undefined },
+            { type: ImageCaption.name, content: undefined }
           ];
 
           return chain()
             .insertContentAt(range, {
               type: this.name,
-              content,
+              content
             })
             .setTextSelection(range.to + content.length)
             .run();
@@ -107,7 +113,7 @@ export const ImageFigure = Figure.extend({
 
           const range = {
             from: pos,
-            to: pos + figureNode.nodeSize,
+            to: pos + figureNode.nodeSize
           };
 
           const content = figureNode.firstChild;
@@ -134,7 +140,10 @@ export const ImageFigure = Figure.extend({
 
           const node = state.doc.nodeAt(pos);
 
-          if (!node || (node.type.name !== this.name && node.type.name !== Image.name)) {
+          if (
+            !node ||
+            (node.type.name !== this.name && node.type.name !== Image.name)
+          ) {
             return false;
           }
 
@@ -144,7 +153,7 @@ export const ImageFigure = Figure.extend({
           }
 
           return true;
-        },
+        }
     };
   },
 
@@ -177,14 +186,20 @@ export const ImageFigure = Figure.extend({
               }
 
               // Set up drag data
-              draggedNode = NodeSelection.create(view.state.doc, $pos.before($pos.depth));
+              draggedNode = NodeSelection.create(
+                view.state.doc,
+                $pos.before($pos.depth)
+              );
               const draggedSlice = draggedNode.content();
-              const { dom, text, slice } = serializeForClipboard(view, draggedSlice);
+              const { dom, text, slice } = serializeForClipboard(
+                view,
+                draggedSlice
+              );
 
               event.dataTransfer.clearData();
-              event.dataTransfer.setData("text/html", dom.innerHTML);
-              event.dataTransfer.setData("text/plain", text);
-              event.dataTransfer.effectAllowed = "copyMove";
+              event.dataTransfer.setData('text/html', dom.innerHTML);
+              event.dataTransfer.setData('text/plain', text);
+              event.dataTransfer.effectAllowed = 'copyMove';
               view.dragging = { slice: slice, move: event.ctrlKey };
 
               return true;
@@ -197,12 +212,12 @@ export const ImageFigure = Figure.extend({
             },
             dragend: () => {
               draggedNode = null;
-            },
-          },
-        },
-      }),
+            }
+          }
+        }
+      })
     ];
-  },
+  }
 });
 
 export default ImageFigure;

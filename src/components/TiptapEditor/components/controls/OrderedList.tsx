@@ -1,7 +1,7 @@
-import React from "react";
-import MenuButton from "../MenuButton";
-import { useEditorState } from "@tiptap/react";
-import { useTiptapContext } from "../Provider";
+import React from 'react';
+import MenuButton from '../MenuButton';
+import { useEditorState } from '@tiptap/react';
+import { useTiptapContext } from '../Provider';
 
 const OrderedListButton = () => {
   const { editor } = useTiptapContext();
@@ -9,17 +9,16 @@ const OrderedListButton = () => {
     editor,
     selector: (ctx) => {
       return {
-        active: ctx.editor.isActive("orderedList"),
-        disabled: !ctx.editor.isEditable,
+        active: ctx.editor.isActive('orderedList'),
+        disabled: !ctx.editor.isEditable
       };
-    },
+    }
   });
 
   return (
     <MenuButton
-      icon="OrderedList"
-      tooltip="Numbered List"
-      shortcuts={["Mod", "Shift", "7"]}
+      icon='OrderedList'
+      tooltip='Lista numerada'
       onClick={() => editor.chain().focus().toggleOrderedList().run()}
       {...state}
     />

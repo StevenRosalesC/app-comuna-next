@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from 'react';
 
 interface TocItem {
   id: string;
@@ -14,38 +14,45 @@ interface UseTocOptions {
 }
 
 export default function useToc(options: UseTocOptions) {
-  const { containerSelector, headingSelector = "h2, h3, h4", observerOptions } = options;
+  const {
+    containerSelector,
+    headingSelector = 'h2, h3, h4',
+    observerOptions
+  } = options;
 
   const [items, setItems] = useState<TocItem[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const container = document.body.querySelector(containerSelector);
+  const memoizedObserverOptions = useMemo(
+    () => observerOptions,
+    [observerOptions]
+  );
 
+  useEffect(() => {
+    const container = document.querySelector(containerSelector);
     if (!container) return;
 
-    const mutationObserver = new MutationObserver(() => {
-      const headings = container.querySelectorAll(headingSelector);
+    const headings = container.querySelectorAll(headingSelector);
 
-      const items = Array.from(headings).map((heading) => ({
-        id: heading.id,
-        text: heading.textContent || "",
-        level: parseInt(heading.tagName[1]),
-        node: heading,
-      }));
+    const newItems = Array.from(headings).map((heading) => ({
+      id: heading.id,
+      text: heading.textContent || '',
+      level: parseInt(heading.tagName[1]),
+      node: heading
+    }));
 
-      setItems(items);
+    // Solo actualiza si hay cambios
+    setItems((prevItems) => {
+      const isEqual =
+        prevItems.length === newItems.length &&
+        prevItems.every((item, index) => item.id === newItems[index].id);
+      return isEqual ? prevItems : newItems;
     });
-
-    mutationObserver.observe(container, {
-      childList: true,
-      subtree: true,
-    });
-
-    return () => mutationObserver.disconnect();
   }, [containerSelector, headingSelector]);
 
   useEffect(() => {
+    if (!items.length) return;
+
     const elements = items.map((item) => item.node);
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -53,14 +60,14 @@ export default function useToc(options: UseTocOptions) {
           setActiveId(entry.target.id);
         }
       });
-    }, observerOptions);
+    }, memoizedObserverOptions);
 
     elements.forEach((element) => observer.observe(element));
 
     return () => {
       elements.forEach((element) => observer.unobserve(element));
     };
-  }, [items]);
+  }, [items, memoizedObserverOptions]);
 
   return { items, activeId };
 }

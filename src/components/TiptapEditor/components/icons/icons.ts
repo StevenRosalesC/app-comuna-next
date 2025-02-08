@@ -1,4 +1,4 @@
-import { IconType, IconBaseProps } from "react-icons";
+import { IconType, IconBaseProps } from 'react-icons';
 import {
   TbBold,
   TbItalic,
@@ -52,14 +52,14 @@ import {
   TbRowInsertTop,
   TbRowInsertBottom,
   TbRowRemove,
-  TbColumnRemove,
-} from "react-icons/tb";
-import { AiOutlineMergeCells, AiOutlineSplitCells } from "react-icons/ai";
-import IconCorner from "./Corner";
-import IconInlineCode from "./InlineCode";
-import IconQuote from "./Quote";
-import IconTextHighlight from "./TextHighlight";
-import IconTextColor from "./TextColor";
+  TbColumnRemove
+} from 'react-icons/tb';
+import { AiOutlineMergeCells, AiOutlineSplitCells } from 'react-icons/ai';
+import IconCorner from './Corner';
+import IconInlineCode from './InlineCode';
+import IconQuote from './Quote';
+import IconTextHighlight from './TextHighlight';
+import IconTextColor from './TextColor';
 
 export const icons = {
   Bold: TbBold,
@@ -124,7 +124,7 @@ export const icons = {
   RowRemove: TbRowRemove,
   RowHeader: TbTableRow,
   MergeCell: AiOutlineMergeCells,
-  SplitCell: AiOutlineSplitCells,
+  SplitCell: AiOutlineSplitCells
 } satisfies Record<string, IconType>;
 
 export type { IconBaseProps, IconType };

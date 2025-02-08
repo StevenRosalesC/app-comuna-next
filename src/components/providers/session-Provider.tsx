@@ -1,5 +1,4 @@
 'use client';
-
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Session } from 'types';
 
@@ -25,7 +24,6 @@ export const SessionProvider = ({
   const [loading, setLoading] = useState(!initialSession);
 
   useEffect(() => {
-    console.log('initialSession', initialSession);
     setSession(initialSession || null);
   }, [initialSession]);
 

@@ -6,6 +6,7 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { auth } from '@/lib/auth';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
+import { notFound, redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: 'Next Shadcn Dashboard Starter',
@@ -20,8 +21,7 @@ export default async function DashboardLayout({
   // Persisting the sidebar state in the cookie.
   const cookieStore = cookies();
   const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
-  const session = await auth();
-
+  const { data: session } = await auth();
   return (
     <Providers session={session}>
       <KBar>
@@ -30,7 +30,7 @@ export default async function DashboardLayout({
           <SidebarInset>
             <Header />
             {/* page main content */}
-            {children}
+            <section className=' mx-auto w-full px-6 py-10'>{children}</section>
             {/* page main content ends */}
           </SidebarInset>
         </SidebarProvider>

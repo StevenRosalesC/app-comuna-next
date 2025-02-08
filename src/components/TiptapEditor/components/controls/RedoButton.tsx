@@ -1,7 +1,7 @@
-import React from "react";
-import { useEditorState } from "@tiptap/react";
-import MenuButton from "../MenuButton";
-import { useTiptapContext } from "../Provider";
+import React from 'react';
+import { useEditorState } from '@tiptap/react';
+import MenuButton from '../MenuButton';
+import { useTiptapContext } from '../Provider';
 
 const RedoButton = () => {
   const { editor } = useTiptapContext();
@@ -9,15 +9,15 @@ const RedoButton = () => {
   const state = useEditorState({
     editor,
     selector: (ctx) => ({
-      disabled: !ctx.editor.can().redo(),
-    }),
+      disabled: !ctx.editor.can().redo()
+    })
   });
 
   return (
     <MenuButton
-      icon="Redo"
-      tooltip="Redo"
-      shortcuts={["Mod", "Y"]}
+      icon='Redo'
+      tooltip='Redo'
+      shortcuts={['Mod', 'Y']}
       onClick={() => editor.chain().focus().redo().run()}
       {...state}
     />

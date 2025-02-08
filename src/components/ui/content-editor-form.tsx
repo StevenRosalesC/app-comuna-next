@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import TiptapEditor, { type TiptapEditorRef } from "@/components/TiptapEditor";
-import { getPost, savePost } from "@/services/post";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import TiptapEditor, { type TiptapEditorRef } from '@/components/TiptapEditor';
+import { getPost, savePost } from '@/services/post';
 
 interface PostForm {
   title: string;
@@ -27,7 +27,7 @@ export default function EditForm() {
 
   useEffect(() => {
     const subscription = watch((values, { type }) => {
-      if (type === "change") {
+      if (type === 'change') {
         savePost({ ...values, wordCount: getWordCount() });
       }
     });
@@ -38,36 +38,40 @@ export default function EditForm() {
   if (isLoading) return;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className='flex flex-col gap-6'>
       <div>
-        <label className="inline-block font-medium dark:text-white mb-2">Title</label>
+        <label className='mb-2 inline-block font-medium dark:text-white'>
+          Title
+        </label>
         <Controller
           control={control}
-          name="title"
+          name='title'
           render={({ field }) => (
             <input
               {...field}
-              type="text"
-              className="w-full px-4 py-2.5 shadow border border-[#d1d9e0] rounded-md bg-white dark:bg-[#0d1017] dark:text-white dark:border-[#3d444d] outline-none"
-              placeholder="Enter post title..."
+              type='text'
+              className='w-full rounded-md border border-[#d1d9e0] bg-white px-4 py-2.5 shadow outline-none dark:border-[#3d444d] dark:bg-[#0d1017] dark:text-white'
+              placeholder='Enter post title...'
             />
           )}
         />
       </div>
 
       <div>
-        <label className="inline-block font-medium dark:text-white mb-2">Content</label>
+        <label className='mb-2 inline-block font-medium dark:text-white'>
+          Content
+        </label>
         <Controller
           control={control}
-          name="content"
+          name='content'
           render={({ field }) => (
             <TiptapEditor
               ref={editorRef}
               ssr={true}
-              output="html"
+              output='html'
               placeholder={{
-                paragraph: "Type your content here...",
-                imageCaption: "Type caption for image (optional)",
+                paragraph: 'Type your content here...',
+                imageCaption: 'Type caption for image (optional)'
               }}
               contentMinHeight={256}
               contentMaxHeight={640}

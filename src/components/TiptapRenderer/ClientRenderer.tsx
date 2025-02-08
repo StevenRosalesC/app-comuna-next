@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { createElement, Fragment, useEffect, useState } from "react";
-import { components } from "./components/custom";
-import { createProcessor } from "./utils/processor";
+import { createElement, Fragment, useEffect, useState } from 'react';
+import { components } from './components/custom';
+import { createProcessor } from './utils/processor';
 
 interface TiptapRendererProps {
   children: string;

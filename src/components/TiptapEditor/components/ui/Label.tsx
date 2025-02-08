@@ -1,5 +1,5 @@
-import clsx from "clsx";
-import React, { ReactNode } from "react";
+import clsx from 'clsx';
+import React, { ReactNode } from 'react';
 import { JSX } from 'react';
 
 interface LabelProps {
@@ -8,8 +8,12 @@ interface LabelProps {
   className?: string;
 }
 
-const Label = ({ as: Comp = "label", children, className = "" }: LabelProps) => {
-  return <Comp className={clsx("rte-label", className)}>{children}</Comp>;
+const Label = ({
+  as: Comp = 'label',
+  children,
+  className = ''
+}: LabelProps) => {
+  return <Comp className={clsx('rte-label', className)}>{children}</Comp>;
 };
 
 export default Label;

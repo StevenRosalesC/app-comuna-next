@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://www.steven-dev-apps.me
+
+# Sitemaps
+Sitemap: https://www.steven-dev-apps.me/sitemap.xml

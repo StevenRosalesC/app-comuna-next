@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export default function useProgress(containerSelector: string) {
   const [enable, setEnable] = useState<boolean>(false);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const container = document.body.querySelector(containerSelector || "");
+    const container = document.body.querySelector(containerSelector || '');
 
     if (!container) return;
 
@@ -45,12 +45,12 @@ export default function useProgress(containerSelector: string) {
       setProgress(Math.min(100, Math.max(0, progress)));
     };
 
-    window.addEventListener("scroll", calculateProgress);
-    window.addEventListener("resize", calculateProgress);
+    window.addEventListener('scroll', calculateProgress);
+    window.addEventListener('resize', calculateProgress);
 
     return () => {
-      window.removeEventListener("scroll", calculateProgress);
-      window.removeEventListener("resize", calculateProgress);
+      window.removeEventListener('scroll', calculateProgress);
+      window.removeEventListener('resize', calculateProgress);
     };
   }, [enable]);
 

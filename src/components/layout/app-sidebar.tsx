@@ -43,8 +43,8 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icons } from '../icons';
-import { NavItem, UserProjectsWithProjects } from 'types';
-import { useEffect, useState } from 'react';
+import { NavItem } from 'types';
+import { useState } from 'react';
 import { useSessionContext } from '../providers/session-Provider';
 import { logout } from '@/app/actions/auth-actions';
 import Image from 'next/image';
@@ -61,33 +61,31 @@ export default function AppSidebar() {
   const pathname = usePathname();
   // const { state, isMobile } = useSidebar();
 
-  const handleAccess = (userProjects: UserProjectsWithProjects[]) => {
-    // const access: NavItem[] = [];
-    // userProjects.forEach((userProject) => {
-    //   access.push({
-    //     title: userProject.projects.name,
-    //     url: `/dashboard/projects/${userProject.projects.jira_key}`,
-    //     icon: 'logo'
-    //   });
-    // });
-    // // find if the item already exists in the access array
-    // setUserAccess((prev) => {
-    //   // if not exist 'List task' in access array
-    //   const existList = prev.find((item) => item.title === 'Your Projects');
-    //   if (!existList) {
-    //     return [
-    //       ...prev,
-    //       {
-    //         title: 'Your Projects',
-    //         url: '/dashboard/projects/list',
-    //         icon: 'list',
-    //         items: access
-    //       }
-    //     ];
-    //   }
-    //   return prev;
-    // });
-  };
+  // const access: NavItem[] = [];
+  // userProjects.forEach((userProject) => {
+  //   access.push({
+  //     title: userProject.projects.name,
+  //     url: `/dashboard/projects/${userProject.projects.jira_key}`,
+  //     icon: 'logo'
+  //   });
+  // });
+  // // find if the item already exists in the access array
+  // setUserAccess((prev) => {
+  //   // if not exist 'List task' in access array
+  //   const existList = prev.find((item) => item.title === 'Your Projects');
+  //   if (!existList) {
+  //     return [
+  //       ...prev,
+  //       {
+  //         title: 'Your Projects',
+  //         url: '/dashboard/projects/list',
+  //         icon: 'list',
+  //         items: access
+  //       }
+  //     ];
+  //   }
+  //   return prev;
+  // });
   // useEffect(() => {
   //   if (session) {
   //     handleAccess(session.user_projects as UserProjectsWithProjects[]);

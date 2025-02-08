@@ -1,9 +1,10 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef } from "react";
-import { createPortal } from "react-dom";
-import { useEditorState } from "@tiptap/react";
-import { useTiptapContext } from "./Provider";
+import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { useEditorState } from '@tiptap/react';
+import { useTiptapContext } from './Provider';
 
-const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, value));
 
 type ResizeInfo = {
   currentHeight: number;
@@ -29,7 +30,7 @@ const Resizer = () => {
     startHeight: 0,
     startWidth: 0,
     startX: 0,
-    startY: 0,
+    startY: 0
   });
 
   const nodeState = useEditorState({
@@ -37,10 +38,10 @@ const Resizer = () => {
     selector: (ctx) => {
       if (!ctx.editor.isFocused || !ctx.editor.isEditable) return null;
 
-      const nodeType = ctx.editor.isActive("image")
-        ? "image"
-        : ctx.editor.isActive("youtube")
-        ? "youtube"
+      const nodeType = ctx.editor.isActive('image')
+        ? 'image'
+        : ctx.editor.isActive('youtube')
+        ? 'youtube'
         : null;
 
       if (!nodeType) return null;
@@ -49,7 +50,7 @@ const Resizer = () => {
       const node = ctx.editor.view.nodeDOM(selection.anchor) as HTMLElement;
 
       return { node, nodeType, nodePos: selection.anchor };
-    },
+    }
   });
 
   const { maxWidth, minWidth } = useMemo(() => {
@@ -57,7 +58,10 @@ const Resizer = () => {
     return { maxWidth: width, minWidth: width * 0.25 };
   }, [contentElement.current]);
 
-  const startResizing = (event: React.PointerEvent<HTMLDivElement>, direction: number) => {
+  const startResizing = (
+    event: React.PointerEvent<HTMLDivElement>,
+    direction: number
+  ) => {
     event.preventDefault();
     const resizeInfo = resizeInfoRef.current;
 
@@ -66,8 +70,8 @@ const Resizer = () => {
     resizeInfo.isResizing = true;
     resizeInfo.direction = direction;
 
-    document.addEventListener("pointermove", handleResize);
-    document.addEventListener("pointerup", stopResizing);
+    document.addEventListener('pointermove', handleResize);
+    document.addEventListener('pointerup', stopResizing);
 
     setIsResizing(true);
   };
@@ -98,14 +102,15 @@ const Resizer = () => {
     if (!resizeInfo.isResizing) return;
 
     resizeInfo.isResizing = false;
-    document.removeEventListener("pointermove", handleResize);
-    document.removeEventListener("pointerup", stopResizing);
+    document.removeEventListener('pointermove', handleResize);
+    document.removeEventListener('pointerup', stopResizing);
 
     setIsResizing(false);
-    requestAnimationFrame(() =>
-      editor?.commands.updateAttributes(nodeState!.nodeType, {
-        width: Math.round((resizeInfo.currentWidth / maxWidth) * 100),
-      })
+    requestAnimationFrame(
+      () =>
+        editor?.commands.updateAttributes(nodeState!.nodeType, {
+          width: Math.round((resizeInfo.currentWidth / maxWidth) * 100)
+        })
     );
   };
 
@@ -146,18 +151,26 @@ const Resizer = () => {
     position: React.CSSProperties
   ) => (
     <div
-      className="rte-resizer__control"
+      className='rte-resizer__control'
       style={{ cursor, ...position }}
       onPointerDown={(event) => startResizing(event, direction)}
     />
   );
 
   return createPortal(
-    <div ref={controlRef} className="rte-resizer">
-      {renderResizerHandle("nw-resize", 0, { width: 12, left: -10, top: -10 })}
-      {renderResizerHandle("sw-resize", 0, { width: 12, left: -10, bottom: -10 })}
-      {renderResizerHandle("sw-resize", 1, { width: 12, right: -10, top: -10 })}
-      {renderResizerHandle("nw-resize", 1, { width: 12, right: -10, bottom: -10 })}
+    <div ref={controlRef} className='rte-resizer'>
+      {renderResizerHandle('nw-resize', 0, { width: 12, left: -10, top: -10 })}
+      {renderResizerHandle('sw-resize', 0, {
+        width: 12,
+        left: -10,
+        bottom: -10
+      })}
+      {renderResizerHandle('sw-resize', 1, { width: 12, right: -10, top: -10 })}
+      {renderResizerHandle('nw-resize', 1, {
+        width: 12,
+        right: -10,
+        bottom: -10
+      })}
     </div>,
     contentElement.current
   );

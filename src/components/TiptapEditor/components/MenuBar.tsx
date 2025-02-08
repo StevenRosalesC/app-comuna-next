@@ -58,7 +58,7 @@ const MenuBar = () => {
         {/* <BlockquoteButton /> */}
         <LinkButton />
         <TableButton />
-        {/* <ImageButton /> */}
+        <ImageButton />
         {/* <YoutubeButton /> */}
         {/* <CodeBlockButton /> */}
         <InsertDropdown />

@@ -8,6 +8,7 @@ import "../../../app/dashboard/notices/style.scss";
 import { getRelativeTime } from "@/utils/date";
 import Link from "next/link";
 import { getAllNotices } from "@/services/notices";
+import { Card } from "@/components/ui/card";
 
 interface Notice {
   id: string;
@@ -43,18 +44,18 @@ export default function DashboardNoticesView() {
     //   <EditForm /> */}
     // </div>
     <section>
-      <h3 className="text-2xl font-bold text-gray-800">
+      <h3 className="text-2xl font-bold">
         Noticias
       </h3>
       {
         notices.length > 0 &&
         notices.map((notice) => (
           <Link key={notice.id} href={`/dashboard/notices/${notice.id}`}>
-            <div className="bg-white rounded-lg shadow-md p-6 mt-4">
-              <h4 className="text-xl font-bold text-gray-800">{notice.title}</h4>
-              <p className="text-gray-600">{notice.description}</p>
-              <p className="text-gray-500 text-sm">{getRelativeTime(notice.createdAt)}</p>
-            </div>
+            <Card className=" rounded-lg shadow-md p-6 mt-4">
+              <h4 className="font-bold text-lg hover:underline">{notice.title}</h4>
+              <p className="">{notice.description}</p>
+              <p className="text-sm">{getRelativeTime(notice.createdAt)}</p>
+            </Card>
           </Link>
         ))
       }

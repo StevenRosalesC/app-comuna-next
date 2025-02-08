@@ -4,6 +4,7 @@ import { useEditorState } from "@tiptap/react";
 import { useTiptapContext } from "../Provider";
 import Dialog from "@/components/TiptapEditor/components/ui/Dialog";
 import useModal from "@/components/TiptapEditor/hooks/useModal";
+import MediaLibrary from "../MediaLibrary";
 
 const ImageButton = () => {
   const { editor } = useTiptapContext();
@@ -23,8 +24,8 @@ const ImageButton = () => {
   return (
     <>
       <MenuButton icon="Image" tooltip="Image" {...state} onClick={handleOpen} />
-      {/* <Dialog open={open} onOpenChange={handleClose}>
-        <MediaLibrary onClose={handleClose} onInsert={(image)=>{
+      <Dialog open={open} onOpenChange={handleClose}>
+        <MediaLibrary onClose={handleClose} onInsert={(image) => {
           editor
             .chain()
             .focus()
@@ -35,8 +36,8 @@ const ImageButton = () => {
             })
             .run();
           handleClose();
-        }}/>
-      </Dialog> */}
+        }} />
+      </Dialog>
     </>
   );
 };

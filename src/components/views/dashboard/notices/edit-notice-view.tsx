@@ -1,3 +1,5 @@
+"use client";
+import EditForm from "@/components/notices/EditForm";
 import { getNotice } from "@/services/notices";
 import { notFound } from "next/navigation";
 
@@ -11,6 +13,10 @@ export const EditNoticeView = async ({ id }: Props) => {
   console.log(notice);
 
   return (
-    <div>EditNoticeView</div>
+    <div>
+      <EditForm
+        id={notice.id}
+      />
+    </div>
   )
 }

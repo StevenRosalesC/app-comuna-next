@@ -1,14 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import TiptapEditor, { type TiptapEditorRef } from "@/components/TiptapEditor";
-import { getPost, savePost } from "@/services/post";
+import { savePost } from "@/services/post";
+import { getNotice } from "@/services/notices";
 
 interface PostForm {
   title: string;
   content: string;
 }
 
-export default function EditForm() {
+interface Props {
+  id: string;
+}
+
+export default function EditForm({ id }: Props) {
   const editorRef = useRef<TiptapEditorRef>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { control, reset, watch } = useForm<PostForm>();
@@ -19,8 +24,8 @@ export default function EditForm() {
   );
 
   useEffect(() => {
-    getPost().then((post) => {
-      reset({ ...post });
+    getNotice(id).then((notice) => {
+      reset({ ...notice });
       setIsLoading(false);
     });
   }, []);
@@ -66,7 +71,7 @@ export default function EditForm() {
               ssr={true}
               output="html"
               placeholder={{
-                paragraph: "Type your content here...",
+                paragraph: "Escribe tu noticia aquí...",
                 imageCaption: "Type caption for image (optional)",
               }}
               contentMinHeight={256}

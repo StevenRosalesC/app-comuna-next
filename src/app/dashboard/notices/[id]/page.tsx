@@ -1,4 +1,4 @@
-import { EditNoticeView } from "@/components/views/dashboard/notieces/edit-notice-view";
+import { EditNoticeView } from "@/components/views/dashboard/notices/edit-notice-view";
 import { Metadata } from "next";
 
 

@@ -5,11 +5,13 @@ import { savePost } from '@/services/post';
 import { getNotice } from '@/services/notices';
 import ImageUpload from '../image-upload';
 import Image from 'next/image';
+import { Textarea } from '../ui/textarea';
 
 interface PostForm {
   title: string;
   content: string;
   cover: string;
+  description: string;
 }
 
 interface Props {
@@ -78,6 +80,23 @@ export default function EditForm({ id }: Props) {
                 className='aspect-video rounded-md object-cover'
               />
             </div>
+          )}
+        />
+      </div>
+
+      <div>
+        <label className='mb-2 inline-block font-medium dark:text-white'>
+          Descripción
+        </label>
+        <Controller
+          control={control}
+          name='description'
+          render={({ field }) => (
+            <Textarea
+              {...field}
+              className='w-full rounded-md border border-[#d1d9e0] bg-white px-4 py-2.5 shadow outline-none dark:border-[#3d444d] dark:bg-[#0d1017] dark:text-white'
+              placeholder='Enter post description...'
+            />
           )}
         />
       </div>

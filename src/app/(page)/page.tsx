@@ -2,7 +2,18 @@ import FaqSection from '@/components/page/faq-section';
 import { HeroSection } from '@/components/page/hero-section';
 import { NoticesSection } from '@/components/page/notices-section';
 import { OthersSection } from '@/components/page/others-section';
+import { NEXT_PUBLIC_APP_URL } from '@/lib/env.config';
 import { Mail, MapPin, Phone } from 'lucide-react';
+import { Metadata } from 'next';
+export const metadata: Metadata = {
+  title: 'Comuna Bambil Collao | Inicio',
+  description: 'Comuna Bambil Collao, ubicada en la provincia de Santa Elena, Parroquia Colonche.',
+  openGraph: {
+    title: 'Comuna Bambil Collao | Inicio',
+    description: 'Comuna Bambil Collao, ubicada en la provincia de Santa Elena, Parroquia Colonche.',
+    url: `${NEXT_PUBLIC_APP_URL}/`,
+  },
+};
 
 export default function page() {
   return (

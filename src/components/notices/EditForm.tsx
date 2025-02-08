@@ -3,10 +3,14 @@ import { useForm, Controller } from "react-hook-form";
 import TiptapEditor, { type TiptapEditorRef } from "@/components/TiptapEditor";
 import { savePost } from "@/services/post";
 import { getNotice } from "@/services/notices";
+import ImageUpload from "../image-upload";
+import Image from "next/image";
 
 interface PostForm {
   title: string;
   content: string;
+  cover: string;
+
 }
 
 interface Props {
@@ -20,15 +24,16 @@ export default function EditForm({ id }: Props) {
 
   const getWordCount = useCallback(
     () => editorRef.current?.getInstance()?.storage.characterCount.words() ?? 0,
-    [editorRef.current]
+    []
   );
 
   useEffect(() => {
     getNotice(id).then((notice) => {
       reset({ ...notice });
+      console.log({ notice });
       setIsLoading(false);
     });
-  }, []);
+  }, [id, reset]);
 
   useEffect(() => {
     const subscription = watch((values, { type }) => {
@@ -45,7 +50,7 @@ export default function EditForm({ id }: Props) {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <label className="inline-block font-medium dark:text-white mb-2">Title</label>
+        <label className="inline-block font-medium dark:text-white mb-2">Título</label>
         <Controller
           control={control}
           name="title"
@@ -58,10 +63,30 @@ export default function EditForm({ id }: Props) {
             />
           )}
         />
+        <Controller
+          control={control}
+          name="cover"
+          render={({ field }) => (
+            <div className="w-full h-64 flex flex-col md:flex-row gap-2 justify-between my-2">
+              <ImageUpload
+                onUploadComplete={(url) => field.onChange(url)}
+              />
+              <Image
+                src={field.value}
+                alt="Cover image"
+                width={640}
+                height={320}
+                className="rounded-md object-cover aspect-video"
+              />
+            </div>
+          )}
+        />
       </div>
 
       <div>
-        <label className="inline-block font-medium dark:text-white mb-2">Content</label>
+        <label className="inline-block font-medium dark:text-white mb-2">
+          Contenido
+        </label>
         <Controller
           control={control}
           name="content"

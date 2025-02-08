@@ -28,7 +28,7 @@ const AlignPopover = () => {
   const isDisabled = !editor.isEditable || !editor.can().setTextAlign("left");
 
   return (
-    <MenuButton type="popover" icon={current} tooltip="Alignment" disabled={isDisabled}>
+    <MenuButton type="popover" icon={current} tooltip="Alinear" disabled={isDisabled}>
       <PopoverClose asChild>
         <Toolbar dense={true}>
           <AlignLeftButton />

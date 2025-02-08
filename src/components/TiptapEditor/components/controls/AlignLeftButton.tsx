@@ -17,8 +17,7 @@ const AlignLeftButton = () => {
   return (
     <MenuButton
       icon="AlignLeft"
-      tooltip="Left"
-      shortcuts={["Mod", "Shift", "L"]}
+      tooltip="Izquierda"
       onClick={() => editor.chain().focus().setTextAlign("left").run()}
       {...state}
     />

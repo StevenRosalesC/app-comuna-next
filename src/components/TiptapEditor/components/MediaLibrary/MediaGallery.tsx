@@ -29,13 +29,16 @@ const MediaGallery: React.FC<MediaGalleryProps> = ({ data, selected, onSelect })
             <Image
               width={image.width}
               height={image.height}
-              src={image.url} alt={image.display_name} />
+              // only show firs 10 characters of the image display name
+              src={image.url} alt={image.display_name.
+                slice(0, 10)
+              } />
           </div>
 
           <div className="media-item__info">
-            <div className="media-item__name">{image.display_name}</div>
+            <div className="media-item__name">{image.display_name.slice(0, 20)}</div>
             <div className="media-item__details">
-              <span>{image.format.toUpperCase()}</span>
+              <span>{image?.format?.toUpperCase()}</span>
               <span> • </span>
               <span>{image?.width} x {image?.height}</span>
             </div>

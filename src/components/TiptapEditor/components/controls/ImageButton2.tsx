@@ -23,7 +23,7 @@ const ImageButton = () => {
 
   return (
     <>
-      <MenuButton icon="Image" tooltip="Image" {...state} onClick={handleOpen} />
+      <MenuButton icon="Image" tooltip="Imagen" {...state} onClick={handleOpen} />
       <Dialog open={open} onOpenChange={handleClose}>
         <MediaLibrary onClose={handleClose} onInsert={(image) => {
           editor

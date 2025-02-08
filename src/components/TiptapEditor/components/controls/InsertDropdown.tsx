@@ -20,7 +20,7 @@ const InsertDropdown = () => {
   return (
     <MenuButton
       type="dropdown"
-      tooltip="Insert"
+      tooltip="Insertar"
       disabled={!editor.isEditable}
       icon="Plus"
       dropdownStyle={{ minWidth: "8rem" }}

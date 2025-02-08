@@ -71,14 +71,12 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onInsert, onClose }) => {
     if (!files || files.length === 0) return;
 
     setUploading(true);
-
     const previewPromises = Array.from(files).map(loadImage);
     const loadedPreviews = await Promise.all(previewPromises);
     setPreviews(loadedPreviews);
 
     const uploadPromises = Array.from(files).map(uploadImage);
     const uploadImages = await Promise.all(uploadPromises);
-
     loadedPreviews.forEach(preview => URL.revokeObjectURL(preview.url));
     setPreviews([]);
     setImages(prev => [...uploadImages, ...prev]);
@@ -108,8 +106,12 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onInsert, onClose }) => {
   return (
     <div className="media-library">
       <header className="media-library__header">
-        <h2>Assets</h2>
-        <Button disabled={loading || uploading} onClick={handleUploadClick}>Upload</Button>
+        <h2>
+          Biblioteca de medios
+        </h2>
+        <Button disabled={loading || uploading} onClick={handleUploadClick}>
+          Subir imagen
+        </Button>
       </header>
 
       <div className="media-library__content">
@@ -118,7 +120,6 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onInsert, onClose }) => {
         ) : (
           <MediaGallery data={[...previews, ...images]} onSelect={
             (image) => {
-              console.log(image);
               setSelected(image);
             }
           } selected={selected} />
@@ -127,11 +128,11 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onInsert, onClose }) => {
 
       <footer className="media-library__footer">
         <Button variant="outline" className="media-library__btn media-library__btn--cancel" onClick={onClose}>
-          Cancel
+          Cancelar
         </Button>
         <Button className="media-library__btn media-library__btn--finish" disabled={!selected || loading || uploading}
           onClick={handleFinish}>
-          Insert
+          Insertar
         </Button>
       </footer>
 

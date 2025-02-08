@@ -17,8 +17,7 @@ const AlignCenterButton = () => {
   return (
     <MenuButton
       icon="AlignCenter"
-      tooltip="Center"
-      shortcuts={["Mod", "Shift", "E"]}
+      tooltip="Centrar"
       onClick={() => editor.chain().focus().setTextAlign("center").run()}
       {...state}
     />

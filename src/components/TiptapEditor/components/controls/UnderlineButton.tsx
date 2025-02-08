@@ -19,7 +19,7 @@ const UnderlineButton = () => {
   return (
     <MenuButton
       icon="Underline"
-      tooltip="Underline"
+      tooltip="Subrayado"
       shortcuts={["Mod", "U"]}
       onClick={() => editor.chain().focus().toggleUnderline().run()}
       {...state}

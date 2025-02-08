@@ -20,7 +20,6 @@ export interface ImageKitData {
     AITags: null;
     versionInfo: VersionInfo;
     embeddedMetadata: EmbeddedMetadata;
-    isPublished: boolean;
     customCoordinates: null;
     customMetadata: {};
     isPrivateFile: boolean;

@@ -1,12 +1,14 @@
-import { IMAGEKIT_PRIVATE_KEY, IMAGEKIT_URL_ENDPOINT } from "@/lib/env.config";
-import { FetchInstance } from "@/lib/fetchInstance";
+import { IMAGEKIT_PRIVATE_KEY, IMAGEKIT_PUBLIC_KEY, IMAGEKIT_URL_ENDPOINT } from "@/lib/env.config";
+import ImageKit from "imagekit";
 
-const imageKitApi = new FetchInstance(IMAGEKIT_URL_ENDPOINT, {
-  headers: {
-    Accept: 'application/json',
-    Authorization : `Basic ${IMAGEKIT_PRIVATE_KEY}`,
-  },
-  cache: 'no-store',
+const privateKey = IMAGEKIT_PRIVATE_KEY;
+const publicKey = IMAGEKIT_PUBLIC_KEY;
+const urlEndpoint = IMAGEKIT_URL_ENDPOINT;
+
+var imageKitApi = new ImageKit({
+    publicKey,
+    privateKey,
+    urlEndpoint
 });
 
 export default imageKitApi;

@@ -18,8 +18,7 @@ const OrderedListButton = () => {
   return (
     <MenuButton
       icon="OrderedList"
-      tooltip="Numbered List"
-      shortcuts={["Mod", "Shift", "7"]}
+      tooltip="Lista numerada"
       onClick={() => editor.chain().focus().toggleOrderedList().run()}
       {...state}
     />

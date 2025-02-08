@@ -19,7 +19,7 @@ const ItalicButton = () => {
   return (
     <MenuButton
       icon="Italic"
-      tooltip="Italic"
+      tooltip="Cursiva"
       shortcuts={["Mod", "I"]}
       onClick={() => editor.chain().focus().toggleItalic().run()}
       {...state}

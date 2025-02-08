@@ -17,8 +17,7 @@ const AlignJustifyButton = () => {
   return (
     <MenuButton
       icon="AlignJustify"
-      tooltip="Justify"
-      shortcuts={["Mod", "Shift", "F"]}
+      tooltip="Justificar"
       onClick={() => editor.chain().focus().setTextAlign("justify").run()}
       {...state}
     />

@@ -18,7 +18,7 @@ const BoldButton = () => {
   return (
     <MenuButton
       icon="Bold"
-      tooltip="Bold"
+      tooltip="Negrita"
       shortcuts={["Mod", "B"]}
       onClick={() => editor.chain().focus().toggleBold().run()}
       {...state}

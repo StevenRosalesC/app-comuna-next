@@ -16,8 +16,7 @@ const LinkButton = () => {
   return (
     <MenuButton
       icon="Link"
-      tooltip="Link"
-      shortcuts={["Mod", "K"]}
+      tooltip="Enlace"
       onClick={() => editor.commands.startEditLink()}
       {...state}
     />

@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: 'Comuna Bambil Collao | Contacto',
   description:
     'Contacto de la Comuna Bambil Collao, ubicada en la provincia de Santa Elena, Parroquia Colonche.',
+  alternates: {
+    canonical: `/contact`,
+  },
   openGraph: {
     title: 'Comuna Bambil Collao | Contacto',
     description:

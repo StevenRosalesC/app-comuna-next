@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import React, { forwardRef, useCallback, useEffect } from "react";
-import { Content, type Editor } from "@tiptap/react";
+import React, { forwardRef, useCallback, useEffect } from 'react';
+import { Content, type Editor } from '@tiptap/react';
 
-import TiptapProvider from "./Provider";
-import { type UseTiptapEditorOptions } from "../hooks/useTiptapEditor";
+import TiptapProvider from './Provider';
+import { type UseTiptapEditorOptions } from '../hooks/useTiptapEditor';
 
-import MenuBar from "./MenuBar";
-import StatusBar from "./StatusBar";
-import Resizer from "./Resizer";
+import MenuBar from './MenuBar';
+import StatusBar from './StatusBar';
+import Resizer from './Resizer';
 
-import { TextMenu, LinkMenu, ImageMenu, CodeBlockMenu } from "./menus";
+import { TextMenu, LinkMenu, ImageMenu, CodeBlockMenu } from './menus';
 
-import ExtensionKit from "../kit";
+import ExtensionKit from '../kit';
 
-import { cssVar } from "../utils/cssVar";
-import { throttle } from "../utils/throttle";
+import { cssVar } from '../utils/cssVar';
+import { throttle } from '../utils/throttle';
 
-import "../styles/index.scss";
-import TableMenu from "@/components/TiptapEditor/components/menus/TableMenu";
+import '../styles/index.scss';
+import TableMenu from '@/components/TiptapEditor/components/menus/TableMenu';
 
 export type TiptapEditorRef = {
   getInstance: () => Editor | null;
@@ -33,7 +33,7 @@ export interface TiptapEditorProps {
     paragraph?: string;
     imageCaption?: string;
   };
-  output?: "html" | "json";
+  output?: 'html' | 'json';
   hideMenuBar?: boolean;
   hideStatusBar?: boolean;
   hideBubbleMenu?: boolean;
@@ -49,7 +49,7 @@ const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
   (
     {
       ssr = false,
-      output = "html",
+      output = 'html',
       readonly = false,
       disabled = false,
       initialContent,
@@ -59,7 +59,7 @@ const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
       hideBubbleMenu = true,
       contentMinHeight = 200,
       contentMaxHeight,
-      onContentChange,
+      onContentChange
     },
     ref
   ) => {
@@ -74,7 +74,11 @@ const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
     const handleUpdate = useCallback(
       (editor: Editor) => {
         const content =
-          output === "html" ? (editor.isEmpty ? "" : editor.getHTML()) : editor.getJSON();
+          output === 'html'
+            ? editor.isEmpty
+              ? ''
+              : editor.getHTML()
+            : editor.getJSON();
         throttledUpdate(content);
       },
       [throttledUpdate, output]
@@ -89,12 +93,12 @@ const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
       immediatelyRender: !ssr,
       shouldRerenderOnTransaction: false,
       autofocus: false,
-      onUpdate: ({ editor }) => handleUpdate(editor),
+      onUpdate: ({ editor }) => handleUpdate(editor)
     };
 
     useEffect(() => {
-      cssVar("--rte-editor-min-height", `${contentMinHeight}px`);
-      cssVar("--rte-editor-max-height", `${contentMaxHeight}px`);
+      cssVar('--rte-editor-min-height', `${contentMinHeight}px`);
+      cssVar('--rte-editor-max-height', `${contentMaxHeight}px`);
     }, [contentMaxHeight, contentMinHeight]);
 
     const menus = displayBubbleMenu && (
@@ -120,6 +124,6 @@ const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(
   }
 );
 
-TiptapEditor.displayName = "TiptapEditor";
+TiptapEditor.displayName = 'TiptapEditor';
 
 export default TiptapEditor;

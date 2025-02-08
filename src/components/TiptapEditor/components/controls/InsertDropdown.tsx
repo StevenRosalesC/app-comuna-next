@@ -1,7 +1,7 @@
-import React, { useCallback, useMemo } from "react";
-import MenuButton from "../MenuButton";
-import { DropdownMenuItem } from "../ui/DropdownMenu";
-import { useTiptapContext } from "../Provider";
+import React, { useCallback, useMemo } from 'react';
+import MenuButton from '../MenuButton';
+import { DropdownMenuItem } from '../ui/DropdownMenu';
+import { useTiptapContext } from '../Provider';
 
 const InsertDropdown = () => {
   const { editor } = useTiptapContext();
@@ -11,7 +11,10 @@ const InsertDropdown = () => {
   const insertBlockquote = () => editor.chain().focus().setBlockquote().run();
 
   const insertYoutube = () => {
-    const src = prompt("Embed Youtube Video", "https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    const src = prompt(
+      'Embed Youtube Video',
+      'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
+    );
     if (src) {
       editor.chain().focus().embedYoutube({ src }).run();
     }
@@ -19,36 +22,36 @@ const InsertDropdown = () => {
 
   return (
     <MenuButton
-      type="dropdown"
-      tooltip="Insertar"
+      type='dropdown'
+      tooltip='Insertar'
       disabled={!editor.isEditable}
-      icon="Plus"
-      dropdownStyle={{ minWidth: "8rem" }}
+      icon='Plus'
+      dropdownStyle={{ minWidth: '8rem' }}
     >
       <DropdownMenuItem asChild>
         <MenuButton
-          text="Blockquote"
+          text='Blockquote'
           hideText={false}
           tooltip={false}
-          icon="Quote"
+          icon='Quote'
           onClick={insertBlockquote}
         />
       </DropdownMenuItem>
       <DropdownMenuItem asChild>
         <MenuButton
-          text="Code block"
+          text='Code block'
           hideText={false}
           tooltip={false}
-          icon="CodeBlock"
+          icon='CodeBlock'
           onClick={insertCodeBlock}
         />
       </DropdownMenuItem>
       <DropdownMenuItem asChild>
         <MenuButton
-          text="Youtube"
+          text='Youtube'
           hideText={false}
           tooltip={false}
-          icon="Youtube"
+          icon='Youtube'
           onClick={insertYoutube}
         />
       </DropdownMenuItem>

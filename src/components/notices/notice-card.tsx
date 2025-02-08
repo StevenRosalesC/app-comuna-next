@@ -7,9 +7,7 @@ interface Props {
   notice: Notice;
 }
 
-export const NoticeCard = (
-  { notice }: Props
-) => {
+export const NoticeCard = ({ notice }: Props) => {
   return (
     <Link
       rel='noopener noreferrer'
@@ -31,9 +29,7 @@ export const NoticeCard = (
         <span className='text-xs dark:text-gray-600'>
           {getRelativeTime(notice.createdAt)}
         </span>
-        <p>
-          {notice.description}
-        </p>
+        <p>{notice.description}</p>
       </div>
     </Link>
   );

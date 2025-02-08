@@ -10,7 +10,6 @@ interface MediaLibraryProps {
   onClose?: () => void;
 }
 
-
 const MediaLibrary: React.FC<MediaLibraryProps> = ({ onInsert, onClose }) => {
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -22,7 +21,7 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onInsert, onClose }) => {
   const handleUploadClick = () => {
     const confirmUpload = window.confirm(
       // "Please avoid uploading too many images unnecessarily to save storage space. Also, ensure your images comply with copyright rules. Do you wish to continue?
-      "Por favor, evite subir demasiadas imágenes innecesariamente para ahorrar espacio de almacenamiento. Además, asegúrese de que sus imágenes cumplan con las reglas de derechos de autor. ¿Desea continuar?"
+      'Por favor, evite subir demasiadas imágenes innecesariamente para ahorrar espacio de almacenamiento. Además, asegúrese de que sus imágenes cumplan con las reglas de derechos de autor. ¿Desea continuar?'
     );
 
     if (confirmUpload) {
@@ -58,7 +57,7 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onInsert, onClose }) => {
     try {
       const response = await fetch('/api/images', {
         method: 'POST',
-        body: formData,
+        body: formData
       });
       return await response.json();
     } catch (error) {
@@ -77,14 +76,13 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onInsert, onClose }) => {
 
     const uploadPromises = Array.from(files).map(uploadImage);
     const uploadImages = await Promise.all(uploadPromises);
-    loadedPreviews.forEach(preview => URL.revokeObjectURL(preview.url));
+    loadedPreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
     setPreviews([]);
-    setImages(prev => [...uploadImages, ...prev]);
+    setImages((prev) => [...uploadImages, ...prev]);
     setUploading(false);
   };
 
-  const handleFinish = () =>
-    selected !== null && onInsert?.(selected)
+  const handleFinish = () => selected !== null && onInsert?.(selected);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -96,51 +94,58 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onInsert, onClose }) => {
       } catch (error) {
         console.error('Error fetching images:', error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
     fetchImages();
   }, []);
 
   return (
-    <div className="media-library">
-      <header className="media-library__header">
-        <h2>
-          Biblioteca de medios
-        </h2>
+    <div className='media-library'>
+      <header className='media-library__header'>
+        <h2>Biblioteca de medios</h2>
         <Button disabled={loading || uploading} onClick={handleUploadClick}>
           Subir imagen
         </Button>
       </header>
 
-      <div className="media-library__content">
+      <div className='media-library__content'>
         {loading ? (
-          <div className="media-library__spinner" aria-label="Loading images" />
+          <div className='media-library__spinner' aria-label='Loading images' />
         ) : (
-          <MediaGallery data={[...previews, ...images]} onSelect={
-            (image) => {
+          <MediaGallery
+            data={[...previews, ...images]}
+            onSelect={(image) => {
               setSelected(image);
-            }
-          } selected={selected} />
+            }}
+            selected={selected}
+          />
         )}
       </div>
 
-      <footer className="media-library__footer">
-        <Button variant="outline" className="media-library__btn media-library__btn--cancel" onClick={onClose}>
+      <footer className='media-library__footer'>
+        <Button
+          variant='outline'
+          className='media-library__btn media-library__btn--cancel'
+          onClick={onClose}
+        >
           Cancelar
         </Button>
-        <Button className="media-library__btn media-library__btn--finish" disabled={!selected || loading || uploading}
-          onClick={handleFinish}>
+        <Button
+          className='media-library__btn media-library__btn--finish'
+          disabled={!selected || loading || uploading}
+          onClick={handleFinish}
+        >
           Insertar
         </Button>
       </footer>
 
       <input
         style={{ display: 'none' }}
-        type="file"
+        type='file'
         multiple
-        accept="image/*"
+        accept='image/*'
         ref={fileInput}
         onChange={handleFileChange}
       />
@@ -149,4 +154,3 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onInsert, onClose }) => {
 };
 
 export default MediaLibrary;
-

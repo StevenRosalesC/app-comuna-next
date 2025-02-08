@@ -40,15 +40,14 @@ export const auth = async (): Promise<{
   if (!token) {
     redirect('/auth/login');
   }
-      try {
-        const response = await apiCommunity.get<Session>('/auth/user', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        return { ok: true, data: response };
-      } catch (error) {
-        return { ok: false, data: null };
+  try {
+    const response = await apiCommunity.get<Session>('/auth/user', {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-
+    });
+    return { ok: true, data: response };
+  } catch (error) {
+    return { ok: false, data: null };
+  }
 };

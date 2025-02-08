@@ -34,7 +34,7 @@ export async function middleware(request: NextRequest) {
       httpOnly: true,
       secure: true,
       sameSite: 'lax',
-      path: '/',
+      path: '/'
     });
   }
 
@@ -42,7 +42,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/auth/:path*'],
+  matcher: ['/dashboard/:path*', '/auth/:path*']
 };
 
 // Función para autenticar o refrescar el token
@@ -67,7 +67,7 @@ async function authenticateOrRefresh(token: string, refreshToken?: string) {
 async function auth(token: string) {
   try {
     const response = await apiCommunity.get('/auth/user', {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${token}` }
     });
 
     return { ok: true, data: response };
@@ -79,13 +79,13 @@ async function auth(token: string) {
 // Función para refrescar el token
 async function refreshTokenRequest(refreshToken: string) {
   try {
-    const response = await apiCommunity.post<{token:string}>('/auth/refresh', {
-      refreshToken,
-    });
+    const response = await apiCommunity.post<{ token: string }>(
+      '/auth/refresh',
+      {
+        refreshToken
+      }
+    );
     return response.token;
-    
-  } catch (error) {
-  }
+  } catch (error) {}
   return null;
 }
-

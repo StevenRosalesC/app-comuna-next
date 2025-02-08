@@ -16,7 +16,7 @@ const envSchema = z.object({
   }),
   IMAGEKIT_PUBLIC_KEY: z.string({
     required_error: 'IMAGEKIT_PUBLIC_KEY is required'
-  }),
+  })
 });
 
 // Validar las variables de entorno
@@ -27,4 +27,10 @@ if (!env.success) {
 }
 
 // Exportar las variables validadas
-export const { API_URL,NEXT_PUBLIC_APP_URL,IMAGEKIT_PRIVATE_KEY,IMAGEKIT_URL_ENDPOINT,IMAGEKIT_PUBLIC_KEY } = env.data;
+export const {
+  API_URL,
+  NEXT_PUBLIC_APP_URL,
+  IMAGEKIT_PRIVATE_KEY,
+  IMAGEKIT_URL_ENDPOINT,
+  IMAGEKIT_PUBLIC_KEY
+} = env.data;

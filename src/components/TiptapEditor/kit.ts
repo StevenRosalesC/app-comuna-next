@@ -17,35 +17,35 @@ import {
   TextStyle,
   Color,
   Highlight,
-  Table,
-} from "./extensions";
+  Table
+} from './extensions';
 
 const ExtensionKit = [
   StarterKit.configure({
     horizontalRule: false,
     hardBreak: false,
-    codeBlock: false,
+    codeBlock: false
   }),
   Placeholder.configure({
     includeChildren: true,
     showOnlyCurrent: true,
-    placeholder: ({ editor, node }: { editor: any, node: any }) => {
+    placeholder: ({ editor, node }: { editor: any; node: any }) => {
       // @ts-ignore
-      const placeholder = editor.options.editorProps["placeholder"];
+      const placeholder = editor.options.editorProps['placeholder'];
       switch (node.type.name) {
         case ImageCaption.name:
           return placeholder?.imageCaption;
         default:
           return placeholder?.paragraph;
       }
-    },
+    }
   }),
   Selection,
   CharacterCount,
   Underline,
   Superscript,
   Subscript,
-  TextAlign.configure({ types: ["heading", "paragraph"] }),
+  TextAlign.configure({ types: ['heading', 'paragraph'] }),
   TextStyle,
   Color,
   Highlight.configure({ multicolor: true }),
@@ -55,7 +55,7 @@ const ExtensionKit = [
   ImageFigure,
   CodeBlock,
   Youtube,
-  Table,
+  Table
 ];
 
 export default ExtensionKit;

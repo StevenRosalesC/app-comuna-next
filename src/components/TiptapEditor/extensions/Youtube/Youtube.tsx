@@ -1,5 +1,5 @@
-import { mergeAttributes, Node } from "@tiptap/core";
-import { getEmbedYoutubeUrl, isValidYoutubeUrl } from "./utils";
+import { mergeAttributes, Node } from '@tiptap/core';
+import { getEmbedYoutubeUrl, isValidYoutubeUrl } from './utils';
 
 export interface YoutubeOptions {
   allowFullscreen?: boolean;
@@ -13,7 +13,7 @@ export interface YoutubeOptions {
 
 type EmbedYoutubeOptions = { src: string; width?: number; height?: number };
 
-declare module "@tiptap/core" {
+declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     youtube: {
       embedYoutube: (options: EmbedYoutubeOptions) => ReturnType;
@@ -22,8 +22,8 @@ declare module "@tiptap/core" {
 }
 
 export const Youtube = Node.create<YoutubeOptions>({
-  name: "youtube",
-  group: "block",
+  name: 'youtube',
+  group: 'block',
   draggable: true,
   atom: true,
 
@@ -33,14 +33,14 @@ export const Youtube = Node.create<YoutubeOptions>({
       autoplay: false,
       nocookie: false,
       controls: true,
-      HTMLAttributes: {},
+      HTMLAttributes: {}
     };
   },
 
   addAttributes() {
     return {
       src: {
-        default: null,
+        default: null
       },
       width: {
         default: null,
@@ -48,32 +48,32 @@ export const Youtube = Node.create<YoutubeOptions>({
         renderHTML: (attrs) => {
           if (!attrs.width) return {};
           return { style: `width: ${attrs.width}%` };
-        },
-      },
+        }
+      }
     };
   },
 
   parseHTML() {
     return [
       {
-        tag: "iframe[src]",
-      },
+        tag: 'iframe[src]'
+      }
     ];
   },
 
   renderHTML({ HTMLAttributes }) {
     return [
-      "iframe",
+      'iframe',
       mergeAttributes(
         this.options.HTMLAttributes,
         {
           with: 200,
           height: 120,
-          allowfullscreen: this.options.allowFullscreen ? "true" : undefined,
-          autoplay: this.options.autoplay ? "true" : undefined,
+          allowfullscreen: this.options.allowFullscreen ? 'true' : undefined,
+          autoplay: this.options.autoplay ? 'true' : undefined
         },
         HTMLAttributes
-      ),
+      )
     ];
   },
 
@@ -91,33 +91,33 @@ export const Youtube = Node.create<YoutubeOptions>({
             allowFullscreen: this.options.allowFullscreen,
             autoplay: this.options.autoplay,
             controls: this.options.controls,
-            nocookie: this.options.nocookie,
+            nocookie: this.options.nocookie
           });
 
           if (!embedUrl) return false;
 
           return commands.insertContent({
             type: this.name,
-            attrs: { ...options, src: embedUrl },
+            attrs: { ...options, src: embedUrl }
           });
-        },
+        }
     };
   },
 
   addNodeView() {
     return ({ node }) => {
-      const iframe = document.createElement("iframe");
+      const iframe = document.createElement('iframe');
       iframe.src = node.attrs.src;
 
-      const dom = document.createElement("div");
-      dom.style.cursor = "default";
-      dom.style.marginInline = "auto";
+      const dom = document.createElement('div');
+      dom.style.cursor = 'default';
+      dom.style.marginInline = 'auto';
       dom.style.width = `${node.attrs.width}%`;
       dom.appendChild(iframe);
 
       return {
-        dom,
+        dom
       };
     };
-  },
+  }
 });

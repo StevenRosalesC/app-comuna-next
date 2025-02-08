@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from 'react';
 
 interface TocItem {
   id: string;
@@ -14,12 +14,19 @@ interface UseTocOptions {
 }
 
 export default function useToc(options: UseTocOptions) {
-  const { containerSelector, headingSelector = "h2, h3, h4", observerOptions } = options;
+  const {
+    containerSelector,
+    headingSelector = 'h2, h3, h4',
+    observerOptions
+  } = options;
 
   const [items, setItems] = useState<TocItem[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  const memoizedObserverOptions = useMemo(() => observerOptions, [observerOptions]);
+  const memoizedObserverOptions = useMemo(
+    () => observerOptions,
+    [observerOptions]
+  );
 
   useEffect(() => {
     const container = document.querySelector(containerSelector);
@@ -29,17 +36,18 @@ export default function useToc(options: UseTocOptions) {
 
     const newItems = Array.from(headings).map((heading) => ({
       id: heading.id,
-      text: heading.textContent || "",
+      text: heading.textContent || '',
       level: parseInt(heading.tagName[1]),
-      node: heading,
+      node: heading
     }));
 
     // Solo actualiza si hay cambios
     setItems((prevItems) => {
-      const isEqual = prevItems.length === newItems.length && prevItems.every((item, index) => item.id === newItems[index].id);
+      const isEqual =
+        prevItems.length === newItems.length &&
+        prevItems.every((item, index) => item.id === newItems[index].id);
       return isEqual ? prevItems : newItems;
     });
-
   }, [containerSelector, headingSelector]);
 
   useEffect(() => {

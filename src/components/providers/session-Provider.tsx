@@ -23,7 +23,6 @@ export const SessionProvider = ({
   );
   const [loading, setLoading] = useState(!initialSession);
 
-
   useEffect(() => {
     setSession(initialSession || null);
   }, [initialSession]);

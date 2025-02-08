@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Bambil Collao APP | Iniciar sesión',
     description: 'Iniciar sesión en la aplicación de la Comuna Bambil Collao.',
-    url: `${NEXT_PUBLIC_APP_URL}/auth/login`,
-  },
+    url: `${NEXT_PUBLIC_APP_URL}/auth/login`
+  }
 };
 
 export default function Page() {

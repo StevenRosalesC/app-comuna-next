@@ -1,5 +1,4 @@
 import { Icons } from '@/components/icons';
-import { Database } from './supabase';
 // user: {
 //       id: '3386900e-9636-4f60-99c1-ff61462ec122',
 //       last_name: 'Rosales',
@@ -26,12 +25,7 @@ export interface Session {
   token: string;
   refreshToken: string;
 }
-export type UserProjectsRow =
-  Database['public']['Tables']['user_projects']['Row'];
-export type ProjectsRow = Database['public']['Tables']['projects']['Row'];
-export type UserProjectsWithProjects = UserProjectsRow & {
-  projects: ProjectsRow;
-};
+
 
 export interface NavItem {
   title: string;

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -9,7 +9,6 @@ import { SubTitle } from '../ui/atoms/sub-title';
 import { Paragraph } from '../ui/atoms/paragraph';
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
-
 
 interface Faq {
   question: string;
@@ -50,44 +49,55 @@ export default function FaqSection() {
       <div className='container grid gap-4 px-4 md:gap-6'>
         <div className='space-y-2'>
           <SubTitle className='text-center'>Preguntas</SubTitle>
-          <Paragraph size={'sm'} className='text-gray-500 dark:text-gray-400 md:text-xl/relaxed'>
+          <Paragraph
+            size={'sm'}
+            className='text-gray-500 dark:text-gray-400 md:text-xl/relaxed'
+          >
             ¿Tienes alguna pregunta? Encuentra respuestas o contacta con
             nosotros.
           </Paragraph>
         </div>
         <div className='space-y-4'>
-          {
-            faqs.map((faq, index) => (
-              <Collapsible
-                key={index}
-                className='grid border-t border-t-gray-200'>
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant='unstyled'
-                    className='w-full justify-between text-left font-semibold'
-                    onClick={() => {
-                      setFaqs(faqs.map((item, i) => {
+          {faqs.map((faq, index) => (
+            <Collapsible
+              key={index}
+              className='grid border-t border-t-gray-200'
+            >
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant='unstyled'
+                  className='w-full justify-between text-left font-semibold'
+                  onClick={() => {
+                    setFaqs(
+                      faqs.map((item, i) => {
                         if (i === index) {
                           item.isOpen = !item.isOpen;
                         } else {
                           item.isOpen = false;
                         }
                         return item;
-                      }));
-                    }}
-                  >
-                    {faq.question}
-                    <ChevronDown className={`transform ${faq.isOpen ? 'rotate-180' : 'rotate-0'}`} />
-                  </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent asChild className='transition-all ease-in-out duration-300'>
-                  <p className='text-sm leading-loose text-gray-500 dark:text-gray-400 md:text-base'>
-                    {faq.answer}
-                  </p>
-                </CollapsibleContent>
-              </Collapsible>
-            ))
-          }
+                      })
+                    );
+                  }}
+                >
+                  {faq.question}
+                  <ChevronDown
+                    className={`transform ${
+                      faq.isOpen ? 'rotate-180' : 'rotate-0'
+                    }`}
+                  />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent
+                asChild
+                className='transition-all duration-300 ease-in-out'
+              >
+                <p className='text-sm leading-loose text-gray-500 dark:text-gray-400 md:text-base'>
+                  {faq.answer}
+                </p>
+              </CollapsibleContent>
+            </Collapsible>
+          ))}
         </div>
       </div>
     </section>

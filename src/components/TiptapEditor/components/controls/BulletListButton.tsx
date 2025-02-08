@@ -1,7 +1,7 @@
-import React from "react";
-import MenuButton from "../MenuButton";
-import { useEditorState } from "@tiptap/react";
-import { useTiptapContext } from "../Provider";
+import React from 'react';
+import MenuButton from '../MenuButton';
+import { useEditorState } from '@tiptap/react';
+import { useTiptapContext } from '../Provider';
 
 const BulletListButton = () => {
   const { editor } = useTiptapContext();
@@ -9,16 +9,16 @@ const BulletListButton = () => {
     editor,
     selector: (ctx) => {
       return {
-        active: ctx.editor.isActive("bulletList"),
-        disabled: !ctx.editor.isEditable,
+        active: ctx.editor.isActive('bulletList'),
+        disabled: !ctx.editor.isEditable
       };
-    },
+    }
   });
 
   return (
     <MenuButton
-      icon="BulletList"
-      tooltip="Lista con viñetas"
+      icon='BulletList'
+      tooltip='Lista con viñetas'
       onClick={() => editor.chain().focus().toggleBulletList().run()}
       {...state}
     />

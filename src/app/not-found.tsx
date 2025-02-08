@@ -23,11 +23,7 @@ export default function NotFound() {
         <Button onClick={() => router.back()} variant='default' size='lg'>
           Atrás
         </Button>
-        <Button
-          onClick={() => router.push('/')}
-          variant='ghost'
-          size='lg'
-        >
+        <Button onClick={() => router.push('/')} variant='ghost' size='lg'>
           Ir al inicio
         </Button>
       </div>

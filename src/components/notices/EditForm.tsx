@@ -1,16 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
-import TiptapEditor, { type TiptapEditorRef } from "@/components/TiptapEditor";
-import { savePost } from "@/services/post";
-import { getNotice } from "@/services/notices";
-import ImageUpload from "../image-upload";
-import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import TiptapEditor, { type TiptapEditorRef } from '@/components/TiptapEditor';
+import { savePost } from '@/services/post';
+import { getNotice } from '@/services/notices';
+import ImageUpload from '../image-upload';
+import Image from 'next/image';
 
 interface PostForm {
   title: string;
   content: string;
   cover: string;
-
 }
 
 interface Props {
@@ -37,7 +36,7 @@ export default function EditForm({ id }: Props) {
 
   useEffect(() => {
     const subscription = watch((values, { type }) => {
-      if (type === "change") {
+      if (type === 'change') {
         savePost({ ...values, wordCount: getWordCount() });
       }
     });
@@ -48,35 +47,35 @@ export default function EditForm({ id }: Props) {
   if (isLoading) return;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className='flex flex-col gap-6'>
       <div>
-        <label className="inline-block font-medium dark:text-white mb-2">Título</label>
+        <label className='mb-2 inline-block font-medium dark:text-white'>
+          Título
+        </label>
         <Controller
           control={control}
-          name="title"
+          name='title'
           render={({ field }) => (
             <input
               {...field}
-              type="text"
-              className="w-full px-4 py-2.5 shadow border border-[#d1d9e0] rounded-md bg-white dark:bg-[#0d1017] dark:text-white dark:border-[#3d444d] outline-none"
-              placeholder="Enter post title..."
+              type='text'
+              className='w-full rounded-md border border-[#d1d9e0] bg-white px-4 py-2.5 shadow outline-none dark:border-[#3d444d] dark:bg-[#0d1017] dark:text-white'
+              placeholder='Enter post title...'
             />
           )}
         />
         <Controller
           control={control}
-          name="cover"
+          name='cover'
           render={({ field }) => (
-            <div className="w-full h-64 flex flex-col md:flex-row gap-2 justify-between my-2">
-              <ImageUpload
-                onUploadComplete={(url) => field.onChange(url)}
-              />
+            <div className='my-2 flex h-64 w-full flex-col justify-between gap-2 md:flex-row'>
+              <ImageUpload onUploadComplete={(url) => field.onChange(url)} />
               <Image
                 src={field.value}
-                alt="Cover image"
+                alt='Cover image'
                 width={640}
                 height={320}
-                className="rounded-md object-cover aspect-video"
+                className='aspect-video rounded-md object-cover'
               />
             </div>
           )}
@@ -84,20 +83,20 @@ export default function EditForm({ id }: Props) {
       </div>
 
       <div>
-        <label className="inline-block font-medium dark:text-white mb-2">
+        <label className='mb-2 inline-block font-medium dark:text-white'>
           Contenido
         </label>
         <Controller
           control={control}
-          name="content"
+          name='content'
           render={({ field }) => (
             <TiptapEditor
               ref={editorRef}
               ssr={true}
-              output="html"
+              output='html'
               placeholder={{
-                paragraph: "Escribe tu noticia aquí...",
-                imageCaption: "Type caption for image (optional)",
+                paragraph: 'Escribe tu noticia aquí...',
+                imageCaption: 'Type caption for image (optional)'
               }}
               contentMinHeight={256}
               contentMaxHeight={640}

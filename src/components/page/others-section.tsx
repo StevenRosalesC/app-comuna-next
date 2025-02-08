@@ -70,7 +70,9 @@ export const OthersSection = () => {
           </TableBody>
         </Table>
       </div>
-      <SubTitle className='text-center pb-2'>Barrios de la comuna bambil collao</SubTitle>
+      <SubTitle className='pb-2 text-center'>
+        Barrios de la comuna bambil collao
+      </SubTitle>
       <Slider delay={5500} key={'nei'}>
         {Array.from({ length: 5 }).map((_, index) => (
           <div key={`nei-${index}`}>

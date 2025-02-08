@@ -1,7 +1,7 @@
-import React from "react";
-import { useEditorState } from "@tiptap/react";
-import MenuButton from "../MenuButton";
-import { useTiptapContext } from "../Provider";
+import React from 'react';
+import { useEditorState } from '@tiptap/react';
+import MenuButton from '../MenuButton';
+import { useTiptapContext } from '../Provider';
 
 const AlignCenterButton = () => {
   const { editor } = useTiptapContext();
@@ -9,16 +9,16 @@ const AlignCenterButton = () => {
   const state = useEditorState({
     editor,
     selector: (ctx) => ({
-      active: ctx.editor.isActive({ textAlign: "center" }),
-      disabled: !ctx.editor.can().setTextAlign("center"),
-    }),
+      active: ctx.editor.isActive({ textAlign: 'center' }),
+      disabled: !ctx.editor.can().setTextAlign('center')
+    })
   });
 
   return (
     <MenuButton
-      icon="AlignCenter"
-      tooltip="Centrar"
-      onClick={() => editor.chain().focus().setTextAlign("center").run()}
+      icon='AlignCenter'
+      tooltip='Centrar'
+      onClick={() => editor.chain().focus().setTextAlign('center').run()}
       {...state}
     />
   );

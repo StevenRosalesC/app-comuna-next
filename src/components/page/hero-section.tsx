@@ -32,7 +32,7 @@ export const HeroSection = () => {
             width={1920}
             height={1080}
             className='rounded-lg object-cover shadow-lg'
-            alt='mockup'
+            alt='Comuna Bambil Collao'
           />
         </div>
       </div>

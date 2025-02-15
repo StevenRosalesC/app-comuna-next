@@ -8,7 +8,7 @@ interface PostHeaderProps {
   cover: string;
   author: string;
   createdAt: string;
-  readingTime: number;
+  readingTime?: number;
 }
 
 const PostHeader = ({
@@ -25,27 +25,27 @@ const PostHeader = ({
       </h1>
 
       <div className='mt-6 flex items-center gap-4'>
-        <Image
+        {/* <Image
           src={'/avatar.jpg'}
           width={50}
           height={50}
           alt=''
           className='rounded-full'
-        />
+        /> */}
         <div className=''>
           <div className='mb-3 font-semibold'>
-            By <u>{author}</u>
+            {/* By <u>{author}</u> */}
           </div>
           <div className='flex items-center'>
             <div className='flex items-center gap-2 text-sm'>
               <LuCalendarDays size={18} />
               <span>{getRelativeTime(createdAt)}</span>
             </div>
-            <div className='mx-3 h-1.5 w-1.5 rounded-full bg-gray-500 dark:bg-gray-300'></div>
-            <div className='flex items-center gap-2 text-sm'>
+            {/* <div className='mx-3 h-1.5 w-1.5 rounded-full bg-gray-500 dark:bg-gray-300'></div> */}
+            {/* <div className='flex items-center gap-2 text-sm'>
               <LuClock size={18} />
-              <span>{readingTime} min read</span>
-            </div>
+              <span>{readingTime}{' '} minutos de lectura</span>
+            </div> */}
           </div>
         </div>
       </div>

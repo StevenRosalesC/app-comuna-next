@@ -1,13 +1,13 @@
 export interface Notice {
-  id: string;
+  newsId: string;
   title: string;
   description: string;
-  image: string;
+  image?: string;
   content: string;
   wordCount?: number;
-  cover?: string;
+  coverImageUrl?: string;
   author?: string;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface ImageKitData {

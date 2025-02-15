@@ -1,7 +1,7 @@
 import apiCommunity from '@/utils/communityApi';
 import { cookies } from 'next/headers';
-import { redirect, RedirectType } from 'next/navigation';
-import { Session } from 'types';
+import { redirect } from 'next/navigation';
+import { AuthResponse } from 'types/response';
 
 export const signIn = async ({
   email,
@@ -33,7 +33,7 @@ export const signOut = async () => {
 
 export const auth = async (): Promise<{
   ok: boolean;
-  data: Session | null;
+  data: AuthResponse | null;
 }> => {
   // get token from cookies
   const token = cookies().get('token')?.value;
@@ -41,7 +41,7 @@ export const auth = async (): Promise<{
     redirect('/auth/login');
   }
   try {
-    const response = await apiCommunity.get<Session>('/auth/user', {
+    const response = await apiCommunity.get<AuthResponse>('/auth/refresh', {
       headers: {
         Authorization: `Bearer ${token}`
       }

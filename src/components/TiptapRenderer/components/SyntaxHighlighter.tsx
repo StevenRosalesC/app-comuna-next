@@ -13,7 +13,7 @@ const SyntaxHighlighter = (props: SyntaxHighlighterProps) => {
 
   useLayoutEffect(() => {
     highlight(props.content!, props.language!).then(setNodes);
-  }, []);
+  }, [props.content, props.language]);
 
   if (!nodes) return <code {...props}>{props.content}</code>;
 

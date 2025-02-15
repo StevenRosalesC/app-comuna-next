@@ -22,7 +22,7 @@ export async function login(formData: FormData) {
       {},
       {
         headers: {
-          Authorization: `Bearer ${btoa(`${data.email}:${data.password}`)}`
+          Authorization: `Basic ${btoa(`${data.email}:${data.password}`)}`
         }
       }
     );
@@ -32,7 +32,6 @@ export async function login(formData: FormData) {
     const token = response.token;
     // Guardar el token en una cookie
     cookies().set('token', token);
-    cookies().set('refreshToken', response.refreshToken);
     return {
       ok: true
     };

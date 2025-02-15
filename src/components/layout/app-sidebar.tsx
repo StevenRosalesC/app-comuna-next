@@ -182,19 +182,19 @@ export default function AppSidebar() {
                   <Avatar className='h-8 w-8 rounded-lg'>
                     {/* <AvatarImage
                       src={session?.user?.id || ''}
-                      alt={session?.user.last_name || ''}
+                      alt={session?.lastName || ''}
                     /> */}
                     <AvatarFallback className='rounded-lg'>
-                      {session?.user.last_name?.slice(0, 2)?.toUpperCase() ||
+                      {session?.lastName?.slice(0, 2)?.toUpperCase() ||
                         'CB'}
                     </AvatarFallback>
                   </Avatar>
                   <div className='grid flex-1 text-left text-sm leading-tight'>
                     <span className='truncate font-semibold'>
-                      {session?.user.last_name || ''}
+                      {session?.lastName || ''}
                     </span>
                     <span className='truncate text-xs'>
-                      {session?.user?.email || ''}
+                      {session?.email || ''}
                     </span>
                   </div>
                   <ChevronsUpDown className='ml-auto size-4' />
@@ -210,17 +210,17 @@ export default function AppSidebar() {
                   <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
                     <Avatar className='h-8 w-8 rounded-lg'>
                       <AvatarFallback className='rounded-lg'>
-                        {session?.user.last_name?.slice(0, 2)?.toUpperCase() ||
+                        {session?.lastName?.slice(0, 2)?.toUpperCase() ||
                           'CN'}
                       </AvatarFallback>
                     </Avatar>
                     <div className='grid flex-1 text-left text-sm leading-tight'>
                       <span className='truncate font-semibold'>
-                        {session?.user.last_name || ''}
+                        {session?.lastName || ''}
                       </span>
                       <span className='truncate text-xs'>
                         {' '}
-                        {session?.user?.email || ''}
+                        {session?.role || ''}
                       </span>
                     </div>
                   </div>

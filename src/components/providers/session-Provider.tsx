@@ -1,9 +1,9 @@
 'use client';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { Session } from 'types';
+import { AuthResponse } from 'types/response';
 
 interface SessionContextProps {
-  session: Session | null;
+  session: AuthResponse | null;
   loading: boolean;
 }
 
@@ -16,9 +16,9 @@ export const SessionProvider = ({
   initialSession
 }: {
   children: React.ReactNode;
-  initialSession?: Session | null;
+  initialSession?: AuthResponse | null;
 }) => {
-  const [session, setSession] = useState<Session | null>(
+  const [session, setSession] = useState<AuthResponse | null>(
     initialSession || null
   );
   const [loading, setLoading] = useState(!initialSession);

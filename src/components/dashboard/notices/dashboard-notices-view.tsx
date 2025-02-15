@@ -1,23 +1,11 @@
 'use client';
-import { useEffect, useState } from 'react';
-// import EditForm from "@/app/dashboard/notices/_components/EditForm";
-// import Button from "@/components/TiptapEditor/components/ui/Button";
-// import Link from "next/link";
 
-import '../../../app/dashboard/notices/style.scss';
-import { getRelativeTime } from '@/utils/date';
-import Link from 'next/link';
-import { getAllNotices } from '@/services/notices';
-import { Card } from '@/components/ui/card';
-
-interface Notice {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  content: string;
-  createdAt: string;
-}
+import { Card } from "@/components/ui/card";
+import { getAllNotices } from "@/services/notices";
+import { getRelativeTime } from "@/utils/date";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Notice } from "types/dashboard";
 
 export default function DashboardNoticesView() {
   const [notices, setNotices] = useState<Notice[]>([]);
@@ -45,13 +33,13 @@ export default function DashboardNoticesView() {
       <h3 className='text-2xl font-bold'>Noticias</h3>
       {notices.length > 0 &&
         notices.map((notice) => (
-          <Link key={notice.id} href={`/dashboard/notices/${notice.id}`}>
+          <Link key={notice.newsId} href={`/notices-test/${notice.newsId}`}>
             <Card className=' mt-4 rounded-lg p-6 shadow-md'>
               <h4 className='text-lg font-bold hover:underline'>
                 {notice.title}
               </h4>
               <p className=''>{notice.description}</p>
-              <p className='text-sm'>{getRelativeTime(notice.createdAt)}</p>
+              <p className='text-sm'>{getRelativeTime(notice.createdAt ?? '')}</p>
             </Card>
           </Link>
         ))}

@@ -64,7 +64,19 @@ export class FetchInstance {
       }
     });
   }
-
+  // Método PATCH	
+  patch<T>(endpoint: string, body: unknown, options?: FetchOptions): Promise<T> {
+    return this.request<T>(endpoint, {
+      ...options,
+      method: 'PATCH',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.headers as Record<string, string>)
+      }
+    });
+  }
+  
   // Método DELETE
   delete<T>(endpoint: string, options?: FetchOptions): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: 'DELETE' });

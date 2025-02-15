@@ -12,8 +12,8 @@ import { Lato } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
 
 export const metadata: Metadata = {
-  title: 'Next Shadcn',
-  description: 'Basic dashboard with Next.js and Shadcn'
+  title: 'Comuna Bambil Collao | App',
+  description: 'App de la Comuna Bambil Collao',
 };
 
 const lato = Lato({
@@ -22,7 +22,7 @@ const lato = Lato({
   display: 'swap'
 });
 
-export default async function RootLayout({
+export default function RootLayout({
   children
 }: {
   children: React.ReactNode;

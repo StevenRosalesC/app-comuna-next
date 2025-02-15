@@ -14,7 +14,6 @@ export default function NoticesView() {
   const [noticesToShow, setNoticesToShow] = useState(
     notices.slice(0, noticesLimit)
   );
-  const [page, setPage] = useState(1);
 
   const handleLoadMore = () => {
     setNoticesLimit(noticesLimit + 6);
@@ -36,7 +35,7 @@ export default function NoticesView() {
           noticesToShow.slice(0, 1).map((notice, index) => (
             <Link
               rel='noopener noreferrer'
-              href={`/notices/${notice.id}`}
+              href={`/notices/${notice.newsId}`}
               key={index}
               className='group mx-auto block max-w-6xl gap-3 hover:no-underline focus:no-underline dark:bg-gray-50 sm:max-w-full lg:grid lg:grid-cols-12'
             >
@@ -44,7 +43,7 @@ export default function NoticesView() {
                 width={1920}
                 height={1080}
                 alt=''
-                src={notice.image}
+                src={notice.coverImageUrl || '/not-found.webp'}
                 className='h-96 w-full rounded object-cover dark:bg-gray-500 sm:h-96 lg:col-span-7'
               />
               <div className='space-y-2 p-6 lg:col-span-5'>
@@ -52,7 +51,7 @@ export default function NoticesView() {
                   {notice.title}
                 </h3>
                 <span className='text-xs dark:text-gray-600'>
-                  {getRelativeTime(notice.createdAt)}
+                  {getRelativeTime(notice.createdAt ?? new Date().toISOString())}
                 </span>
                 <p>{notice.description}</p>
               </div>
@@ -73,7 +72,7 @@ export default function NoticesView() {
             className='rounded-md px-6 py-3 text-sm hover:underline dark:bg-gray-50 dark:text-gray-600'
             onClick={handleLoadMore}
           >
-            Load more posts...
+            Ver más
           </button>
         </div>
       </div>

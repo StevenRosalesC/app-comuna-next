@@ -17,6 +17,4 @@ export const metadata: Metadata = {
     url: `${NEXT_PUBLIC_APP_URL}/`
   }
 };
-export default function Home() {
-  return <HomePage />;
-}
+export default HomePage;

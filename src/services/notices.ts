@@ -30,6 +30,7 @@ export interface NoticeCreation {
 }
 
 export const createNotice = async (notice: NoticeCreation): Promise<Notice | null> => {
+  console.log({apiCommunity})
   try {
     const newNotice: Notice = await apiCommunity.post<Notice>('/news', notice);
     return newNotice;

@@ -68,11 +68,6 @@ export async function login(formData: FormData) {
 export async function logout() {
   let redirectPath = '/';
   try {
-    await apiCommunity.get('/auth/logout', {
-      headers: {
-        Authorization: `Bearer ${cookies().get('token')?.value}`
-      }
-    });
     cookies().set('token', '');
     redirectPath = '/auth/login';
   } catch (error) {

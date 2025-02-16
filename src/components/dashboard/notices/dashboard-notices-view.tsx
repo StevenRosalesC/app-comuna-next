@@ -20,17 +20,13 @@ export default function DashboardNoticesView() {
   }, []);
 
   return (
-    // <div className="max-w-[56rem] w-full mx-auto py-10 px-6">
-
-    //   {/* <Link href="/dashboard/notices/post-ssr" passHref>
-    //     <Button>
-    //       Preview
-    //     </Button>
-    //   </Link>
-    //   <EditForm /> */}
-    // </div>
     <section>
-      <h3 className='text-2xl font-bold'>Noticias</h3>
+      <div className="flex flex-row w-full justify-between">
+        <h3 className='text-2xl font-bold'>Noticias</h3>
+        <Link href='/dashboard/notices/create'
+          className='text-blue-500'>Crear noticia
+        </Link>
+      </div>
       {notices.length > 0 &&
         notices.map((notice) => (
           <Link key={notice.newsId} href={`/dashboard/notices/${notice.newsId}`}>

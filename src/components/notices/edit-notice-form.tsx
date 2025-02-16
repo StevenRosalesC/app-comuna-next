@@ -63,7 +63,6 @@ export default function EditNoticeForm({ id }: Props) {
   const update = async (id: string, notice: PostForm) => {
     try {
       const response = await updateNotice(id, notice);
-      console.log({ response });
       toast.success('Noticia actualizada');
       return response;
     } catch (error) {
@@ -77,6 +76,8 @@ export default function EditNoticeForm({ id }: Props) {
     if (id) {
       getNotice(id).then((notice) => {
         reset({ ...notice });
+        setIsLoading(false);
+      }).catch((err) => {
         setIsLoading(false);
       });
     } else {
@@ -102,7 +103,7 @@ export default function EditNoticeForm({ id }: Props) {
               description: values.description || ''
             });
             if (notice) {
-              router.push(`/notices-test/${notice.newsId}`);
+              router.push(`/dashboard/notices/${notice.newsId}`);
             }
           } else if (id) {
 
@@ -148,6 +149,14 @@ export default function EditNoticeForm({ id }: Props) {
         >
           Eliminar
         </Button>
+        {
+          id &&
+          <Button
+            variant={'secondary'}
+
+          >
+            Previsualizar
+          </Button>}
         <Button
           onClick={async () => {
             if (!id) return;
@@ -193,11 +202,11 @@ export default function EditNoticeForm({ id }: Props) {
                 </Label>
 
                 <Image
-                  src={field.value}
+                  src={field.value || '/not-found-1.webp'}
                   alt='Cover image'
                   width={400}
                   height={200}
-                  className='rounded-md mx-auto aspect-video '
+                  className='rounded-md mx-auto aspect-video object-cover '
                 />
                 <Button
                   onClick={() => setOpenDialog(true)}

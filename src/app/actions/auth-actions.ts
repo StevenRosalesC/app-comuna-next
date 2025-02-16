@@ -14,7 +14,7 @@ export async function login(formData: FormData) {
   let redirectPath = '/';
 
   try {
-    const response = await apiCommunity.post<{
+    const {data:response} = await apiCommunity.post<{
       token: string;
       refreshToken: string;
     }>(
@@ -37,12 +37,17 @@ export async function login(formData: FormData) {
     };
   } catch (error) {
     // Opcional: redirigir a una página de error
+    console.error(error);
     return {
       ok: false
     };
   } finally {
     revalidatePath(redirectPath, 'layout');
   }
+}
+
+export async function getToken() {
+  return cookies().get('token')?.value;
 }
 
 // export async function signup(formData: FormData) {

@@ -23,7 +23,7 @@ export default function NotFound() {
           Atrás
         </Button>
         <Button onClick={() => router.push(
-          pathname.includes('/dashboard') ? '/dashboard/overview' : '/'
+          '/',
         )} variant='ghost' size='lg'>
           Ir al inicio
         </Button>

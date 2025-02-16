@@ -4,7 +4,6 @@ import { AuthResponse } from 'types/response';
 
 export async function middleware(request: NextRequest) {
   let token = request.cookies.get('token')?.value;
-  if(token) apiCommunity.setAuthorization(token);
   const {pathname} = request.nextUrl;
   // Permitir acceso a /auth/login libremente si no hay sesión
   if (pathname === '/auth/login') {
@@ -60,7 +59,7 @@ async function authenticateOrRefresh(token: string, refreshToken?: string) {
 // Función para refrescar el token
 async function refreshTokenRequest(refreshToken: string) {
   try {
-    const response = await apiCommunity.get<AuthResponse>(
+    const {data:response} = await apiCommunity.get<AuthResponse>(
       '/auth/refresh',
       {
         headers: {

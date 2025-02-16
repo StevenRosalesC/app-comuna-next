@@ -10,7 +10,7 @@ export const signIn = async ({
   email: string;
   password: string;
 }) => {
-  const response = await apiCommunity.post<{ token: string }>(
+  const {data:response} = await apiCommunity.post<{ token: string }>(
     '/auth/login',
     {},
     {
@@ -41,7 +41,7 @@ export const auth = async (): Promise<{
     redirect('/auth/login');
   }
   try {
-    const response = await apiCommunity.get<AuthResponse>('/auth/refresh', {
+    const {data:response} = await apiCommunity.get<AuthResponse>('/auth/refresh', {
       headers: {
         Authorization: `Bearer ${token}`
       }

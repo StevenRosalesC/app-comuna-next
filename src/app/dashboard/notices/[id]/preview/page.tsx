@@ -11,8 +11,8 @@ interface Props {
 }
 
 export default async function PreviewNotice({ params }: Props) {
-  const { slug } = params;
-  const notice = await getNotice(slug[0]);
+  const { id } = params;
+  const notice = await getNotice(id);
 
   if (!notice) return notFound();
   const allCharacters = notice.content

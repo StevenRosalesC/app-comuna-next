@@ -1,13 +1,14 @@
 export interface Notice {
-  newsId: string;
-  title: string;
-  description: string;
-  image?: string;
-  content: string;
-  wordCount?: number;
-  coverImageUrl?: string;
-  author?: string;
-  createdAt?: string;
+  newsId:        string;
+  title:         string;
+  description:   string;
+  content:       string;
+  coverImageUrl: string;
+  createdAt:     string;
+  updatedAt:     string;
+  published:     boolean;
+  status:        boolean;
+  createdBy:     string;
 }
 
 export interface ImageKitData {

@@ -34,18 +34,18 @@ const PostHeader = ({
         /> */}
         <div className=''>
           <div className='mb-3 font-semibold'>
-            {/* By <u>{author}</u> */}
+            Por <u>{author}</u>
           </div>
           <div className='flex items-center'>
             <div className='flex items-center gap-2 text-sm'>
               <LuCalendarDays size={18} />
               <span>{getRelativeTime(createdAt)}</span>
             </div>
-            {/* <div className='mx-3 h-1.5 w-1.5 rounded-full bg-gray-500 dark:bg-gray-300'></div> */}
-            {/* <div className='flex items-center gap-2 text-sm'>
+            <div className='mx-3 h-1.5 w-1.5 rounded-full bg-gray-500 dark:bg-gray-300'></div>
+            <div className='flex items-center gap-2 text-sm'>
               <LuClock size={18} />
               <span>{readingTime}{' '} minutos de lectura</span>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>

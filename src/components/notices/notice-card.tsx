@@ -20,7 +20,7 @@ export const NoticeCard = ({ notice }: Props) => {
         alt=''
         role='presentation'
         className='h-44 w-full rounded object-cover dark:bg-gray-500'
-        src={notice.image || '/not-found.webp'}
+        src={notice.coverImageUrl || '/not-found.webp'}
       />
       <div className='space-y-2 p-6'>
         <h3 className='text-2xl font-semibold group-hover:underline group-focus:underline'>

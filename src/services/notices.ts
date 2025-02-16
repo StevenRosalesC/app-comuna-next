@@ -13,10 +13,13 @@ export const getAllNotices = async (): Promise<Notice[]> => {
 export const getNotice = async (id: string): Promise<Notice | null> => {
   try {
     const notice: Notice = await apiCommunity.get<Notice>(`/news/${id}`);
-
     return notice;
   } catch (error) {
-    return null;
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error('An unknown error occurred');
+    }
   }
 };
 export interface NoticeCreation {
@@ -31,7 +34,11 @@ export const createNotice = async (notice: NoticeCreation): Promise<Notice | nul
     const newNotice: Notice = await apiCommunity.post<Notice>('/news', notice);
     return newNotice;
   } catch (error) {
-    return null;
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error('An unknown error occurred');
+    }
   }
 };
 
@@ -50,6 +57,10 @@ export const updateNotice = async (id: string, {
     });
     return updatedNotice;
   } catch (error) {
-    return null;
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error('An unknown error occurred');
+    }
   }
 }

@@ -33,7 +33,7 @@ export default function DashboardNoticesView() {
       <h3 className='text-2xl font-bold'>Noticias</h3>
       {notices.length > 0 &&
         notices.map((notice) => (
-          <Link key={notice.newsId} href={`/notices-test/${notice.newsId}`}>
+          <Link key={notice.newsId} href={`/dashboard/notices/${notice.newsId}`}>
             <Card className=' mt-4 rounded-lg p-6 shadow-md'>
               <h4 className='text-lg font-bold hover:underline'>
                 {notice.title}

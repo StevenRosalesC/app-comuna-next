@@ -24,6 +24,7 @@ export default function NoticesView() {
     setLoading(true);
     getAllNotices().then((notices) => {
       setNotices(notices);
+      console.log({ notices });
       setNoticesToShow(notices.slice(0, noticesLimit));
     });
     setLoading(false);

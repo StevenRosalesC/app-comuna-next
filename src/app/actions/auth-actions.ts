@@ -11,7 +11,7 @@ export async function login(formData: FormData) {
     email: formData.get('email') as string,
     password: formData.get('password') as string
   };
-  let redirectPath = '/dashboard/overview';
+  let redirectPath = '/';
 
   try {
     const response = await apiCommunity.post<{
@@ -74,7 +74,6 @@ export async function logout() {
       }
     });
     cookies().set('token', '');
-    cookies().set('refreshToken', '');
     redirectPath = '/auth/login';
   } catch (error) {
     // Opcional: redirigir a una página de error

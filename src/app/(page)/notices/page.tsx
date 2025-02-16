@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   }
 };
 
-export default function aboutPage() {
+export default function NoticesPage() {
   return (
     <>
       <NoticesView />

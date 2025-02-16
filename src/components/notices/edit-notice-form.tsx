@@ -13,6 +13,7 @@ import { Button } from '../ui/button';
 import Dialog from '../TiptapEditor/components/ui/Dialog';
 import MediaLibrary from '../TiptapEditor/components/MediaLibrary';
 import { Textarea } from '../ui/textarea';
+import { toast } from 'sonner';
 
 interface PostForm {
   title: string;
@@ -47,6 +48,31 @@ export default function EditNoticeForm({ id }: Props) {
     setOpenDialog(false);
   }, []);
 
+
+  const create = async (notice: PostForm) => {
+    try {
+      const newNotice = await createNotice(notice);
+      toast.success('Noticia creada');
+      return newNotice;
+    } catch (error) {
+      toast.error('Error al crear la noticia');
+
+    }
+  };
+
+  const update = async (id: string, notice: PostForm) => {
+    try {
+      const response = await updateNotice(id, notice);
+      console.log({ response });
+      toast.success('Noticia actualizada');
+      return response;
+    } catch (error) {
+      toast.error('Error al actualizar la noticia');
+    }
+  }
+
+
+
   useEffect(() => {
     if (id) {
       getNotice(id).then((notice) => {
@@ -69,11 +95,11 @@ export default function EditNoticeForm({ id }: Props) {
         timeoutRef.current = setTimeout(async () => {
           if (pathname.includes('create')) {
             if (!values.title || !values.description || !values.content) return;
-            const notice = await createNotice({
-              title: values.title,
-              description: values.description,
+            const notice = await create({
+              title: values.title || '',
+              content: values.content || '',
               coverImageUrl: values.coverImageUrl || '',
-              content: values.content
+              description: values.description || ''
             });
             if (notice) {
               router.push(`/notices-test/${notice.newsId}`);
@@ -81,11 +107,11 @@ export default function EditNoticeForm({ id }: Props) {
           } else if (id) {
 
             if (!values.title || !values.description || !values.content) return;
-            await updateNotice(id, {
-              title: values.title,
-              description: values.description,
+            await update(id, {
+              title: values.title || '',
+              content: values.content || '',
               coverImageUrl: values.coverImageUrl || '',
-              content: values.content
+              description: values.description || ''
             });
           }
         }, 5000);
@@ -104,6 +130,39 @@ export default function EditNoticeForm({ id }: Props) {
 
   return (
     <div className='flex flex-col gap-6'>
+      {/* buttons to save and delete notice */}
+
+      <div className='flex gap-4 w-full justify-end'>
+        <Button
+          variant={'destructive'}
+          onClick={async () => {
+            if (!id) return;
+            await updateNotice(id, {
+              title: watch('title'),
+              description: watch('description'),
+              coverImageUrl: watch('coverImageUrl') || '',
+              content: watch('content')
+            });
+            toast.success('Noticia actualizada');
+          }}
+        >
+          Eliminar
+        </Button>
+        <Button
+          onClick={async () => {
+            if (!id) return;
+            await update(id, {
+              title: watch('title'),
+              description: watch('description'),
+              coverImageUrl: watch('coverImageUrl') || '',
+              content: watch('content')
+            })
+          }
+          }
+        >
+          Guardar
+        </Button>
+      </div>
       <div>
         <label className='mb-2 inline-block font-medium dark:text-white'>
           Título
@@ -120,6 +179,9 @@ export default function EditNoticeForm({ id }: Props) {
             />
           )}
         />
+
+
+
         <Controller
           control={control}
           name='coverImageUrl'

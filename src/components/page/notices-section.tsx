@@ -1,3 +1,4 @@
+"use client"
 import React from 'react';
 import { SubTitle } from '../ui/atoms/sub-title';
 import { Paragraph } from '../ui/atoms/paragraph';
@@ -13,7 +14,7 @@ interface NoticePreview {
   noticeId: string;
 }
 
-export const NoticesSection = () => {
+export default function NoticesSection() {
   const notices: NoticePreview[] = [
     {
       createdAt: '2025-01-31T12:00:00Z',
@@ -59,24 +60,32 @@ export const NoticesSection = () => {
   return (
     <section className='bg-white dark:bg-gray-900'>
       <div className='mx-auto max-w-screen-xl px-4 py-8 lg:px-6 lg:py-16'>
-        <div className='mx-auto mb-8 max-w-screen-sm text-center lg:mb-16'>
-          <SubTitle>Actualízate con nuestras noticias locales</SubTitle>
-          <Paragraph size={'lg'}>
-            Mantente informado sobre lo que sucede en tu comunidad. Aquí
-            encontrarás noticias importantes y eventos que no te puedes perder.
-          </Paragraph>
-        </div>
-        <Slider autoplay={false} delay={5000} key={'notices-slider'}>
-          {notices.map((notice, index) => (
-            <NoticeMiniCard {...notice} key={`notice-${index}`} />
-          ))}
-        </Slider>
+        <div className='mx-auto mb-8 max-w-screen-sm text-center lg:mb-16' >
+          <div data-aos="zoom-in-up">
+            <SubTitle >Actualízate con nuestras noticias locales</SubTitle>
+          </div>
+          <div data-aos="zoom-in-up">
 
-        <div className='mt-8 flex justify-center'>
+            <Paragraph size={'lg'}>
+              Mantente informado sobre lo que sucede en tu comunidad. Aquí
+              encontrarás noticias importantes y eventos que no te puedes perder.
+            </Paragraph>
+          </div>
+        </div>
+        <div data-aos="fade-up">
+
+          <Slider autoplay={false} delay={5000} key={'notices-slider'}>
+            {notices.map((notice, index) => (
+              <NoticeMiniCard {...notice} key={`notice-${index}`} />
+            ))}
+          </Slider>
+        </div>
+
+        <div className='mt-8 flex justify-center' data-aos="fade-up">
           <Link
             type='button'
             href='/notices'
-            className='rounded-md px-6 py-3 text-sm hover:underline dark:bg-gray-50 dark:text-gray-600'
+            className='rounded-md border border-gray-400 px-6 py-3 text-sm hover:underline dark:bg-gray-50 dark:text-gray-600'
           >
             Ver más noticias...
           </Link>

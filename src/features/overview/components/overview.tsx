@@ -14,7 +14,7 @@ export default function OverViewPage() {
           <h2 className='text-2xl font-bold tracking-tight'>
             Hi, Welcome back 👋{' '}
             <span className='font-semibold capitalize'>
-              {session?.user?.last_name + ' ' + session?.user?.first_name}
+              {session?.lastName + ' ' + session?.firstName}
             </span>
           </h2>
           <div className='hidden items-center space-x-2 md:flex'>

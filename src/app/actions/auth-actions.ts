@@ -11,10 +11,10 @@ export async function login(formData: FormData) {
     email: formData.get('email') as string,
     password: formData.get('password') as string
   };
-  let redirectPath = '/dashboard/overview';
+  let redirectPath = '/';
 
   try {
-    const response = await apiCommunity.post<{
+    const {data:response} = await apiCommunity.post<{
       token: string;
       refreshToken: string;
     }>(
@@ -22,7 +22,7 @@ export async function login(formData: FormData) {
       {},
       {
         headers: {
-          Authorization: `Bearer ${btoa(`${data.email}:${data.password}`)}`
+          Authorization: `Basic ${btoa(`${data.email}:${data.password}`)}`
         }
       }
     );
@@ -32,18 +32,22 @@ export async function login(formData: FormData) {
     const token = response.token;
     // Guardar el token en una cookie
     cookies().set('token', token);
-    cookies().set('refreshToken', response.refreshToken);
     return {
       ok: true
     };
   } catch (error) {
     // Opcional: redirigir a una página de error
+    console.error(error);
     return {
       ok: false
     };
   } finally {
     revalidatePath(redirectPath, 'layout');
   }
+}
+
+export async function getToken() {
+  return cookies().get('token')?.value;
 }
 
 // export async function signup(formData: FormData) {
@@ -69,13 +73,7 @@ export async function login(formData: FormData) {
 export async function logout() {
   let redirectPath = '/';
   try {
-    await apiCommunity.get('/auth/logout', {
-      headers: {
-        Authorization: `Bearer ${cookies().get('token')?.value}`
-      }
-    });
     cookies().set('token', '');
-    cookies().set('refreshToken', '');
     redirectPath = '/auth/login';
   } catch (error) {
     // Opcional: redirigir a una página de error

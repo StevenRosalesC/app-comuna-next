@@ -1,20 +1,13 @@
-'use client';
-import EditForm from '@/components/notices/EditForm';
-import { getNotice } from '@/services/notices';
-import { notFound } from 'next/navigation';
+import EditForm from '@/components/notices/edit-notice-form';
 
 interface Props {
-  id: string;
+  id?: string;
 }
 export const EditNoticeView = async ({ id }: Props) => {
-  if (!id) notFound();
-
-  const notice = await getNotice(id);
-  if (!notice) notFound();
 
   return (
     <div>
-      <EditForm id={notice.id} />
+      <EditForm id={id} />
     </div>
   );
 };

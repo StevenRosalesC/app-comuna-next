@@ -16,10 +16,10 @@ export function NavBar() {
           </Button>
         </SheetTrigger>
         <SheetContent side='left'>
-          <Link href='#' className='mr-6 hidden lg:flex' prefetch={false}>
+          <Link href='/home' className='mr-6 hidden lg:flex' prefetch={false}>
             <Image
               src='/icon.webp'
-              alt='Comuna Bambil Collao'
+              alt='logo-comuna-bambil-collao'
               width={120}
               height={120}
             />
@@ -39,10 +39,10 @@ export function NavBar() {
           </div>
         </SheetContent>
       </Sheet>
-      <Link href='/' className='mr-6 hidden lg:flex' prefetch={false}>
+      <Link href='/home' className='mr-6 hidden lg:flex' prefetch={false}>
         <Image
           src='/icon.webp'
-          alt='Comuna Bambil Collao'
+          alt='logo-comuna-bambil-collao'
           className='h-14 w-full rounded-full object-cover'
           width={120}
           height={120}

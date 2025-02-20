@@ -1,15 +1,66 @@
 import { Notice } from 'types/dashboard';
-import testNotices from '../assets/data/notices.json';
+import apiCommunity from '@/utils/communityApi';
 
 export const getAllNotices = async (): Promise<Notice[]> => {
-  const notices: Notice[] = testNotices;
-  return notices;
+  try {
+    const {data:notices} =  await apiCommunity.get<Notice[]>('/news');
+    return notices;
+  } catch (error) {
+    return [];
+  }
 };
 
 export const getNotice = async (id: string): Promise<Notice | null> => {
-  const notice = testNotices.find((notice) => notice.id === id);
-  if (!notice) {
-    return null;
+  try {
+    const {data:notice} = await apiCommunity.get<Notice>(`/news/${id}`);
+    return notice;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error('An unknown error occurred');
+    }
   }
-  return notice;
 };
+export interface NoticeCreation {
+  title:         string;
+  description:   string;
+  coverImageUrl: string;
+  content:       string;
+}
+
+export const createNotice = async (notice: NoticeCreation): Promise<Notice | null> => {
+  try {
+    const { data: newNotice } = await apiCommunity.post<Notice>('/news', notice);
+    return newNotice;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error('An unknown error occurred');
+    }
+  }
+};
+
+export const updateNotice = async (id: string, {
+  title,
+  description,
+  coverImageUrl,
+  content
+}: NoticeCreation): Promise<Notice | null> => {
+  try {
+    const {data:updatedNotice} = await apiCommunity.patch<Notice>(`/news/${id}`, {
+      title,
+      description,
+      coverImageUrl: coverImageUrl!== '' ? coverImageUrl : '/not-found.webp',
+      content
+    });
+    return updatedNotice;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error('An unknown error occurred');
+    }
+  }
+}

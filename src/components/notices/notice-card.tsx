@@ -11,7 +11,7 @@ export const NoticeCard = ({ notice }: Props) => {
   return (
     <Link
       rel='noopener noreferrer'
-      href={`/notices/${notice.id}`}
+      href={`/notices/${notice.newsId}`}
       className='group mx-auto max-w-sm hover:no-underline focus:no-underline dark:bg-gray-50 sm:block'
     >
       <Image
@@ -20,14 +20,14 @@ export const NoticeCard = ({ notice }: Props) => {
         alt=''
         role='presentation'
         className='h-44 w-full rounded object-cover dark:bg-gray-500'
-        src={notice.image}
+        src={notice.coverImageUrl || '/not-found-1.webp'}
       />
       <div className='space-y-2 p-6'>
         <h3 className='text-2xl font-semibold group-hover:underline group-focus:underline'>
           {notice.title}
         </h3>
         <span className='text-xs dark:text-gray-600'>
-          {getRelativeTime(notice.createdAt)}
+          {getRelativeTime(notice.createdAt ?? new Date().toISOString())}
         </span>
         <p>{notice.description}</p>
       </div>

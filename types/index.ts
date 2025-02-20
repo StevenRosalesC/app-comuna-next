@@ -1,27 +1,7 @@
 import { Icons } from '@/components/icons';
-// user: {
-//       id: '3386900e-9636-4f60-99c1-ff61462ec122',
-//       last_name: 'Rosales',
-//       first_name: 'Steven',
-//       email: 'stevenrosales31@gmail.com',
-//       username: 'stevenrc',
-//       status: 1,
-//       role: 'Admin'
-//     },
-//     token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIzMzg2OTAwZS05NjM2LTRmNjAtOTljMS1mZjYxNDYyZWMxMjIiLCJpYXQiOjE3MzczMDQxMTQsImV4cCI6MTczNzMwNzcxNH0.I3ke2fatSd1FoJBMgDs64a4_JfkHc81NMKdzjSXeV6Y',
-//     refreshToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiIzMzg2OTAwZS05NjM2LTRmNjAtOTljMS1mZjYxNDYyZWMxMjIiLCJpYXQiOjE3MzczMDQxMTQsImV4cCI6MTczNzkwODkxNH0.7Dqx4WD6HzXVFNlbVmw1lE1anUet7u5rIX6eX7UUWrc'
-//   }
-interface User {
-  id: string;
-  last_name: string;
-  first_name: string;
-  email: string;
-  username: string;
-  status: number;
-  role: string;
-}
+import { AuthResponse } from './response';
 export interface Session {
-  user: User;
+  user: AuthResponse;
   token: string;
   refreshToken: string;
 }

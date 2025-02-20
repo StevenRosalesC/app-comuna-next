@@ -2,13 +2,13 @@
 import React from 'react';
 import ThemeProvider from './ThemeToggle/theme-provider';
 import { SessionProvider } from '../providers/session-Provider';
-import { Session } from 'types';
+import { AuthResponse } from 'types/response';
 
 export default function Providers({
   session,
   children
 }: {
-  session: Session | null;
+  session: AuthResponse | null;
   children: React.ReactNode;
 }) {
   return (

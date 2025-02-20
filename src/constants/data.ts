@@ -37,7 +37,7 @@ export const navItems: NavItem[] = [
     shortcut: ['u', 'u']
   },
   {
-    title: 'Notices',
+    title: 'Noticias',
     url: '/dashboard/notices',
     icon: 'page',
     isActive: false,

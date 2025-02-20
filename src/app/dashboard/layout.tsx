@@ -6,7 +6,6 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { auth } from '@/lib/auth';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
-import { notFound, redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: 'Next Shadcn Dashboard Starter',

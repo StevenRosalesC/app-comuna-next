@@ -1,8 +1,10 @@
+
 type FetchOptions = RequestInit & { headers?: Record<string, string> };
 
 export class FetchInstance {
   private baseURL: string;
   private defaultOptions: FetchOptions;
+  
 
   constructor(baseURL: string, defaultOptions: FetchOptions = {}) {
     this.baseURL = baseURL;
@@ -14,15 +16,15 @@ export class FetchInstance {
     options: FetchOptions = {}
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
+
     const config: FetchOptions = {
       ...this.defaultOptions,
       ...options,
       headers: {
         ...(this.defaultOptions.headers as Record<string, string>),
-        ...(options.headers as Record<string, string>)
+        ...(options.headers as Record<string, string>),
       }
     };
-
     const response = await fetch(url, config);
 
     if (!response.ok) {
@@ -64,9 +66,29 @@ export class FetchInstance {
       }
     });
   }
-
+  // Método PATCH	
+  patch<T>(endpoint: string, body: unknown, options?: FetchOptions): Promise<T> {
+    return this.request<T>(endpoint, {
+      ...options,
+      method: 'PATCH',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.headers as Record<string, string>)
+      }
+    });
+  }
+  
   // Método DELETE
   delete<T>(endpoint: string, options?: FetchOptions): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: 'DELETE' });
+  }
+
+  // Method to set authorization token
+  setAuthorization(token: string): void {
+    this.defaultOptions.headers = {
+      ...(this.defaultOptions.headers || {}),
+      Authorization: `Bearer ${token}`
+    } as Record<string, string>;
   }
 }

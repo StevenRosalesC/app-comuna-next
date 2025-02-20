@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   }
 };
 
-export default function page() {
+export default function HomePage() {
   return (
     <>
       <HeroSection />

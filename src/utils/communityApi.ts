@@ -6,7 +6,7 @@ const apiCommunity = axios.create({
   baseURL: url,
   adapter:'fetch',
   fetchOptions: {
-    cache:"force-cache"
+    revalidate: 5000
   }
 });
 

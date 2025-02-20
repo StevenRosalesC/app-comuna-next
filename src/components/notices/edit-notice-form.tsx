@@ -3,7 +3,7 @@
 // import { useForm, Controller } from 'react-hook-form';
 import TiptapEditor, { type TiptapEditorRef } from '@/components/TiptapEditor';
 import { createNotice, getNotice, updateNotice } from '@/services/notices';
-import { usePathname, useRouter } from 'next/navigation';
+import { notFound, usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Input } from '../ui/input';
@@ -78,12 +78,13 @@ export default function EditNoticeForm({ id }: Props) {
         reset({ ...notice });
         setIsLoading(false);
       }).catch((err) => {
-        setIsLoading(false);
+        // redirect to 404 page
+        router.push('/dashboard/notices');
       });
     } else {
       setIsLoading(false);
     }
-  }, [id, reset]);
+  }, [id, reset, router]);
 
   useEffect(() => {
     const subscription = watch((values, { type }) => {

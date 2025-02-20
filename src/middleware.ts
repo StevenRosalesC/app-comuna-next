@@ -18,6 +18,7 @@ export async function middleware(request: NextRequest) {
 
   // Para rutas protegidas, redirigir a login si no hay token
   if (!token) {
+    console.log('NO HAY TOKEN');
     return NextResponse.redirect(new URL('/auth/login', request.url));
   }
 
@@ -42,7 +43,8 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/auth/:path*',]
+// omit forgot-password and login pages from middleware
+  matcher: ['/dashboard/:path*', '/auth/:path*',],
 };
 
 // Función para autenticar o refrescar el token

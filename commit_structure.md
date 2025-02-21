@@ -20,3 +20,5 @@ type(file): change
 
 branch: "feature/google-map"
 fix(googleMap.tsx): Fixed address formatting issue.
+
+// Please use this file for making commits.

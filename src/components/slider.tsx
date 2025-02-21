@@ -23,6 +23,7 @@ type SliderProps = {
   pagination?: boolean;
   navigation?: boolean;
   delay?: number;
+  className?: string;
 };
 const defaultBreakpoints = {
   640: {
@@ -48,7 +49,8 @@ export default function Slider({
   autoplay = true,
   pagination = true,
   navigation = true,
-  delay = 2500
+  delay = 2500,
+  className
 }: SliderProps) {
   return (
     <Swiper
@@ -57,6 +59,7 @@ export default function Slider({
       slidesPerView={slidesPerView}
       navigation
       loop={loop}
+      className={className}
       // autoplay={{
       //   delay,
       //   disableOnInteraction: false
@@ -68,8 +71,8 @@ export default function Slider({
     >
       {Array.isArray(children)
         ? children.map((child, index) => (
-            <SwiperSlide key={index}>{child}</SwiperSlide>
-          ))
+          <SwiperSlide key={index}>{child}</SwiperSlide>
+        ))
         : children}
     </Swiper>
   );

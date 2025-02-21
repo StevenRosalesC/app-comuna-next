@@ -1,14 +1,7 @@
-'use client';
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent
-} from '@/components/ui/collapsible';
-import { Button } from '@/components/ui/button';
+"use client";
 import { SubTitle } from '../ui/atoms/sub-title';
 import { Paragraph } from '../ui/atoms/paragraph';
-import { ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../ui/accordion';
 
 interface Faq {
   question: string;
@@ -17,15 +10,15 @@ interface Faq {
 }
 
 export default function FaqSection() {
-  const [faqs, setFaqs] = useState([
+  const faqs: Faq[] = [
     {
       question: '¿Cómo puedo participar en la comuna?',
-      answer: 'Yes. You can start or stop your plan at any time.',
+      answer: 'En el reglamento interno estipula que debe de estar en la primera asamblea pidiendo su afiliación bajo una solicitud y debe asistir a 5 asambleas consecutivas para otorgarle su afiliación.',
       isOpen: false
     },
     {
-      question: 'Can I switch plans?',
-      answer: 'Yes. You can start or stop your plan at any time.',
+      question: '¿En que horarios puedo visitar la comuna?',
+      answer: 'Puede visitar la comuna en cualquier horario, pero se recomienda visitar en horarios de oficina.',
       isOpen: false
     },
     {
@@ -43,7 +36,7 @@ export default function FaqSection() {
       answer: 'Yes. You can start or stop your plan at any time.',
       isOpen: false
     }
-  ]);
+  ]
   return (
     <section className='w-full bg-white py-4'>
       <div className='container grid gap-4 px-4 md:gap-6'>
@@ -57,47 +50,22 @@ export default function FaqSection() {
             nosotros.
           </Paragraph>
         </div>
-        <div className='space-y-4'>
-          {faqs.map((faq, index) => (
-            <Collapsible
-              key={index}
-              className='grid border-t border-t-gray-200'
-            >
-              <CollapsibleTrigger asChild>
-                <Button
-                  variant='unstyled'
-                  className='w-full justify-between text-left font-semibold'
-                  onClick={() => {
-                    setFaqs(
-                      faqs.map((item, i) => {
-                        if (i === index) {
-                          item.isOpen = !item.isOpen;
-                        } else {
-                          item.isOpen = false;
-                        }
-                        return item;
-                      })
-                    );
-                  }}
-                >
-                  {faq.question}
-                  <ChevronDown
-                    className={`transform ${
-                      faq.isOpen ? 'rotate-180' : 'rotate-0'
-                    }`}
-                  />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent
-                asChild
-                className='transition-all duration-300 ease-in-out'
-              >
-                <p className='text-sm leading-loose text-gray-500 dark:text-gray-400 md:text-base'>
-                  {faq.answer}
-                </p>
-              </CollapsibleContent>
-            </Collapsible>
-          ))}
+        <div data-aos="fade-up">
+
+          <Accordion type='single' collapsible>
+            {
+              faqs.map((item, index) => (
+                <AccordionItem key={index} value={`item-${index}`}>
+                  <AccordionTrigger>
+                    <h3 className='text-xl text-center sm:text-left'>{item.question}</h3>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    {item.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))
+            }
+          </Accordion>
         </div>
       </div>
     </section>

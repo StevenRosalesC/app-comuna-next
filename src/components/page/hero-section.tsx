@@ -3,12 +3,16 @@ import { Title } from '../ui/atoms/title';
 import { Paragraph } from '../ui/atoms/paragraph';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
+import dynamic from 'next/dynamic';
 
-export const HeroSection = () => {
+const Aos = dynamic(() => import('../aos'));
+
+export default function HeroSection() {
   return (
     <section className='bg-white dark:bg-gray-900'>
-      <div className='mx-auto grid max-w-screen-xl px-4 py-8 lg:grid-cols-12 lg:gap-8 lg:py-16 xl:gap-0'>
-        <div className='mr-5 place-self-center lg:col-span-7'>
+      <Aos />
+      <div className='mx-auto grid max-w-screen-xl px-4 py-8 lg:grid-cols-12 lg:gap-8 lg:py-16 xl:gap-0' data-aos="fade-up" >
+        <div className='mr-5 place-self-center lg:col-span-7' >
           <Title>Bienvenido a la Comuna Bambil Collao</Title>
           <Paragraph className='md:text-lg lg:mb-8 lg:text-xl'>
             Un sitio web para la comunidad de Bambil Collao, donde podrás
@@ -26,7 +30,7 @@ export const HeroSection = () => {
             </Button>
           </div>
         </div>
-        <div className='hidden lg:col-span-5 lg:mt-0 lg:flex'>
+        <div className='hidden lg:col-span-5 lg:mt-0 lg:flex ' data-aos="fade-up">
           <Image
             src='https://ik.imagekit.io/stevenrosales/app-comuna/comuna.webp?updatedAt=1737254562322'
             width={1920}

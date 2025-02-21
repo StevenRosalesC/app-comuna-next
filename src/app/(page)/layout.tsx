@@ -26,7 +26,7 @@ export default function Layout({ children }: Props) {
   return (
     <>
       <NavBar />
-      <div className='container mx-auto px-5'>{children}</div>
+      <div className='container mx-auto px-5 min-h-[100dvh]'>{children}</div>
       <FooterSection />
     </>
   );

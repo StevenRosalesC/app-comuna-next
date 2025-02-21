@@ -1,17 +1,20 @@
-'use client';
 import Image from 'next/image';
 import { Title } from '../ui/atoms/title';
-import ReactAudioPlayer from 'react-audio-player';
+
+import Aos from '../aos';
+import Himno from '../page/himno';
+
 
 export default function AboutView() {
   return (
     <>
+      <Aos duration={500} />
       <Title className='w-full max-w-full text-center'>
         Acerca de la comuna Bambil Collao
       </Title>
       <div className='px-4 py-9 2xl:container md:px-6 md:py-12 lg:px-20 lg:py-16 2xl:mx-auto'>
         <section className='flex flex-col justify-between gap-8 lg:flex-row'>
-          <div className='flex w-full flex-col justify-center lg:w-5/12'>
+          <div className='flex w-full flex-col justify-center lg:w-5/12' data-aos="zoom-in-up">
             <h2 className='pb-4 text-3xl font-bold leading-9 text-gray-800 lg:text-4xl'>
               Misión
             </h2>
@@ -23,20 +26,20 @@ export default function AboutView() {
               respeto, la empatía y la igualdad.
             </p>
           </div>
-          <div className='w-full lg:w-8/12 '>
+          <div className='w-full lg:w-8/12 ' data-aos="zoom-in-up">
             <Image
               width={1920}
               height={1080}
               className='h-60 w-full rounded-lg object-cover lg:h-96'
-              src='https://ik.imagekit.io/stevenrosales/app-comuna/bambil.jpg?updatedAt=1737682578946'
-              alt='Bambil Collao'
+              src='/page/mision.webp'
+              alt='mission comuna bambil collao'
             />
           </div>
         </section>
 
         <section className='flex flex-col justify-between gap-8 pt-12 lg:flex-row-reverse lg:pt-16'>
-          <div className='flex w-full flex-col justify-center lg:w-5/12'>
-            <h2 className='pb-4 text-3xl font-bold leading-9 text-gray-800 lg:text-4xl'>
+          <div className='flex w-full flex-col justify-center lg:w-5/12' data-aos="zoom-in-up">
+            <h2 className='pb-4 text-3xl font-bold leading-9 text-gray-800 lg:text-4xl' >
               Vision
             </h2>
             <p className='text-base font-normal leading-6 text-gray-600 '>
@@ -51,18 +54,18 @@ export default function AboutView() {
               la montaña
             </p>
           </div>
-          <div className='w-full lg:w-8/12 lg:pt-8'>
+          <div className='w-full lg:w-8/12 lg:pt-8' data-aos="zoom-in-up">
             <Image
               width={1920}
               height={1080}
               className='h-60 w-full rounded-lg object-cover lg:h-96'
-              src='https://ik.imagekit.io/stevenrosales/app-comuna/comuna2.jpg?updatedAt=1738503934177'
-              alt='Bambil Collao 2'
+              src='/page/vision.webp'
+              alt='vision comuna bambil collao'
             />
           </div>
         </section>
         <section className='mx-auto max-w-screen-xl items-center gap-16 px-4 py-8 lg:grid lg:grid-cols-2 lg:px-6 lg:py-16'>
-          <div className='font-light text-gray-500 dark:text-gray-400 sm:text-lg'>
+          <div className='font-light text-gray-500 dark:text-gray-400 sm:text-lg' data-aos="zoom-in-up">
             <h2 className='mb-4 text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white'>
               Nuestro himno
             </h2>
@@ -109,26 +112,22 @@ export default function AboutView() {
               &quot;DE TRANSFORMAR ESTE PUEBLO HERMOSO EN PARROQUIA DE MI
               CANTÓN&quot;
             </p>
-            <ReactAudioPlayer
-              src='https://ik.imagekit.io/stevenrosales/app-comuna/Himno.mpeg?updatedAt=1738526401950'
-              controls
-              className='background-transparent h-12 w-full'
-            />
+            <Himno />
           </div>
-          <div className='mt-8 grid grid-cols-2 gap-4'>
+          <div className='mt-8 grid grid-cols-2 gap-4' data-aos="zoom-in-up">
             <Image
               width={1920}
               height={1080}
               className='h-auto w-full rounded-lg object-cover lg:h-80'
-              src='https://ik.imagekit.io/stevenrosales/app-comuna/comuna3.jpg?updatedAt=1738504481302'
-              alt='office content 1'
+              src='/page/church.webp'
+              alt='iglesia de bambil collao'
             />
             <Image
               width={1920}
               height={1080}
               className='mt-4 h-full w-full rounded-lg object-cover lg:mt-10'
-              src='https://ik.imagekit.io/stevenrosales/app-comuna/descarga%20(1).png?updatedAt=1738505142037&tr=w-1200%2Ch-630%2Cfo-auto'
-              alt='office content 2'
+              src='/page/himno-1.webp'
+              alt='imagen del himno de bambil collao'
             />
           </div>
         </section>

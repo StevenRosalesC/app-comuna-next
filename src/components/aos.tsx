@@ -3,14 +3,18 @@
 import { useEffect } from 'react';
 import 'aos/dist/aos.css';
 
-export default function Aos() {
+interface Props {
+  duration?: number;
+}
+
+export default function Aos({ duration = 1000 }: Props) {
   useEffect(() => {
     import('aos').then((AOS) =>
       AOS.init({
-        duration: 1200,
+        duration: duration,
       })
     );
-  }, []);
+  }, [duration]);
 
   return <></>;
 }

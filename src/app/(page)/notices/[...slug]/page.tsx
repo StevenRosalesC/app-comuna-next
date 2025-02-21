@@ -12,13 +12,19 @@ interface Props {
 
 export default async function PreviewNotice({ params }: Props) {
   const { slug } = params;
-  const notice = await getNotice(slug[0]);
+  let notice;
+  let readingTime = 1;
+  try {
+    notice = await getNotice(slug[0]);
+    if (!notice) return notFound();
+    const allCharacters = notice.content
+      .replace(/<[^>]*>/g, '')
+      .trim().length
+    readingTime = Math.ceil(allCharacters / 1000) || 1;
+  } catch (error) {
+    return notFound();
+  }
 
-  if (!notice) return notFound();
-  const allCharacters = notice.content
-    .replace(/<[^>]*>/g, '')
-    .trim().length
-  const readingTime = Math.ceil(allCharacters / 1000) || 1;
 
   return (
     <article className='flex flex-col items-center px-6 py-10 '>

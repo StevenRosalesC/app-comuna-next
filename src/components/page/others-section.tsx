@@ -25,7 +25,7 @@ export const OthersSection = () => {
         <div className='w-full basis-2/5 py-12' data-aos="fade-up">
           <Image
             className='aspect-square  w-full rounded-3xl object-cover md:aspect-auto'
-            src='/leaders.webp'
+            src='/page/leaders.webp'
             alt='Dirigentes de la comuna bambil collao'
             width={600}
             height={400}

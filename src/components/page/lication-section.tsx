@@ -5,7 +5,7 @@ export default function LocationSection() {
   return (
     <section className='my-5 rounded-xl bg-white p-2'>
       <div className='flex h-full w-full flex-col items-end lg:flex-row'>
-        <div className='flex basis-1/2 flex-col justify-between' data-aos="zoom-out-right">
+        <div className='flex basis-1/2 flex-col justify-between' data-aos="fade-up">
           <div className='p-4'>
             <Mail size={32} />
             <p className='text-xl font-bold'>Correo</p>

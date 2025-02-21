@@ -4,7 +4,6 @@ import LocationSection from '@/components/page/lication-section';
 // import { NoticesSection } from '@/components/page/notices-section';
 import { OthersSection } from '@/components/page/others-section';
 import { NEXT_PUBLIC_APP_URL } from '@/lib/env.config';
-import { Mail, MapPin, Phone } from 'lucide-react';
 import { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 

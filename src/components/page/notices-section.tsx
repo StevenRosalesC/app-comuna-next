@@ -61,10 +61,10 @@ export default function NoticesSection() {
     <section className='bg-white dark:bg-gray-900'>
       <div className='mx-auto max-w-screen-xl px-4 py-8 lg:px-6 lg:py-16'>
         <div className='mx-auto mb-8 max-w-screen-sm text-center lg:mb-16' >
-          <div data-aos="zoom-in-up">
+          <div data-aos="fade-up">
             <SubTitle >Actualízate con nuestras noticias locales</SubTitle>
           </div>
-          <div data-aos="zoom-in-up">
+          <div data-aos="fade-up">
 
             <Paragraph size={'lg'}>
               Mantente informado sobre lo que sucede en tu comunidad. Aquí

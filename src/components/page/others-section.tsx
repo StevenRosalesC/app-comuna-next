@@ -22,7 +22,7 @@ export const OthersSection = () => {
         </SubTitle>
       </div>
       <div className='mx-auto flex w-full flex-col items-center gap-4 px-4 md:flex-row lg:px-6 lg:py-4'>
-        <div className='w-full basis-2/5 py-12' data-aos="fade-right">
+        <div className='w-full basis-2/5 py-12' data-aos="fade-up">
           <Image
             className='aspect-square  w-full rounded-3xl object-cover md:aspect-auto'
             src='/leaders.webp'
@@ -32,7 +32,7 @@ export const OthersSection = () => {
           />
         </div>
         <div className='w-full basis-3/5 py-12'
-          data-aos="flip-left">
+          data-aos="fade-up">
 
           <Table>
             <TableHeader>

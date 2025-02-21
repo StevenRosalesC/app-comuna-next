@@ -30,7 +30,7 @@ export default function HeroSection() {
             </Button>
           </div>
         </div>
-        <div className='hidden lg:col-span-5 lg:mt-0 lg:flex ' data-aos="fade-left">
+        <div className='hidden lg:col-span-5 lg:mt-0 lg:flex ' data-aos="fade-up">
           <Image
             src='https://ik.imagekit.io/stevenrosales/app-comuna/comuna.webp?updatedAt=1737254562322'
             width={1920}

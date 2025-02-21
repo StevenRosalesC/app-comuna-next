@@ -50,7 +50,7 @@ export default function FaqSection() {
             nosotros.
           </Paragraph>
         </div>
-        <div data-aos="zoom-out-up">
+        <div data-aos="fade-up">
 
           <Accordion type='single' collapsible>
             {

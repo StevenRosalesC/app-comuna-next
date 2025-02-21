@@ -32,7 +32,7 @@ export const OthersSection = () => {
           />
         </div>
         <div className='w-full basis-3/5 py-12'
-          data-aos="fade-left">
+          data-aos="flip-left">
 
           <Table>
             <TableHeader>
@@ -80,16 +80,19 @@ export const OthersSection = () => {
       <SubTitle className='pb-2 text-center'>
         Barrios de la comuna bambil collao
       </SubTitle>
-      <Slider delay={5500} key={'nei'}>
-        {Array.from({ length: 5 }).map((_, index) => (
-          <div key={`nei-${index}`}>
-            <GalleryCard alt={`${index}`} key={`nei-${index}`} />
-            <Paragraph key={`nei-${index}`} className='text-center'>
-              Barrio {index + 1}
-            </Paragraph>
-          </div>
-        ))}
-      </Slider>
+      <div data-aos="fade-up"
+        data-aos-anchor-placement="top-bottom">
+        <Slider delay={5500} key={'nei'}>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div key={`nei-${index}`}>
+              <GalleryCard alt={`${index}`} key={`nei-${index}`} />
+              <Paragraph key={`nei-${index}`} className='text-center'>
+                Barrio {index + 1}
+              </Paragraph>
+            </div>
+          ))}
+        </Slider>
+      </div>
     </section>
   );
 };

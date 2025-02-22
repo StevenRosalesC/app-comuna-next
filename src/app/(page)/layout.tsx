@@ -1,9 +1,13 @@
-import FabScroll from '@/components/fab-scroll';
 import { FooterSection } from '@/components/page/footer-section';
 import { NavBar } from '@/components/page/nav-bar';
 import { NEXT_PUBLIC_APP_URL } from '@/lib/env.config';
 import { Metadata } from 'next';
+import dynamic from 'next/dynamic';
 import React from 'react';
+
+const FabScroll = dynamic(() => import('@/components/fab-scroll'));
+
+
 export const metadata: Metadata = {
   title: 'Comuna Bambil Collao ',
   description:

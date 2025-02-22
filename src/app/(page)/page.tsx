@@ -1,5 +1,6 @@
 import FaqSection from '@/components/page/faq-section';
 import LocationSection from '@/components/page/lication-section';
+import MiniCardsInfo from '@/components/page/mini-cards-info';
 // import { HeroSection } from '@/components/page/hero-section';
 // import { NoticesSection } from '@/components/page/notices-section';
 import { OthersSection } from '@/components/page/others-section';
@@ -31,6 +32,7 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
+      <MiniCardsInfo />
       <NoticesSection />
       <OthersSection />
       <FaqSection />

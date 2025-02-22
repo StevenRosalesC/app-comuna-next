@@ -1,3 +1,4 @@
+import FabScroll from '@/components/fab-scroll';
 import { FooterSection } from '@/components/page/footer-section';
 import { NavBar } from '@/components/page/nav-bar';
 import { NEXT_PUBLIC_APP_URL } from '@/lib/env.config';
@@ -28,6 +29,8 @@ export default function Layout({ children }: Props) {
       <NavBar />
       <div className='container mx-auto px-5 min-h-[100dvh]'>{children}</div>
       <FooterSection />
+      <FabScroll />
+
     </>
   );
 }

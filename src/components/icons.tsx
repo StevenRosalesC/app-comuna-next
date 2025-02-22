@@ -34,7 +34,8 @@ import {
   X,
   ListTodo,
   UsersRound,
-  UserRound
+  UserRound,
+  ChevronsDown,
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
@@ -44,6 +45,7 @@ export const Icons = {
   logo: Command,
   login: LogIn,
   close: X,
+  doubleDown: ChevronsDown,
   product: LucideShoppingBag,
   spinner: Loader2,
   kanban: CircuitBoardIcon,

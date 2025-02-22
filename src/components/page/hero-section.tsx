@@ -25,7 +25,7 @@ export default function HeroSection() {
               placeholder='Ingresa tu correo electrónico'
               className='w-full'
             />
-            <Button className='mt-4 w-full lg:mt-0 lg:w-auto'>
+            <Button className='mt-4 w-full bg-green-700 lg:mt-0 lg:w-auto'>
               Suscribirse
             </Button>
           </div>

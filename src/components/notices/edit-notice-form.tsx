@@ -1,9 +1,17 @@
 'use client';
 // import { useCallback, useEffect, useRef, useState } from 'react';
-// import { useForm, Controller } from 'react-hook-form';
 import TiptapEditor, { type TiptapEditorRef } from '@/components/TiptapEditor';
 import { createNotice, getNotice, updateNotice } from '@/services/notices';
-import { notFound, usePathname, useRouter } from 'next/navigation';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Input } from '../ui/input';
@@ -14,12 +22,14 @@ import Dialog from '../TiptapEditor/components/ui/Dialog';
 import MediaLibrary from '../TiptapEditor/components/MediaLibrary';
 import { Textarea } from '../ui/textarea';
 import { toast } from 'sonner';
+import { NoticeType } from 'types/notices';
 
 interface PostForm {
   title: string;
   content: string;
   coverImageUrl: string;
   description: string;
+  type: NoticeType
 }
 
 interface Props {
@@ -37,7 +47,8 @@ export default function EditNoticeForm({ id }: Props) {
       title: '',
       content: '',
       coverImageUrl: '',
-      description: ''
+      description: '',
+      type: NoticeType.Noticia
     }
   });
 
@@ -62,6 +73,7 @@ export default function EditNoticeForm({ id }: Props) {
 
   const update = async (id: string, notice: PostForm) => {
     try {
+      console.log({ id, notice });
       const response = await updateNotice(id, notice);
       toast.success('Noticia actualizada');
       return response;
@@ -101,7 +113,8 @@ export default function EditNoticeForm({ id }: Props) {
               title: values.title || '',
               content: values.content || '',
               coverImageUrl: values.coverImageUrl || '',
-              description: values.description || ''
+              description: values.description || '',
+              type: values.type || NoticeType.Noticia
             });
             if (notice) {
               router.push(`/dashboard/notices/${notice.newsId}`);
@@ -113,7 +126,8 @@ export default function EditNoticeForm({ id }: Props) {
               title: values.title || '',
               content: values.content || '',
               coverImageUrl: values.coverImageUrl || '',
-              description: values.description || ''
+              description: values.description || '',
+              type: values.type || NoticeType.Noticia
             });
           }
         }, 5000);
@@ -133,45 +147,78 @@ export default function EditNoticeForm({ id }: Props) {
   return (
     <div className='flex flex-col gap-6'>
       {/* buttons to save and delete notice */}
+      <div className='flex gap-4 w-full justify-between'>
+        <div className="flex">
+          <Controller
+            control={control}
+            name='type'
+            render={({ field }) => (
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+              >
+                <SelectTrigger>
+                  <SelectValue>{field.value}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup >
+                    <SelectLabel>Tipo</SelectLabel>
+                    {Object.values(NoticeType).map((type) => (
+                      <SelectItem
+                        key={type}
+                        value={type}
+                      >
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </div>
+        <div className="flex flex-row gap4">
 
-      <div className='flex gap-4 w-full justify-end'>
-        <Button
-          variant={'destructive'}
-          onClick={async () => {
-            if (!id) return;
-            await updateNotice(id, {
-              title: watch('title'),
-              description: watch('description'),
-              coverImageUrl: watch('coverImageUrl') || '',
-              content: watch('content')
-            });
-            toast.success('Noticia actualizada');
-          }}
-        >
-          Eliminar
-        </Button>
-        {
-          id &&
           <Button
-            variant={'secondary'}
-
+            variant={'destructive'}
+            onClick={async () => {
+              if (!id) return;
+              await updateNotice(id, {
+                title: watch('title'),
+                description: watch('description'),
+                coverImageUrl: watch('coverImageUrl') || '',
+                content: watch('content'),
+                type: watch('type')
+              });
+              toast.success('Noticia actualizada');
+            }}
           >
-            Previsualizar
-          </Button>}
-        <Button
-          onClick={async () => {
-            if (!id) return;
-            await update(id, {
-              title: watch('title'),
-              description: watch('description'),
-              coverImageUrl: watch('coverImageUrl') || '',
-              content: watch('content')
-            })
-          }
-          }
-        >
-          Guardar
-        </Button>
+            Eliminar
+          </Button>
+          {
+            id &&
+            <Button
+              variant={'secondary'}
+
+            >
+              Previsualizar
+            </Button>}
+          <Button
+            onClick={async () => {
+              if (!id) return;
+              await update(id, {
+                title: watch('title'),
+                description: watch('description'),
+                coverImageUrl: watch('coverImageUrl') || '',
+                content: watch('content'),
+                type: watch('type')
+              })
+            }
+            }
+          >
+            Guardar
+          </Button>
+        </div>
       </div>
       <div>
         <label className='mb-2 inline-block font-medium dark:text-white'>

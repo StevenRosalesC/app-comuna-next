@@ -1,4 +1,5 @@
 import { Mail, MapPin } from "lucide-react";
+import Link from "next/link";
 
 
 export default function LocationSection() {
@@ -10,7 +11,9 @@ export default function LocationSection() {
             <Mail size={32} />
             <p className='text-xl font-bold'>Correo</p>
             <p>Escribenos a:</p>
-            <a href='mailto:comuna@gmail.com'>comuna@gmail.com</a>
+            <Link
+              className="hover:underline"
+              href='mailto:22defebrerobambil@gmail.com'>22defebrerobambil@gmail.com</Link>
           </div>
 
           <div className='p-4'>

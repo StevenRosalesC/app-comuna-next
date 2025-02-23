@@ -14,7 +14,7 @@ import { Paragraph } from '../ui/atoms/paragraph';
 
 export const OthersSection = () => {
   return (
-    <section className='items-center bg-white py-2 dark:bg-gray-900  '>
+    <section className='items-center py-2  '>
       <div data-aos="fade-up">
 
         <SubTitle className='text-center'>

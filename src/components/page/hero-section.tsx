@@ -3,13 +3,12 @@ import { Title } from '../ui/atoms/title';
 import { Paragraph } from '../ui/atoms/paragraph';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import dynamic from 'next/dynamic';
+import Aos from '../aos';
 
-const Aos = dynamic(() => import('../aos'));
 
 export default function HeroSection() {
   return (
-    <section className='bg-white dark:bg-gray-900'>
+    <>
       <Aos />
       <div className='mx-auto grid max-w-screen-xl px-4 py-8 lg:grid-cols-12 lg:gap-8 lg:py-16 xl:gap-0' data-aos="fade-up" >
         <div className='mr-5 place-self-center lg:col-span-7' >
@@ -40,6 +39,6 @@ export default function HeroSection() {
           />
         </div>
       </div>
-    </section>
+    </>
   );
 };

@@ -38,10 +38,10 @@ export default function FaqSection() {
     }
   ]
   return (
-    <section className='w-full bg-white py-4'>
+    <section className='w-full  py-4'>
       <div className='container grid gap-4 px-4 md:gap-6'>
         <div className='space-y-2'>
-          <SubTitle className='text-center'>Preguntas</SubTitle>
+          <SubTitle className='text-center'>Preguntas Frecuentes</SubTitle>
           <Paragraph
             size={'sm'}
             className='text-gray-500 dark:text-gray-400 md:text-xl/relaxed'

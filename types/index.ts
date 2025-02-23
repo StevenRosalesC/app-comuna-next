@@ -40,3 +40,33 @@ export interface FooterItem {
 export type MainNavItem = NavItemWithOptionalChildren;
 
 export type SidebarNavItem = NavItemWithChildren;
+
+export interface PageData {
+  totalPersons:        number;
+  totalMembers:        number;
+  totalNeighborhoods:  number;
+  totalAssociations:   number;
+  neighborhoodsImages: NeighborhoodsImage[];
+  news:             News[];
+}
+
+export interface NeighborhoodsImage {
+  neighborhoodName: string;
+  neighborhoodId:   string;
+  images:           Image[];
+}
+
+export interface Image {
+  imageId: string;
+  url:     string;
+}
+
+export interface News {
+  newsId:        string;
+  coverImageUrl: string;
+  title:         string;
+  description:   string;
+  type:          string;
+  createdAt:     string;
+  createdBy:     string;
+}

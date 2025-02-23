@@ -5,61 +5,15 @@ import { Paragraph } from '../ui/atoms/paragraph';
 import { NoticeMiniCard } from '../notices/notice-mini-card';
 import Slider from '../slider';
 import Link from 'next/link';
+import { News } from 'types';
 
-interface NoticePreview {
-  createdAt: string;
-  title: string;
-  description: string;
-  writer: string;
-  noticeId: string;
+interface Props {
+  notices: News[];
 }
-
-export default function NoticesSection() {
-  const notices: NoticePreview[] = [
-    {
-      createdAt: '2025-01-31T12:00:00Z',
-      title: 'Nueva ley de seguridad ciudadana',
-      description:
-        'La nueva ley de seguridad ciudadana ha sido aprobada por el congreso. Conoce los detalles de esta nueva normativa.',
-      writer: 'Jese Leos',
-      noticeId: '1'
-    },
-    {
-      createdAt: '2025-01-30T12:00:00Z',
-      title: 'Evento de reforestación',
-      description:
-        'Este sábado 30 de enero se llevará a cabo un evento de reforestación en el parque central de la ciudad. ¡No te lo pierdas!',
-      writer: 'Andrea Quintero',
-      noticeId: '2'
-    },
-    {
-      createdAt: '2025-01-29T12:00:00Z',
-      title: 'Nueva ley de seguridad ciudadana',
-      description:
-        'La nueva ley de seguridad ciudadana ha sido aprobada por el congreso. Conoce los detalles de esta nueva normativa.',
-      writer: 'Jese Leos',
-      noticeId: '3'
-    },
-    {
-      createdAt: '2025-01-15T12:00:00Z',
-      title: 'Nueva ley de seguridad ciudadana',
-      description:
-        'La nueva ley de seguridad ciudadana ha sido aprobada por el congreso. Conoce los detalles de esta nueva normativa.',
-      writer: 'Jese Leos',
-      noticeId: '4'
-    },
-    {
-      createdAt: '2024-12-10T12:00:00Z',
-      title: 'Nueva ley de seguridad ciudadana',
-      description:
-        'La nueva ley de seguridad ciudadana ha sido aprobada por el congreso. Conoce los detalles de esta nueva normativa.',
-      writer: 'Jese Leos',
-      noticeId: '5'
-    }
-  ];
+export default function NoticesSection({ notices }: Props) {
   return (
-    <section className='bg-white dark:bg-gray-900'>
-      <div className='mx-auto max-w-screen-xl px-4 py-8 lg:px-6 lg:py-16'>
+    <>
+      <section className='mx-auto max-w-screen-xl px-4 py-8 lg:px-6 lg:py-16'>
         <div className='mx-auto mb-8 max-w-screen-sm text-center lg:mb-16' >
           <div data-aos="fade-up">
             <SubTitle >Actualízate con nuestras noticias locales</SubTitle>
@@ -90,7 +44,7 @@ export default function NoticesSection() {
             Ver más noticias...
           </Link>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 };

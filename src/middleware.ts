@@ -1,9 +1,10 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import apiCommunity from './utils/communityApi';
 import { AuthResponse } from 'types/response';
-
+import { cookies } from 'next/headers';
 export async function middleware(request: NextRequest) {
   let token = request.cookies.get('token')?.value;
+  const cookieStore = cookies();
   const {pathname} = request.nextUrl;
   // Permitir acceso a /auth/login libremente si no hay sesión
   if (pathname === '/auth/login') {
@@ -25,6 +26,8 @@ export async function middleware(request: NextRequest) {
   // Intentar autenticar o refrescar el token
   const refreshResponse = await authenticateOrRefresh(token);
   if (!refreshResponse) {
+    // delete token from cookies
+    cookieStore.delete('token');
     return NextResponse.redirect(new URL('/auth/login', request.url));
   }
 
@@ -51,6 +54,7 @@ export const config = {
 async function authenticateOrRefresh(token: string, refreshToken?: string) {
   try {
     const response = await refreshTokenRequest(token);
+    console.log({refreshToken})
     if (response) return response;
   } catch (error) {
     return null;

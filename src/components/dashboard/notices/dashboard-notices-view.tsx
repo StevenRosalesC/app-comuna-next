@@ -6,18 +6,31 @@ import { getRelativeTime } from "@/utils/date";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Notice } from "types/dashboard";
-
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 export default function DashboardNoticesView() {
   const [notices, setNotices] = useState<Notice[]>([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(6);
+
 
   const getNotices = async () => {
-    const response = await getAllNotices();
-    setNotices(response);
+    const { data, count } = await getAllNotices(limit, limit * page - limit);
+    setNotices(data);
+    setTotal(count);
   };
 
   useEffect(() => {
     getNotices();
-  }, []);
+  }, [page, limit]);
 
   return (
     <section>
@@ -39,6 +52,25 @@ export default function DashboardNoticesView() {
             </Card>
           </Link>
         ))}
+      {
+        total > limit && (
+          <div className="flex justify-center">
+            <Pagination>
+              <PaginationPrevious>Previous</PaginationPrevious>
+              <PaginationContent>
+                {
+                  Array.from({ length: Math.ceil(total / 6) }).map((_, index) => (
+                    <PaginationItem key={index}>
+                      <PaginationLink href='#'>{index + 1}</PaginationLink>
+                    </PaginationItem>
+                  ))
+                }
+              </PaginationContent>
+              <PaginationNext>Next</PaginationNext>
+            </Pagination>
+          </div>
+        )
+      }
     </section>
   );
 }

@@ -15,7 +15,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Input } from '../ui/input';
-import { Label } from '../ui/label';
 import Image from 'next/image';
 import { Button } from '../ui/button';
 import Dialog from '../TiptapEditor/components/ui/Dialog';
@@ -23,6 +22,8 @@ import MediaLibrary from '../TiptapEditor/components/MediaLibrary';
 import { Textarea } from '../ui/textarea';
 import { toast } from 'sonner';
 import { NoticeType } from 'types/notices';
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 
 interface PostForm {
   title: string;
@@ -148,7 +149,7 @@ export default function EditNoticeForm({ id }: Props) {
     <div className='flex flex-col gap-6'>
       {/* buttons to save and delete notice */}
       <div className='flex gap-4 w-full justify-between'>
-        <div className="flex">
+        <div className="flex gap-4 items-center">
           <Controller
             control={control}
             name='type'
@@ -176,6 +177,8 @@ export default function EditNoticeForm({ id }: Props) {
               </Select>
             )}
           />
+          <Label htmlFor="published">Publicado</Label>
+          <Switch id="published" />
         </div>
         <div className="flex flex-row gap4">
 

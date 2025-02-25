@@ -15,8 +15,8 @@ export const NoticeCard = ({ notice }: Props) => {
       className='group mx-auto max-w-sm hover:no-underline focus:no-underline dark:bg-gray-50 sm:block'
     >
       <Image
-        width={1920}
-        height={1080}
+        width={800}
+        height={600}
         alt=''
         role='presentation'
         className='h-44 w-full rounded object-cover dark:bg-gray-500'

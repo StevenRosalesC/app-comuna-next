@@ -1,7 +1,7 @@
 import React from 'react';
 import { Paragraph } from '../ui/atoms/paragraph';
 import Link from 'next/link';
-import { Globe, ListCheck, NotebookPen, StickyNote } from 'lucide-react';
+import { Globe, ListCheck, MessageCircleWarning, Newspaper, NotebookPen, StickyNote } from 'lucide-react';
 import { getRelativeTime } from '@/utils/date';
 import Image from 'next/image';
 import { NoticeType } from 'types/notices';
@@ -29,15 +29,15 @@ export const NoticeMiniCard = ({
   const handleIcon = (type: string) => {
     switch (type) {
       case NoticeType.Noticia:
-        return <Globe />;
+        return <Newspaper />;
       case NoticeType.Evento:
         return <ListCheck />;
       case NoticeType.Anuncio:
-        return <StickyNote />;
+        return <MessageCircleWarning />;
       case NoticeType.Blog:
         return <NotebookPen />;
       case NoticeType.Aviso:
-        return <StickyNote />;
+        return <Globe />;
       default:
         return <StickyNote />;
     }

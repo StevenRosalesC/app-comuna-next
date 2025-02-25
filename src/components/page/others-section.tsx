@@ -77,9 +77,11 @@ export const OthersSection = () => {
         </div>
 
       </div>
-      <SubTitle className='pb-2 text-center'>
-        Barrios de la comuna bambil collao
-      </SubTitle>
+      <div data-aos="fade-up">
+        <SubTitle className='pb-2 text-center'>
+          Barrios de la comuna bambil collao
+        </SubTitle>
+      </div>
       <div data-aos="fade-up"
         data-aos-anchor-placement="top-bottom">
         <Slider delay={5500} key={'nei'}>
@@ -93,6 +95,6 @@ export const OthersSection = () => {
           ))}
         </Slider>
       </div>
-    </section>
+    </section >
   );
 };

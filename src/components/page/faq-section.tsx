@@ -39,7 +39,7 @@ export default function FaqSection() {
   ]
   return (
     <section className='w-full  py-4'>
-      <div className='container grid gap-4 px-4 md:gap-6'>
+      <div className='container grid gap-4 px-4 md:gap-6' data-aos="fade-up">
         <div className='space-y-2'>
           <SubTitle className='text-center'>Preguntas Frecuentes</SubTitle>
           <Paragraph

@@ -3,6 +3,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
 import './globals.css';
+import { ViewTransitions } from 'next-view-transitions'
 // import { auth } from '@/lib/auth';
 // import Providers from '@/components/layout/providers';
 import { Toaster } from '@/components/ui/sonner';
@@ -10,6 +11,7 @@ import type { Metadata } from 'next';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Lato } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
+import { Providers } from '@/components/providers/providers';
 
 export const metadata: Metadata = {
   title: 'Comuna Bambil Collao | App',
@@ -29,20 +31,24 @@ export default function RootLayout({
 }) {
   // const session = await auth();
   return (
-    <html
-      lang='es'
-      className={`${lato.className}`}
-      suppressHydrationWarning={true}
-    >
-      <body>
-        <NextTopLoader showSpinner={false} />
-        <NuqsAdapter>
-          {/* <Providers session={session}> */}
-          <Toaster />
-          {children}
-          {/* </Providers> */}
-        </NuqsAdapter>
-      </body>
-    </html>
+    <ViewTransitions>
+      <html
+        lang='es'
+        className={`${lato.className}`}
+        suppressHydrationWarning={true}
+      >
+        <body>
+          <NextTopLoader showSpinner={false} />
+          <Providers>
+            <NuqsAdapter>
+              {/* <Providers session={session}> */}
+              <Toaster />
+              {children}
+              {/* </Providers> */}
+            </NuqsAdapter>
+          </Providers>
+        </body>
+      </html>
+    </ViewTransitions>
   );
 }

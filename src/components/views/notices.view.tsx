@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { NoticeCard } from '../notices/notice-card';
 import { useEffect, useState } from 'react';
 import { Notice } from 'types/dashboard';
-import { getAllNotices } from '@/services/notices';
 import { getRelativeTime } from '@/utils/date';
 import LoadingPage from '@/app/(page)/loading';
 import { Button } from '../ui/button';
+import { getAllNews } from '@/services/page';
 
 export default function NoticesView() {
   const [notices, setNotices] = useState<Notice[]>([]);
@@ -28,7 +28,7 @@ export default function NoticesView() {
       if (!mounted) return;
       setLoading(true);
       try {
-        const { data, count } = await getAllNotices(6, 6 * page);
+        const { data, count } = await getAllNews(6, 6 * page);
         if (mounted) {
           setNotices((prevNotices) => [...prevNotices, ...data]);
           setTotal(count);
@@ -40,6 +40,7 @@ export default function NoticesView() {
       } finally {
         if (mounted) {
           setLoading(false);
+
         }
       }
     };

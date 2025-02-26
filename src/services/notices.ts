@@ -13,7 +13,7 @@ export const getAllNotices = async (
         offset
       }
     });
-    return notices
+    return notices;
   } catch (error) {
     return {count: 0, data: []};
   }

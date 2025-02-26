@@ -2,7 +2,8 @@ import FaqSection from '@/components/page/faq-section';
 import LocationSection from '@/components/page/lication-section';
 import MiniCardsInfo from '@/components/page/mini-cards-info';
 import { OthersSection } from '@/components/page/others-section';
-import { API_URL, NEXT_PUBLIC_APP_URL } from '@/lib/env.config';
+import { NEXT_PUBLIC_APP_URL } from '@/lib/env.config';
+import { getPageInfo } from '@/services/page';
 import { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import { PageData } from 'types';
@@ -28,10 +29,7 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const data: PageData = await fetch(`${API_URL}/page`, {
-    next: { revalidate: 60 },
-  }).then((res) => res.json());
-
+  const data: PageData = await getPageInfo();
   return (
     <>
       <HeroSection />

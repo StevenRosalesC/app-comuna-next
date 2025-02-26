@@ -1,9 +1,9 @@
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import { JSX, SVGProps } from 'react';
 import { pageNavItems } from '@/constants/data';
 import Image from 'next/image';
+import { Link } from 'next-view-transitions';
 
 export function NavBar() {
   return (

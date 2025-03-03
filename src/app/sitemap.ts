@@ -4,16 +4,28 @@ import type { MetadataRoute } from 'next';
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: `${NEXT_PUBLIC_APP_URL}/`,
+      url: `https://${NEXT_PUBLIC_APP_URL}/`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: 'daily',
+      priority: 1
     },
     {
-      url: `${NEXT_PUBLIC_APP_URL}/about`,
+      url: `https://${NEXT_PUBLIC_APP_URL}/about`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: 'daily',
+      priority: 0.8
     },
     {
-      url: `${NEXT_PUBLIC_APP_URL}/contact`,
+      url: `https://${NEXT_PUBLIC_APP_URL}/contact`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: 'daily',
+      priority: 0.8
     },
     {
-      url: `${NEXT_PUBLIC_APP_URL}/notices`,
+      url: `https://${NEXT_PUBLIC_APP_URL}/notices`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: 'daily',
+      priority: 0.8
     }
   ];
 }

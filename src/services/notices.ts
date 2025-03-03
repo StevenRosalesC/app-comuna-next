@@ -2,12 +2,20 @@ import { Notice } from 'types/dashboard';
 import apiCommunity from '@/utils/communityApi';
 import { NoticeCreation } from 'types/notices';
 
-export const getAllNotices = async (): Promise<Notice[]> => {
+export const getAllNotices = async (
+  limit?: number,
+  offset?: number
+): Promise<{count: number, data: Notice[]}> => {
   try {
-    const {data:notices} =  await apiCommunity.get<Notice[]>('/news');
+    const {data:notices} =  await apiCommunity.get<{count: number, data: Notice[]}>('/news', {
+      params: {
+        limit,
+        offset
+      }
+    });
     return notices;
   } catch (error) {
-    return [];
+    return {count: 0, data: []};
   }
 };
 
@@ -42,7 +50,8 @@ export const updateNotice = async (id: string, {
   description,
   coverImageUrl,
   content,
-  type
+  type,
+  published
 }: NoticeCreation): Promise<Notice | null> => {
   try {
     const {data:updatedNotice} = await apiCommunity.patch<Notice>(`/news/${id}`, {
@@ -50,7 +59,8 @@ export const updateNotice = async (id: string, {
       description,
       coverImageUrl: coverImageUrl!== '' ? coverImageUrl : '/not-found.webp',
       content,
-      type
+      type,
+      published: published ?? false
     });
     return updatedNotice;
   } catch (error) {

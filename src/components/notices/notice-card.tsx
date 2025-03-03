@@ -1,6 +1,6 @@
 import { getRelativeTime } from '@/utils/date';
+import { Link } from 'next-view-transitions';
 import Image from 'next/image';
-import Link from 'next/link';
 import { Notice } from 'types/dashboard';
 
 interface Props {
@@ -11,12 +11,12 @@ export const NoticeCard = ({ notice }: Props) => {
   return (
     <Link
       rel='noopener noreferrer'
-      href={`/notices/${notice.newsId}`}
+      href={`/notices/${notice.title}`}
       className='group mx-auto max-w-sm hover:no-underline focus:no-underline dark:bg-gray-50 sm:block'
     >
       <Image
-        width={1920}
-        height={1080}
+        width={800}
+        height={600}
         alt=''
         role='presentation'
         className='h-44 w-full rounded object-cover dark:bg-gray-500'

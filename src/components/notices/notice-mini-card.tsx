@@ -1,57 +1,79 @@
 import React from 'react';
 import { Paragraph } from '../ui/atoms/paragraph';
-import Link from 'next/link';
-import { StickyNote } from 'lucide-react';
+import { Globe, ListCheck, MessageCircleWarning, Newspaper, NotebookPen, StickyNote } from 'lucide-react';
 import { getRelativeTime } from '@/utils/date';
 import Image from 'next/image';
+import { NoticeType } from 'types/notices';
+import { Link } from 'next-view-transitions';
 
 interface Props {
   createdAt: string;
   title: string;
   description: string;
-  writer: string;
-  noticeId: string;
-  image?: string;
+  createdBy: string;
+  newsId: string;
+  type: string;
+  coverImageUrl?: string;
 }
 
 export const NoticeMiniCard = ({
   createdAt,
   title,
   description,
-  writer,
-  noticeId,
-  image
+  createdBy,
+  newsId,
+  type,
+  coverImageUrl
 }: Props) => {
   const relativeTime = getRelativeTime(createdAt);
-
+  const handleIcon = (type: string) => {
+    switch (type) {
+      case NoticeType.Noticia:
+        return <Newspaper />;
+      case NoticeType.Evento:
+        return <ListCheck />;
+      case NoticeType.Anuncio:
+        return <MessageCircleWarning />;
+      case NoticeType.Blog:
+        return <NotebookPen />;
+      case NoticeType.Aviso:
+        return <Globe />;
+      default:
+        return <StickyNote />;
+    }
+  }
   return (
     <article className='mb-10 flex flex-col justify-between rounded-lg border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-gray-800 sm:h-[30rem]'>
       <div className='mb-5 flex items-center justify-between text-gray-500'>
         <span className='bg-primary-100 text-primary-800 dark:bg-primary-200 dark:text-primary-800 inline-flex items-center rounded px-2.5 py-0.5 text-xs font-medium'>
-          <StickyNote />
-          <span className='ml-1'>Noticia</span>
+          {handleIcon(type)}
+          <span className='ml-1'>
+            {type}
+          </span>
         </span>
         <span className='text-sm'>{relativeTime}</span>
       </div>
       <Image
-        src={image || '/not-found.webp'}
+        src={coverImageUrl || '/not-found.webp'}
         alt='Notice'
         width={600}
         height={400}
         className='aspect-video rounded-lg object-cover'
       />
       <h2 className='mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white'>
-        <a href={`/notices/${noticeId}`} className='hover:underline'>
+        <a href={`/notices/${newsId}`} className='hover:underline'>
           {title}
         </a>
       </h2>
       <Paragraph size={'sm'}>{description}</Paragraph>
       <div className='flex items-center justify-between'>
         <div className='flex items-center space-x-4'>
-          <span className='font-medium dark:text-white'>Jese Leos</span>
+          <span className='font-medium dark:text-white'>{
+            createdBy
+          }</span>
         </div>
         <Link
-          href={`/notices/${noticeId}`}
+          href={`/notices/${title}`}
           className='text-primary-600 dark:text-primary-500 inline-flex items-center font-medium hover:underline'
         >
           Leer más

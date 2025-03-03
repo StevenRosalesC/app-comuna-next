@@ -15,7 +15,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Input } from '../ui/input';
-import { Label } from '../ui/label';
 import Image from 'next/image';
 import { Button } from '../ui/button';
 import Dialog from '../TiptapEditor/components/ui/Dialog';
@@ -23,6 +22,9 @@ import MediaLibrary from '../TiptapEditor/components/MediaLibrary';
 import { Textarea } from '../ui/textarea';
 import { toast } from 'sonner';
 import { NoticeType } from 'types/notices';
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { Link } from 'next-view-transitions';
 
 interface PostForm {
   title: string;
@@ -30,6 +32,7 @@ interface PostForm {
   coverImageUrl: string;
   description: string;
   type: NoticeType
+  published: boolean
 }
 
 interface Props {
@@ -48,7 +51,8 @@ export default function EditNoticeForm({ id }: Props) {
       content: '',
       coverImageUrl: '',
       description: '',
-      type: NoticeType.Noticia
+      type: NoticeType.Noticia,
+      published: false
     }
   });
 
@@ -73,7 +77,6 @@ export default function EditNoticeForm({ id }: Props) {
 
   const update = async (id: string, notice: PostForm) => {
     try {
-      console.log({ id, notice });
       const response = await updateNotice(id, notice);
       toast.success('Noticia actualizada');
       return response;
@@ -114,20 +117,21 @@ export default function EditNoticeForm({ id }: Props) {
               content: values.content || '',
               coverImageUrl: values.coverImageUrl || '',
               description: values.description || '',
-              type: values.type || NoticeType.Noticia
+              type: values.type || NoticeType.Noticia,
+              published: values.published ?? false
             });
             if (notice) {
-              router.push(`/dashboard/notices/${notice.newsId}`);
+              router.push(`/dashboard/notices/${notice.title}`);
             }
           } else if (id) {
-
             if (!values.title || !values.description || !values.content) return;
             await update(id, {
               title: values.title || '',
               content: values.content || '',
               coverImageUrl: values.coverImageUrl || '',
               description: values.description || '',
-              type: values.type || NoticeType.Noticia
+              type: values.type || NoticeType.Noticia,
+              published: values.published ?? false
             });
           }
         }, 5000);
@@ -148,7 +152,7 @@ export default function EditNoticeForm({ id }: Props) {
     <div className='flex flex-col gap-6'>
       {/* buttons to save and delete notice */}
       <div className='flex gap-4 w-full justify-between'>
-        <div className="flex">
+        <div className="flex gap-4 items-center">
           <Controller
             control={control}
             name='type'
@@ -176,33 +180,30 @@ export default function EditNoticeForm({ id }: Props) {
               </Select>
             )}
           />
+          <Controller
+            control={control}
+            name="published"
+            render={({ field }) => (
+              <>
+                <Label htmlFor="published">Publicado</Label>
+                <Switch
+                  id="published"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </>
+            )}
+          />
         </div>
         <div className="flex flex-row gap4">
-
-          <Button
-            variant={'destructive'}
-            onClick={async () => {
-              if (!id) return;
-              await updateNotice(id, {
-                title: watch('title'),
-                description: watch('description'),
-                coverImageUrl: watch('coverImageUrl') || '',
-                content: watch('content'),
-                type: watch('type')
-              });
-              toast.success('Noticia actualizada');
-            }}
-          >
-            Eliminar
-          </Button>
           {
             id &&
-            <Button
-              variant={'secondary'}
-
+            <Link
+              href={`/dashboard/notices/${id}/preview`}
+              className='bg-blue-500 text-white px-4 py-2 rounded-md'
             >
               Previsualizar
-            </Button>}
+            </Link>}
           <Button
             onClick={async () => {
               if (!id) return;
@@ -211,7 +212,8 @@ export default function EditNoticeForm({ id }: Props) {
                 description: watch('description'),
                 coverImageUrl: watch('coverImageUrl') || '',
                 content: watch('content'),
-                type: watch('type')
+                type: watch('type'),
+                published: watch('published')
               })
             }
             }

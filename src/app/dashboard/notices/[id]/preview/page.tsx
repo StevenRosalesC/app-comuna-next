@@ -7,7 +7,7 @@ import TiptapRenderer from '@/components/TiptapRenderer/ServerRenderer';
 import { notFound } from 'next/navigation';
 import { getNotice } from '@/services/notices';
 interface Props {
-  params: { slug: string; id: string };
+  params: { id: string };
 }
 
 export default async function PreviewNotice({ params }: Props) {

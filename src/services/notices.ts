@@ -21,7 +21,9 @@ export const getAllNotices = async (
 
 export const getNotice = async (id: string): Promise<Notice | null> => {
   try {
+    console.log({id})
     const {data:notice} = await apiCommunity.get<Notice>(`/news/${id}`);
+    console.log({notice})
     return notice;
   } catch (error) {
     if (error instanceof Error) {

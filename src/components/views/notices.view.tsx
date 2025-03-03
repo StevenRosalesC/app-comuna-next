@@ -5,7 +5,6 @@ import { NoticeCard } from '../notices/notice-card';
 import { useEffect, useState } from 'react';
 import { Notice } from 'types/dashboard';
 import { getRelativeTime } from '@/utils/date';
-import LoadingPage from '@/app/(page)/loading';
 import { Button } from '../ui/button';
 import { getAllNews } from '@/services/page';
 
@@ -18,44 +17,26 @@ export default function NoticesView() {
 
   const handleLoadMore = () => {
     setPage(page + 1);
+    getNotices();
   };
 
 
+  const getNotices = async () => {
+    setLoading(true);
+    try {
+      const { data, count } = await getAllNews(6, 6 * page);
+      setNotices((prevNotices) => [...prevNotices, ...data]);
+      setTotal(count);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
   useEffect(() => {
-    let mounted = true;
-
-    const getNotices = async () => {
-      if (!mounted) return;
-      setLoading(true);
-      try {
-        const { data, count } = await getAllNews(6, 6 * page);
-        if (mounted) {
-          setNotices((prevNotices) => [...prevNotices, ...data]);
-          setTotal(count);
-        }
-      } catch (error) {
-        if (mounted) {
-          setNotices([]);
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-
-        }
-      }
-    };
-
     getNotices();
+  }, []);
 
-    return () => {
-      mounted = false;
-    };
-  }, [page]);
-
-
-  if (loading) return (
-    <LoadingPage />
-  );
   return (
     <section className='dark:bg-gray-100 dark:text-gray-800'>
       {
@@ -69,7 +50,7 @@ export default function NoticesView() {
               notices.slice(0, 1).map((notice, index) => (
                 <Link
                   rel='noopener noreferrer'
-                  href={`/notices/${notice.newsId}`}
+                  href={`/notices/${notice.title}`}
                   key={index}
                   className='group mx-auto block max-w-6xl gap-3 hover:no-underline focus:no-underline dark:bg-gray-50 sm:max-w-full lg:grid lg:grid-cols-12'
                 >

@@ -8,6 +8,7 @@ export const getAllNews = async (
   offset: number
 ): Promise<{ count: number; data: Notice[] }> => {
   try {
+    console.log('REVALIDATE', process.env.NEXT_PUBLIC_CACHE_REVALIDATE);
     const response = await fetch(
       `${API_URL}/news?limit=${limit}&offset=${offset}`,
       {
@@ -17,8 +18,8 @@ export const getAllNews = async (
         },
         cache: 'force-cache',
         next: {
-          tags: ['news'],
-          revalidate: 1500
+          revalidate: parseInt(process.env.NEXT_PUBLIC_CACHE_REVALIDATE || '60'),
+          tags: ['news']
         }
       }
     );
@@ -35,6 +36,10 @@ export const getNew = async (id: string): Promise<Notice | null> => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
+      },
+      next: {
+        revalidate: parseInt(process.env.NEXT_PUBLIC_CACHE_REVALIDATE || '60'),
+        tags: [`news`]
       }
     });
     const data: Notice = await response.json();
@@ -52,8 +57,9 @@ export const getPageInfo = async (): Promise<PageData> => {
       'Content-Type': 'application/json'
     },
     next:{
-      revalidate: 1500
-    }
+        tags: ['page'],
+        revalidate: parseInt(process.env.NEXT_PUBLIC_CACHE_REVALIDATE || '60')
+      }
     });
     const data: PageData = await response.json();
     return data;
@@ -68,3 +74,23 @@ export const getPageInfo = async (): Promise<PageData> => {
     };
   }
 };
+
+export const getNoticeByTitle = async (title: string): Promise<Notice | null> => {
+  try {
+    const response = await fetch(`${API_URL}/news/title/${title}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      next: {
+        revalidate: parseInt(process.env.NEXT_PUBLIC_CACHE_REVALIDATE || '60'),
+        tags: [`news`]
+      }
+    });
+    const data: Notice = await response.json();
+    console.log({data})
+    return data;
+  } catch (error) {
+    return null;
+  }
+}

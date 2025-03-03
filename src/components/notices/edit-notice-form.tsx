@@ -118,10 +118,9 @@ export default function EditNoticeForm({ id }: Props) {
               type: values.type || NoticeType.Noticia
             });
             if (notice) {
-              router.push(`/dashboard/notices/${notice.newsId}`);
+              router.push(`/dashboard/notices/${notice.title}`);
             }
           } else if (id) {
-
             if (!values.title || !values.description || !values.content) return;
             await update(id, {
               title: values.title || '',

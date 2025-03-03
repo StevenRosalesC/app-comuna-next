@@ -8,7 +8,6 @@ import { ViewTransitions } from 'next-view-transitions'
 // import Providers from '@/components/layout/providers';
 import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
-import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Lato } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
 import { Providers } from '@/components/providers/providers';
@@ -40,12 +39,10 @@ export default function RootLayout({
         <body>
           <NextTopLoader showSpinner={false} />
           <Providers>
-            <NuqsAdapter>
-              {/* <Providers session={session}> */}
-              <Toaster />
-              {children}
-              {/* </Providers> */}
-            </NuqsAdapter>
+            {/* <Providers session={session}> */}
+            <Toaster />
+            {children}
+            {/* </Providers> */}
           </Providers>
         </body>
       </html>

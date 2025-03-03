@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: 'Aplicación de la comuna Bambil Collao.'
 };
 interface Props {
-  params: { slug: string; id: string };
+  params: { id: string };
 }
 
 export default function EditNoticePage({ params }: Props) {

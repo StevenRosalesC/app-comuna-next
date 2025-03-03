@@ -11,7 +11,7 @@ export const NoticeCard = ({ notice }: Props) => {
   return (
     <Link
       rel='noopener noreferrer'
-      href={`/notices/${notice.newsId}`}
+      href={`/notices/${notice.title}`}
       className='group mx-auto max-w-sm hover:no-underline focus:no-underline dark:bg-gray-50 sm:block'
     >
       <Image

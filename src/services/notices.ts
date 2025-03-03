@@ -21,9 +21,7 @@ export const getAllNotices = async (
 
 export const getNotice = async (id: string): Promise<Notice | null> => {
   try {
-    console.log({id})
     const {data:notice} = await apiCommunity.get<Notice>(`/news/${id}`);
-    console.log({notice})
     return notice;
   } catch (error) {
     if (error instanceof Error) {
@@ -52,7 +50,8 @@ export const updateNotice = async (id: string, {
   description,
   coverImageUrl,
   content,
-  type
+  type,
+  published
 }: NoticeCreation): Promise<Notice | null> => {
   try {
     const {data:updatedNotice} = await apiCommunity.patch<Notice>(`/news/${id}`, {
@@ -60,7 +59,8 @@ export const updateNotice = async (id: string, {
       description,
       coverImageUrl: coverImageUrl!== '' ? coverImageUrl : '/not-found.webp',
       content,
-      type
+      type,
+      published: published ?? false
     });
     return updatedNotice;
   } catch (error) {

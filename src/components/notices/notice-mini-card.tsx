@@ -1,10 +1,10 @@
 import React from 'react';
 import { Paragraph } from '../ui/atoms/paragraph';
-import Link from 'next/link';
 import { Globe, ListCheck, MessageCircleWarning, Newspaper, NotebookPen, StickyNote } from 'lucide-react';
 import { getRelativeTime } from '@/utils/date';
 import Image from 'next/image';
 import { NoticeType } from 'types/notices';
+import { Link } from 'next-view-transitions';
 
 interface Props {
   createdAt: string;
@@ -73,7 +73,7 @@ export const NoticeMiniCard = ({
           }</span>
         </div>
         <Link
-          href={`/notices/${newsId}`}
+          href={`/notices/${title}`}
           className='text-primary-600 dark:text-primary-500 inline-flex items-center font-medium hover:underline'
         >
           Leer más

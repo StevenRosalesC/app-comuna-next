@@ -4,6 +4,7 @@ export interface NoticeCreation {
   coverImageUrl: string;
   content:       string;
   type:         NoticeType;
+  published: boolean;
 }
 
 export enum NoticeType {

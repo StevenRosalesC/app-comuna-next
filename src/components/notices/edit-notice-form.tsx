@@ -24,6 +24,7 @@ import { toast } from 'sonner';
 import { NoticeType } from 'types/notices';
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
+import { Link } from 'next-view-transitions';
 
 interface PostForm {
   title: string;
@@ -31,6 +32,7 @@ interface PostForm {
   coverImageUrl: string;
   description: string;
   type: NoticeType
+  published: boolean
 }
 
 interface Props {
@@ -49,7 +51,8 @@ export default function EditNoticeForm({ id }: Props) {
       content: '',
       coverImageUrl: '',
       description: '',
-      type: NoticeType.Noticia
+      type: NoticeType.Noticia,
+      published: false
     }
   });
 
@@ -74,7 +77,6 @@ export default function EditNoticeForm({ id }: Props) {
 
   const update = async (id: string, notice: PostForm) => {
     try {
-      console.log({ id, notice });
       const response = await updateNotice(id, notice);
       toast.success('Noticia actualizada');
       return response;
@@ -115,7 +117,8 @@ export default function EditNoticeForm({ id }: Props) {
               content: values.content || '',
               coverImageUrl: values.coverImageUrl || '',
               description: values.description || '',
-              type: values.type || NoticeType.Noticia
+              type: values.type || NoticeType.Noticia,
+              published: values.published ?? false
             });
             if (notice) {
               router.push(`/dashboard/notices/${notice.title}`);
@@ -127,7 +130,8 @@ export default function EditNoticeForm({ id }: Props) {
               content: values.content || '',
               coverImageUrl: values.coverImageUrl || '',
               description: values.description || '',
-              type: values.type || NoticeType.Noticia
+              type: values.type || NoticeType.Noticia,
+              published: values.published ?? false
             });
           }
         }, 5000);
@@ -176,35 +180,30 @@ export default function EditNoticeForm({ id }: Props) {
               </Select>
             )}
           />
-          <Label htmlFor="published">Publicado</Label>
-          <Switch id="published" />
+          <Controller
+            control={control}
+            name="published"
+            render={({ field }) => (
+              <>
+                <Label htmlFor="published">Publicado</Label>
+                <Switch
+                  id="published"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </>
+            )}
+          />
         </div>
         <div className="flex flex-row gap4">
-
-          <Button
-            variant={'destructive'}
-            onClick={async () => {
-              if (!id) return;
-              await updateNotice(id, {
-                title: watch('title'),
-                description: watch('description'),
-                coverImageUrl: watch('coverImageUrl') || '',
-                content: watch('content'),
-                type: watch('type')
-              });
-              toast.success('Noticia actualizada');
-            }}
-          >
-            Eliminar
-          </Button>
           {
             id &&
-            <Button
-              variant={'secondary'}
-
+            <Link
+              href={`/dashboard/notices/${id}/preview`}
+              className='bg-blue-500 text-white px-4 py-2 rounded-md'
             >
               Previsualizar
-            </Button>}
+            </Link>}
           <Button
             onClick={async () => {
               if (!id) return;
@@ -213,7 +212,8 @@ export default function EditNoticeForm({ id }: Props) {
                 description: watch('description'),
                 coverImageUrl: watch('coverImageUrl') || '',
                 content: watch('content'),
-                type: watch('type')
+                type: watch('type'),
+                published: watch('published')
               })
             }
             }

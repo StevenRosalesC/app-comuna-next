@@ -1,6 +1,6 @@
 import { getRelativeTime } from '@/utils/date';
+import { Link } from 'next-view-transitions';
 import Image from 'next/image';
-import Link from 'next/link';
 import { Notice } from 'types/dashboard';
 
 interface Props {

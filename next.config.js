@@ -12,6 +12,7 @@ const nextConfig = {
       },
     ]
   },
+  reactStrictMode: false,
   transpilePackages: ['geist'],
   output: process.env.NODE_ENV !== 'production' ? undefined : 'standalone',
   experimental: {

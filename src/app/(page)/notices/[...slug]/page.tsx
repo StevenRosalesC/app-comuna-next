@@ -62,7 +62,6 @@ export default async function PreviewNotice({ params }: Props) {
   let readingTime = 1;
   try {
     notice = await getNoticeByTitle(slug[0]);
-    console.log({ notice })
     if (!notice) return notFound();
     const allCharacters = notice.content
       .replace(/<[^>]*>/g, '')

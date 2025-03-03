@@ -8,18 +8,16 @@ export const getAllNews = async (
   offset: number
 ): Promise<{ count: number; data: Notice[] }> => {
   try {
-    console.log('REVALIDATE', process.env.NEXT_PUBLIC_CACHE_REVALIDATE);
     const response = await fetch(
-      `${API_URL}/news?limit=${limit}&offset=${offset}`,
+      `${API_URL}/news/published?limit=${limit}&offset=${offset}`,
       {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
         },
-        cache: 'force-cache',
         next: {
           revalidate: parseInt(process.env.NEXT_PUBLIC_CACHE_REVALIDATE || '60'),
-          tags: ['news']
+          tags: ['get-all-news']
         }
       }
     );
@@ -88,7 +86,6 @@ export const getNoticeByTitle = async (title: string): Promise<Notice | null> =>
       }
     });
     const data: Notice = await response.json();
-    console.log({data})
     return data;
   } catch (error) {
     return null;

@@ -6,7 +6,6 @@ export interface Session {
   refreshToken: string;
 }
 
-
 export interface NavItem {
   title: string;
   url: string;
@@ -42,31 +41,31 @@ export type MainNavItem = NavItemWithOptionalChildren;
 export type SidebarNavItem = NavItemWithChildren;
 
 export interface PageData {
-  totalPersons:        number;
-  totalMembers:        number;
-  totalNeighborhoods:  number;
-  totalAssociations:   number;
+  totalPersons: number;
+  totalMembers: number;
+  totalNeighborhoods: number;
+  totalAssociations: number;
   neighborhoodsImages: NeighborhoodsImage[];
-  news:             News[];
+  news: News[];
 }
 
 export interface NeighborhoodsImage {
   neighborhoodName: string;
-  neighborhoodId:   string;
-  images:           Image[];
+  neighborhoodId: string;
+  images: Image[];
 }
 
 export interface Image {
   imageId: string;
-  url:     string;
+  url: string;
 }
 
 export interface News {
-  newsId:        string;
+  newsId: string;
   coverImageUrl: string;
-  title:         string;
-  description:   string;
-  type:          string;
-  createdAt:     string;
-  createdBy:     string;
+  title: string;
+  description: string;
+  type: string;
+  createdAt: string;
+  createdBy: string;
 }

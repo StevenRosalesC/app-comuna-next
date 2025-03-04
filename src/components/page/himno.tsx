@@ -1,5 +1,5 @@
-"use client";
-import ReactAudioPlayer from "react-audio-player";
+'use client';
+import ReactAudioPlayer from 'react-audio-player';
 
 export default function Himno() {
   return (

@@ -14,7 +14,7 @@ export async function login(formData: FormData) {
   let redirectPath = '/';
 
   try {
-    const {data:response} = await apiCommunity.post<{
+    const { data: response } = await apiCommunity.post<{
       token: string;
       refreshToken: string;
     }>(

@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 export async function middleware(request: NextRequest) {
   let token = request.cookies.get('token')?.value;
   const cookieStore = cookies();
-  const {pathname} = request.nextUrl;
+  const { pathname } = request.nextUrl;
   // Permitir acceso a /auth/login libremente si no hay sesión
   if (pathname === '/auth/login') {
     if (!token) return NextResponse.next();
@@ -46,15 +46,15 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-// omit forgot-password and login pages from middleware
-  matcher: ['/dashboard/:path*', '/auth/:path*',],
+  // omit forgot-password and login pages from middleware
+  matcher: ['/dashboard/:path*', '/auth/:path*']
 };
 
 // Función para autenticar o refrescar el token
 async function authenticateOrRefresh(token: string, refreshToken?: string) {
   try {
     const response = await refreshTokenRequest(token);
-    console.log({refreshToken})
+    console.log({ refreshToken });
     if (response) return response;
   } catch (error) {
     return null;
@@ -65,7 +65,7 @@ async function authenticateOrRefresh(token: string, refreshToken?: string) {
 // Función para refrescar el token
 async function refreshTokenRequest(refreshToken: string) {
   try {
-    const {data:response} = await apiCommunity.get<AuthResponse>(
+    const { data: response } = await apiCommunity.get<AuthResponse>(
       '/auth/refresh',
       {
         headers: {

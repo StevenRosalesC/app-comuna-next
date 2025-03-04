@@ -11,7 +11,7 @@ export default function Aos({ duration = 1000 }: Props) {
   useEffect(() => {
     import('aos').then((AOS) =>
       AOS.init({
-        duration: duration,
+        duration: duration
       })
     );
   }, [duration]);

@@ -10,7 +10,9 @@ import { PageData } from 'types';
 
 // dynamic import for better performance
 const HeroSection = dynamic(() => import('@/components/page/hero-section'));
-const NoticesSection = dynamic(() => import('@/components/page/notices-section'));
+const NoticesSection = dynamic(
+  () => import('@/components/page/notices-section')
+);
 
 export const metadata: Metadata = {
   title: 'Comuna Bambil Collao | Inicio',
@@ -18,7 +20,7 @@ export const metadata: Metadata = {
     'Comuna Bambil Collao, ubicada en la provincia de Santa Elena, Parroquia Colonche.',
   category: 'Inicio',
   alternates: {
-    canonical: `https://${NEXT_PUBLIC_APP_URL}/home`,
+    canonical: `https://${NEXT_PUBLIC_APP_URL}/home`
   },
   openGraph: {
     title: 'Comuna Bambil Collao | Inicio',
@@ -33,13 +35,19 @@ export default async function HomePage() {
   return (
     <>
       <HeroSection />
-      <MiniCardsInfo data={{
-        persons: data.totalPersons,
-        neighborhoods: data.totalNeighborhoods,
-        associations: data.totalAssociations,
-        members: data.totalMembers
-      }} />
-      {data ? <NoticesSection notices={data.news} /> : <NoticesSection notices={[]} />}
+      <MiniCardsInfo
+        data={{
+          persons: data.totalPersons,
+          neighborhoods: data.totalNeighborhoods,
+          associations: data.totalAssociations,
+          members: data.totalMembers
+        }}
+      />
+      {data ? (
+        <NoticesSection notices={data.news} />
+      ) : (
+        <NoticesSection notices={[]} />
+      )}
       <OthersSection />
       <FaqSection />
       <LocationSection />

@@ -44,7 +44,7 @@ const PostHeader = ({
             <div className='mx-3 h-1.5 w-1.5 rounded-full bg-gray-500 dark:bg-gray-300'></div>
             <div className='flex items-center gap-2 text-sm'>
               <LuClock size={18} />
-              <span>{readingTime}{' '} minutos de lectura</span>
+              <span>{readingTime} minutos de lectura</span>
             </div>
           </div>
         </div>

@@ -10,7 +10,6 @@ import { NEXT_PUBLIC_APP_URL } from '@/lib/env.config';
 import { getNoticeByTitle } from '@/services/page';
 import { Notice } from 'types/dashboard';
 
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = params;
   const notice = await getNoticeByTitle(slug[0]);
@@ -18,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: `Comuna Bambil Collao | ${notice?.title}`,
     description: notice?.description,
     alternates: {
-      canonical: `https://${NEXT_PUBLIC_APP_URL}/notices/${notice?.title}`,
+      canonical: `https://${NEXT_PUBLIC_APP_URL}/notices/${notice?.title}`
     },
     openGraph: {
       title: `Comuna Bambil Collao | ${notice?.title}`,
@@ -28,10 +27,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         {
           url: notice?.coverImageUrl || '/not-found.jpg',
           width: 1200,
-          height: 630,
-        },
-      ],
-    },
+          height: 630
+        }
+      ]
+    }
   };
 }
 
@@ -42,15 +41,15 @@ const jsonLd = async (slug: string[]) => {
     '@type': 'NewsArticle',
     mainEntityOfPage: {
       '@type': 'WebPage',
-      url: `https://${NEXT_PUBLIC_APP_URL}/notices/${notice?.title}`,
+      url: `https://${NEXT_PUBLIC_APP_URL}/notices/${notice?.title}`
     },
     headline: notice?.title,
     image: notice?.coverImageUrl || '/not-found.jpg',
     datePublished: notice?.createdAt || new Date().toISOString(),
     dateModified: notice?.updatedAt || new Date().toISOString(),
-    author: notice?.createdBy,
+    author: notice?.createdBy
   };
-}
+};
 
 interface Props {
   params: { slug: string; id: string };
@@ -63,20 +62,15 @@ export default async function PreviewNotice({ params }: Props) {
   try {
     notice = await getNoticeByTitle(slug[0]);
     if (!notice) return notFound();
-    const allCharacters = notice.content
-      .replace(/<[^>]*>/g, '')
-      .trim().length
+    const allCharacters = notice.content.replace(/<[^>]*>/g, '').trim().length;
     readingTime = Math.ceil(allCharacters / 1000) || 1;
   } catch (error) {
     return notFound();
   }
 
-
   return (
     <>
-      <script type="application/ld+json">
-        {JSON.stringify(jsonLd)}
-      </script>
+      <script type='application/ld+json'>{JSON.stringify(jsonLd)}</script>
       <article className='flex flex-col items-center px-6 py-10 '>
         <PostHeader
           title={notice.title}

@@ -8,21 +8,27 @@ import {
   TableRow
 } from '../ui/table';
 import { SubTitle } from '../ui/atoms/sub-title';
-import Slider from '../slider';
+
 import { GalleryCard } from '../gallery-card';
 import { Paragraph } from '../ui/atoms/paragraph';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 
 export const OthersSection = () => {
   return (
     <section className='items-center py-2  '>
-      <div data-aos="fade-up">
-
-        <SubTitle className='text-center'>
+      <div data-aos='fade-up'>
+        <SubTitle className='text-center text-green-600'>
           Dirigentes de la comuna bambil collao
         </SubTitle>
       </div>
       <div className='mx-auto flex w-full flex-col items-center gap-4 px-4 md:flex-row lg:px-6 lg:py-4'>
-        <div className='w-full basis-2/5 py-12' data-aos="fade-up">
+        <div className='w-full basis-2/5 py-4 lg:py-12' data-aos='fade-up'>
           <Image
             className='aspect-square  w-full rounded-3xl object-cover md:aspect-auto'
             src='/page/leaders.webp'
@@ -31,21 +37,19 @@ export const OthersSection = () => {
             height={400}
           />
         </div>
-        <div className='w-full basis-3/5 py-12'
-          data-aos="fade-up">
-
+        <div className='w-full basis-3/5 py-4 lg:py-12' data-aos='fade-up'>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableCell
                   scope='col'
-                  className='px-6 py-3 text-center font-bold'
+                  className='px-6 py-3 text-sm lg:text-lg text-center font-bold text-green-700'
                 >
                   Nombre
                 </TableCell>
                 <TableCell
                   scope='col'
-                  className='px-6 py-3 text-center font-bold'
+                  className='px-6 py-3 text-sm lg:text-lg text-center font-bold text-green-700'
                 >
                   Cargo
                 </TableCell>
@@ -53,48 +57,52 @@ export const OthersSection = () => {
             </TableHeader>
             <TableBody className='overflow-hidden '>
               <TableRow>
-                <TableCell>Edison Catuto Tomalá</TableCell>
-                <TableCell>Presidente</TableCell>
+                <TableCell className='text-sm lg:text-lg'>Edison Catuto Tomalá</TableCell>
+                <TableCell className='text-sm lg:text-lg font-bold'>Presidente</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Karina Catuto Tomalá</TableCell>
-                <TableCell>Vice Presidente</TableCell>
+                <TableCell className='text-sm lg:text-lg '>Karina Catuto Tomalá</TableCell>
+                <TableCell className='text-sm lg:text-lg font-bold'>Vice Presidente</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Jessenia Quirumbay Ramírez</TableCell>
-                <TableCell>Secretario</TableCell>
+                <TableCell className='text-sm lg:text-lg'  >Jessenia Quirumbay Ramírez</TableCell>
+                <TableCell className='text-sm lg:text-lg font-bold'>Secretario</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Nathaly Tomalá Pozo</TableCell>
-                <TableCell>Tesorero</TableCell>
+                <TableCell className='text-sm lg:text-lg'>Nathaly Tomalá Pozo</TableCell>
+                <TableCell className='text-sm lg:text-lg font-bold'>Tesorero</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Ernesto Tomalá Torres</TableCell>
-                <TableCell>Síndico</TableCell>
+                <TableCell className='text-sm lg:text-lg'>Ernesto Tomalá Torres</TableCell>
+                <TableCell className='text-sm lg:text-lg font-bold'  >Síndico</TableCell>
               </TableRow>
             </TableBody>
           </Table>
         </div>
-
       </div>
-      <div data-aos="fade-up">
-        <SubTitle className='pb-2 text-center'>
+      <div data-aos='fade-up'>
+        <SubTitle className='pb-2 text-center text-green-600'>
           Barrios de la comuna bambil collao
         </SubTitle>
       </div>
-      <div data-aos="fade-up"
-        data-aos-anchor-placement="top-bottom">
-        <Slider delay={5500} key={'nei'}>
-          {Array.from({ length: 5 }).map((_, index) => (
-            <div key={`nei-${index}`}>
-              <GalleryCard alt={`${index}`} key={`nei-${index}`} />
-              <Paragraph key={`nei-${index}`} className='text-center'>
-                Barrio {index + 1}
-              </Paragraph>
-            </div>
-          ))}
-        </Slider>
+      <div data-aos='fade-up' data-aos-anchor-placement='top-bottom'>
+        <Carousel>
+          <CarouselContent>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <CarouselItem key={`nei-${index}`} className='md:basis-1/2 lg:basis-1/3'>
+                <div className="flex flex-col items-center">
+                  <GalleryCard alt={`${index}`} key={`nei-${index}`} />
+                  <p className="mt-0 text-center text-sm font-medium">
+                    Barrio {index + 1}
+                  </p>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
-    </section >
+    </section>
   );
 };

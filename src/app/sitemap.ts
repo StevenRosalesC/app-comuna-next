@@ -26,6 +26,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date().toISOString(),
       changeFrequency: 'daily',
       priority: 0.8
+    },
+    {
+      url: `https://${NEXT_PUBLIC_APP_URL}/notices/sitemap.xml`,
+      lastModified: new Date().toISOString(),
+      changeFrequency: 'daily',
+      priority: 0.8
     }
   ];
 }

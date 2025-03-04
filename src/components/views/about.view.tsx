@@ -14,8 +14,11 @@ export default function AboutView() {
       </Title>
       <div className='px-4 py-9 2xl:container md:px-6 md:py-12 lg:px-20 lg:py-16 2xl:mx-auto'>
         <section className='flex flex-col justify-between gap-8 lg:flex-row'>
-          <div className='flex w-full flex-col justify-center lg:w-5/12' data-aos="zoom-in-up">
-            <h2 className='pb-4 text-3xl font-bold leading-9 text-gray-800 lg:text-4xl'>
+          <div
+            className='flex w-full flex-col justify-center lg:w-5/12'
+            data-aos='zoom-in-up'
+          >
+            <h2 className='pb-4 text-3xl font-bold leading-9 text-green-600 lg:text-4xl'>
               Misión
             </h2>
             <p className='text-base font-normal leading-6 text-gray-600 '>
@@ -26,7 +29,7 @@ export default function AboutView() {
               respeto, la empatía y la igualdad.
             </p>
           </div>
-          <div className='w-full lg:w-8/12 ' data-aos="zoom-in-up">
+          <div className='w-full lg:w-8/12 ' data-aos='zoom-in-up'>
             <Image
               width={1920}
               height={1080}
@@ -38,8 +41,11 @@ export default function AboutView() {
         </section>
 
         <section className='flex flex-col justify-between gap-8 pt-12 lg:flex-row-reverse lg:pt-16'>
-          <div className='flex w-full flex-col justify-center lg:w-5/12' data-aos="zoom-in-up">
-            <h2 className='pb-4 text-3xl font-bold leading-9 text-gray-800 lg:text-4xl' >
+          <div
+            className='flex w-full flex-col justify-center lg:w-5/12'
+            data-aos='zoom-in-up'
+          >
+            <h2 className='pb-4 text-3xl font-bold leading-9 text-green-600 lg:text-4xl'>
               Vision
             </h2>
             <p className='text-base font-normal leading-6 text-gray-600 '>
@@ -54,7 +60,7 @@ export default function AboutView() {
               la montaña
             </p>
           </div>
-          <div className='w-full lg:w-8/12 lg:pt-8' data-aos="zoom-in-up">
+          <div className='w-full lg:w-8/12 lg:pt-8' data-aos='zoom-in-up'>
             <Image
               width={1920}
               height={1080}
@@ -65,8 +71,11 @@ export default function AboutView() {
           </div>
         </section>
         <section className='mx-auto max-w-screen-xl items-center gap-16 px-4 py-8 lg:grid lg:grid-cols-2 lg:px-6 lg:py-16'>
-          <div className='font-light text-gray-500 dark:text-gray-400 sm:text-lg' data-aos="zoom-in-up">
-            <h2 className='mb-4 text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white'>
+          <div
+            className='font-light text-gray-500 dark:text-gray-400 sm:text-lg'
+            data-aos='zoom-in-up'
+          >
+            <h2 className='mb-4 text-4xl font-extrabold tracking-tight  text-green-600 dark:text-white'>
               Nuestro himno
             </h2>
             <p className='mb-4'>
@@ -114,7 +123,7 @@ export default function AboutView() {
             </p>
             <Himno />
           </div>
-          <div className='mt-8 grid grid-cols-2 gap-4' data-aos="zoom-in-up">
+          <div className='mt-8 grid grid-cols-2 gap-4' data-aos='zoom-in-up'>
             <Image
               width={1920}
               height={1080}
@@ -131,7 +140,7 @@ export default function AboutView() {
             />
           </div>
         </section>
-        {/* <HistorySection /> */}
+        <HistorySection />
       </div>
     </>
   );

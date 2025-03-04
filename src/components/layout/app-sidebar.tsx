@@ -185,8 +185,7 @@ export default function AppSidebar() {
                       alt={session?.lastName || ''}
                     /> */}
                     <AvatarFallback className='rounded-lg'>
-                      {session?.lastName?.slice(0, 2)?.toUpperCase() ||
-                        'CB'}
+                      {session?.lastName?.slice(0, 2)?.toUpperCase() || 'CB'}
                     </AvatarFallback>
                   </Avatar>
                   <div className='grid flex-1 text-left text-sm leading-tight'>
@@ -210,8 +209,7 @@ export default function AppSidebar() {
                   <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
                     <Avatar className='h-8 w-8 rounded-lg'>
                       <AvatarFallback className='rounded-lg'>
-                        {session?.lastName?.slice(0, 2)?.toUpperCase() ||
-                          'CN'}
+                        {session?.lastName?.slice(0, 2)?.toUpperCase() || 'CN'}
                       </AvatarFallback>
                     </Avatar>
                     <div className='grid flex-1 text-left text-sm leading-tight'>

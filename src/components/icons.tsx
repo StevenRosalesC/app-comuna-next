@@ -35,7 +35,7 @@ import {
   ListTodo,
   UsersRound,
   UserRound,
-  ChevronsDown,
+  ChevronsDown
 } from 'lucide-react';
 
 export type Icon = LucideIcon;

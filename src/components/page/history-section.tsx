@@ -1,106 +1,261 @@
 export default function HistorySection() {
   return (
-    <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold text-center text-green-600 mb-8">
+    <div className=' mx-auto px-4 py-12 sm:px-6 lg:px-8'>
+      <h1 className='mb-8 text-center text-3xl font-bold text-green-600'>
         Historia De La Comuna Bambil Collao
       </h1>
 
-      <div className="space-y-8">
-        <p className="text-lg text-justify leading-relaxed">
-          <strong className="text-green-700">Este Sitio Desde El Año De 1.902,</strong>
-          {" "}Cuyo Nombre Indígena Se Halla A Una Hora De La &ldquo;Parroquia Colonche&rdquo; Y Tiene
-          Una Pequeña Población, Que Se Llega Sobre Unas De Las Tantas Lomas
-          Blanquinosa Que Cual Oleaje Marino Se Extiende Más O Menos Regular, Hacia
-          Unos Lados De La Cordillera Colonche, Sus{" "}
-          <strong className="text-green-700">
-            Casas Se Construían De Caña Gadúa Sus Paredes, Y La Cubierta De Cady
+      <div className='space-y-8'>
+        <p className='text-justify text-lg leading-relaxed'>
+          Desde 1902, este sitio, cuyo nombre indígena se encuentra a una hora
+          de la parroquia Colonche, albergó una pequeña población. Se accedía a
+          través de lomas blanquecinas que se extendían suavemente hacia la
+          cordillera de Colonche. En aquel entonces, las casas eran construidas
+          con caña guadúa y techadas con cade (
+          <strong className='text-green-700'>
+            techos con hojas de palma secas
           </strong>
-          , Por La Parte Derecha Se Encuentra El Rio Grande Y Se Une Con El{" "}
-          <strong className="text-green-700">Rio Fernán Sánchez</strong>
-          {" "}Sus Cauces. En Tiempos De Invierno Buenos Son Un MAR DE BENDICIONES, Para
-          Luego Cosechar El Plátano, Yuca, Maíz, Y La Paja Toquilla, Que De La Misma
-          Hacían Sombreros Y Lo Comercializaban.
+          ), reflejando la arquitectura tradicional de la época.
         </p>
 
-        <div className="bg-green-50 p-6 rounded-lg shadow-sm">
-          <h2 className="text-2xl font-semibold text-green-800 mb-4">Primeros Pobladores</h2>
-          <p className="text-justify leading-relaxed">
-            Los Primeros Pobladores Que Fundaron Esta Población Las Siguientes Personas
-            ,Familia{" "}
-            <strong className="text-green-700">
-              Tomalá ,Teran, Caiche, Rosales, Pavin Catuto, Tamayo Tomalá, Jacobo
-              Catuto, Pedro Caiche, Jose Bacilio Tomala, Pedro Del Pezo
+        <p className='text-justify text-lg leading-relaxed'>
+          A la derecha, el río Grande se une con el río Fernán Sánchez, formando
+          cauces que, en invierno, se desbordaban en abundancia, favoreciendo la
+          cosecha de plátano, yuca, maíz y paja toquilla. Esta última se
+          utilizaba para fabricar sombreros, los cuales eran comercializados en
+          la región.
+        </p>
+
+        <div className='rounded-lg bg-green-50 p-6 shadow-sm'>
+          <h2 className='mb-4 text-2xl font-semibold text-green-800'>
+            Primeros Pobladores
+          </h2>
+          <p className='text-justify leading-relaxed'>
+            Los primeros habitantes que fundaron esta población fueron las
+            familias{' '}
+            <strong className='text-green-700'>
+              Tomalá, Teran, Caiche y Rosales
             </strong>
-            ; Su Primer Presidente Fué El Señor{" "}
-            <strong className="text-green-700">Tamayo Tomalá</strong>
-            , Secretario El Señor{" "}
-            <strong className="text-green-700">Aurelio Tomalá ,</strong>
-            Como Primer Inspector El Señor{" "}
-            <strong className="text-green-700">Florencio Tomalá</strong>
+            , personas de nombre{' '}
+            <strong className='text-green-700'>
+              Pavin Catuto, Tamayo Tomalá, Jacobo Catuto, Pedro Caiche, Jose
+              Bacilio Tomala, Pedro Del Pezo
+            </strong>
+            ; su primera directiva fue conformada por las siguientes personas:
           </p>
+          <ul className='mt-4 list-disc space-y-2 pl-6'>
+            <li>
+              <strong className='text-green-700'>Presidente:</strong> Tamayo
+              Tomalá
+            </li>
+            <li>
+              <strong className='text-green-700'>Secretario:</strong> Aurelio
+              Tomalá
+            </li>
+            <li>
+              <strong className='text-green-700'>Inspector:</strong> Florencio
+              Tomalá
+            </li>
+          </ul>
         </div>
 
-        <section className="border-l-4 border-green-500 pl-6">
-          <h2 className="text-2xl font-semibold text-green-800 mb-4">Límites De La Comuna</h2>
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white p-4 rounded-lg shadow-sm">
-                <h3 className="font-bold text-green-700 mb-2">Norte</h3>
-                <p className="text-justify">
-                  Limita Con Las Posesiones De La Comuna{" "}
-                  <strong>Loma Alta</strong>, Dede El Punto Conocido Como Cerro Verde
+        <section className='border-l-4 border-green-500 pl-6'>
+          <h2 className='mb-4 text-2xl font-semibold text-green-800'>
+            Límites De La Comuna
+          </h2>
+          <div className='space-y-4'>
+            <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
+              <div className='rounded-lg bg-white p-4 shadow-sm'>
+                <h3 className='mb-2 font-bold text-green-700'>Norte</h3>
+                <p className='text-justify'>
+                  Con las posesiones de la{' '}
+                  <strong className='text-green-700'>Comuna Loma Alta</strong>,
+                  desde el punto conocido como{' '}
+                  <strong className='text-green-700'>Cerro Verde</strong>,
+                  continuando por el camino llamado{' '}
+                  <strong className='text-green-700'>Cauchero</strong>
+                  hasta llegar al{' '}
+                  <strong className='text-green-700'>Camino Barbasco</strong>.
                 </p>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-sm">
-                <h3 className="font-bold text-green-700 mb-2">Sur</h3>
-                <p className="text-justify">
-                  Limita Con La Comuna{" "}
-                  <strong>Manantial De Colonche</strong>
+              <div className='rounded-lg bg-white p-4 shadow-sm'>
+                <h3 className='mb-2 font-bold text-green-700'>Sur</h3>
+                <p className='text-justify'>
+                  Con la{' '}
+                  <strong className='text-green-700'>
+                    Comuna Manantial de Colonche
+                  </strong>
+                  , desde el punto conocido como{' '}
+                  <strong className='text-green-700'>Las Crucitas</strong>, un
+                  pequeño caserío que separa al{' '}
+                  <strong className='text-green-700'>
+                    Recinto Bambil Desecho
+                  </strong>
+                  , cruzando el{' '}
+                  <strong className='text-green-700'>río Botella</strong>.
                 </p>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-sm">
-                <h3 className="font-bold text-green-700 mb-2">Este</h3>
-                <p className="text-justify">
-                  Limita Con La Comuna{" "}
-                  <strong>Rio Seco</strong>
+              <div className='rounded-lg bg-white p-4 shadow-sm'>
+                <h3 className='mb-2 font-bold text-green-700'>Este</h3>
+                <p className='text-justify'>
+                  Con la{' '}
+                  <strong className='text-green-700'>Comuna Río Seco</strong>,
+                  desde el punto{' '}
+                  <strong className='text-green-700'>Barbasco</strong>, pasando
+                  por el sector denominado{' '}
+                  <strong className='text-green-700'>Sabaneta</strong>.
                 </p>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-sm">
-                <h3 className="font-bold text-green-700 mb-2">Oeste</h3>
-                <p className="text-justify">
-                  Limita Con La Comuna{" "}
-                  <strong>Sinchal-Barcelona</strong>
+              <div className='rounded-lg bg-white p-4 shadow-sm'>
+                <h3 className='mb-2 font-bold text-green-700'>Oeste</h3>
+                <p className='text-justify'>
+                  Con la{' '}
+                  <strong className='text-green-700'>
+                    Comuna Sinchal-Barcelona
+                  </strong>
+                  , desde{' '}
+                  <strong className='text-green-700'>Cerro Verde</strong>,
+                  siguiendo aproximadamente{' '}
+                  <strong className='text-green-700'>4.000 metros</strong>
+                  hasta la{' '}
+                  <strong className='text-green-700'>Loma del Mate</strong>.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="mt-12">
-          <h2 className="text-2xl font-semibold text-green-800 mb-6">Fiestas Religiosas</h2>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <p className="text-justify leading-relaxed">
-              Nuestra Comuna{" "}
-              <strong className="text-green-700">Bambil Collao</strong>
-              {" "}Celebra Sus Fiestas Patronales Anualmente En Honor A Nuestra Patrona La{" "}
-              <strong className="text-green-700">Virgen Maria Auxiliadora</strong>
+        <section className='mt-12'>
+          <h2 className='mb-6 text-2xl font-semibold text-green-800'>
+            Fiestas Religiosas
+          </h2>
+          <div className='space-y-6 rounded-lg bg-white p-6 shadow-md'>
+            <p className='text-justify leading-relaxed'>
+              La comuna{' '}
+              <strong className='text-green-700'>Bambil Collao</strong> celebra
+              anualmente sus{' '}
+              <strong className='text-green-700'>fiestas patronales</strong> en
+              honor a su patrona, la{' '}
+              <strong className='text-green-700'>
+                Virgen María Auxiliadora
+              </strong>
+              , del{' '}
+              <strong className='text-green-700'>1 al 8 de septiembre</strong>.
             </p>
+
+            <div className='space-y-4'>
+              <p className='text-justify leading-relaxed'>
+                Las festividades inician el{' '}
+                <strong className='text-green-700'>1 de septiembre</strong> con
+                el <strong className='text-green-700'>Pregón</strong>, evento en
+                el que todos los barrios participan en la elección de la reina.
+                Del{' '}
+                <strong className='text-green-700'>2 al 6 de septiembre</strong>{' '}
+                , se realizan diversas actividades recreativas, como:
+              </p>
+
+              <ul className='list-disc space-y-2 pl-6'>
+                <li>
+                  <strong className='text-green-700'>Juegos deportivos</strong>
+                </li>
+                <li>
+                  <strong className='text-green-700'>Palo encebado</strong>
+                </li>
+                <li>
+                  <strong className='text-green-700'>Ollas encantadas</strong>
+                </li>
+                <li>
+                  <strong className='text-green-700'>
+                    Despescuezado de gallos
+                  </strong>
+                </li>
+                <li>
+                  <strong className='text-green-700'>
+                    Otros juegos tradicionales
+                  </strong>
+                </li>
+              </ul>
+
+              <p className='text-justify leading-relaxed'>
+                El <strong className='text-green-700'>7 de septiembre</strong>{' '}
+                se celebra la{' '}
+                <strong className='text-green-700'>Santa Misa</strong>, seguida
+                de una procesión por las principales calles de la comunidad, con
+                la imagen de la Virgen María portada por los feligreses. La
+                jornada culmina con un{' '}
+                <strong className='text-green-700'>gran baile público</strong>.
+              </p>
+
+              <p className='text-justify leading-relaxed'>
+                Finalmente, el{' '}
+                <strong className='text-green-700'>8 de septiembre</strong> ,
+                las festividades concluyen con otra{' '}
+                <strong className='text-green-700'>Santa Misa</strong> y el
+                tradicional baile conocido como{' '}
+                <strong className='text-green-700'>
+                  &ldquo;Pela Rabo&rdquo;
+                </strong>
+                .
+              </p>
+            </div>
           </div>
         </section>
 
-        <section className="mt-12">
-          <h2 className="text-2xl font-semibold text-green-800 mb-6">Bienes De La Comuna</h2>
-          <div className="bg-green-50 p-6 rounded-lg shadow-sm">
-            <p className="text-justify leading-relaxed">
-              Nuestra Comuna Posee Con Una Iglesia, Casa Comunal, Una Escuela, Un
-              Cementerio, Un Mercadillo, Una Cancha De Fútbol, Un Dispensario Médico, Un
-              Centro Educativo Denominado,{" "}
-              <strong className="text-green-700">
-                C.P.R, Una Guarderia Infantil, C.D, I
-              </strong>
-              , Una Capilla Ardiente, Una Cancha De Uso Múltiple Y Además Una Ciudadela
-              Llamada Narcisa De Jesús
+        <section className='mt-12'>
+          <h2 className='mb-6 text-2xl font-semibold text-green-800'>
+            Bienes De La Comuna
+          </h2>
+          <div className='rounded-lg bg-green-50 p-6 shadow-sm'>
+            <p className='text-justify leading-relaxed'>
+              La comuna{' '}
+              <strong className='text-green-700'>Bambil Collao</strong> cuenta
+              con diversas infraestructuras para el bienestar de sus habitantes,
+              entre ellas:
             </p>
+            <ul className='mt-4 list-disc space-y-2 pl-6'>
+              <li>
+                <strong className='text-green-700'>Iglesia</strong>
+              </li>
+              <li>
+                <strong className='text-green-700'>Casa comunal</strong>
+              </li>
+              <li>
+                <strong className='text-green-700'>Escuela</strong>
+              </li>
+              <li>
+                <strong className='text-green-700'>Cementerio</strong>
+              </li>
+              <li>
+                <strong className='text-green-700'>Mercadillo</strong>
+              </li>
+              <li>
+                <strong className='text-green-700'>Cancha de fútbol</strong>
+              </li>
+              <li>
+                <strong className='text-green-700'>Dispensario médico</strong>
+              </li>
+              <li>
+                <strong className='text-green-700'>
+                  Centro educativo (C.P.R.)
+                </strong>
+              </li>
+              <li>
+                <strong className='text-green-700'>Guardería (C.D.I.)</strong>
+              </li>
+              <li>
+                <strong className='text-green-700'>Capilla ardiente</strong>
+              </li>
+              <li>
+                <strong className='text-green-700'>
+                  Cancha de uso múltiple
+                </strong>
+              </li>
+              <li>
+                <strong className='text-green-700'>
+                  Ciudadela Narcisa de Jesús
+                </strong>
+              </li>
+            </ul>
           </div>
         </section>
       </div>

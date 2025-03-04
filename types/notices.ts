@@ -1,9 +1,9 @@
 export interface NoticeCreation {
-  title:         string;
-  description:   string;
+  title: string;
+  description: string;
   coverImageUrl: string;
-  content:       string;
-  type:         NoticeType;
+  content: string;
+  type: NoticeType;
   published: boolean;
 }
 

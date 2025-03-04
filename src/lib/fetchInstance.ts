@@ -1,10 +1,8 @@
-
 type FetchOptions = RequestInit & { headers?: Record<string, string> };
 
 export class FetchInstance {
   private baseURL: string;
   private defaultOptions: FetchOptions;
-  
 
   constructor(baseURL: string, defaultOptions: FetchOptions = {}) {
     this.baseURL = baseURL;
@@ -22,7 +20,7 @@ export class FetchInstance {
       ...options,
       headers: {
         ...(this.defaultOptions.headers as Record<string, string>),
-        ...(options.headers as Record<string, string>),
+        ...(options.headers as Record<string, string>)
       }
     };
     const response = await fetch(url, config);
@@ -66,8 +64,12 @@ export class FetchInstance {
       }
     });
   }
-  // Método PATCH	
-  patch<T>(endpoint: string, body: unknown, options?: FetchOptions): Promise<T> {
+  // Método PATCH
+  patch<T>(
+    endpoint: string,
+    body: unknown,
+    options?: FetchOptions
+  ): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
       method: 'PATCH',
@@ -78,7 +80,7 @@ export class FetchInstance {
       }
     });
   }
-  
+
   // Método DELETE
   delete<T>(endpoint: string, options?: FetchOptions): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: 'DELETE' });

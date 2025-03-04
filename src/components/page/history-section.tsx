@@ -8,7 +8,7 @@ export default function HistorySection() {
       <div className="space-y-8">
         <p className="text-lg text-justify leading-relaxed">
           <strong className="text-green-700">Este Sitio Desde El Año De 1.902,</strong>
-          {" "}Cuyo Nombre Indígena Se Halla A Una Hora De La "Parroquia Colonche "Y Tiene
+          {" "}Cuyo Nombre Indígena Se Halla A Una Hora De La &ldquo;Parroquia Colonche&rdquo; Y Tiene
           Una Pequeña Población, Que Se Llega Sobre Unas De Las Tantas Lomas
           Blanquinosa Que Cual Oleaje Marino Se Extiende Más O Menos Regular, Hacia
           Unos Lados De La Cordillera Colonche, Sus{" "}

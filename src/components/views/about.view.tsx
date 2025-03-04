@@ -3,7 +3,7 @@ import { Title } from '../ui/atoms/title';
 
 import Aos from '../aos';
 import Himno from '../page/himno';
-
+import HistorySection from '../page/history-section';
 
 export default function AboutView() {
   return (
@@ -131,6 +131,7 @@ export default function AboutView() {
             />
           </div>
         </section>
+        {/* <HistorySection /> */}
       </div>
     </>
   );

@@ -72,7 +72,9 @@ const paragraphVariants = cva(
         default: 'text-base lg:text-lg xl:text-xl',
         sm: 'text-sm lg:text-base xl:text-lg',
         lg: 'text-lg lg:text-xl xl:text-2xl',
-        xl: 'text-xl lg:text-2xl xl:text-3xl'
+        xl: 'text-xl lg:text-2xl xl:text-3xl',
+        xs: 'text-xs lg:text-sm xl:text-base',
+        md: 'text-md lg:text-lg xl:text-xl'
       }
     }
   }
@@ -80,7 +82,7 @@ const paragraphVariants = cva(
 
 export interface ParagraphProps
   extends React.HTMLAttributes<HTMLParagraphElement>,
-    VariantProps<typeof paragraphVariants> {
+  VariantProps<typeof paragraphVariants> {
   asChild?: boolean;
 }
 

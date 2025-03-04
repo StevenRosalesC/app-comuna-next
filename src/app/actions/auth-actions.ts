@@ -38,6 +38,8 @@ export async function login(formData: FormData) {
   } catch (error) {
     // Opcional: redirigir a una página de error
     console.error(error);
+    // delete the cookie
+    cookies().delete('token');
     return {
       ok: false
     };

@@ -43,7 +43,7 @@ export const NoticeMiniCard = ({
     }
   }
   return (
-    <article className='mb-10 flex flex-col justify-between rounded-lg border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-gray-800 sm:h-[30rem]'>
+    <article className='mb-10 flex flex-col justify-between rounded-lg border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-gray-800 h-full'>
       <div className='mb-5 flex items-center justify-between text-gray-500'>
         <span className='bg-primary-100 text-primary-800 dark:bg-primary-200 dark:text-primary-800 inline-flex items-center rounded px-2.5 py-0.5 text-xs font-medium'>
           {handleIcon(type)}
@@ -61,11 +61,13 @@ export const NoticeMiniCard = ({
         className='aspect-video rounded-lg object-cover'
       />
       <h2 className='mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white'>
-        <a href={`/notices/${newsId}`} className='hover:underline'>
+        <Link href={`/notices/${title}`} className={`hover:underline ${title.length > 30 ? 'text-md' : ''}`}>
           {title}
-        </a>
+        </Link>
       </h2>
-      <Paragraph size={'sm'}>{description}</Paragraph>
+      <Paragraph size={
+        description.length > 100 ? 'xs' : 'md'
+      }>{description}</Paragraph>
       <div className='flex items-center justify-between'>
         <div className='flex items-center space-x-4'>
           <span className='font-medium dark:text-white'>{

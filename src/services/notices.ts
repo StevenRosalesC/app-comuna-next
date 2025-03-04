@@ -37,6 +37,7 @@ export const createNotice = async (notice: NoticeCreation): Promise<Notice | nul
     const { data: newNotice } = await apiCommunity.post<Notice>('/news', notice);
     return newNotice;
   } catch (error) {
+    console.log({error})
     if (error instanceof Error) {
       throw new Error(error.message);
     } else {

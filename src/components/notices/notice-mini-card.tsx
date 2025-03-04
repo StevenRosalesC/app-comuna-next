@@ -60,13 +60,14 @@ export const NoticeMiniCard = ({
       </div>
       <Image
         src={coverImageUrl || '/not-found.webp'}
-        alt='Notice'
+        alt={`notice-${newsId}`}
         width={600}
         height={400}
         className='aspect-video rounded-lg object-cover'
       />
       <h2 className='mb-2 line-clamp-2 text-2xl font-bold tracking-tight text-green-600'>
         <Link
+          rel='noopener noreferrer'
           href={`/notices/${title}`}
           className={`hover:underline ${title.length > 30 ? 'text-md' : ''}`}
         >
@@ -81,6 +82,7 @@ export const NoticeMiniCard = ({
           <span className='font-medium dark:text-white'>{createdBy}</span>
         </div>
         <Link
+          rel='noopener noreferrer'
           href={`/notices/${title}`}
           className='inline-flex items-center font-medium hover:underline'
         >

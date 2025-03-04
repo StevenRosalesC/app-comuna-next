@@ -17,27 +17,27 @@ export default function MiniCardsInfo({ data }: Props) {
       data-aos='fade-up'
     >
       <div className='flex flex-col items-center justify-center gap-2 rounded-lg bg-white p-4 shadow-md'>
-        <h3 className='text-2xl font-semibold text-green-600'>
+        <h2 className='text-2xl font-semibold text-green-600'>
           {data.persons}
-        </h3>
+        </h2>
         <p className='text-lg font-semibold'>Personas</p>
       </div>
       <div className='flex flex-col items-center justify-center gap-2 rounded-lg bg-white p-4 shadow-md'>
-        <h3 className='text-2xl font-semibold text-green-600'>
+        <h2 className='text-2xl font-semibold text-green-600'>
           {data.members}
-        </h3>
+        </h2>
         <p className='text-lg font-semibold'>Comuneros</p>
       </div>
       <div className='flex flex-col items-center justify-center gap-2 rounded-lg bg-white p-4 shadow-md'>
-        <h3 className='text-2xl font-semibold text-green-600'>
+        <h2 className='text-2xl font-semibold text-green-600'>
           {data.neighborhoods}
-        </h3>
+        </h2>
         <p className='text-lg font-semibold'>Barrios</p>
       </div>
       <div className='flex flex-col items-center justify-center gap-2 rounded-lg bg-white p-4 shadow-md'>
-        <h3 className='text-2xl font-semibold text-green-600'>
+        <h2 className='text-2xl font-semibold text-green-600'>
           {data.associations}
-        </h3>
+        </h2>
         <p className='text-lg font-semibold'>Asociaciones</p>
       </div>
     </section>

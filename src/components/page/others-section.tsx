@@ -21,7 +21,7 @@ import {
 
 export const OthersSection = () => {
   return (
-    <section className='items-center py-2  '>
+    <section className='items-center py-2'>
       <div data-aos='fade-up'>
         <SubTitle className='text-center text-green-600'>
           Dirigentes de la comuna bambil collao
@@ -30,7 +30,7 @@ export const OthersSection = () => {
       <div className='mx-auto flex w-full flex-col items-center gap-4 px-4 md:flex-row lg:px-6 lg:py-4'>
         <div className='w-full basis-2/5 py-4 lg:py-12' data-aos='fade-up'>
           <Image
-            className='aspect-square  w-full rounded-3xl object-cover md:aspect-auto'
+            className='aspect-square w-full rounded-3xl object-cover md:aspect-auto'
             src='/page/leaders.webp'
             alt='Dirigentes de la comuna bambil collao'
             width={600}
@@ -38,66 +38,27 @@ export const OthersSection = () => {
           />
         </div>
         <div className='w-full basis-3/5 py-4 lg:py-12' data-aos='fade-up'>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableCell
-                  scope='col'
-                  className='px-6 py-3 text-center text-sm font-bold text-green-700 lg:text-lg'
-                >
-                  Nombre
-                </TableCell>
-                <TableCell
-                  scope='col'
-                  className='px-6 py-3 text-center text-sm font-bold text-green-700 lg:text-lg'
-                >
-                  Cargo
-                </TableCell>
-              </TableRow>
-            </TableHeader>
-            <TableBody className='overflow-hidden '>
-              <TableRow>
-                <TableCell className='text-sm lg:text-lg'>
-                  Edison Catuto Tomalá
-                </TableCell>
-                <TableCell className='text-sm font-bold lg:text-lg'>
-                  Presidente
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className='text-sm lg:text-lg '>
-                  Karina Catuto Tomalá
-                </TableCell>
-                <TableCell className='text-sm font-bold lg:text-lg'>
-                  Vice Presidente
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className='text-sm lg:text-lg'>
-                  Jessenia Quirumbay Ramírez
-                </TableCell>
-                <TableCell className='text-sm font-bold lg:text-lg'>
-                  Secretario
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className='text-sm lg:text-lg'>
-                  Nathaly Tomalá Pozo
-                </TableCell>
-                <TableCell className='text-sm font-bold lg:text-lg'>
-                  Tesorero
-                </TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className='text-sm lg:text-lg'>
-                  Ernesto Tomalá Torres
-                </TableCell>
-                <TableCell className='text-sm font-bold lg:text-lg'>
-                  Síndico
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2 grid grid-cols-2 border-b border-gray-200 px-6 py-3">
+              <div className="text-center text-sm font-bold text-green-700 lg:text-lg">Nombre</div>
+              <div className="text-center text-sm font-bold text-green-700 lg:text-lg">Cargo</div>
+            </div>
+
+            <div className="text-sm lg:text-lg px-6 py-2">Edison Catuto Tomalá</div>
+            <div className="text-sm font-bold lg:text-lg px-6 py-2">Presidente</div>
+
+            <div className="text-sm lg:text-lg px-6 py-2">Karina Catuto Tomalá</div>
+            <div className="text-sm font-bold lg:text-lg px-6 py-2">Vice Presidente</div>
+
+            <div className="text-sm lg:text-lg px-6 py-2">Jessenia Quirumbay Ramírez</div>
+            <div className="text-sm font-bold lg:text-lg px-6 py-2">Secretario</div>
+
+            <div className="text-sm lg:text-lg px-6 py-2">Nathaly Tomalá Pozo</div>
+            <div className="text-sm font-bold lg:text-lg px-6 py-2">Tesorero</div>
+
+            <div className="text-sm lg:text-lg px-6 py-2">Ernesto Tomalá Torres</div>
+            <div className="text-sm font-bold lg:text-lg px-6 py-2">Síndico</div>
+          </div>
         </div>
       </div>
       <div data-aos='fade-up'>

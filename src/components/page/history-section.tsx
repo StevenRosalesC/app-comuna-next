@@ -6,7 +6,7 @@ export default function HistorySection() {
       </h2>
 
       <div className='space-y-8'>
-        <p className='text-justify text-lg leading-relaxed'>
+        <p className=' text-lg leading-relaxed'>
           Desde 1902, este sitio, cuyo nombre indígena se encuentra a una hora
           de la parroquia Colonche, albergó una pequeña población. Se accedía a
           través de lomas blanquecinas que se extendían suavemente hacia la
@@ -18,7 +18,7 @@ export default function HistorySection() {
           ), reflejando la arquitectura tradicional de la época.
         </p>
 
-        <p className='text-justify text-lg leading-relaxed'>
+        <p className=' text-lg leading-relaxed'>
           A la derecha, el río Grande se une con el río Fernán Sánchez, formando
           cauces que, en invierno, se desbordaban en abundancia, favoreciendo la
           cosecha de plátano, yuca, maíz y paja toquilla. Esta última se
@@ -30,7 +30,7 @@ export default function HistorySection() {
           <h2 className='mb-4 text-2xl font-semibold text-green-800'>
             Primeros Pobladores
           </h2>
-          <p className='text-justify leading-relaxed'>
+          <p className=' leading-relaxed'>
             Los primeros habitantes que fundaron esta población fueron las
             familias{' '}
             <strong className='text-green-700'>
@@ -67,7 +67,7 @@ export default function HistorySection() {
             <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
               <div className='rounded-lg bg-white p-4 shadow-sm'>
                 <h3 className='mb-2 font-bold text-green-700'>Norte</h3>
-                <p className='text-justify'>
+                <p className=''>
                   Con las posesiones de la{' '}
                   <strong className='text-green-700'>Comuna Loma Alta</strong>,
                   desde el punto conocido como{' '}
@@ -80,7 +80,7 @@ export default function HistorySection() {
               </div>
               <div className='rounded-lg bg-white p-4 shadow-sm'>
                 <h3 className='mb-2 font-bold text-green-700'>Sur</h3>
-                <p className='text-justify'>
+                <p className=''>
                   Con la{' '}
                   <strong className='text-green-700'>
                     Comuna Manantial de Colonche
@@ -97,7 +97,7 @@ export default function HistorySection() {
               </div>
               <div className='rounded-lg bg-white p-4 shadow-sm'>
                 <h3 className='mb-2 font-bold text-green-700'>Este</h3>
-                <p className='text-justify'>
+                <p className=''>
                   Con la{' '}
                   <strong className='text-green-700'>Comuna Río Seco</strong>,
                   desde el punto{' '}
@@ -108,7 +108,7 @@ export default function HistorySection() {
               </div>
               <div className='rounded-lg bg-white p-4 shadow-sm'>
                 <h3 className='mb-2 font-bold text-green-700'>Oeste</h3>
-                <p className='text-justify'>
+                <p className=''>
                   Con la{' '}
                   <strong className='text-green-700'>
                     Comuna Sinchal-Barcelona
@@ -130,7 +130,7 @@ export default function HistorySection() {
             Fiestas Religiosas
           </h2>
           <div className='space-y-6 rounded-lg bg-white p-6 shadow-md'>
-            <p className='text-justify leading-relaxed'>
+            <p className=' leading-relaxed'>
               La comuna{' '}
               <strong className='text-green-700'>Bambil Collao</strong> celebra
               anualmente sus{' '}
@@ -144,7 +144,7 @@ export default function HistorySection() {
             </p>
 
             <div className='space-y-4'>
-              <p className='text-justify leading-relaxed'>
+              <p className=' leading-relaxed'>
                 Las festividades inician el{' '}
                 <strong className='text-green-700'>1 de septiembre</strong> con
                 el <strong className='text-green-700'>Pregón</strong>, evento en
@@ -176,7 +176,7 @@ export default function HistorySection() {
                 </li>
               </ul>
 
-              <p className='text-justify leading-relaxed'>
+              <p className=' leading-relaxed'>
                 El <strong className='text-green-700'>7 de septiembre</strong>{' '}
                 se celebra la{' '}
                 <strong className='text-green-700'>Santa Misa</strong>, seguida
@@ -186,7 +186,7 @@ export default function HistorySection() {
                 <strong className='text-green-700'>gran baile público</strong>.
               </p>
 
-              <p className='text-justify leading-relaxed'>
+              <p className=' leading-relaxed'>
                 Finalmente, el{' '}
                 <strong className='text-green-700'>8 de septiembre</strong> ,
                 las festividades concluyen con otra{' '}
@@ -206,7 +206,7 @@ export default function HistorySection() {
             Bienes De La Comuna
           </h2>
           <div className='rounded-lg bg-green-50 p-6 shadow-sm'>
-            <p className='text-justify leading-relaxed'>
+            <p className=' leading-relaxed'>
               La comuna{' '}
               <strong className='text-green-700'>Bambil Collao</strong> cuenta
               con diversas infraestructuras para el bienestar de sus habitantes,
@@ -265,12 +265,14 @@ export default function HistorySection() {
                 className='hidden h-full w-full lg:block'
                 width='100%'
                 height='500px'
+                lang="es"
+                aria-label='Historia de la comuna Bambil Collao'
               />
               <a
                 href='/page/bambil-collao-history.pdf'
                 target='_blank'
                 rel='noopener noreferrer'
-                className='inline-flex items-center rounded-md bg-green-600 px-4 py-2 text-white shadow-md transition-colors duration-200 hover:bg-green-700'
+                className='inline-flex items-center rounded-md bg-green-700 px-4 py-2 text-white shadow-md transition-colors duration-200 hover:bg-green-700'
               >
                 <svg
                   className='mr-2 h-5 w-5'
@@ -285,7 +287,7 @@ export default function HistorySection() {
                     d='M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14'
                   />
                 </svg>
-                Ver documento completo
+                Ver documento completo (PDF)
               </a>
             </div>
           </div>

@@ -11,7 +11,7 @@ export default function LocationSection() {
         >
           <div className='p-4'>
             <Mail size={32} />
-            <p className='text-xl font-bold'>Correo</p>
+            <h4 className='text-xl font-bold'>Correo</h4>
             <p>Escribenos a:</p>
             <Link
               className='hover:underline'
@@ -23,7 +23,7 @@ export default function LocationSection() {
 
           <div className='p-4'>
             <MapPin size={32} />
-            <p className='text-xl font-bold'>Oficina</p>
+            <h4 className='text-xl font-bold'>Oficina</h4>
             <p>
               Santa Elena, Parroquia Colonche, Bambil Collao - Barrio 3 de
               Noviembre - Frente a la cancha de uso múltiple, Ecuador.

@@ -17,8 +17,7 @@ export const NoticeCard = ({ notice }: Props) => {
       <Image
         width={800}
         height={600}
-        alt=''
-        role='presentation'
+        alt={`notice-${notice.newsId}`}
         className='h-44 w-full rounded object-cover dark:bg-gray-500'
         src={notice.coverImageUrl || '/not-found-1.webp'}
       />

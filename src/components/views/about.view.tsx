@@ -118,7 +118,7 @@ export default function AboutView() {
             />
           </div>
         </section>
-        <HistorySection />
+        {/* <HistorySection /> */}
         <section className='mx-auto max-w-screen-xl items-center gap-16 px-4 py-8 lg:grid lg:grid-cols-2 lg:px-6 lg:py-16'>
           <div
             className='font-light text-gray-500 dark:text-gray-400 sm:text-lg'

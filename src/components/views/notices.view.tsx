@@ -46,6 +46,10 @@ export default function NoticesView() {
         </div>
       ) : (
         <div className='container mx-auto max-w-6xl space-y-6 p-6 sm:space-y-12'>
+          <h2 className='text-2xl lg:text-4xl text-center  font-bold'>
+            Noticias de la comuna Bambil Collao
+          </h2>
+
           {notices.slice(0, 1).map((notice, index) => (
             <Link
               rel='noopener noreferrer'
@@ -61,15 +65,15 @@ export default function NoticesView() {
                 className='h-96 w-full rounded object-cover dark:bg-gray-500 sm:h-96 lg:col-span-7'
               />
               <div className='space-y-2 p-6 lg:col-span-5'>
-                <h3 className='text-2xl font-semibold group-hover:underline group-focus:underline sm:text-4xl'>
+                <h3 className='text-2xl font-semibold text-green-600 line-clamp-2 group-hover:underline group-focus:underline sm:text-4xl '>
                   {notice.title}
                 </h3>
-                <span className='text-xs dark:text-gray-600'>
+                <span className='text-xs'>
                   {getRelativeTime(
                     notice.createdAt ?? new Date().toISOString()
                   )}
                 </span>
-                <p>{notice.description}</p>
+                <p className='line-clamp-6'>{notice.description}</p>
               </div>
             </Link>
           ))}
@@ -79,9 +83,11 @@ export default function NoticesView() {
               notices
                 .slice(1)
                 .map((notice, index) => (
-                  <NoticeCard notice={notice} key={index} />
+                  <div className="h-full" key={index}>
+                    <NoticeCard notice={notice} />
+                  </div>
                 ))}
-            <div className=' col-span-full flex justify-center'>
+            <div className='col-span-full flex justify-center'>
               {notices.length < total && (
                 <Button
                   type='button'

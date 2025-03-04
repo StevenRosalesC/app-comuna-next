@@ -23,13 +23,13 @@ export const NoticeCard = ({ notice }: Props) => {
         src={notice.coverImageUrl || '/not-found-1.webp'}
       />
       <div className='space-y-2 p-6'>
-        <h3 className='text-2xl font-semibold group-hover:underline group-focus:underline'>
+        <h3 className='text-2xl font-semibold text-green-600 line-clamp-2 group-hover:underline group-focus:underline'>
           {notice.title}
         </h3>
         <span className='text-xs dark:text-gray-600'>
           {getRelativeTime(notice.createdAt ?? new Date().toISOString())}
         </span>
-        <p>{notice.description}</p>
+        <p className='line-clamp-6'>{notice.description}</p>
       </div>
     </Link>
   );

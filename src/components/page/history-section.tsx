@@ -1,9 +1,9 @@
 export default function HistorySection() {
   return (
     <div className=' mx-auto px-4 py-12 sm:px-6 lg:px-8'>
-      <h1 className='mb-8 text-center text-3xl font-bold text-green-600'>
+      <h2 className='mb-8 text-center text-3xl font-bold text-green-600'>
         Historia De La Comuna Bambil Collao
-      </h1>
+      </h2>
 
       <div className='space-y-8'>
         <p className='text-justify text-lg leading-relaxed'>
@@ -256,6 +256,38 @@ export default function HistorySection() {
                 </strong>
               </li>
             </ul>
+          </div>
+          <div className='mt-4'>
+            <div className="flex flex-col items-center space-y-4">
+              <embed
+                src='/page/bambil-collao-history.pdf'
+                type='application/pdf'
+                className='h-full w-full hidden lg:block'
+                width='100%'
+                height='500px'
+              />
+              <a
+                href="/page/bambil-collao-history.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200 shadow-md"
+              >
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
+                </svg>
+                Ver documento completo
+              </a>
+            </div>
           </div>
         </section>
       </div>

@@ -1,6 +1,13 @@
 import React from 'react';
 import { Paragraph } from '../ui/atoms/paragraph';
-import { Globe, ListCheck, MessageCircleWarning, Newspaper, NotebookPen, StickyNote } from 'lucide-react';
+import {
+  Globe,
+  ListCheck,
+  MessageCircleWarning,
+  Newspaper,
+  NotebookPen,
+  StickyNote
+} from 'lucide-react';
 import { getRelativeTime } from '@/utils/date';
 import Image from 'next/image';
 import { NoticeType } from 'types/notices';
@@ -29,54 +36,55 @@ export const NoticeMiniCard = ({
   const handleIcon = (type: string) => {
     switch (type) {
       case NoticeType.Noticia:
-        return <Newspaper />;
+        return <Newspaper className='text-green-600' />;
       case NoticeType.Evento:
-        return <ListCheck />;
+        return <ListCheck className='text-green-600' />;
       case NoticeType.Anuncio:
-        return <MessageCircleWarning />;
+        return <MessageCircleWarning className='text-green-600' />;
       case NoticeType.Blog:
-        return <NotebookPen />;
+        return <NotebookPen className='text-green-600' />;
       case NoticeType.Aviso:
-        return <Globe />;
+        return <Globe className='text-green-600' />;
       default:
-        return <StickyNote />;
+        return <StickyNote className='text-green-600' />;
     }
-  }
+  };
   return (
-    <article className='mb-10 flex flex-col justify-between rounded-lg border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-gray-800 h-full'>
+    <article className='mb-10 flex h-full flex-1 flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-md'>
       <div className='mb-5 flex items-center justify-between text-gray-500'>
-        <span className='bg-primary-100 text-primary-800 dark:bg-primary-200 dark:text-primary-800 inline-flex items-center rounded px-2.5 py-0.5 text-xs font-medium'>
+        <span className='bg-primary-100 text-primary-800 inline-flex items-center rounded px-2.5 py-0.5 text-xs font-medium'>
           {handleIcon(type)}
-          <span className='ml-1'>
-            {type}
-          </span>
+          <span className='ml-1'>{type}</span>
         </span>
         <span className='text-sm'>{relativeTime}</span>
       </div>
       <Image
         src={coverImageUrl || '/not-found.webp'}
-        alt='Notice'
+        alt={`notice-${newsId}`}
         width={600}
         height={400}
         className='aspect-video rounded-lg object-cover'
       />
-      <h2 className='mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white'>
-        <Link href={`/notices/${title}`} className={`hover:underline ${title.length > 30 ? 'text-md' : ''}`}>
+      <h2 className='mb-2 line-clamp-2 text-2xl font-bold tracking-tight text-green-600'>
+        <Link
+          rel='noopener noreferrer'
+          href={`/notices/${title}`}
+          className={`hover:underline ${title.length > 30 ? 'text-md' : ''}`}
+        >
           {title}
         </Link>
       </h2>
-      <Paragraph size={
-        description.length > 100 ? 'xs' : 'md'
-      }>{description}</Paragraph>
-      <div className='flex items-center justify-between'>
+      <Paragraph size={'md'} className='line-clamp-5'>
+        {description}
+      </Paragraph>
+      <div className='mt-auto flex items-center justify-between'>
         <div className='flex items-center space-x-4'>
-          <span className='font-medium dark:text-white'>{
-            createdBy
-          }</span>
+          <span className='font-medium dark:text-white'>{createdBy}</span>
         </div>
         <Link
+          rel='noopener noreferrer'
           href={`/notices/${title}`}
-          className='text-primary-600 dark:text-primary-500 inline-flex items-center font-medium hover:underline'
+          className='inline-flex items-center font-medium hover:underline'
         >
           Leer más
           <svg

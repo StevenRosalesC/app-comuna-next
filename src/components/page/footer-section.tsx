@@ -21,14 +21,14 @@ export const FooterSection = () => {
             </li>
           ))}
         </ul>
-        <span className='text-sm text-gray-500 dark:text-gray-400 sm:text-center'>
+        <span className='text-sm text-gray-500 sm:text-center'>
           {new Date().getFullYear()} © Comuna Bambil Collao. Todos los derechos
           reservados.
           <br />
           Desarrollado por{' '}
           <Link
             href='https://github.com/StevenRosalesC'
-            className='hover:underline'
+            className='hover:underline font-bold text-green-700'
             target='_blank'
           >
             Steven Rosales

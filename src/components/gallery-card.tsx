@@ -16,7 +16,7 @@ export const GalleryCard = ({ images, alt }: GalleryCardProps) => {
 
   return (
     <>
-      <div className='mb-10 grid h-full w-full grid-cols-3 gap-2 rounded-lg bg-gray-100 p-4 dark:bg-gray-800'>
+      <div className='mb-10 grid h-full w-full grid-cols-3 gap-2 rounded-lg bg-gray-100 p-4'>
         {galleryImages.map((src, index) => (
           <div
             key={`gallery-${alt}-${index}`}

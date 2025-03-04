@@ -82,7 +82,7 @@ const paragraphVariants = cva(
 
 export interface ParagraphProps
   extends React.HTMLAttributes<HTMLParagraphElement>,
-  VariantProps<typeof paragraphVariants> {
+    VariantProps<typeof paragraphVariants> {
   asChild?: boolean;
 }
 

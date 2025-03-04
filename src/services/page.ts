@@ -16,7 +16,9 @@ export const getAllNews = async (
           'Content-Type': 'application/json'
         },
         next: {
-          revalidate: parseInt(process.env.NEXT_PUBLIC_CACHE_REVALIDATE || '60'),
+          revalidate: parseInt(
+            process.env.NEXT_PUBLIC_CACHE_REVALIDATE || '60'
+          ),
           tags: ['get-all-news']
         }
       }
@@ -50,11 +52,11 @@ export const getNew = async (id: string): Promise<Notice | null> => {
 export const getPageInfo = async (): Promise<PageData> => {
   try {
     const response = await fetch(`${API_URL}/page`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    next:{
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      next: {
         tags: ['page'],
         revalidate: parseInt(process.env.NEXT_PUBLIC_CACHE_REVALIDATE || '60')
       }
@@ -73,7 +75,9 @@ export const getPageInfo = async (): Promise<PageData> => {
   }
 };
 
-export const getNoticeByTitle = async (title: string): Promise<Notice | null> => {
+export const getNoticeByTitle = async (
+  title: string
+): Promise<Notice | null> => {
   try {
     const response = await fetch(`${API_URL}/news/title/${title}`, {
       method: 'GET',
@@ -90,4 +94,4 @@ export const getNoticeByTitle = async (title: string): Promise<Notice | null> =>
   } catch (error) {
     return null;
   }
-}
+};

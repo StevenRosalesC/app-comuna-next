@@ -3,7 +3,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
 import './globals.css';
-import { ViewTransitions } from 'next-view-transitions'
+import { ViewTransitions } from 'next-view-transitions';
 // import { auth } from '@/lib/auth';
 // import Providers from '@/components/layout/providers';
 import { Toaster } from '@/components/ui/sonner';
@@ -14,7 +14,7 @@ import { Providers } from '@/components/providers/providers';
 
 export const metadata: Metadata = {
   title: 'Comuna Bambil Collao | App',
-  description: 'App de la Comuna Bambil Collao',
+  description: 'App de la Comuna Bambil Collao'
 };
 
 const lato = Lato({

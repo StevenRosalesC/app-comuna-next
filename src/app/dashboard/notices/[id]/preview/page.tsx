@@ -15,9 +15,7 @@ export default async function PreviewNotice({ params }: Props) {
   const notice = await getNotice(id);
 
   if (!notice) return notFound();
-  const allCharacters = notice.content
-    .replace(/<[^>]*>/g, '')
-    .trim().length
+  const allCharacters = notice.content.replace(/<[^>]*>/g, '').trim().length;
   const readingTime = Math.ceil(allCharacters / 1000) || 1;
 
   return (

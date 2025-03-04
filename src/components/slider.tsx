@@ -71,8 +71,8 @@ export default function Slider({
     >
       {Array.isArray(children)
         ? children.map((child, index) => (
-          <SwiperSlide key={index}>{child}</SwiperSlide>
-        ))
+            <SwiperSlide key={index}>{child}</SwiperSlide>
+          ))
         : children}
     </Swiper>
   );

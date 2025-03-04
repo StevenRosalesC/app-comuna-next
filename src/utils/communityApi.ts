@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const url = process.env.NEXT_PUBLIC_API_URL as string;
 const apiCommunity = axios.create({
-  baseURL: url,
+  baseURL: url
 });
 
 apiCommunity.interceptors.request.use(async (config) => {
@@ -15,4 +15,3 @@ apiCommunity.interceptors.request.use(async (config) => {
 });
 
 export default apiCommunity;
-

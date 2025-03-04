@@ -7,7 +7,7 @@ interface Props {
 export const SubTitle = ({ children, className }: Props) => {
   return (
     <h2
-      className={`mb-4 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white lg:text-4xl ${className}`}
+      className={`mb-4 text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white lg:text-3xl  ${className}`}
     >
       {children}
     </h2>

@@ -10,7 +10,7 @@ export const signIn = async ({
   email: string;
   password: string;
 }) => {
-  const {data:response} = await apiCommunity.post<{ token: string }>(
+  const { data: response } = await apiCommunity.post<{ token: string }>(
     '/auth/login',
     {},
     {
@@ -41,11 +41,14 @@ export const auth = async (): Promise<{
     redirect('/auth/login');
   }
   try {
-    const {data:response} = await apiCommunity.get<AuthResponse>('/auth/refresh', {
-      headers: {
-        Authorization: `Bearer ${token}`
+    const { data: response } = await apiCommunity.get<AuthResponse>(
+      '/auth/refresh',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       }
-    });
+    );
     return { ok: true, data: response };
   } catch (error) {
     return { ok: false, data: null };

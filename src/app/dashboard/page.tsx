@@ -1,7 +1,6 @@
-import DashboardOverviewPage from "./overview/page";
+import DashboardOverviewPage from './overview/page';
 export const metadata = {
   title: 'Dashboard : Overview'
 };
 
-
-export default DashboardOverviewPage
+export default DashboardOverviewPage;

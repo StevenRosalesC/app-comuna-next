@@ -1,7 +1,7 @@
-import React from 'react'
-import { Skeleton } from "@/components/ui/skeleton"
+import React from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 interface Props {
-  data: Data
+  data: Data;
 }
 
 interface Data {
@@ -9,27 +9,37 @@ interface Data {
   members: number;
   neighborhoods: number;
   associations: number;
-
 }
 export default function MiniCardsInfo({ data }: Props) {
   return (
-    <section className='p-1 grid grid-cols-2 md:grid-cols-4 gap-4' data-aos="fade-up">
-      <div className='flex flex-col items-center justify-center gap-2 p-4 bg-white rounded-lg shadow-md'>
-        <h3 className='text-2xl font-semibold'>{data.persons}</h3>
+    <section
+      className='grid grid-cols-2 gap-4 p-1 md:grid-cols-4'
+      data-aos='fade-up'
+    >
+      <div className='flex flex-col items-center justify-center gap-2 rounded-lg bg-white p-4 shadow-md'>
+        <h2 className='text-2xl font-semibold text-green-600'>
+          {data.persons}
+        </h2>
         <p className='text-lg font-semibold'>Personas</p>
       </div>
-      <div className='flex flex-col items-center justify-center gap-2 p-4 bg-white rounded-lg shadow-md'>
-        <h3 className='text-2xl font-semibold'>{data.members}</h3>
+      <div className='flex flex-col items-center justify-center gap-2 rounded-lg bg-white p-4 shadow-md'>
+        <h2 className='text-2xl font-semibold text-green-600'>
+          {data.members}
+        </h2>
         <p className='text-lg font-semibold'>Comuneros</p>
       </div>
-      <div className='flex flex-col items-center justify-center gap-2 p-4 bg-white rounded-lg shadow-md'>
-        <h3 className='text-2xl font-semibold'>{data.neighborhoods}</h3>
+      <div className='flex flex-col items-center justify-center gap-2 rounded-lg bg-white p-4 shadow-md'>
+        <h2 className='text-2xl font-semibold text-green-600'>
+          {data.neighborhoods}
+        </h2>
         <p className='text-lg font-semibold'>Barrios</p>
       </div>
-      <div className='flex flex-col items-center justify-center gap-2 p-4 bg-white rounded-lg shadow-md'>
-        <h3 className='text-2xl font-semibold'>{data.associations}</h3>
+      <div className='flex flex-col items-center justify-center gap-2 rounded-lg bg-white p-4 shadow-md'>
+        <h2 className='text-2xl font-semibold text-green-600'>
+          {data.associations}
+        </h2>
         <p className='text-lg font-semibold'>Asociaciones</p>
       </div>
     </section>
-  )
+  );
 }

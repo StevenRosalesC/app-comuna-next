@@ -9,8 +9,8 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+  SelectValue
+} from '@/components/ui/select';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -22,8 +22,8 @@ import MediaLibrary from '../TiptapEditor/components/MediaLibrary';
 import { Textarea } from '../ui/textarea';
 import { toast } from 'sonner';
 import { NoticeType } from 'types/notices';
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Link } from 'next-view-transitions';
 
 interface PostForm {
@@ -31,8 +31,8 @@ interface PostForm {
   content: string;
   coverImageUrl: string;
   description: string;
-  type: NoticeType
-  published: boolean
+  type: NoticeType;
+  published: boolean;
 }
 
 interface Props {
@@ -63,7 +63,6 @@ export default function EditNoticeForm({ id }: Props) {
     setOpenDialog(false);
   }, []);
 
-
   const create = async (notice: PostForm) => {
     try {
       const newNotice = await createNotice(notice);
@@ -71,7 +70,6 @@ export default function EditNoticeForm({ id }: Props) {
       return newNotice;
     } catch (error) {
       toast.error('Error al crear la noticia');
-
     }
   };
 
@@ -83,19 +81,19 @@ export default function EditNoticeForm({ id }: Props) {
     } catch (error) {
       toast.error('Error al actualizar la noticia');
     }
-  }
-
-
+  };
 
   useEffect(() => {
     if (id) {
-      getNotice(id).then((notice) => {
-        reset({ ...notice });
-        setIsLoading(false);
-      }).catch((err) => {
-        // redirect to 404 page
-        router.push('/dashboard/notices');
-      });
+      getNotice(id)
+        .then((notice) => {
+          reset({ ...notice });
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          // redirect to 404 page
+          router.push('/dashboard/notices');
+        });
     } else {
       setIsLoading(false);
     }
@@ -151,27 +149,21 @@ export default function EditNoticeForm({ id }: Props) {
   return (
     <div className='flex flex-col gap-6'>
       {/* buttons to save and delete notice */}
-      <div className='flex gap-4 w-full justify-between'>
-        <div className="flex gap-4 items-center">
+      <div className='flex w-full justify-between gap-4'>
+        <div className='flex items-center gap-4'>
           <Controller
             control={control}
             name='type'
             render={({ field }) => (
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-              >
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <SelectTrigger>
                   <SelectValue>{field.value}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectGroup >
+                  <SelectGroup>
                     <SelectLabel>Tipo</SelectLabel>
                     {Object.values(NoticeType).map((type) => (
-                      <SelectItem
-                        key={type}
-                        value={type}
-                      >
+                      <SelectItem key={type} value={type}>
                         {type}
                       </SelectItem>
                     ))}
@@ -182,12 +174,12 @@ export default function EditNoticeForm({ id }: Props) {
           />
           <Controller
             control={control}
-            name="published"
+            name='published'
             render={({ field }) => (
               <>
-                <Label htmlFor="published">Publicado</Label>
+                <Label htmlFor='published'>Publicado</Label>
                 <Switch
-                  id="published"
+                  id='published'
                   checked={field.value}
                   onCheckedChange={field.onChange}
                 />
@@ -195,15 +187,15 @@ export default function EditNoticeForm({ id }: Props) {
             )}
           />
         </div>
-        <div className="flex flex-row gap4">
-          {
-            id &&
+        <div className='gap4 flex flex-row'>
+          {id && (
             <Link
               href={`/dashboard/notices/${id}/preview`}
-              className='bg-blue-500 text-white px-4 py-2 rounded-md'
+              className='rounded-md bg-blue-500 px-4 py-2 text-white'
             >
               Previsualizar
-            </Link>}
+            </Link>
+          )}
           <Button
             onClick={async () => {
               if (!id) return;
@@ -214,9 +206,8 @@ export default function EditNoticeForm({ id }: Props) {
                 content: watch('content'),
                 type: watch('type'),
                 published: watch('published')
-              })
-            }
-            }
+              });
+            }}
           >
             Guardar
           </Button>
@@ -239,14 +230,12 @@ export default function EditNoticeForm({ id }: Props) {
           )}
         />
 
-
-
         <Controller
           control={control}
           name='coverImageUrl'
           render={({ field }) => {
             return (
-              <div className='mt-4 w-full flex flex-col items-center gap-4'>
+              <div className='mt-4 flex w-full flex-col items-center gap-4'>
                 <Label className='mb-2 inline-block font-medium dark:text-white'>
                   Imagen de portada
                 </Label>
@@ -256,7 +245,7 @@ export default function EditNoticeForm({ id }: Props) {
                   alt='Cover image'
                   width={400}
                   height={200}
-                  className='rounded-md mx-auto aspect-video object-cover '
+                  className='mx-auto aspect-video rounded-md object-cover '
                 />
                 <Button
                   onClick={() => setOpenDialog(true)}
@@ -266,7 +255,9 @@ export default function EditNoticeForm({ id }: Props) {
                 </Button>
                 <Dialog
                   key={'media-library'}
-                  open={openDialog} onOpenChange={handleClose}>
+                  open={openDialog}
+                  onOpenChange={handleClose}
+                >
                   <MediaLibrary
                     key={'media-library-content'}
                     onClose={handleClose}
@@ -277,7 +268,7 @@ export default function EditNoticeForm({ id }: Props) {
                   />
                 </Dialog>
               </div>
-            )
+            );
           }}
         />
       </div>

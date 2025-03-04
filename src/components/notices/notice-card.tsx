@@ -23,7 +23,7 @@ export const NoticeCard = ({ notice }: Props) => {
         src={notice.coverImageUrl || '/not-found-1.webp'}
       />
       <div className='space-y-2 p-6'>
-        <h3 className='text-2xl font-semibold text-green-600 line-clamp-2 group-hover:underline group-focus:underline'>
+        <h3 className='line-clamp-2 text-2xl font-semibold text-green-600 group-hover:underline group-focus:underline'>
           {notice.title}
         </h3>
         <span className='text-xs dark:text-gray-600'>

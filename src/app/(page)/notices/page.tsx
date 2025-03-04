@@ -16,7 +16,6 @@ export const metadata: Metadata = {
   }
 };
 
-
 export default function NoticesPage() {
   return (
     <main>

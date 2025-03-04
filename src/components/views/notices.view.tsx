@@ -1,18 +1,18 @@
 'use client';
 import Image from 'next/image';
-import Link from 'next/link';
 import { NoticeCard } from '../notices/notice-card';
 import { useEffect, useState } from 'react';
 import { Notice } from 'types/dashboard';
 import { getRelativeTime } from '@/utils/date';
 import { Button } from '../ui/button';
 import { getAllNews } from '@/services/page';
+import { Link } from 'next-view-transitions';
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'NewsMediaOrganization',
   name: 'Comuna Bambil Collao',
   url: `https://${process.env.NEXT_PUBLIC_APP_URL}/notices`,
-  logo: `https://${process.env.NEXT_PUBLIC_APP_URL}/logo.png`,
+  logo: `https://${process.env.NEXT_PUBLIC_APP_URL}/icon.webp`,
   sameAs: [
     'https://www.facebook.com/comunabambilcollao',
     'https://www.instagram.com/comunabambilcollao',
@@ -57,13 +57,14 @@ export default function NoticesView() {
     }
     return () => {
       if (typeof window !== 'undefined') {
-        const script = document.querySelector('script[type="application/ld+json"]');
+        const script = document.querySelector(
+          'script[type="application/ld+json"]'
+        );
         if (script) {
           document.head.removeChild(script);
         }
       }
     };
-
   }, []);
 
   return (
@@ -76,7 +77,7 @@ export default function NoticesView() {
         </div>
       ) : (
         <div className='container mx-auto max-w-6xl space-y-6 p-6 sm:space-y-12'>
-          <h2 className='text-2xl lg:text-4xl text-center  font-bold'>
+          <h2 className='text-center text-2xl font-bold  lg:text-4xl'>
             Noticias de la comuna Bambil Collao
           </h2>
 
@@ -95,7 +96,7 @@ export default function NoticesView() {
                 className='h-96 w-full rounded object-cover dark:bg-gray-500 sm:h-96 lg:col-span-7'
               />
               <div className='space-y-2 p-6 lg:col-span-5'>
-                <h3 className='text-2xl font-semibold text-green-600 line-clamp-2 group-hover:underline group-focus:underline sm:text-4xl '>
+                <h3 className='line-clamp-2 text-2xl font-semibold text-green-600 group-hover:underline group-focus:underline sm:text-4xl '>
                   {notice.title}
                 </h3>
                 <span className='text-xs'>
@@ -110,13 +111,11 @@ export default function NoticesView() {
 
           <div className='grid grid-cols-1 justify-center gap-6 sm:grid-cols-2 lg:grid-cols-3'>
             {notices.length > 1 &&
-              notices
-                .slice(1)
-                .map((notice, index) => (
-                  <div className="h-full" key={index}>
-                    <NoticeCard notice={notice} />
-                  </div>
-                ))}
+              notices.slice(1).map((notice, index) => (
+                <div className='h-full' key={index}>
+                  <NoticeCard notice={notice} />
+                </div>
+              ))}
             <div className='col-span-full flex justify-center'>
               {notices.length < total && (
                 <Button

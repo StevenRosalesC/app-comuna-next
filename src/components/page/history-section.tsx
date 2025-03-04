@@ -258,31 +258,31 @@ export default function HistorySection() {
             </ul>
           </div>
           <div className='mt-4'>
-            <div className="flex flex-col items-center space-y-4">
+            <div className='flex flex-col items-center space-y-4'>
               <embed
                 src='/page/bambil-collao-history.pdf'
                 type='application/pdf'
-                className='h-full w-full hidden lg:block'
+                className='hidden h-full w-full lg:block'
                 width='100%'
                 height='500px'
               />
               <a
-                href="/page/bambil-collao-history.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200 shadow-md"
+                href='/page/bambil-collao-history.pdf'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='inline-flex items-center rounded-md bg-green-600 px-4 py-2 text-white shadow-md transition-colors duration-200 hover:bg-green-700'
               >
                 <svg
-                  className="w-5 h-5 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+                  className='mr-2 h-5 w-5'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
                 >
                   <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
                     strokeWidth={2}
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    d='M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14'
                   />
                 </svg>
                 Ver documento completo

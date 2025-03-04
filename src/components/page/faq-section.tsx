@@ -27,8 +27,7 @@ export default function FaqSection() {
       answer:
         'Puede visitar la comuna en cualquier horario, pero se recomienda visitar en horarios de oficina.',
       isOpen: false
-    },
-
+    }
   ];
   return (
     <section className='w-full  py-4'>

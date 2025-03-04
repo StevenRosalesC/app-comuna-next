@@ -206,11 +206,11 @@ const CarouselPrevious = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        'absolute h-8 w-8 rounded-full bg-white/80 hover:bg-white shadow-lg border-2 border-green-500 hover:border-green-600 transition-all duration-200',
+        'absolute h-8 w-8 rounded-full border-2 border-green-500 bg-white/80 shadow-lg transition-all duration-200 hover:border-green-600 hover:bg-white',
         orientation === 'horizontal'
-          ? '-left-4 top-1/2 -translate-y-1/2 z-10'
+          ? '-left-4 top-1/2 z-10 -translate-y-1/2'
           : '-top-12 left-1/2 -translate-x-1/2 rotate-90',
-        !canScrollPrev && 'opacity-50 cursor-not-allowed',
+        !canScrollPrev && 'cursor-not-allowed opacity-50',
         className
       )}
       disabled={!canScrollPrev}
@@ -236,11 +236,11 @@ const CarouselNext = React.forwardRef<
       variant={variant}
       size={size}
       className={cn(
-        'absolute h-8 w-8 rounded-full bg-white/80 hover:bg-white shadow-lg border-2 border-green-500 hover:border-green-600 transition-all duration-200',
+        'absolute h-8 w-8 rounded-full border-2 border-green-500 bg-white/80 shadow-lg transition-all duration-200 hover:border-green-600 hover:bg-white',
         orientation === 'horizontal'
-          ? '-right-4 top-1/2 -translate-y-1/2 z-10'
+          ? '-right-4 top-1/2 z-10 -translate-y-1/2'
           : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
-        !canScrollNext && 'opacity-50 cursor-not-allowed',
+        !canScrollNext && 'cursor-not-allowed opacity-50',
         className
       )}
       disabled={!canScrollNext}

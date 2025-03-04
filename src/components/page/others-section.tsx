@@ -16,8 +16,8 @@ import {
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel"
+  CarouselPrevious
+} from '@/components/ui/carousel';
 
 export const OthersSection = () => {
   return (
@@ -43,13 +43,13 @@ export const OthersSection = () => {
               <TableRow>
                 <TableCell
                   scope='col'
-                  className='px-6 py-3 text-sm lg:text-lg text-center font-bold text-green-700'
+                  className='px-6 py-3 text-center text-sm font-bold text-green-700 lg:text-lg'
                 >
                   Nombre
                 </TableCell>
                 <TableCell
                   scope='col'
-                  className='px-6 py-3 text-sm lg:text-lg text-center font-bold text-green-700'
+                  className='px-6 py-3 text-center text-sm font-bold text-green-700 lg:text-lg'
                 >
                   Cargo
                 </TableCell>
@@ -57,24 +57,44 @@ export const OthersSection = () => {
             </TableHeader>
             <TableBody className='overflow-hidden '>
               <TableRow>
-                <TableCell className='text-sm lg:text-lg'>Edison Catuto Tomalá</TableCell>
-                <TableCell className='text-sm lg:text-lg font-bold'>Presidente</TableCell>
+                <TableCell className='text-sm lg:text-lg'>
+                  Edison Catuto Tomalá
+                </TableCell>
+                <TableCell className='text-sm font-bold lg:text-lg'>
+                  Presidente
+                </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className='text-sm lg:text-lg '>Karina Catuto Tomalá</TableCell>
-                <TableCell className='text-sm lg:text-lg font-bold'>Vice Presidente</TableCell>
+                <TableCell className='text-sm lg:text-lg '>
+                  Karina Catuto Tomalá
+                </TableCell>
+                <TableCell className='text-sm font-bold lg:text-lg'>
+                  Vice Presidente
+                </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className='text-sm lg:text-lg'  >Jessenia Quirumbay Ramírez</TableCell>
-                <TableCell className='text-sm lg:text-lg font-bold'>Secretario</TableCell>
+                <TableCell className='text-sm lg:text-lg'>
+                  Jessenia Quirumbay Ramírez
+                </TableCell>
+                <TableCell className='text-sm font-bold lg:text-lg'>
+                  Secretario
+                </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className='text-sm lg:text-lg'>Nathaly Tomalá Pozo</TableCell>
-                <TableCell className='text-sm lg:text-lg font-bold'>Tesorero</TableCell>
+                <TableCell className='text-sm lg:text-lg'>
+                  Nathaly Tomalá Pozo
+                </TableCell>
+                <TableCell className='text-sm font-bold lg:text-lg'>
+                  Tesorero
+                </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className='text-sm lg:text-lg'>Ernesto Tomalá Torres</TableCell>
-                <TableCell className='text-sm lg:text-lg font-bold'  >Síndico</TableCell>
+                <TableCell className='text-sm lg:text-lg'>
+                  Ernesto Tomalá Torres
+                </TableCell>
+                <TableCell className='text-sm font-bold lg:text-lg'>
+                  Síndico
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -89,10 +109,13 @@ export const OthersSection = () => {
         <Carousel>
           <CarouselContent>
             {Array.from({ length: 5 }).map((_, index) => (
-              <CarouselItem key={`nei-${index}`} className='md:basis-1/2 lg:basis-1/3'>
-                <div className="flex flex-col items-center">
+              <CarouselItem
+                key={`nei-${index}`}
+                className='md:basis-1/2 lg:basis-1/3'
+              >
+                <div className='flex flex-col items-center'>
                   <GalleryCard alt={`${index}`} key={`nei-${index}`} />
-                  <p className="mt-0 text-center text-sm font-medium">
+                  <p className='mt-0 text-center text-sm font-medium'>
                     Barrio {index + 1}
                   </p>
                 </div>

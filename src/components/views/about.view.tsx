@@ -4,10 +4,58 @@ import { Title } from '../ui/atoms/title';
 import Aos from '../aos';
 import Himno from '../page/himno';
 import HistorySection from '../page/history-section';
+// {
+//   "@context": "https://schema.org/",
+//     "@type": "Article",
+//       "name": "Apple announces iPhone SE",
+//         "description": "New iPhone announced at 11:30 in California.",
+//           "about": {
+//     "@type": "Event",
+//       "name": "Apple's March 21 Announcements"
+//   },
+//   "contentReferenceTime": "2016-03-21T11:30:00-07:00"
+// }
 
 export default function AboutView() {
+  const jsonLd = {
+    '@context': 'https://schema.org/',
+    '@type': 'Article',
+    name: 'Acerca de la comuna Bambil Collao',
+    description:
+      'Información sobre la comuna Bambil Collao, su historia, misión y visión.',
+    about: {
+      '@type': 'Event',
+      name: 'Misión, Visión y Historia de la Comuna Bambil Collao',
+      startDate: new Date().toISOString(),
+      location: {
+        '@type': 'Place',
+        name: 'Comuna Bambil Collao',
+        url: `https://${process.env.NEXT_PUBLIC_APP_URL}`
+      },
+      image: `https://${process.env.NEXT_PUBLIC_APP_URL}/icon.webp`
+    },
+    contentReferenceTime: new Date().toISOString(),
+    author: {
+      '@type': 'Organization',
+      name: 'Comuna Bambil Collao',
+      url: `https://${process.env.NEXT_PUBLIC_APP_URL}`
+    },
+    image: `https://${process.env.NEXT_PUBLIC_APP_URL}/icon.webp`,
+    headline: 'Acerca de la comuna Bambil Collao',
+    datePublished: new Date().toISOString(),
+    dateModified: new Date().toISOString(),
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://${process.env.NEXT_PUBLIC_APP_URL}/about`
+    }
+  };
+
   return (
     <>
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Aos duration={500} />
       <Title className='w-full max-w-full text-center'>
         Acerca de la comuna Bambil Collao

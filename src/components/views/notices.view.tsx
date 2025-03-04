@@ -7,6 +7,18 @@ import { Notice } from 'types/dashboard';
 import { getRelativeTime } from '@/utils/date';
 import { Button } from '../ui/button';
 import { getAllNews } from '@/services/page';
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'NewsMediaOrganization',
+  name: 'Comuna Bambil Collao',
+  url: `https://${process.env.NEXT_PUBLIC_APP_URL}/notices`,
+  logo: `https://${process.env.NEXT_PUBLIC_APP_URL}/logo.png`,
+  sameAs: [
+    'https://www.facebook.com/comunabambilcollao',
+    'https://www.instagram.com/comunabambilcollao',
+    'https://www.youtube.com/@comunabambilcollao'
+  ]
+};
 
 export default function NoticesView() {
   const [notices, setNotices] = useState<Notice[]>([]);
@@ -34,6 +46,24 @@ export default function NoticesView() {
   };
   useEffect(() => {
     getNotices();
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.innerHTML = JSON.stringify(jsonLd);
+      document.head.appendChild(script);
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        const script = document.querySelector('script[type="application/ld+json"]');
+        if (script) {
+          document.head.removeChild(script);
+        }
+      }
+    };
+
   }, []);
 
   return (

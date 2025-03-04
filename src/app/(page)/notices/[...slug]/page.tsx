@@ -71,7 +71,7 @@ export default async function PreviewNotice({ params }: Props) {
   return (
     <>
       <script type='application/ld+json'>{JSON.stringify(jsonLd)}</script>
-      <article className='flex flex-col items-center px-6 py-10 '>
+      <section className='flex flex-col items-center px-6 py-10 '>
         <PostHeader
           title={notice.title}
           author={notice.createdBy}
@@ -86,7 +86,7 @@ export default async function PreviewNotice({ params }: Props) {
           </PostContent>
           <PostToc />
         </div>
-      </article>
+      </section>
     </>
   );
 }

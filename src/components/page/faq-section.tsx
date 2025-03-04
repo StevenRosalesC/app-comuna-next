@@ -28,21 +28,7 @@ export default function FaqSection() {
         'Puede visitar la comuna en cualquier horario, pero se recomienda visitar en horarios de oficina.',
       isOpen: false
     },
-    {
-      question: 'Do you offer a discount for non-profit',
-      answer: 'Yes. You can start or stop your plan at any time.',
-      isOpen: false
-    },
-    {
-      question: 'How secure is your service?',
-      answer: 'Yes. You can start or stop your plan at any time.',
-      isOpen: false
-    },
-    {
-      question: 'Can I cancel at any time?',
-      answer: 'Yes. You can start or stop your plan at any time.',
-      isOpen: false
-    }
+
   ];
   return (
     <section className='w-full  py-4'>

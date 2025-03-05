@@ -19,7 +19,6 @@ export async function middleware(request: NextRequest) {
 
   // Para rutas protegidas, redirigir a login si no hay token
   if (!token) {
-    console.log('NO HAY TOKEN');
     return NextResponse.redirect(new URL('/auth/login', request.url));
   }
 
@@ -54,7 +53,6 @@ export const config = {
 async function authenticateOrRefresh(token: string, refreshToken?: string) {
   try {
     const response = await refreshTokenRequest(token);
-    console.log({ refreshToken });
     if (response) return response;
   } catch (error) {
     return null;

@@ -36,8 +36,8 @@ export default function HeroSection() {
         >
           <Image
             src='https://ik.imagekit.io/stevenrosales/app-comuna/comuna.webp?updatedAt=1737254562322'
-            width={1920}
-            height={1080}
+            width={600}
+            height={800}
             className='rounded-lg object-cover shadow-lg'
             alt='Comuna Bambil Collao'
           />

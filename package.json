@@ -54,7 +54,7 @@
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.47.11",
     "@tailwindcss/typography": "^0.5.16",
-    "@tanstack/react-table": "^8.10.7",
+    "@tanstack/react-table": "^8.21.2",
     "@tiptap/core": "^2.11.5",
     "@tiptap/extension-bubble-menu": "^2.11.5",
     "@tiptap/extension-bullet-list": "^2.11.5",

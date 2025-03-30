@@ -142,6 +142,7 @@
   "devDependencies": {
     "@faker-js/faker": "^9.0.3",
     "@types/aos": "^3.0.7",
+    "@types/hast": "^3.0.4",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@types/sort-by": "^1.2.3",

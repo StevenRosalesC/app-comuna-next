@@ -34,7 +34,14 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export const columns: ColumnDef<Person>[] = [
   {
@@ -60,7 +67,21 @@ export const columns: ColumnDef<Person>[] = [
     enableHiding: false,
   }, {
     accessorKey: "identification",
-    header: "Cédula",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="flex items-center"
+        >
+          Cédula
+          <ArrowUpDown
+            size="1.25em"
+            className="ml-1"
+          />
+        </Button>
+      )
+    },
     cell: ({ row }) => (
       <div>
         {row.getValue("identification")}
@@ -69,7 +90,21 @@ export const columns: ColumnDef<Person>[] = [
   },
   {
     accessorKey: "lastName",
-    header: "Apellido",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="flex items-center"
+        >
+          Apellido
+          <ArrowUpDown
+            size="1.25em"
+            className="ml-1"
+          />
+        </Button>
+      )
+    },
     cell: ({ row }) => (
       <div>
         {row.getValue("lastName")}
@@ -102,70 +137,234 @@ export const columns: ColumnDef<Person>[] = [
 ]
 
 interface Props {
-  persons: Person[]
+  persons: Person[],
+  total: number,
+  onDataTableChange: (params: { sorting: SortingState, search: string, selected: Person[], pagination: { pageIndex: number, pageSize: number } }) => void,
+  loading: boolean
 }
 
-export default function PersonsDataTable({ persons }: Props) {
+export default function PersonsDataTable({ persons, total, onDataTableChange, loading }: Props) {
   const [sorting, setSorting] = useState<SortingState>([])
+  const [pageSize, setPageSize] = useState(10)
+  const [pageIndex, setPageIndex] = useState(0)
+  const [search, setSearch] = useState("")
+  const [debouncedSearch, setDebouncedSearch] = useState(search)
+  const [pageCount, setPageCount] = useState(0)
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search)
+    }, 300)
+
+    return () => {
+      clearTimeout(handler)
+    }
+  }, [search])
+
+  useEffect(() => {
+    setPageIndex(0)
+    onDataTableChange({
+      sorting,
+      search: debouncedSearch,
+      selected: table?.getSelectedRowModel().rows.map(row => row.original) ?? [],
+      pagination: { pageIndex: 0, pageSize }
+    })
+  }, [debouncedSearch])
+
   const table = useReactTable({
     data: persons,
     columns,
     getCoreRowModel: getCoreRowModel<Person>(),
-    onSortingChange: setSorting,
-
+    onSortingChange: (updaterOrValue) => {
+      const newSorting = typeof updaterOrValue === 'function' ? updaterOrValue(sorting) : updaterOrValue;
+      setSorting(newSorting)
+      onDataTableChange({ sorting: newSorting, search: debouncedSearch, selected: table.getSelectedRowModel().rows.map(row => row.original), pagination: { pageIndex, pageSize } })
+    },
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      sorting,
+      pagination: {
+        pageIndex,
+        pageSize,
+      },
+    },
+    pageCount,
+    onPaginationChange: (updater) => {
+      if (typeof updater === 'function') {
+        const newState = updater({
+          pageIndex,
+          pageSize,
+        })
+        setPageIndex(newState.pageIndex)
+        setPageSize(newState.pageSize)
+        onDataTableChange({ sorting, search: debouncedSearch, selected: table.getSelectedRowModel().rows.map(row => row.original), pagination: { pageIndex: newState.pageIndex, pageSize: newState.pageSize } })
+      } else {
+        setPageIndex(updater.pageIndex)
+        setPageSize(updater.pageSize)
+        onDataTableChange({ sorting, search: debouncedSearch, selected: table.getSelectedRowModel().rows.map(row => row.original), pagination: { pageIndex: updater.pageIndex, pageSize: updater.pageSize } })
+      }
+    },
+    manualPagination: true,
+    manualSorting: true,
   })
+
+  useEffect(() => {
+    setPageCount(Math.ceil(total / pageSize))
+  }, [total, pageSize])
+
   return (
-    <Table>
-      <TableHeader>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id}>
-            {headerGroup.headers.map((header) => {
-              return (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                </TableHead>
-              )
-            }
-            )}
+    <>
+      <Input
+        placeholder="Buscar persona"
+        value={search}
+        onChange={(event) => {
+          setSearch(event.target.value)
+        }}
+        className="max-w-sm"
+      />
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                return (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                  </TableHead>
+                )
+              }
+              )}
 
-          </TableRow>
-        ))}
-      </TableHeader>
-      <TableBody>
-        {table.getRowModel().rows?.length ? (
-          table.getRowModel().rows.map((row) => (
-            <TableRow
-              key={row.id}
-              data-state={row.getIsSelected() && "selected"}
-            >
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                  {flexRender(
-                    cell.column.columnDef.cell,
-                    cell.getContext()
-                  )}
-                </TableCell>
-              ))}
             </TableRow>
-          ))
-        ) : (
-          <TableRow>
-            <TableCell
-              colSpan={columns.length}
-              className="h-24 text-center"
+          ))}
+        </TableHeader>
+        <TableBody>
+          {loading ? (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                Cargando...
+              </TableCell>
+            </TableRow>
+          ) : table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(
+                      cell.column.columnDef.cell,
+                      cell.getContext()
+                    )}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell
+                colSpan={columns.length}
+                className="h-24 text-center"
+              >
+                No hay resultados
+              </TableCell>
+            </TableRow>
+          )}
+
+        </TableBody>
+      </Table>
+      <div className="flex items-center justify-between px-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          {table.getFilteredSelectedRowModel().rows.length} de{" "}
+          {total} registros seleccionados.
+        </div>
+        <div className="flex items-center space-x-6 lg:space-x-8">
+          <div className="flex items-center space-x-2">
+            <p className="text-sm font-medium">Registros por página</p>
+            <Select
+              value={pageSize.toString()}
+              onValueChange={(value) => {
+                setPageSize(Number(value))
+                onDataTableChange({ sorting, search: debouncedSearch, selected: table.getSelectedRowModel().rows.map(row => row.original), pagination: { pageIndex, pageSize: Number(value) } })
+              }}
             >
-              No results.
-            </TableCell>
-          </TableRow>
-        )}
-
-      </TableBody>
-    </Table>
+              <SelectTrigger className="h-8 w-[70px]">
+                <SelectValue placeholder={pageSize} />
+              </SelectTrigger>
+              <SelectContent side="top">
+                {[5, 10, 20, 30, 40, 50].map((size) => (
+                  <SelectItem key={size} value={size.toString()}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+            Página {pageIndex + 1} de {pageCount}
+          </div>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setPageIndex(0)
+                onDataTableChange({ sorting, search: debouncedSearch, selected: table.getSelectedRowModel().rows.map(row => row.original), pagination: { pageIndex: 0, pageSize } })
+              }}
+              disabled={pageIndex === 0}
+            >
+              {"<<"}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setPageIndex(prev => {
+                  const newIndex = prev - 1
+                  onDataTableChange({ sorting, search: debouncedSearch, selected: table.getSelectedRowModel().rows.map(row => row.original), pagination: { pageIndex: newIndex, pageSize } })
+                  return newIndex
+                })
+              }}
+              disabled={pageIndex === 0}
+            >
+              Anterior
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setPageIndex(prev => {
+                  const newIndex = prev + 1
+                  onDataTableChange({ sorting, search: debouncedSearch, selected: table.getSelectedRowModel().rows.map(row => row.original), pagination: { pageIndex: newIndex, pageSize } })
+                  return newIndex
+                })
+              }}
+              disabled={pageIndex >= pageCount - 1}
+            >
+              Siguiente
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setPageIndex(pageCount - 1)
+                onDataTableChange({ sorting, search: debouncedSearch, selected: table.getSelectedRowModel().rows.map(row => row.original), pagination: { pageIndex: pageCount - 1, pageSize } })
+              }}
+              disabled={pageIndex >= pageCount - 1}
+            >
+              {">>"}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </>
   )
-
 }

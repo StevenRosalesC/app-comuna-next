@@ -6,6 +6,6 @@ export const metadata: Metadata = {
   description: 'Sitio web de la comuna Bambil Collao.'
 };
 
-export default function EditPage() {
+export default async function EditPage() {
   return <DashboardNoticesView />;
 }

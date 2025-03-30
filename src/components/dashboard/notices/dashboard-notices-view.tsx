@@ -15,16 +15,20 @@ import {
   PaginationNext,
   PaginationPrevious
 } from '@/components/ui/pagination';
+import NoticeSkeleton from './notice-skeleton';
 export default function DashboardNoticesView() {
   const [notices, setNotices] = useState<Notice[]>([]);
+  const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(6);
 
   const getNotices = async () => {
+    setLoading(true);
     const { data, count } = await getAllNotices(limit, limit * page - limit);
     setNotices(data);
     setTotal(count);
+    setLoading(false);
   };
 
   useEffect(() => {

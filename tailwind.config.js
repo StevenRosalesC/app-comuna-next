@@ -91,11 +91,16 @@ module.exports = {
           to: {
             height: '0'
           }
-        }
+        },
+        'horizontal-spin': {
+          '0%': { transform: 'rotateY(0deg)' },
+          '100%': { transform: 'rotateY(360deg)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
-        'accordion-up': 'accordion-up 0.2s ease-out'
+        'accordion-up': 'accordion-up 0.2s ease-out',
+        'horizontal-spin': 'horizontal-spin 1s linear infinite',
       }
     }
   },

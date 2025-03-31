@@ -37,182 +37,13 @@ import {
 import { personsService } from "@/services/persons"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { PersonEditDialog } from "./person-edit-dialog"
 
 import { toast } from 'sonner';
 
-export const columns: ColumnDef<Person>[] = [
-  {
-    id: "selection",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Seleccionar todas las filas"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Seleccionar fila"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  }, {
-    accessorKey: "identification",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="flex items-center"
-        >
-          Cédula
-          {column.getIsSorted() === "asc" ? (
-            <ArrowUp className="ml-1 h-4 w-4" />
-          ) : column.getIsSorted() === "desc" ? (
-            <ArrowDown className="ml-1 h-4 w-4" />
-          ) : (
-            <ArrowUpDown className="ml-1 h-4 w-4 opacity-50" />
-          )}
-        </Button>
-      )
-    },
-    cell: ({ row }) => (
-      <div>
-        {row.getValue("identification")}
-      </div>
-    )
-  },
-  {
-    accessorKey: "lastName",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="flex items-center"
-        >
-          Apellidos
-          {column.getIsSorted() === "asc" ? (
-            <ArrowUp className="ml-1 h-4 w-4" />
-          ) : column.getIsSorted() === "desc" ? (
-            <ArrowDown className="ml-1 h-4 w-4" />
-          ) : (
-            <ArrowUpDown className="ml-1 h-4 w-4 opacity-50" />
-          )}
-        </Button>
-      )
-    },
-    cell: ({ row }) => (
-      <div>
-        {row.getValue("lastName")}
-      </div>
-    )
-  },
-  {
-    accessorKey: "firstName",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="flex items-center"
-        >
-          Nombres
-          {column.getIsSorted() === "asc" ? (
-            <ArrowUp className="ml-1 h-4 w-4" />
-          ) : column.getIsSorted() === "desc" ? (
-            <ArrowDown className="ml-1 h-4 w-4" />
-          ) : (
-            <ArrowUpDown className="ml-1 h-4 w-4 opacity-50" />
-          )}
-        </Button>
-      )
-    },
-    cell: ({ row }) => (
-      <p className="text-left">
-        {row.getValue("firstName")}
-      </p>
-    )
-  },
-  {
-    accessorKey: "birthDate",
-    enableSorting: true,
-    header: () => {
-      return <Button variant="ghost" className="flex items-center">Fecha de nacimiento</Button>
-    },
-    cell: ({ row }) => {
-      const date = row.getValue("birthDate")
-      if (!date) return <div>-</div>
 
-      try {
-        return <div>{new Date(date as string).toLocaleDateString('es-ES')}</div>
-      } catch (error) {
-        return <div>Fecha inválida</div>
-      }
-    }
-  },
-  {
-    accessorKey: "email",
-    enableSorting: false,
-    header: () => {
-      return (
-        <Button variant="ghost" className="flex items-center">
-          Email
-        </Button>
-      )
-    }
-  },
-  {
-    id: "actions",
-    enableSorting: false,
-    header: () => <div className="text-right">Acciones</div>,
-    cell: ({ row }) => {
-      const person = row.original
 
-      return (
-        <div className="flex justify-end gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => {
-              console.log('Editar persona:', person)
-            }}
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() => {
-                  console.log('Cambiar estado:', person)
-                }}
-              >
-                Cambiar estado
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      )
-    }
-  }
-]
-
-interface Props {
-  onSelectionChange?: (selected: Person[]) => void
-}
-
-export default function PersonsDataTable({ onSelectionChange }: Props) {
+export default function PersonsDataTable() {
   const [persons, setPersons] = useState<Person[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -221,6 +52,177 @@ export default function PersonsDataTable({ onSelectionChange }: Props) {
   const [pageIndex, setPageIndex] = useState(0)
   const [search, setSearch] = useState("")
   const [pageCount, setPageCount] = useState(0)
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+
+  const columns: ColumnDef<Person>[] = [
+    {
+      id: "selection",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Seleccionar todas las filas"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Seleccionar fila"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    }, {
+      accessorKey: "identification",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="flex items-center"
+          >
+            Cédula
+            {column.getIsSorted() === "asc" ? (
+              <ArrowUp className="ml-1 h-4 w-4" />
+            ) : column.getIsSorted() === "desc" ? (
+              <ArrowDown className="ml-1 h-4 w-4" />
+            ) : (
+              <ArrowUpDown className="ml-1 h-4 w-4 opacity-50" />
+            )}
+          </Button>
+        )
+      },
+      cell: ({ row }) => (
+        <div>
+          {row.getValue("identification")}
+        </div>
+      )
+    },
+    {
+      accessorKey: "lastName",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="flex items-center"
+          >
+            Apellidos
+            {column.getIsSorted() === "asc" ? (
+              <ArrowUp className="ml-1 h-4 w-4" />
+            ) : column.getIsSorted() === "desc" ? (
+              <ArrowDown className="ml-1 h-4 w-4" />
+            ) : (
+              <ArrowUpDown className="ml-1 h-4 w-4 opacity-50" />
+            )}
+          </Button>
+        )
+      },
+      cell: ({ row }) => (
+        <div>
+          {row.getValue("lastName")}
+        </div>
+      )
+    },
+    {
+      accessorKey: "firstName",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="flex items-center"
+          >
+            Nombres
+            {column.getIsSorted() === "asc" ? (
+              <ArrowUp className="ml-1 h-4 w-4" />
+            ) : column.getIsSorted() === "desc" ? (
+              <ArrowDown className="ml-1 h-4 w-4" />
+            ) : (
+              <ArrowUpDown className="ml-1 h-4 w-4 opacity-50" />
+            )}
+          </Button>
+        )
+      },
+      cell: ({ row }) => (
+        <p className="text-left">
+          {row.getValue("firstName")}
+        </p>
+      )
+    },
+    {
+      accessorKey: "birthDate",
+      enableSorting: true,
+      header: () => {
+        return <Button variant="ghost" className="flex items-center">Fecha de nacimiento</Button>
+      },
+      cell: ({ row }) => {
+        const date = row.getValue("birthDate")
+        if (!date) return <div>-</div>
+
+        try {
+          return <div>{new Date(date as string).toLocaleDateString('es-ES')}</div>
+        } catch (error) {
+          return <div>Fecha inválida</div>
+        }
+      }
+    },
+    {
+      accessorKey: "email",
+      enableSorting: false,
+      header: () => {
+        return (
+          <Button variant="ghost" className="flex items-center">
+            Email
+          </Button>
+        )
+      }
+    },
+    {
+      id: "actions",
+      enableSorting: false,
+      header: () => <div className="text-right">Acciones</div>,
+      cell: ({ row }) => {
+        const person = row.original
+
+        return (
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                setSelectedPerson(person)
+                setEditDialogOpen(true)
+              }}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => {
+                    console.log('Cambiar estado:', person)
+                  }}
+                >
+                  Cambiar estado
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )
+      }
+    }
+  ]
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -273,10 +275,6 @@ export default function PersonsDataTable({ onSelectionChange }: Props) {
     manualPagination: true,
     manualSorting: true,
   })
-
-  useEffect(() => {
-    onSelectionChange?.(table.getSelectedRowModel().rows.map(row => row.original))
-  }, [onSelectionChange, table])
 
   return (
     <Card>
@@ -409,6 +407,13 @@ export default function PersonsDataTable({ onSelectionChange }: Props) {
           </div>
         </div>
       </CardContent>
+      {selectedPerson && (
+        <PersonEditDialog
+          person={selectedPerson}
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+        />
+      )}
     </Card>
   )
 }

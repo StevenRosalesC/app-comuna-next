@@ -1,0 +1,171 @@
+"use client"
+
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog"
+import { Person } from "@/interfaces/persons"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
+import { useEffect } from "react"
+
+const personFormSchema = z.object({
+  identification: z.string().min(1, "La cédula es requerida"),
+  firstName: z.string().min(1, "El nombre es requerido"),
+  lastName: z.string().min(1, "El apellido es requerido"),
+  email: z.string().email("Email inválido"),
+  birthDate: z.string().optional(),
+})
+
+type PersonFormValues = z.infer<typeof personFormSchema>
+
+interface PersonEditDialogProps {
+  person: Person | null
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onSave?: (person: PersonFormValues) => Promise<void>
+}
+
+export function PersonEditDialog({
+  person,
+  open,
+  onOpenChange,
+  onSave
+}: PersonEditDialogProps) {
+  const form = useForm<PersonFormValues>({
+    resolver: zodResolver(personFormSchema),
+  })
+
+  useEffect(() => {
+    if (person) {
+      form.reset({
+        identification: person.identification,
+        firstName: person.firstName,
+        lastName: person.lastName,
+        email: person.email || "",
+        birthDate: person.birthDate ? new Date(person.birthDate).toISOString().split('T')[0] : undefined,
+      })
+    }
+  }, [person, form.reset, form])
+
+
+  async function onSubmit(data: PersonFormValues) {
+    try {
+      await onSave?.(data)
+      onOpenChange(false)
+      toast.success("Persona actualizada correctamente")
+    } catch (error) {
+      toast.error("Error al actualizar la persona")
+    }
+  }
+
+  if (!person) return null
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Editar Persona</DialogTitle>
+          <DialogDescription>
+            Realice los cambios necesarios en el formulario. Haga clic en guardar cuando termine.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="identification"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cédula</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nombres</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Apellidos</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="email" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="birthDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Fecha de Nacimiento</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="date" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit">Guardar cambios</Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  )
+} 

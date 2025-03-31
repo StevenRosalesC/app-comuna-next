@@ -4,9 +4,15 @@ import PersonsDataTable from "@/components/dashboard/persons/persons-datatable";
 
 export default function PersonsDashboardView() {
   return (
-    <div className="flex flex-col ">
-      <InsertPersonForm />
-      <PersonsDataTable />
+    <div className="container mx-auto px-2 sm:px-4 py-4 space-y-6 max-w-[1400px]">
+      <div className="grid grid-cols-1 gap-6">
+        <div className="w-full">
+          <InsertPersonForm />
+        </div>
+        <div className="w-full overflow-hidden">
+          <PersonsDataTable />
+        </div>
+      </div>
     </div>
   );
 }

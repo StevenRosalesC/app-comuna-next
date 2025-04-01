@@ -53,7 +53,7 @@ export default function PersonsDataTable() {
 
   const [persons, setPersons] = useState<Person[]>([])
   const [total, setTotal] = useState(0)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [sorting, setSorting] = useState<SortingState>(() => {
     const sortField = searchParams.get("sort")
     const sortDir = searchParams.get("dir")
@@ -365,6 +365,19 @@ export default function PersonsDataTable() {
     manualPagination: true,
     manualSorting: true,
   })
+
+  useEffect(() => {
+    const handlePersonsCreated = (event: CustomEvent) => {
+      fetchData();
+    }
+
+    // Add event listener with type assertion
+    document.addEventListener("persons-created", handlePersonsCreated as EventListener);
+
+    return () => {
+      document.removeEventListener("persons-created", handlePersonsCreated as EventListener);
+    }
+  }, [fetchData]);
 
   return (
     <Card>

@@ -12,19 +12,29 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { CalendarIcon } from "lucide-react"
+import { personsService } from "@/services/persons"
+import { IPerson } from "@/interfaces/persons"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { es } from "date-fns/locale"
 
 const formSchema = z.object({
   identification: z.string().min(1, "La cédula es requerida"),
   firstName: z.string().min(1, "El nombre es requerido"),
   lastName: z.string().min(1, "El apellido es requerido"),
   email: z.string().email("Email inválido").optional().or(z.literal("")),
+  gender: z.number().min(0, "El género es requerido").max(1, "El género debe ser 0 o 1"),
   birthDate: z.string().optional(),
   phone: z.string().optional(),
   address: z.string().optional(),
@@ -43,13 +53,28 @@ export default function InsertPersonForm() {
       birthDate: "",
       phone: "",
       address: "",
+      gender: 1,
     },
   })
 
   async function onSubmit(data: FormValues) {
     try {
-      // Aquí iría la llamada al servicio para guardar la persona
-      console.log(data)
+      const person: IPerson = {
+        lastName: data.lastName,
+        firstName: data.firstName,
+        phoneNumber: data.phone,
+        identification: data.identification,
+        gender: data.gender ? 1 : 0,
+        birthDate: data.birthDate || "",
+        email: data.email || "",
+      }
+      await personsService.createPerson(person)
+      const event = new CustomEvent("persons-created", {
+        bubbles: true,
+        composed: true,
+        detail: { person }
+      });
+      document.dispatchEvent(event);
       toast.success("Persona guardada exitosamente")
       form.reset()
     } catch (error) {
@@ -110,6 +135,28 @@ export default function InsertPersonForm() {
 
               <FormField
                 control={form.control}
+                name="gender"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Género</FormLabel>
+                    <Select onValueChange={(value) => field.onChange(Number(value))} defaultValue={field.value.toString()}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccione el género" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="1">Masculino</SelectItem>
+                        <SelectItem value="0">Femenino</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
@@ -138,12 +185,16 @@ export default function InsertPersonForm() {
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "w-[240px] pl-3 text-left font-normal",
+                              "w-full pl-3 text-left font-normal",
                               !field.value && "text-muted-foreground"
                             )}
                           >
                             {field.value ? (
-                              field.value
+                              new Date(field.value).toLocaleDateString('es-ES', {
+                                day: '2-digit',
+                                month: 'long',
+                                year: 'numeric'
+                              })
                             ) : (
                               <span>Seleccionar fecha</span>
                             )}
@@ -152,19 +203,7 @@ export default function InsertPersonForm() {
                         </FormControl>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value ? new Date(field.value) : undefined}
-                          onSelect={(date) => {
-                            if (date) {
-                              field.onChange(date.toISOString().split('T')[0]);
-                            }
-                          }}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                        />
+                        <Input type="date" {...field} />
                       </PopoverContent>
                     </Popover>
                     <FormMessage />

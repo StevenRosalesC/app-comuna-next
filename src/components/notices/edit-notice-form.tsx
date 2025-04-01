@@ -144,175 +144,181 @@ export default function EditNoticeForm({ id }: Props) {
     };
   }, [watch, pathname, id, router]);
 
-  if (isLoading) return;
+  if (isLoading) return <div className="flex justify-center items-center min-h-[400px]">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+  </div>;
 
   return (
-    <div className='flex flex-col gap-6'>
-      {/* buttons to save and delete notice */}
-      <div className='flex w-full justify-between gap-4'>
-        <div className='flex items-center gap-4'>
-          <Controller
-            control={control}
-            name='type'
-            render={({ field }) => (
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger>
-                  <SelectValue>{field.value}</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Tipo</SelectLabel>
-                    {Object.values(NoticeType).map((type) => (
-                      <SelectItem key={type} value={type}>
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-          />
-          <Controller
-            control={control}
-            name='published'
-            render={({ field }) => (
-              <>
-                <Label htmlFor='published'>Publicado</Label>
-                <Switch
-                  id='published'
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </>
-            )}
-          />
-        </div>
-        <div className='gap4 flex flex-row'>
-          {id && (
-            <Link
-              href={`/dashboard/notices/${id}/preview`}
-              className='rounded-md bg-blue-500 px-4 py-2 text-white'
-            >
-              Previsualizar
-            </Link>
-          )}
-          <Button
-            onClick={async () => {
-              if (!id) return;
-              await update(id, {
-                title: watch('title'),
-                description: watch('description'),
-                coverImageUrl: watch('coverImageUrl') || '',
-                content: watch('content'),
-                type: watch('type'),
-                published: watch('published')
-              });
-            }}
-          >
-            Guardar
-          </Button>
-        </div>
-      </div>
-      <div>
-        <label className='mb-2 inline-block font-medium dark:text-white'>
-          Título
-        </label>
-        <Controller
-          control={control}
-          name='title'
-          render={({ field }) => (
-            <Input
-              {...field}
-              type='text'
-              className='w-full rounded-md border border-[#d1d9e0] bg-white px-4 py-2.5 shadow outline-none dark:border-[#3d444d] dark:bg-[#0d1017] dark:text-white'
-              placeholder='Ingrese el título de la noticia...'
+    <div className="container mx-auto px-4 py-6 ">
+      <div className="space-y-8">
+        {/* Header con controles principales */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card p-4 rounded-lg border">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <Controller
+              control={control}
+              name="type"
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue>{field.value}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Tipo</SelectLabel>
+                      {Object.values(NoticeType).map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
             />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name='coverImageUrl'
-          render={({ field }) => {
-            return (
-              <div className='mt-4 flex w-full flex-col items-center gap-4'>
-                <Label className='mb-2 inline-block font-medium dark:text-white'>
-                  Imagen de portada
-                </Label>
-
-                <Image
-                  src={field.value || '/not-found-1.webp'}
-                  alt='Cover image'
-                  width={400}
-                  height={200}
-                  className='mx-auto aspect-video rounded-md object-cover '
-                />
-                <Button
-                  onClick={() => setOpenDialog(true)}
-                  className='w-full md:w-1/3'
-                >
-                  Seleccionar imagen
-                </Button>
-                <Dialog
-                  key={'media-library'}
-                  open={openDialog}
-                  onOpenChange={handleClose}
-                >
-                  <MediaLibrary
-                    key={'media-library-content'}
-                    onClose={handleClose}
-                    onInsert={(image) => {
-                      field.onChange(image.url);
-                      handleClose();
-                    }}
+            <Controller
+              control={control}
+              name="published"
+              render={({ field }) => (
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="published">Publicado</Label>
+                  <Switch
+                    id="published"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
                   />
-                </Dialog>
-              </div>
-            );
-          }}
-        />
-      </div>
-
-      <div>
-        <Label className='mb-2 inline-block font-medium dark:text-white'>
-          Descripción
-        </Label>
-        <Controller
-          control={control}
-          name='description'
-          render={({ field }) => (
-            <Textarea
-              {...field}
-              className='w-full rounded-md border border-[#d1d9e0] bg-white px-4 py-2.5 shadow outline-none dark:border-[#3d444d] dark:bg-[#0d1017] dark:text-white'
-              placeholder='Ingrese la descripción de la noticia...'
+                </div>
+              )}
             />
-          )}
-        />
-      </div>
-
-      <div>
-        <Label className='mb-2 inline-block font-medium dark:text-white'>
-          Contenido
-        </Label>
-        <Controller
-          control={control}
-          name='content'
-          render={({ field }) => (
-            <TiptapEditor
-              ref={editorRef}
-              ssr={true}
-              output='html'
-              placeholder={{
-                paragraph: 'Escribe tu noticia aquí...',
-                imageCaption: 'Type caption for image (optional)'
+          </div>
+          <div className="flex gap-2">
+            {id && (
+              <Button variant="outline" asChild>
+                <Link href={`/dashboard/notices/${id}/preview`}>
+                  Previsualizar
+                </Link>
+              </Button>
+            )}
+            <Button
+              onClick={async () => {
+                if (!id) return;
+                await update(id, {
+                  title: watch('title'),
+                  description: watch('description'),
+                  coverImageUrl: watch('coverImageUrl') || '',
+                  content: watch('content'),
+                  type: watch('type'),
+                  published: watch('published')
+                });
               }}
-              contentMinHeight={256}
-              contentMaxHeight={640}
-              onContentChange={field.onChange}
-              initialContent={field.value}
+            >
+              Guardar
+            </Button>
+          </div>
+        </div>
+
+        {/* Formulario principal */}
+        <div className="space-y-6">
+          {/* Título */}
+          <div className="space-y-2">
+            <Label className="text-base font-semibold">Título</Label>
+            <Controller
+              control={control}
+              name="title"
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  type="text"
+                  className="w-full"
+                  placeholder="Ingrese el título de la noticia..."
+                />
+              )}
             />
-          )}
-        />
+          </div>
+
+          {/* Imagen de portada */}
+          <div className="space-y-4">
+            <Label className="text-base font-semibold">Imagen de portada</Label>
+            <Controller
+              control={control}
+              name="coverImageUrl"
+              render={({ field }) => (
+                <div className="space-y-4">
+                  <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-muted">
+                    <Image
+                      src={field.value || '/not-found-1.webp'}
+                      alt="Cover image"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => setOpenDialog(true)}
+                    className="w-full sm:w-auto"
+                  >
+                    Seleccionar imagen
+                  </Button>
+                  <Dialog
+                    key="media-library"
+                    open={openDialog}
+                    onOpenChange={handleClose}
+                  >
+                    <MediaLibrary
+                      key="media-library-content"
+                      onClose={handleClose}
+                      onInsert={(image) => {
+                        field.onChange(image.url);
+                        handleClose();
+                      }}
+                    />
+                  </Dialog>
+                </div>
+              )}
+            />
+          </div>
+
+          {/* Descripción */}
+          <div className="space-y-2">
+            <Label className="text-base font-semibold">Descripción</Label>
+            <Controller
+              control={control}
+              name="description"
+              render={({ field }) => (
+                <Textarea
+                  {...field}
+                  className="min-h-[100px]"
+                  placeholder="Ingrese la descripción de la noticia..."
+                />
+              )}
+            />
+          </div>
+
+          {/* Editor de contenido */}
+          <div className="space-y-2">
+            <Label className="text-base font-semibold">Contenido</Label>
+            <Controller
+              control={control}
+              name="content"
+              render={({ field }) => (
+                <div className="border rounded-lg">
+                  <TiptapEditor
+                    ref={editorRef}
+                    ssr={true}
+                    output="html"
+                    placeholder={{
+                      paragraph: "Escribe tu noticia aquí...",
+                      imageCaption: "Type caption for image (optional)"
+                    }}
+                    contentMinHeight={256}
+                    contentMaxHeight={640}
+                    onContentChange={field.onChange}
+                    initialContent={field.value}
+                  />
+                </div>
+              )}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

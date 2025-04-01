@@ -40,7 +40,6 @@ import {
   GalleryVerticalEnd,
   LogOut
 } from 'lucide-react';
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Icons } from '../icons';
 import { NavItem } from 'types';
@@ -48,6 +47,7 @@ import { useState } from 'react';
 import { useSessionContext } from '../providers/session-Provider';
 import { logout } from '@/app/actions/auth-actions';
 import Image from 'next/image';
+import { Link } from 'next-view-transitions';
 
 export const company = {
   name: 'Comuna Bambil Collao',

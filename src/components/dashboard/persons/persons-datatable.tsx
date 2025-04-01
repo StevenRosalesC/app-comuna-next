@@ -4,6 +4,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Badge } from "@/components/ui/badge"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -200,6 +201,21 @@ export default function PersonsDataTable() {
       }
     },
     {
+      accessorKey: "status",
+      enableSorting: true,
+      header: () => {
+        return <Button variant="ghost" className="flex items-center">Estado</Button>
+      },
+      cell: ({ row }) => {
+        const status = row.getValue("status") as boolean
+        return (
+          <Badge variant={status ? "default" : "destructive"}>
+            {status ? "Activo" : "Inactivo"}
+          </Badge>
+        )
+      }
+    },
+    {
       id: "actions",
       enableSorting: false,
       header: () => <div className="text-right">Acciones</div>,
@@ -384,7 +400,7 @@ export default function PersonsDataTable() {
                   <TableRow key={i}>
                     {Array.from({ length: columns.length }).map((_, j) => (
                       <TableCell key={j}>
-                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-9 w-full" />
                       </TableCell>
                     ))}
                   </TableRow>

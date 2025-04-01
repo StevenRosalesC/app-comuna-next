@@ -1,5 +1,6 @@
 "use client"
 import { ArrowUpDown, MoreHorizontal, ArrowUp, ArrowDown, Pencil } from "lucide-react"
+import { useSearchParams, useRouter, usePathname } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -21,6 +22,7 @@ import {
 import { Person } from "@/interfaces/persons"
 import {
   ColumnDef,
+  ColumnSort,
   SortingState,
   flexRender,
   getCoreRowModel,
@@ -44,13 +46,27 @@ import { toast } from 'sonner';
 
 
 export default function PersonsDataTable() {
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
   const [persons, setPersons] = useState<Person[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(false)
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [pageSize, setPageSize] = useState(10)
-  const [pageIndex, setPageIndex] = useState(0)
-  const [search, setSearch] = useState("")
+  const [sorting, setSorting] = useState<SortingState>(() => {
+    const sortField = searchParams.get("sort")
+    const sortDir = searchParams.get("dir")
+    return sortField && sortDir ? [{ id: sortField, desc: sortDir === "desc" }] : []
+  })
+  const [pageSize, setPageSize] = useState(() =>
+    Number(searchParams.get("size")) || 10
+  )
+  const [pageIndex, setPageIndex] = useState(() =>
+    Number(searchParams.get("page")) || 0
+  )
+  const [search, setSearch] = useState(() =>
+    searchParams.get("search") || ""
+  )
   const [pageCount, setPageCount] = useState(0)
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
@@ -224,6 +240,57 @@ export default function PersonsDataTable() {
     }
   ]
 
+  const updateUrl = useCallback((updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString())
+
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null) {
+        params.delete(key)
+      } else {
+        params.set(key, value)
+      }
+    })
+
+    router.replace(`${pathname}?${params.toString()}`, {
+      scroll: false
+    })
+  }, [pathname, router, searchParams])
+
+  const handleSortingChange = useCallback((newSorting: SortingState) => {
+    setSorting(newSorting)
+    if (newSorting.length > 0) {
+      updateUrl({
+        sort: newSorting[0].id,
+        dir: newSorting[0].desc ? "desc" : "asc"
+      })
+    } else {
+      updateUrl({ sort: null, dir: null })
+    }
+  }, [updateUrl])
+
+  const handlePageSizeChange = useCallback((newSize: number) => {
+    setPageSize(newSize)
+    setPageIndex(0)
+    updateUrl({
+      size: newSize.toString(),
+      page: "0"
+    })
+  }, [updateUrl])
+
+  const handlePageIndexChange = useCallback((newIndex: number) => {
+    setPageIndex(newIndex)
+    updateUrl({ page: newIndex.toString() })
+  }, [updateUrl])
+
+  const handleSearchChange = useCallback((newSearch: string) => {
+    setSearch(newSearch)
+    setPageIndex(0)
+    updateUrl({
+      search: newSearch || null,
+      page: "0"
+    })
+  }, [updateUrl])
+
   const fetchData = useCallback(async () => {
     setLoading(true)
     try {
@@ -259,17 +326,24 @@ export default function PersonsDataTable() {
     data: persons,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
+    onSortingChange: (updater) => {
+      if (typeof updater === 'function') {
+        const newSorting = updater(sorting);
+        handleSortingChange(newSorting);
+      } else {
+        handleSortingChange(updater);
+      }
+    },
     state: {
-      sorting,
+      sorting: sorting as ColumnSort[],
       pagination: { pageIndex, pageSize },
     },
     pageCount,
     onPaginationChange: (updater) => {
       if (typeof updater === 'function') {
         const newState = updater({ pageIndex, pageSize })
-        setPageIndex(newState.pageIndex)
-        setPageSize(newState.pageSize)
+        handlePageIndexChange(newState.pageIndex)
+        handlePageSizeChange(newState.pageSize)
       }
     },
     manualPagination: true,
@@ -284,7 +358,7 @@ export default function PersonsDataTable() {
           <Input
             placeholder="Buscar persona"
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => handleSearchChange(event.target.value)}
             className="max-w-sm"
           />
         </div>
@@ -354,7 +428,7 @@ export default function PersonsDataTable() {
               <p className="text-sm font-medium whitespace-nowrap">Registros por página</p>
               <Select
                 value={pageSize.toString()}
-                onValueChange={(value) => setPageSize(Number(value))}
+                onValueChange={(value) => handlePageSizeChange(Number(value))}
               >
                 <SelectTrigger className="h-8 w-[70px]">
                   <SelectValue placeholder={pageSize} />
@@ -374,7 +448,7 @@ export default function PersonsDataTable() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPageIndex(0)}
+                  onClick={() => handlePageIndexChange(0)}
                   disabled={pageIndex === 0 || loading}
                   className="px-2"
                 >
@@ -384,7 +458,7 @@ export default function PersonsDataTable() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPageIndex(prev => prev - 1)}
+                onClick={() => handlePageIndexChange(pageIndex - 1)}
                 disabled={pageIndex === 0 || loading}
               >
                 Anterior
@@ -396,7 +470,7 @@ export default function PersonsDataTable() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPageIndex(prev => prev + 1)}
+                onClick={() => handlePageIndexChange(pageIndex + 1)}
                 disabled={pageIndex >= pageCount - 1 || loading}
               >
                 Siguiente
@@ -405,7 +479,7 @@ export default function PersonsDataTable() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPageIndex(pageCount - 1)}
+                  onClick={() => handlePageIndexChange(pageCount - 1)}
                   disabled={pageIndex >= pageCount - 1 || loading}
                   className="px-2"
                 >

@@ -27,7 +27,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { es } from "date-fns/locale"
+import { Events } from "@/interfaces/enums"
+import { useNeighborhoodsStore } from "@/components/providers/neighborhoods-privider"
+import { useEffect } from "react"
 
 const formSchema = z.object({
   identification: z.string().min(1, "La cédula es requerida"),
@@ -35,9 +37,10 @@ const formSchema = z.object({
   lastName: z.string().min(1, "El apellido es requerido"),
   email: z.string().email("Email inválido").optional().or(z.literal("")),
   gender: z.number().min(0, "El género es requerido").max(1, "El género debe ser 0 o 1"),
-  birthDate: z.string().optional(),
+  birthDate: z.string().min(1, "La fecha de nacimiento es requerida"),
   phone: z.string().optional(),
   address: z.string().optional(),
+  neighborhoodId: z.string().min(1, "El barrio es requerido"),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -54,8 +57,10 @@ export default function InsertPersonForm() {
       phone: "",
       address: "",
       gender: 1,
+      neighborhoodId: "",
     },
   })
+  const neighborhoods = useNeighborhoodsStore((state) => state.getNeighborhoods())
 
   async function onSubmit(data: FormValues) {
     try {
@@ -68,15 +73,19 @@ export default function InsertPersonForm() {
         birthDate: data.birthDate || "",
         email: data.email || "",
       }
-      await personsService.createPerson(person)
-      const event = new CustomEvent("persons-created", {
-        bubbles: true,
-        composed: true,
-        detail: { person }
-      });
-      document.dispatchEvent(event);
-      toast.success("Persona guardada exitosamente")
-      form.reset()
+      const response = await personsService.createPerson(person)
+      if (response.status) {
+        const event = new CustomEvent(Events.PERSONS_CREATED, {
+          bubbles: true,
+          composed: true,
+          detail: { person }
+        });
+        document.dispatchEvent(event);
+        toast.success("Persona guardada exitosamente")
+        form.reset()
+      } else {
+        toast.error(response.message)
+      }
     } catch (error) {
       toast.error("Error al guardar la persona")
     }
@@ -128,6 +137,30 @@ export default function InsertPersonForm() {
                     <FormControl>
                       <Input placeholder="Ingrese los apellidos" {...field} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="neighborhoodId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Barrio</FormLabel>
+                    <Select onValueChange={(value) => field.onChange(Number(value))} defaultValue={field.value.toString()}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccione el barrio" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {neighborhoods.map((neighborhood) => (
+                          <SelectItem key={neighborhood.neighborhoodId} value={neighborhood.neighborhoodId}>
+                            {neighborhood.neighborhoodName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

@@ -1,11 +1,11 @@
 import { IPerson, IPersonsRequestResponse } from "@/interfaces/persons"
 import apiCommunity from "@/utils/communityApi"
-import { ServiceResponse } from "./common"
+import { ServiceResponse } from "../interfaces/common"
 
 export const personsService = {
-  async getPersons(limit: number, offset: number,orderBy ?: string, order ?: string, search ?: string) : Promise<IPersonsRequestResponse | null> {
+  async getPersons(limit: number, offset: number,orderBy ?: string, order ?: string, search ?: string) : Promise<ServiceResponse<IPersonsRequestResponse | null>> {
     try {
-      const {data} =await apiCommunity.get<IPersonsRequestResponse>("/persons", {
+      const {data:persons} =await apiCommunity.get<IPersonsRequestResponse>("/persons", {
         params: {
           limit,
           offset,
@@ -14,11 +14,17 @@ export const personsService = {
           search
         }
       })
-      console.log({data})
-      return data
+      return {
+        data: persons,
+        message: 'Personas obtenidas correctamente',
+        status: true
+      }
     } catch (error) {
-      console.log({error})
-      return null
+      return {
+        data: null,
+        message: 'Error al obtener las personas',
+        status: false
+      }
     }
   },
 
@@ -31,7 +37,6 @@ export const personsService = {
         status: true
       };
     } catch (error) {
-      console.error('Error al crear la persona:', error); 
       return {
         data: null,
         message: 'Error al crear la persona',

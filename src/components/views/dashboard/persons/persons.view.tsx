@@ -1,5 +1,6 @@
 import InsertPersonForm from "@/components/dashboard/persons/insertPersonForm";
 import PersonsDataTable from "@/components/dashboard/persons/persons-datatable";
+import PersonsActionsSection from "@/components/dashboard/persons/personsActionsSection";
 
 export default function PersonsDashboardView() {
   return (
@@ -8,6 +9,7 @@ export default function PersonsDashboardView() {
         <div className="w-full">
           <InsertPersonForm />
         </div>
+        <PersonsActionsSection />
         <div className="w-full overflow-hidden">
           <PersonsDataTable />
         </div>

@@ -25,6 +25,6 @@ export const savePost = (data: any) => {
     const value = data?.content?.trim() ? { ...mock, ...data } : mock;
     localStorage.setItem('post', JSON.stringify(value));
   } catch (error) {
-    console.error('Error saving to localStorage:', error);
+    throw error;
   }
 };

@@ -1,16 +1,10 @@
 "use client"
-import { ArrowUpDown, MoreHorizontal, ArrowUp, ArrowDown, Pencil } from "lucide-react"
+import { ArrowUpDown, ArrowUp, ArrowDown, Pencil } from "lucide-react"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import {
   Table,
@@ -37,23 +31,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { personsService } from "@/services/persons"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PersonEditDialog } from "./person-edit-dialog"
-
-import { toast } from 'sonner';
-
-
+import { toast } from 'sonner'
+import { Events } from '../../../interfaces/enums'
+import { useNeighborhoodsStore } from "@/components/providers/neighborhoods-privider"
+import { usePersonsStore } from "@/components/providers/persons-provider"
 
 export default function PersonsDataTable() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const neighborhoods = useNeighborhoodsStore((state) => state.getNeighborhoods())
+  const { persons, isLoading, fetchPersons, count } = usePersonsStore((state) => ({
+    persons: state.persons,
+    isLoading: state.isLoading,
+    fetchPersons: state.fetchPersons,
+    count: state.count
+  }))
 
-  const [persons, setPersons] = useState<Person[]>([])
-  const [total, setTotal] = useState(0)
-  const [loading, setLoading] = useState(true)
   const [sorting, setSorting] = useState<SortingState>(() => {
     const sortField = searchParams.get("sort")
     const sortDir = searchParams.get("dir")
@@ -68,7 +65,7 @@ export default function PersonsDataTable() {
   const [search, setSearch] = useState(() =>
     searchParams.get("search") || ""
   )
-  const [pageCount, setPageCount] = useState(0)
+  const [pageCount, setPageCount] = useState(() => Math.ceil(count / pageSize))
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
 
@@ -183,10 +180,22 @@ export default function PersonsDataTable() {
         if (!date) return <div>-</div>
 
         try {
-          return <div>{new Date(date as string).toLocaleDateString('es-ES')}</div>
+          return <div className="text-right">{new Date(date as string).toLocaleDateString('es-ES')}</div>
         } catch (error) {
           return <div>Fecha inválida</div>
         }
+      }
+    },
+    {
+      accessorKey: "neighborhoodId",
+      enableSorting: false,
+      header: () => {
+        return <Button variant="ghost" className="flex items-center">Barrio</Button>
+      },
+      cell: ({ row }) => {
+        const neighborhoodId = row.getValue("neighborhoodId") as string
+        const neighborhood = neighborhoods.find(neighborhood => neighborhood.neighborhoodId === neighborhoodId)
+        return <div>{neighborhood?.neighborhoodName ?? "-"}</div>
       }
     },
     {
@@ -234,22 +243,7 @@ export default function PersonsDataTable() {
             >
               <Pencil className="h-4 w-4" />
             </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() => {
-                    console.log('Cambiar estado:', person)
-                  }}
-                >
-                  Cambiar estado
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+
           </div>
         )
       }
@@ -308,35 +302,30 @@ export default function PersonsDataTable() {
   }, [updateUrl])
 
   const fetchData = useCallback(async () => {
-    setLoading(true)
     try {
       const orderBy = sorting.length ? sorting[0].id : "lastName"
       const order = sorting.length && sorting[0].desc ? "desc" : "asc"
 
-      const response = await personsService.getPersons(
+      await fetchPersons(
         pageSize,
-        pageIndex * pageSize,
+        pageIndex,
         orderBy,
         order,
         search
       )
-
-      if (response) {
-        setPersons(response.data)
-        setTotal(response.count)
-        setPageCount(Math.ceil(response.count / pageSize))
-      }
     } catch (error) {
       toast.error('Error al obtener las personas')
-    } finally {
-      setLoading(false)
     }
-  }, [pageSize, pageIndex, sorting, search])
+  }, [pageSize, pageIndex, sorting, search, fetchPersons])
 
   useEffect(() => {
     const handler = setTimeout(fetchData, 300)
     return () => clearTimeout(handler)
   }, [fetchData])
+
+  useEffect(() => {
+    setPageCount(Math.ceil(count / pageSize))
+  }, [count, pageSize])
 
   const table = useReactTable({
     data: persons,
@@ -370,12 +359,10 @@ export default function PersonsDataTable() {
     const handlePersonsCreated = (event: CustomEvent) => {
       fetchData();
     }
-
-    // Add event listener with type assertion
-    document.addEventListener("persons-created", handlePersonsCreated as EventListener);
+    document.addEventListener(Events.PERSONS_CREATED, handlePersonsCreated as EventListener);
 
     return () => {
-      document.removeEventListener("persons-created", handlePersonsCreated as EventListener);
+      document.removeEventListener(Events.PERSONS_CREATED, handlePersonsCreated as EventListener);
     }
   }, [fetchData]);
 
@@ -408,7 +395,7 @@ export default function PersonsDataTable() {
               ))}
             </TableHeader>
             <TableBody>
-              {loading ? (
+              {isLoading ? (
                 Array.from({ length: persons.length || pageSize }).map((_, i) => (
                   <TableRow key={i}>
                     {Array.from({ length: columns.length }).map((_, j) => (
@@ -449,7 +436,7 @@ export default function PersonsDataTable() {
         <div className="mt-4 space-y-4 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
           <div className="text-sm text-muted-foreground text-center sm:text-left">
             {table.getFilteredSelectedRowModel().rows.length} de{" "}
-            {total} registros seleccionados.
+            {count} registros seleccionados.
           </div>
 
           <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-6 lg:space-x-8">
@@ -478,7 +465,7 @@ export default function PersonsDataTable() {
                   variant="outline"
                   size="sm"
                   onClick={() => handlePageIndexChange(0)}
-                  disabled={pageIndex === 0 || loading}
+                  disabled={pageIndex === 0 || isLoading}
                   className="px-2"
                 >
                   {"<<"}
@@ -488,7 +475,7 @@ export default function PersonsDataTable() {
                 variant="outline"
                 size="sm"
                 onClick={() => handlePageIndexChange(pageIndex - 1)}
-                disabled={pageIndex === 0 || loading}
+                disabled={pageIndex === 0 || isLoading}
               >
                 Anterior
               </Button>
@@ -500,7 +487,7 @@ export default function PersonsDataTable() {
                 variant="outline"
                 size="sm"
                 onClick={() => handlePageIndexChange(pageIndex + 1)}
-                disabled={pageIndex >= pageCount - 1 || loading}
+                disabled={pageIndex >= pageCount - 1 || isLoading}
               >
                 Siguiente
               </Button>
@@ -509,7 +496,7 @@ export default function PersonsDataTable() {
                   variant="outline"
                   size="sm"
                   onClick={() => handlePageIndexChange(pageCount - 1)}
-                  disabled={pageIndex >= pageCount - 1 || loading}
+                  disabled={pageIndex >= pageCount - 1 || isLoading}
                   className="px-2"
                 >
                   {">>"}

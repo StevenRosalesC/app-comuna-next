@@ -31,6 +31,7 @@ export const createNeighborhoodsStore = (initState?: Partial<NeighborhoodsState>
     setNeighborhoods: (neighborhoods: Neighborhood[]) => set({ neighborhoods }),
     fetchNeighborhoods: async () => {
       try {
+        set({ isLoading: true })
         if (get().neighborhoods.length > 0) {
           return;
         }

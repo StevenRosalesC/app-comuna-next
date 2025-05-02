@@ -73,11 +73,12 @@ export const createPersonsStore = (initState?: Partial<PersonsState>) =>
           });
         }
       } catch (error) {
-        console.error(error);
         set({ 
           error: 'Error al cargar los datos', 
           isLoading: false 
         });
+      } finally {
+        set({ isLoading: false });
       }
     },
     getPersons: (pageSize: number, pageIndex: number, orderBy: string, order: string, search: string) => {

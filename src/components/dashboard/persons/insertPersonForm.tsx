@@ -28,9 +28,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Events } from "@/interfaces/enums"
-import { useNeighborhoodsList } from "@/hooks/store/useNeighborhoodsStore"
+import { useNeighborhoodsStore } from "@/hooks/store/useNeighborhoodsStore"
 import { useEffect } from "react"
-
 const formSchema = z.object({
   identification: z.string().min(1, "La cédula es requerida"),
   firstName: z.string().min(1, "El nombre es requerido"),
@@ -60,7 +59,16 @@ export default function InsertPersonForm() {
       neighborhoodId: "",
     },
   })
-  const { neighborhoods, isLoading } = useNeighborhoodsList()
+  const { neighborhoods, isLoading, fetchNeighborhoods } = useNeighborhoodsStore((state) => ({
+    neighborhoods: state.neighborhoods,
+    isLoading: state.isLoading,
+    fetchNeighborhoods: state.fetchNeighborhoods
+  }))
+
+  useEffect(() => {
+    fetchNeighborhoods()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function onSubmit(data: FormValues) {
     try {
@@ -144,6 +152,7 @@ export default function InsertPersonForm() {
               <FormField
                 control={form.control}
                 name="neighborhoodId"
+                disabled={isLoading}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Barrio</FormLabel>

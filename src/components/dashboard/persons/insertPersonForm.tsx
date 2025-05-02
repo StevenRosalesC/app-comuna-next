@@ -28,7 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Events } from "@/interfaces/enums"
-import { useNeighborhoodsStore } from "@/components/providers/neighborhoods-privider"
+import { useNeighborhoodsList } from "@/hooks/store/useNeighborhoodsStore"
 import { useEffect } from "react"
 
 const formSchema = z.object({
@@ -60,7 +60,7 @@ export default function InsertPersonForm() {
       neighborhoodId: "",
     },
   })
-  const neighborhoods = useNeighborhoodsStore((state) => state.getNeighborhoods())
+  const { neighborhoods, isLoading } = useNeighborhoodsList()
 
   async function onSubmit(data: FormValues) {
     try {
@@ -154,7 +154,7 @@ export default function InsertPersonForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {neighborhoods.map((neighborhood) => (
+                        {neighborhoods.map((neighborhood: import('@/store/neighborhoodsStore').Neighborhood) => (
                           <SelectItem key={neighborhood.neighborhoodId} value={neighborhood.neighborhoodId}>
                             {neighborhood.neighborhoodName}
                           </SelectItem>

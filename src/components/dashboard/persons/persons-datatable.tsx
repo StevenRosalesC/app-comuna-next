@@ -36,15 +36,15 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { PersonEditDialog } from "./person-edit-dialog"
 import { toast } from 'sonner'
 import { Events } from '../../../interfaces/enums'
-import { useNeighborhoodsStore } from "@/components/providers/neighborhoods-privider"
-import { usePersonsStore } from "@/components/providers/persons-provider"
+import { useNeighborhoodsList } from "@/hooks/store/useNeighborhoodsStore"
+import { usePersonsStore } from "@/hooks/store/usePersonsStore"
 
 export default function PersonsDataTable() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const neighborhoods = useNeighborhoodsStore((state) => state.getNeighborhoods())
-  const { persons, isLoading, fetchPersons, count } = usePersonsStore((state) => ({
+  const { neighborhoods, isLoading } = useNeighborhoodsList()
+  const { persons, isLoading: personsLoading, fetchPersons, count } = usePersonsStore((state) => ({
     persons: state.persons,
     isLoading: state.isLoading,
     fetchPersons: state.fetchPersons,
@@ -194,7 +194,7 @@ export default function PersonsDataTable() {
       },
       cell: ({ row }) => {
         const neighborhoodId = row.getValue("neighborhoodId") as string
-        const neighborhood = neighborhoods.find(neighborhood => neighborhood.neighborhoodId === neighborhoodId)
+        const neighborhood = neighborhoods.find((neighborhood: import('@/store/neighborhoodsStore').Neighborhood) => neighborhood.neighborhoodId === neighborhoodId)
         return <div>{neighborhood?.neighborhoodName ?? "-"}</div>
       }
     },

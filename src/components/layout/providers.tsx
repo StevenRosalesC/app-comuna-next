@@ -3,8 +3,8 @@ import React from 'react';
 import ThemeProvider from './ThemeToggle/theme-provider';
 import { SessionProvider } from '../providers/session-Provider';
 import { AuthResponse } from 'types/response';
-import { NeighborhoodsStoreProvider } from '../providers/neighborhoods-privider';
-import { PersonsStoreProvider } from '../providers/persons-provider';
+import { NeighborhoodsStoreProvider } from '@/hooks/store/useNeighborhoodsStore';
+import { PersonsStoreProvider } from '@/hooks/store/usePersonsStore';
 
 export default function Providers({
   session,

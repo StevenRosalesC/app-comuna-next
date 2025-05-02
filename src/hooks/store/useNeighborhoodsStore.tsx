@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useRef, useEffect } from 'react';
 import { useStore } from 'zustand';
-import { createNeighborhoodsStore, NeighborhoodsState, Neighborhood } from '@/store/neighborhoodsStore';
+import { createNeighborhoodsStore, NeighborhoodsState } from '@/store/neighborhoodsStore';
 
 export type NeighborhoodsStoreApi = ReturnType<typeof createNeighborhoodsStore>;
 

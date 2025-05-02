@@ -30,6 +30,8 @@ import {
 import { Events } from "@/interfaces/enums"
 import { useNeighborhoodsStore } from "@/hooks/store/useNeighborhoodsStore"
 import { useEffect } from "react"
+import { Neighborhood } from "@/store/neighborhoodsStore"
+
 const formSchema = z.object({
   identification: z.string().min(1, "La cédula es requerida"),
   firstName: z.string().min(1, "El nombre es requerido"),
@@ -39,7 +41,7 @@ const formSchema = z.object({
   birthDate: z.string().min(1, "La fecha de nacimiento es requerida"),
   phone: z.string().optional(),
   address: z.string().optional(),
-  neighborhoodId: z.string().min(1, "El barrio es requerido"),
+  neighborhoodId: z.string().optional(),
 })
 
 type FormValues = z.infer<typeof formSchema>
@@ -70,6 +72,14 @@ export default function InsertPersonForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Neighborhood options for Select
+  // This variable is outside the JSX for better readability
+  const neighborhoodsOptions = neighborhoods.map((neighborhood: Neighborhood) => (
+    <SelectItem key={neighborhood.neighborhoodId} value={neighborhood.neighborhoodId}>
+      {neighborhood.neighborhoodName}
+    </SelectItem>
+  ))
+
   async function onSubmit(data: FormValues) {
     try {
       const person: IPerson = {
@@ -80,6 +90,7 @@ export default function InsertPersonForm() {
         gender: data.gender ? 1 : 0,
         birthDate: data.birthDate || "",
         email: data.email || "",
+        neighborhoodId: data.neighborhoodId,
       }
       const response = await personsService.createPerson(person)
       if (response.status) {
@@ -156,18 +167,14 @@ export default function InsertPersonForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Barrio</FormLabel>
-                    <Select onValueChange={(value) => field.onChange(Number(value))} defaultValue={field.value.toString()}>
+                    <Select onValueChange={(value) => field.onChange(value)} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Seleccione el barrio" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {neighborhoods.map((neighborhood: import('@/store/neighborhoodsStore').Neighborhood) => (
-                          <SelectItem key={neighborhood.neighborhoodId} value={neighborhood.neighborhoodId}>
-                            {neighborhood.neighborhoodName}
-                          </SelectItem>
-                        ))}
+                        {neighborhoodsOptions}
                       </SelectContent>
                     </Select>
                     <FormMessage />

@@ -7,6 +7,7 @@ import { getRelativeTime } from '@/utils/date';
 import { Button } from '../ui/button';
 import { getAllNews } from '@/services/page';
 import { Link } from 'next-view-transitions';
+import { Loader2 } from 'lucide-react';
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'NewsMediaOrganization',
@@ -87,24 +88,44 @@ export default function NoticesView() {
               href={`/notices/${notice.title}`}
               key={index}
               className='group mx-auto block max-w-6xl gap-3 hover:no-underline focus:no-underline dark:bg-gray-50 sm:max-w-full lg:grid lg:grid-cols-12'
+              aria-label={`Leer noticia: ${notice.title}`}
             >
               <Image
                 width={800}
                 height={600}
-                alt=''
+                alt={notice.title ? `Imagen de la noticia: ${notice.title}` : 'Imagen de noticia'}
                 src={notice.coverImageUrl || '/not-found-1.webp'}
                 className='h-96 w-full rounded object-cover dark:bg-gray-500 sm:h-96 lg:col-span-7'
+                loading='lazy'
               />
               <div className='space-y-2 p-6 lg:col-span-5'>
+                <div className='flex items-center gap-2 mb-2'>
+                  <span className='text-xs text-gray-500' aria-label={`Autor: ${notice.createdBy}`}>{notice.createdBy}</span>
+                  <span className='text-xs text-gray-500' aria-label={`Fecha de publicación: ${getRelativeTime(notice.createdAt ?? new Date().toISOString())}`}>{getRelativeTime(notice.createdAt ?? new Date().toISOString())}</span>
+                </div>
                 <h3 className='line-clamp-2 text-2xl font-semibold text-green-600 group-hover:underline group-focus:underline sm:text-4xl '>
                   {notice.title}
                 </h3>
-                <span className='text-xs'>
-                  {getRelativeTime(
-                    notice.createdAt ?? new Date().toISOString()
-                  )}
-                </span>
+                <span className='sr-only'>Publicado {getRelativeTime(notice.createdAt ?? new Date().toISOString())} por {notice.createdBy}</span>
                 <p className='line-clamp-6'>{notice.description}</p>
+                {/* Datos estructurados SEO tipo NewsArticle */}
+                <script type='application/ld+json' dangerouslySetInnerHTML={{
+                  __html: JSON.stringify({
+                    '@context': 'https://schema.org',
+                    '@type': 'NewsArticle',
+                    headline: notice.title,
+                    image: [notice.coverImageUrl],
+                    datePublished: notice.createdAt,
+                    dateModified: notice.updatedAt,
+                    author: [{ '@type': 'Person', name: notice.createdBy }],
+                    publisher: {
+                      '@type': 'Organization',
+                      name: 'Comuna Bambil Collao',
+                      logo: { '@type': 'ImageObject', url: `https://${process.env.NEXT_PUBLIC_APP_URL}/icon.webp` }
+                    },
+                    description: notice.description
+                  })
+                }} />
               </div>
             </Link>
           ))}
@@ -120,10 +141,12 @@ export default function NoticesView() {
               {notices.length < total && (
                 <Button
                   type='button'
-                  className='rounded-md px-6 py-3 text-sm hover:underline dark:bg-gray-50 dark:text-gray-600'
+                  className='rounded-md px-6 py-3 text-sm hover:underline dark:bg-gray-50 dark:text-gray-600 flex items-center gap-2'
                   onClick={handleLoadMore}
+                  aria-label='Cargar más noticias'
+                  disabled={loading}
                 >
-                  Ver más
+                  {loading ? (<><Loader2 className='animate-spin mr-2 h-4 w-4' aria-label='Cargando noticias' />Cargando...</>) : 'Ver más'}
                 </Button>
               )}
             </div>

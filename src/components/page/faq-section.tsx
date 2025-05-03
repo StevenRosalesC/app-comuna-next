@@ -7,6 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger
 } from '../ui/accordion';
+import Link from 'next/link';
 
 interface Faq {
   question: string;
@@ -30,7 +31,7 @@ export default function FaqSection() {
     }
   ];
   return (
-    <section className='w-full  py-4'>
+    <section className='w-full py-4'>
       <div className='container grid gap-4 px-4 md:gap-6' data-aos='fade-up'>
         <div className='space-y-2'>
           <SubTitle className='text-center'>Preguntas Frecuentes</SubTitle>
@@ -45,8 +46,8 @@ export default function FaqSection() {
         <div data-aos='fade-up'>
           <Accordion type='single' collapsible>
             {faqs.map((item, index) => (
-              <AccordionItem key={index} value={`item-${index}`}>
-                <AccordionTrigger>
+              <AccordionItem key={index} value={`item-${index}`} className="animate-fade-in-card">
+                <AccordionTrigger aria-expanded={item.isOpen}>
                   <h3 className='text-center text-xl sm:text-left'>
                     {item.question}
                   </h3>
@@ -55,6 +56,10 @@ export default function FaqSection() {
               </AccordionItem>
             ))}
           </Accordion>
+        </div>
+        <div className="mt-4 text-center">
+          <span className="text-gray-600">¿No encontraste tu respuesta?</span>{' '}
+          <Link href="/contact" className="text-primary font-semibold underline ml-1" aria-label="Ir a contacto">Contáctanos</Link>
         </div>
       </div>
     </section>

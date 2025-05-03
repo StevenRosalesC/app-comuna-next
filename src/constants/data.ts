@@ -30,8 +30,8 @@ export const navItems: NavItem[] = [
     items: [] // No child items
   },
   {
-    title: 'Users',
-    url: '/dashboard/users',
+    title: 'Personas',
+    url: '/dashboard/persons',
     icon: 'users',
     isActive: false,
     shortcut: ['u', 'u']
@@ -42,6 +42,14 @@ export const navItems: NavItem[] = [
     icon: 'page',
     isActive: false,
     shortcut: ['u', 'u']
+  },
+  {
+    title: 'Comuneros',
+    url: '/dashboard/members',
+    icon: 'users',
+    isActive: false,
+    shortcut: ['m', 'm'],
+    items: []
   }
 ];
 

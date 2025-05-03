@@ -8,8 +8,8 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 
 export const metadata: Metadata = {
-  title: 'Next Shadcn Dashboard Starter',
-  description: 'Basic dashboard with Next.js and Shadcn'
+  title: 'Dashboard',
+  description: 'Dashboard'
 };
 
 export default async function DashboardLayout({
@@ -29,7 +29,7 @@ export default async function DashboardLayout({
           <SidebarInset>
             <Header />
             {/* page main content */}
-            <section className=' mx-auto w-full px-6 py-10'>{children}</section>
+            <section className=' mx-auto w-full px-2 sm:px-4 py-4 space-y-6'>{children}</section>
             {/* page main content ends */}
           </SidebarInset>
         </SidebarProvider>

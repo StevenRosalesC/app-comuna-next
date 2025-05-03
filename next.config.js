@@ -31,7 +31,13 @@ const nextConfig = {
   //   ]
   // },
   //  serverComponentsExternalPackages: ["shiki"],
-    transpilePackages: ['shiki']
+    transpilePackages: ['shiki'],
+    
+    ...(process.env.NODE_ENV === 'production' && {
+      compiler: {
+        removeConsole: true
+      }
+    })
 };
 
 module.exports = nextConfig;

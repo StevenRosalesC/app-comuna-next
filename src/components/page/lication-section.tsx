@@ -1,7 +1,16 @@
-import { Mail, MapPin } from 'lucide-react';
+'use client';
+import { Mail, MapPin, Copy } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
 
 export default function LocationSection() {
+  const [copied, setCopied] = useState(false);
+  const address = 'Santa Elena, Parroquia Colonche, Bambil Collao - Barrio 3 de Noviembre - Frente a la cancha de uso múltiple, Ecuador.';
+  const handleCopy = () => {
+    navigator.clipboard.writeText(address);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
   return (
     <section className='my-5 rounded-xl p-2'>
       <div className='flex h-full w-full flex-col items-end lg:flex-row'>
@@ -10,24 +19,39 @@ export default function LocationSection() {
           data-aos='fade-up'
         >
           <div className='p-4'>
-            <Mail size={32} />
+            <Mail size={32} aria-label="Icono correo" />
             <h4 className='text-xl font-bold'>Correo</h4>
-            <p>Escribenos a:</p>
+            <p>Escríbenos a:</p>
             <Link
-              className='hover:underline'
+              className='hover:underline text-primary font-semibold'
               href='mailto:22defebrerobambil@gmail.com'
+              aria-label='Enviar correo a la comuna'
             >
               22defebrerobambil@gmail.com
             </Link>
           </div>
 
           <div className='p-4'>
-            <MapPin size={32} />
+            <MapPin size={32} aria-label="Icono ubicación" />
             <h4 className='text-xl font-bold'>Oficina</h4>
-            <p>
-              Santa Elena, Parroquia Colonche, Bambil Collao - Barrio 3 de
-              Noviembre - Frente a la cancha de uso múltiple, Ecuador.
-            </p>
+            <p>{address}</p>
+            <div className="flex gap-2 mt-2">
+              <button
+                className="px-3 py-1 rounded bg-primary text-white font-semibold shadow hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+                onClick={() => window.open('https://goo.gl/maps/2Qn6Qn6Qn6Qn6Qn6A', '_blank')}
+                aria-label="Abrir ubicación en Google Maps"
+              >
+                Ver en Google Maps
+              </button>
+              <button
+                className="px-3 py-1 rounded border border-gray-400 text-gray-700 font-semibold shadow hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+                onClick={handleCopy}
+                aria-label="Copiar dirección de la comuna"
+              >
+                <Copy size={18} className="inline-block mr-1 align-text-bottom" />
+                {copied ? '¡Copiado!' : 'Copiar dirección'}
+              </button>
+            </div>
           </div>
         </div>
         <div
@@ -39,6 +63,7 @@ export default function LocationSection() {
             className='min-h-96 w-full rounded-lg border-0 shadow-md'
             loading='lazy'
             referrerPolicy='no-referrer-when-downgrade'
+            aria-label="Mapa de ubicación de la comuna"
           ></iframe>
         </div>
       </div>

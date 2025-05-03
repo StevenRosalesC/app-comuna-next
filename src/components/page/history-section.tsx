@@ -257,7 +257,7 @@ export default function HistorySection() {
               </li>
             </ul>
           </div>
-          <div className='mt-4'>
+          {/* <div className='mt-4'>
             <div className='flex flex-col items-center space-y-4'>
               <embed
                 src='/page/bambil-collao-history.pdf'
@@ -290,7 +290,7 @@ export default function HistorySection() {
                 Ver documento completo (PDF)
               </a>
             </div>
-          </div>
+          </div> */}
         </section>
       </div>
     </div>

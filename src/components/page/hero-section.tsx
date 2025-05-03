@@ -4,42 +4,61 @@ import { Paragraph } from '../ui/atoms/paragraph';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import Aos from '../aos';
+import Link from 'next/link';
 
 export default function HeroSection() {
   return (
     <>
       <Aos />
       <div
-        className='mx-auto grid max-w-screen-xl px-4 py-8 lg:grid-cols-12 lg:gap-8 lg:py-16 xl:gap-0'
+        className='mx-auto grid max-w-screen-xl px-4 py-8 lg:grid-cols-12 lg:gap-8 lg:py-16 xl:gap-0 items-center'
+        aria-label="Sección principal de bienvenida"
       >
-        <div className='mr-5 place-self-center lg:col-span-7'>
+        <div className='mr-5 place-self-center lg:col-span-7 animate-fade-in'>
           <Title>Bienvenido a la Comuna Bambil Collao</Title>
           <Paragraph className='md:text-lg lg:mb-8 lg:text-xl'>
             Un sitio web para la comunidad de Bambil Collao, donde podrás
             encontrar información relevante sobre la comuna, noticias, eventos y
             mucho más.
           </Paragraph>
-          <div className='flex flex-col lg:flex-row lg:items-center lg:space-x-4'>
+          <div className='flex flex-col lg:flex-row lg:items-center lg:space-x-4 mt-4'>
+            <label htmlFor="email-suscripcion" className="sr-only">Correo electrónico</label>
             <Input
+              id="email-suscripcion"
               type='email'
               placeholder='Ingresa tu correo electrónico'
               className='w-full'
+              aria-label="Ingresa tu correo electrónico para suscribirte"
             />
-            <Button className='mt-4 w-full bg-green-700 lg:mt-0 lg:w-auto'>
+            <Button className='mt-4 w-full bg-green-700 lg:mt-0 lg:w-auto' aria-label="Suscribirse al boletín">
               Suscribirse
             </Button>
           </div>
+          <div className="mt-6 flex gap-4">
+            <Link href="/about" passHref legacyBehavior>
+              <Button asChild className="bg-primary text-white font-semibold px-6 py-3 shadow hover:bg-primary/90 transition-colors" aria-label="Conoce más sobre la comuna">
+                <a>Conoce más</a>
+              </Button>
+            </Link>
+            <Link href="/notices" passHref legacyBehavior>
+              <Button asChild variant="outline" className="font-semibold px-6 py-3" aria-label="Ver noticias recientes">
+                <a>Ver noticias</a>
+              </Button>
+            </Link>
+          </div>
         </div>
         <div
-          className='hidden lg:col-span-5 lg:mt-0 lg:flex '
-
+          className='hidden lg:col-span-5 lg:mt-0 lg:flex animate-fade-in-img'
+          aria-label="Imagen de la comuna"
         >
           <Image
             src='https://ik.imagekit.io/stevenrosales/app-comuna/comuna.webp?updatedAt=1737254562322'
-            width={1920}
-            height={1080}
+            width={600}
+            height={800}
             className='rounded-lg object-cover shadow-lg'
             alt='Comuna Bambil Collao'
+            loading="lazy"
+            priority={false}
           />
         </div>
       </div>

@@ -99,7 +99,6 @@ export function PersonEditDialog({
       onSave?.(personToSave)
       onOpenChange(false)
       form.reset()
-      toast.success("Persona actualizada correctamente")
     } catch (error) {
       toast.error("Error al actualizar la persona")
     }

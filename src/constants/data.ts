@@ -42,6 +42,14 @@ export const navItems: NavItem[] = [
     icon: 'page',
     isActive: false,
     shortcut: ['u', 'u']
+  },
+  {
+    title: 'Cuotas anuales',
+    url: '/dashboard/annual-fee',
+    icon: 'billing',
+    isActive: false,
+    shortcut: ['f', 'f'],
+    items: []
   }
 ];
 

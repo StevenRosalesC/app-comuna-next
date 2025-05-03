@@ -1,9 +1,10 @@
 import Image from 'next/image';
 import { Title } from '../ui/atoms/title';
-
 import Aos from '../aos';
 import Himno from '../page/himno';
 import HistorySection from '../page/history-section';
+import { Users, Award, Star, HeartHandshake } from 'lucide-react';
+
 // {
 //   "@context": "https://schema.org/",
 //     "@type": "Article",
@@ -19,36 +20,64 @@ import HistorySection from '../page/history-section';
 export default function AboutView() {
   const jsonLd = {
     '@context': 'https://schema.org/',
-    '@type': 'Article',
-    name: 'Acerca de la comuna Bambil Collao',
+    '@type': 'Organization',
+    name: 'Comuna Bambil Collao',
     description:
-      'Información sobre la comuna Bambil Collao, su historia, misión y visión.',
-    about: {
-      '@type': 'Event',
-      name: 'Misión, Visión y Historia de la Comuna Bambil Collao',
-      startDate: new Date().toISOString(),
-      location: {
-        '@type': 'Place',
-        name: 'Comuna Bambil Collao',
-        url: `https://${process.env.NEXT_PUBLIC_APP_URL}`
+      'Información sobre la comuna Bambil Collao, su historia, misión, visión, valores, equipo y logros.',
+    url: `https://${process.env.NEXT_PUBLIC_APP_URL}`,
+    logo: `https://${process.env.NEXT_PUBLIC_APP_URL}/icon.webp`,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: 'Barrio 3 de Noviembre - Frente a la cancha de uso múltiple',
+      addressLocality: 'Bambil Collao',
+      addressRegion: 'Santa Elena',
+      addressCountry: 'EC'
+    },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      email: '22defebrerobambil@gmail.com',
+      telephone: '+593 99 999 9999',
+      contactType: 'Información general'
+    },
+    member: [
+      {
+        '@type': 'Person',
+        name: 'Juan Pérez',
+        jobTitle: 'Presidente',
+        image: '/team/presidente.webp'
       },
-      image: `https://${process.env.NEXT_PUBLIC_APP_URL}/icon.webp`
-    },
-    contentReferenceTime: new Date().toISOString(),
-    author: {
-      '@type': 'Organization',
-      name: 'Comuna Bambil Collao',
-      url: `https://${process.env.NEXT_PUBLIC_APP_URL}`
-    },
-    image: `https://${process.env.NEXT_PUBLIC_APP_URL}/icon.webp`,
-    headline: 'Acerca de la comuna Bambil Collao',
-    datePublished: new Date().toISOString(),
-    dateModified: new Date().toISOString(),
-    mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': `https://${process.env.NEXT_PUBLIC_APP_URL}/about`
-    }
+      {
+        '@type': 'Person',
+        name: 'María García',
+        jobTitle: 'Secretaria',
+        image: '/team/secretaria.webp'
+      }
+    ]
   };
+
+  const valores = [
+    { icon: <HeartHandshake className="text-green-600" size={32} />, label: 'Solidaridad', desc: 'Apoyamos y cuidamos a todos los miembros de la comunidad.' },
+    { icon: <Star className="text-yellow-500" size={32} />, label: 'Excelencia', desc: 'Buscamos la mejora continua en todo lo que hacemos.' },
+    { icon: <Award className="text-blue-600" size={32} />, label: 'Respeto', desc: 'Valoramos la diversidad y fomentamos el trato digno.' },
+    { icon: <Users className="text-purple-600" size={32} />, label: 'Colaboración', desc: 'Trabajamos juntos para lograr objetivos comunes.' }
+  ];
+
+  // const equipo = [
+  //   { nombre: 'Juan Pérez', rol: 'Presidente', img: '/team/presidente.webp' },
+  //   { nombre: 'María García', rol: 'Secretaria', img: '/team/secretaria.webp' },
+  //   { nombre: 'Carlos López', rol: 'Tesorero', img: '/team/tesorero.webp' }
+  // ];
+
+  // const logros = [
+  //   { icon: <Award className="text-green-600" size={28} />, titulo: 'Reconocimiento Provincial', desc: 'Premio a la mejor gestión comunitaria 2023.' },
+  //   { icon: <Star className="text-yellow-500" size={28} />, titulo: '100+ Comuneros', desc: 'Superamos los 100 comuneros activos en 2024.' },
+  //   { icon: <Users className="text-blue-600" size={28} />, titulo: 'Nuevas asociaciones', desc: 'Formación de 3 nuevas asociaciones en la comuna.' }
+  // ];
+
+  // const testimonios = [
+  //   { nombre: 'Ana Torres', texto: 'Ser parte de la comuna ha cambiado mi vida. Aquí todos nos apoyamos.' },
+  //   { nombre: 'Luis Mendoza', texto: 'Gracias a la gestión, mi familia tiene mejores oportunidades.' }
+  // ];
 
   return (
     <>
@@ -61,6 +90,7 @@ export default function AboutView() {
         Acerca de la comuna Bambil Collao
       </Title>
       <div className='px-4 py-9 2xl:container md:px-6 md:py-12 lg:px-20 lg:py-16 2xl:mx-auto'>
+        {/* Misión */}
         <section className='flex flex-col justify-between gap-8 lg:flex-row'>
           <div
             className='flex w-full flex-col justify-center lg:w-5/12'
@@ -83,18 +113,20 @@ export default function AboutView() {
               height={1080}
               className='h-60 w-full rounded-lg object-cover lg:h-96'
               src='/page/mision.webp'
-              alt='mission comuna bambil collao'
+              alt='Misión de la comuna Bambil Collao'
+              loading='lazy'
             />
           </div>
         </section>
 
+        {/* Visión */}
         <section className='flex flex-col justify-between gap-8 pt-12 lg:flex-row-reverse lg:pt-16'>
           <div
             className='flex w-full flex-col justify-center lg:w-5/12'
             data-aos='zoom-in-up'
           >
             <h2 className='pb-4 text-3xl font-bold leading-9 text-green-600 lg:text-4xl'>
-              Vision
+              Visión
             </h2>
             <p className='text-base font-normal leading-6 text-gray-600 '>
               Nuestra visión es convertir a Bambil Collao en un refugio de
@@ -114,11 +146,77 @@ export default function AboutView() {
               height={1080}
               className='h-60 w-full rounded-lg object-cover lg:h-96'
               src='/page/vision.webp'
-              alt='vision comuna bambil collao'
+              alt='Visión de la comuna Bambil Collao'
+              loading='lazy'
             />
           </div>
         </section>
+
+        {/* Valores */}
+        <section className='py-12'>
+          <h2 className='mb-8 text-3xl font-bold text-center text-green-600'>Valores</h2>
+          <div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4'>
+            {valores.map((valor, idx) => (
+              <div key={idx} className='flex flex-col items-center p-6 bg-white rounded-lg shadow-md animate-fade-in-card' tabIndex={0} aria-label={valor.label}>
+                {valor.icon}
+                <h3 className='mt-2 text-xl font-semibold'>{valor.label}</h3>
+                <p className='text-gray-600 text-center'>{valor.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Equipo */}
+        {/* <section className='py-12'>
+          <h2 className='mb-8 text-3xl font-bold text-center text-green-600'>Equipo directivo</h2>
+          <div className='flex flex-wrap justify-center gap-8'>
+            {equipo.map((persona, idx) => (
+              <div key={idx} className='flex flex-col items-center bg-white p-4 rounded-lg shadow-md animate-fade-in-card' tabIndex={0} aria-label={persona.nombre}>
+                <Image
+                  src={persona.img}
+                  alt={`Foto de ${persona.nombre}`}
+                  width={120}
+                  height={120}
+                  className='rounded-full object-cover mb-2 border-4 border-green-200 shadow'
+                  loading='lazy'
+                />
+                <h3 className='text-lg font-bold'>{persona.nombre}</h3>
+                <span className='text-green-700 font-semibold'>{persona.rol}</span>
+              </div>
+            ))}
+          </div>
+        </section> */}
+
+        {/* Logros */}
+        {/* <section className='py-12'>
+          <h2 className='mb-8 text-3xl font-bold text-center text-green-600'>Logros y reconocimientos</h2>
+          <div className='flex flex-wrap justify-center gap-8'>
+            {logros.map((logro, idx) => (
+              <div key={idx} className='flex flex-col items-center bg-white p-4 rounded-lg shadow-md animate-fade-in-card' tabIndex={0} aria-label={logro.titulo}>
+                {logro.icon}
+                <h3 className='text-lg font-bold mt-2'>{logro.titulo}</h3>
+                <p className='text-gray-600 text-center'>{logro.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section> */}
+
         <HistorySection />
+
+        {/* Testimonios */}
+        {/* <section className='py-12'>
+          <h2 className='mb-8 text-3xl font-bold text-center text-green-600'>Testimonios</h2>
+          <div className='flex flex-wrap justify-center gap-8'>
+            {testimonios.map((testi, idx) => (
+              <div key={idx} className='max-w-md bg-white p-6 rounded-lg shadow-md animate-fade-in-card' tabIndex={0} aria-label={`Testimonio de ${testi.nombre}`}>
+                <p className='italic text-gray-700 mb-2'>&quot;{testi.texto}&quot;</p>
+                <span className='block text-right text-green-700 font-semibold'>- {testi.nombre}</span>
+              </div>
+            ))}
+          </div>
+        </section> */}
+
+        {/* Himno y galería */}
         <section className='mx-auto max-w-screen-xl items-center gap-16 px-4 py-8 lg:grid lg:grid-cols-2 lg:px-6 lg:py-16'>
           <div
             className='font-light text-gray-500 dark:text-gray-400 sm:text-lg'
@@ -179,6 +277,7 @@ export default function AboutView() {
               className='h-auto w-full rounded-lg object-cover lg:h-80'
               src='/page/church.webp'
               alt='iglesia de bambil collao'
+              loading='lazy'
             />
             <Image
               width={1920}
@@ -186,6 +285,7 @@ export default function AboutView() {
               className='mt-4 h-full w-full rounded-lg object-cover lg:mt-10'
               src='/page/himno-1.webp'
               alt='imagen del himno de bambil collao'
+              loading='lazy'
             />
           </div>
         </section>

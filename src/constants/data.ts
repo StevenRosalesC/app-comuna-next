@@ -44,11 +44,11 @@ export const navItems: NavItem[] = [
     shortcut: ['u', 'u']
   },
   {
-    title: 'Cuotas anuales',
-    url: '/dashboard/annual-fee',
-    icon: 'billing',
+    title: 'Comuneros',
+    url: '/dashboard/members',
+    icon: 'users',
     isActive: false,
-    shortcut: ['f', 'f'],
+    shortcut: ['m', 'm'],
     items: []
   }
 ];

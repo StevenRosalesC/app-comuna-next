@@ -5,16 +5,17 @@ import { PersonsTableSkeleton } from "./persons-table-skeleton"
 import { Person } from "@/interfaces/persons"
 import { PersonEditDialog } from "./person-edit-dialog"
 import { useState } from "react"
-
 interface PersonsTableProps {
   data: Person[]
   isLoading: boolean
   pageSize: number
   sorting: SortingState
-  onSortingChange: (sorting: SortingState) => void
+  onSortingChange: (sorting: SortingState) => void,
+  updatePerson: (person: Person) => void
 }
 
-export function PersonsTable({ data, isLoading, pageSize, sorting, onSortingChange }: PersonsTableProps) {
+export function PersonsTable({ data, isLoading, pageSize, sorting, onSortingChange, updatePerson }: PersonsTableProps) {
+
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const columns = usePersonsTableColumns({
@@ -39,6 +40,7 @@ export function PersonsTable({ data, isLoading, pageSize, sorting, onSortingChan
     },
     manualSorting: true,
   })
+
 
   return (
     <>
@@ -88,6 +90,7 @@ export function PersonsTable({ data, isLoading, pageSize, sorting, onSortingChan
           person={selectedPerson}
           open={editDialogOpen}
           onOpenChange={setEditDialogOpen}
+          onSave={(person) => updatePerson(person)}
         />
       )}
     </>

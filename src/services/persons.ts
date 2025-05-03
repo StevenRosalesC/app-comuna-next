@@ -1,4 +1,4 @@
-import { IPerson, IPersonsRequestResponse } from "@/interfaces/persons"
+import { IPerson, IPersonsRequestResponse, Person } from "@/interfaces/persons"
 import apiCommunity from "@/utils/communityApi"
 import { ServiceResponse } from "../interfaces/common"
 
@@ -43,5 +43,23 @@ export const personsService = {
         status: false
       }
     }
+  },
+
+  async updatePerson(personId: string, person: Omit<Person, 'personId'>): Promise<ServiceResponse<Person | null>> {
+    try {
+      const { data } = await apiCommunity.patch(`/persons/${personId}`, person);
+      return {
+        data: data,
+        message: 'Persona actualizada correctamente',
+        status: true
+      }
+    } catch (error) {
+      return {
+        data: null,
+        message: 'Error al actualizar la persona',
+        status: false
+      }
+    }
   }
 }
+

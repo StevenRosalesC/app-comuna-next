@@ -31,12 +31,15 @@ import { useNeighborhoodsStore } from "@/hooks/store/useNeighborhoodsStore"
 import { Neighborhood } from "@/store/neighborhoodsStore"
 
 const personFormSchema = z.object({
+  personId: z.string().optional(),
   identification: z.string().min(1, "La cédula es requerida"),
   firstName: z.string().min(1, "El nombre es requerido"),
   lastName: z.string().min(1, "El apellido es requerido"),
-  email: z.string().email("Email inválido"),
-  birthDate: z.string().optional(),
+  email: z.string().email("Email inválido").optional().or(z.literal("")),
+  birthDate: z.string(),
   neighborhoodId: z.string().optional(),
+  phoneNumber: z.string().optional(),
+  gender: z.number().optional(),
 })
 
 type PersonFormValues = z.infer<typeof personFormSchema>
@@ -45,7 +48,7 @@ interface PersonEditDialogProps {
   person: Person | null
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSave?: (person: PersonFormValues) => Promise<void>
+  onSave?: (person: Person) => void
 }
 export function PersonEditDialog({
   person,
@@ -80,9 +83,19 @@ export function PersonEditDialog({
   }, [person, form.reset, form])
 
 
-  async function onSubmit(data: PersonFormValues) {
+  function onSubmit(data: PersonFormValues) {
     try {
-      await onSave?.(data)
+      // Convert form values to a Person object
+      const personToSave: Person = {
+        ...person!, // Keep existing fields like id
+        identification: data.identification,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email || '',
+        birthDate: new Date(data.birthDate), // Convert string to Date
+        neighborhoodId: data.neighborhoodId || '', // Ensure neighborhoodId is not undefined
+      }
+      onSave?.(personToSave)
       onOpenChange(false)
       toast.success("Persona actualizada correctamente")
     } catch (error) {

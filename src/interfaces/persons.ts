@@ -9,14 +9,15 @@ export interface Person {
   lastName:       string;
   firstName:      string;
   gender:         number;
-  phoneNumber:    null;
+  phoneNumber:    string;
   birthDate:      Date;
   status:         boolean;
-  email:          null;
+  email:          string;
   neighborhoodId: string;
 }
 
 export interface IPerson {
+  personId?: string;
   identification: string;
   lastName: string;
   firstName: string;

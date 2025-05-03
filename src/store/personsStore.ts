@@ -19,6 +19,7 @@ export interface PersonsState {
   setOrder: (order: string) => void;
   setOrderBy: (orderBy: string) => void;
   setSearch: (search: string) => void;
+  updatePerson: (person: Person) => void;
 }
 
 export const defaultPersonsState = (): PersonsState => ({
@@ -38,6 +39,7 @@ export const defaultPersonsState = (): PersonsState => ({
   setOrder: () => {},
   setOrderBy: () => {},
   setSearch: () => {},
+  updatePerson: () => {},
 })
 
 export const createPersonsStore = (initState?: Partial<PersonsState>) =>
@@ -117,6 +119,13 @@ export const createPersonsStore = (initState?: Partial<PersonsState>) =>
     setSearch: (search: string) => {
       const state = get();
       state.fetchPersons(state.pageSize, 0, state.orderBy, state.order, search);
+    },
+    updatePerson: (person: Person) => {
+      console.log({person})
+      const state = get();
+      console.log({state})
+      state.persons = state.persons.map(p => p.personId === person.personId ? person : p);
+      console.log({state})
     },
     ...initState,
   }))

@@ -8,16 +8,19 @@ import { useState, useEffect, useCallback } from "react"
 import { PersonsTableToolbar } from "./persons-table-toolbar"
 import { PersonsTablePagination } from "./persons-table-pagination"
 import { PersonsTable } from "./persons-table"
+import { personsService } from "@/services/persons"
+import { Person } from "@/interfaces/persons"
 
 export default function PersonsDataTable() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const { persons, isLoading: personsLoading, fetchPersons, count } = usePersonsStore((state) => ({
+  const { persons, isLoading: personsLoading, fetchPersons, count, updatePerson } = usePersonsStore((state) => ({
     persons: state.persons,
     isLoading: state.isLoading,
     fetchPersons: state.fetchPersons,
-    count: state.count
+    count: state.count,
+    updatePerson: state.updatePerson
   }))
 
   const [loading, setLoading] = useState(false)
@@ -103,6 +106,21 @@ export default function PersonsDataTable() {
     }
   }, [pageSize, pageIndex, sorting, search, fetchPersons])
 
+  const handleEditPerson = async (person: Person) => {
+    try {
+      const { personId, ...personToUpdate } = person
+      const response = await personsService.updatePerson(personId, personToUpdate)
+      if (response.status) {
+        updatePerson(person)
+        toast.success(response.message)
+      } else {
+        toast.error(response.message)
+      }
+    } catch (error) {
+      toast.error("Error al actualizar la persona")
+    }
+  }
+
   useEffect(() => {
     const handler = setTimeout(fetchData, 300)
     return () => clearTimeout(handler)
@@ -139,6 +157,7 @@ export default function PersonsDataTable() {
           pageSize={pageSize}
           sorting={sorting}
           onSortingChange={handleSortingChange}
+          updatePerson={handleEditPerson}
         />
         <div className="mt-4">
           <div className="text-sm text-muted-foreground text-center sm:text-left mb-2">

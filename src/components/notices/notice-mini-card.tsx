@@ -50,7 +50,7 @@ export const NoticeMiniCard = ({
     }
   };
   return (
-    <article className='mb-10 flex h-full flex-1 flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-md'>
+    <article className='mb-10 flex h-full flex-1 flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-md focus-within:ring-2 focus-within:ring-green-600'>
       <div className='mb-5 flex items-center justify-between text-gray-500'>
         <span className='bg-primary-100 text-primary-800 inline-flex items-center rounded px-2.5 py-0.5 text-xs font-medium'>
           {handleIcon(type)}
@@ -60,16 +60,18 @@ export const NoticeMiniCard = ({
       </div>
       <Image
         src={coverImageUrl || '/not-found.webp'}
-        alt={`notice-${newsId}`}
+        alt={title ? `Imagen de la noticia: ${title}` : 'Imagen de noticia'}
         width={600}
         height={400}
         className='aspect-video rounded-lg object-cover'
+        loading='lazy'
       />
       <h2 className='mb-2 line-clamp-2 text-2xl font-bold tracking-tight text-green-600'>
         <Link
           rel='noopener noreferrer'
           href={`/notices/${title}`}
-          className={`hover:underline ${title.length > 30 ? 'text-md' : ''}`}
+          className={`hover:underline focus:outline-none focus:ring-2 focus:ring-green-600 ${title.length > 30 ? 'text-md' : ''}`}
+          aria-label={`Leer noticia: ${title}`}
         >
           {title}
         </Link>
@@ -79,12 +81,13 @@ export const NoticeMiniCard = ({
       </Paragraph>
       <div className='mt-auto flex items-center justify-between'>
         <div className='flex items-center space-x-4'>
-          <span className='font-medium dark:text-white'>{createdBy}</span>
+          <span className='font-medium dark:text-white' aria-label={`Autor: ${createdBy}`}>{createdBy}</span>
         </div>
         <Link
           rel='noopener noreferrer'
           href={`/notices/${title}`}
-          className='inline-flex items-center font-medium hover:underline'
+          className='inline-flex items-center font-medium hover:underline focus:outline-none focus:ring-2 focus:ring-green-600'
+          aria-label={`Leer más sobre: ${title}`}
         >
           Leer más
           <svg
@@ -101,6 +104,23 @@ export const NoticeMiniCard = ({
           </svg>
         </Link>
       </div>
+      {/* Datos estructurados SEO tipo NewsArticle */}
+      <script type='application/ld+json' dangerouslySetInnerHTML={{
+        __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'NewsArticle',
+          headline: title,
+          image: [coverImageUrl],
+          datePublished: createdAt,
+          author: [{ '@type': 'Person', name: createdBy }],
+          publisher: {
+            '@type': 'Organization',
+            name: 'Comuna Bambil Collao',
+            logo: { '@type': 'ImageObject', url: `https://${process.env.NEXT_PUBLIC_APP_URL}/icon.webp` }
+          },
+          description: description
+        })
+      }} />
     </article>
   );
 };

@@ -77,7 +77,8 @@ export function PersonEditDialog({
         firstName: person.firstName,
         lastName: person.lastName,
         email: person.email || "",
-        birthDate: person.birthDate ? new Date(person.birthDate).toISOString().split('T')[0] : undefined,
+        birthDate: person.birthDate ? new Date(person.birthDate).toISOString().split('T')[0] : "",
+        neighborhoodId: person.neighborhoodId || "",
       })
     }
   }, [person, form.reset, form])

@@ -24,6 +24,11 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { useEffect } from "react"
+import { SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
+import { SelectValue } from "@/components/ui/select"
+import { Select } from "@/components/ui/select"
+import { useNeighborhoodsStore } from "@/hooks/store/useNeighborhoodsStore"
+import { Neighborhood } from "@/store/neighborhoodsStore"
 
 const personFormSchema = z.object({
   identification: z.string().min(1, "La cédula es requerida"),
@@ -31,6 +36,7 @@ const personFormSchema = z.object({
   lastName: z.string().min(1, "El apellido es requerido"),
   email: z.string().email("Email inválido"),
   birthDate: z.string().optional(),
+  neighborhoodId: z.string().optional(),
 })
 
 type PersonFormValues = z.infer<typeof personFormSchema>
@@ -41,7 +47,6 @@ interface PersonEditDialogProps {
   onOpenChange: (open: boolean) => void
   onSave?: (person: PersonFormValues) => Promise<void>
 }
-
 export function PersonEditDialog({
   person,
   open,
@@ -52,6 +57,16 @@ export function PersonEditDialog({
     resolver: zodResolver(personFormSchema),
   })
 
+  const { neighborhoods } = useNeighborhoodsStore((state) => ({
+    neighborhoods: state.neighborhoods,
+  }))
+
+
+  const neighborhoodsOptions = neighborhoods.map((neighborhood: Neighborhood) => (
+    <SelectItem key={neighborhood.neighborhoodId} value={neighborhood.neighborhoodId}>
+      {neighborhood.neighborhoodName}
+    </SelectItem>
+  ))
   useEffect(() => {
     if (person) {
       form.reset({
@@ -123,6 +138,26 @@ export function PersonEditDialog({
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="neighborhoodId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Barrio</FormLabel>
+                  <Select onValueChange={(value) => field.onChange(value)} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Seleccione el barrio" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {neighborhoodsOptions}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

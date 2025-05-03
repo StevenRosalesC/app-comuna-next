@@ -120,13 +120,9 @@ export const createPersonsStore = (initState?: Partial<PersonsState>) =>
       const state = get();
       state.fetchPersons(state.pageSize, 0, state.orderBy, state.order, search);
     },
-    updatePerson: (person: Person) => {
-      console.log({person})
-      const state = get();
-      console.log({state})
-      state.persons = state.persons.map(p => p.personId === person.personId ? person : p);
-      console.log({state})
-    },
+    updatePerson: (person: Person) => set(state => ({
+      persons: state.persons.map(p => p.personId === person.personId ? person : p)
+    })),
     ...initState,
   }))
 

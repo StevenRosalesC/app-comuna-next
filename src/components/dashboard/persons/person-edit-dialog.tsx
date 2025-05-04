@@ -29,6 +29,7 @@ import { SelectValue } from "@/components/ui/select"
 import { Select } from "@/components/ui/select"
 import { useNeighborhoodsStore } from "@/hooks/store/useNeighborhoodsStore"
 import { Neighborhood } from "@/store/neighborhoodsStore"
+import { Switch } from "@/components/ui/switch"
 
 const personFormSchema = z.object({
   personId: z.string().optional(),
@@ -40,6 +41,7 @@ const personFormSchema = z.object({
   neighborhoodId: z.string().optional(),
   phoneNumber: z.string().optional(),
   gender: z.number().optional(),
+  status: z.boolean().optional(),
 })
 
 type PersonFormValues = z.infer<typeof personFormSchema>
@@ -79,6 +81,7 @@ export function PersonEditDialog({
         email: person.email || "",
         birthDate: person.birthDate ? new Date(person.birthDate).toISOString().split('T')[0] : "",
         neighborhoodId: person.neighborhoodId || "",
+        status: person.status ?? true,
       })
     }
   }, [person, form.reset, form])
@@ -95,6 +98,7 @@ export function PersonEditDialog({
         email: data.email || '',
         birthDate: new Date(data.birthDate), // Convert string to Date
         neighborhoodId: data.neighborhoodId || '', // Ensure neighborhoodId is not undefined
+        status: data.status ?? true,
       }
       onSave?.(personToSave)
       onOpenChange(false)
@@ -199,6 +203,20 @@ export function PersonEditDialog({
                     <Input {...field} type="date" />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                  <div className="space-y-0.5">
+                    <FormLabel>Estado</FormLabel>
+                  </div>
+                  <FormControl>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
                 </FormItem>
               )}
             />

@@ -12,8 +12,8 @@ export interface PersonsState {
   orderBy: string;
   order: string;
   search: string;
-  fetchPersons: (pageSize: number, pageIndex: number, orderBy: string, order: string, search: string) => Promise<void>;
-  getPersons: (pageSize: number, pageIndex: number, orderBy: string, order: string, search: string) => Person[];
+  fetchPersons: (pageSize: number, pageIndex: number, orderBy: string, order: string, search: string, status?: boolean) => Promise<void>;
+  getPersons: (pageSize: number, pageIndex: number, orderBy: string, order: string, search: string, status?: boolean) => Person[];
   setCurrentPage: (page: number) => void;
   setPageSize: (size: number) => void;
   setOrder: (order: string) => void;
@@ -45,19 +45,20 @@ export const defaultPersonsState = (): PersonsState => ({
 export const createPersonsStore = (initState?: Partial<PersonsState>) =>
   createStore<PersonsState>((set, get) => ({
     ...defaultPersonsState(),
-    fetchPersons: async (pageSize: number, pageIndex: number, orderBy: string, order: string, search: string) => {
+    fetchPersons: async (pageSize: number, pageIndex: number, orderBy: string, order: string, search: string, status?: boolean) => {
       try {
         set({ isLoading: true, error: null });
         
-        const { data, status } = await personsService.getPersons(
+        const { data, status: ok } = await personsService.getPersons(
           pageSize,
           pageIndex * pageSize,
           orderBy,
           order,
-          search
+          search,
+          status
         );
 
-        if (status) {
+        if (ok) {
           set({ 
             persons: data?.data || [], 
             isLoading: false, 
@@ -83,7 +84,7 @@ export const createPersonsStore = (initState?: Partial<PersonsState>) =>
         set({ isLoading: false });
       }
     },
-    getPersons: (pageSize: number, pageIndex: number, orderBy: string, order: string, search: string) => {
+    getPersons: (pageSize: number, pageIndex: number, orderBy: string, order: string, search: string, status?: boolean) => {
       const state = get();
       
       // Only fetch if the parameters have changed or there are no persons
@@ -95,7 +96,7 @@ export const createPersonsStore = (initState?: Partial<PersonsState>) =>
         state.order !== order ||
         state.search !== search
       ) {
-        state.fetchPersons(pageSize, pageIndex, orderBy, order, search);
+        state.fetchPersons(pageSize, pageIndex, orderBy, order, search, status);
       }
       
       return state.persons;

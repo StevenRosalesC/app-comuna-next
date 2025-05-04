@@ -3,7 +3,15 @@ import apiCommunity from "@/utils/communityApi"
 import { ServiceResponse } from "../interfaces/common"
 
 export const personsService = {
-  async getPersons(limit: number, offset: number,orderBy ?: string, order ?: string, search ?: string) : Promise<ServiceResponse<IPersonsRequestResponse | null>> {
+  async getPersons(limit: number, offset: number, orderBy?: string, order?: string, search?: string, status?: boolean) : Promise<ServiceResponse<IPersonsRequestResponse | null>> {
+    console.log({
+      limit,
+      offset,
+      orderBy,
+      order,
+      search,
+      status,
+    })
     try {
       const {data:persons} =await apiCommunity.get<IPersonsRequestResponse>("/persons", {
         params: {
@@ -11,7 +19,8 @@ export const personsService = {
           offset,
           orderBy,
           order,
-          search
+          search,
+          status,
         }
       })
       return {

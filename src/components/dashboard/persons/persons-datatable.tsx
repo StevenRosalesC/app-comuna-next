@@ -10,6 +10,7 @@ import { PersonsTablePagination } from "./persons-table-pagination"
 import { PersonsTable } from "./persons-table"
 import { personsService } from "@/services/persons"
 import { Person } from "@/interfaces/persons"
+import { Switch } from "@/components/ui/switch"
 
 export default function PersonsDataTable() {
   const router = useRouter()
@@ -24,6 +25,7 @@ export default function PersonsDataTable() {
   }))
 
   const [loading, setLoading] = useState(false)
+  const [showActive, setShowActive] = useState(true)
 
   const [sorting, setSorting] = useState(() => {
     const sortField = searchParams.get("sort")
@@ -99,12 +101,13 @@ export default function PersonsDataTable() {
         pageIndex,
         orderBy,
         order,
-        search
+        search,
+        showActive
       )
     } catch (error) {
       toast.error('Error al obtener las personas')
     }
-  }, [pageSize, pageIndex, sorting, search, fetchPersons])
+  }, [pageSize, pageIndex, sorting, search, fetchPersons, showActive])
 
   const handleEditPerson = async (person: Person) => {
     try {
@@ -148,11 +151,15 @@ export default function PersonsDataTable() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle>Personas</CardTitle>
+        <div className="flex items-center gap-2">
+          <span className="text-sm">{showActive ? 'Activos' : 'Inactivos'}</span>
+          <Switch checked={showActive} onCheckedChange={(checked) => setShowActive(checked)} />
+        </div>
       </CardHeader>
       <CardContent>
         <PersonsTableToolbar search={search} onSearchChange={handleSearchChange} />
         <PersonsTable
-          data={persons}
+          data={persons.filter(p => (showActive ? p.status : !p.status))}
           isLoading={loading}
           pageSize={pageSize}
           sorting={sorting}

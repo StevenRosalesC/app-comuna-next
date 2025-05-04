@@ -4,14 +4,6 @@ import { ServiceResponse } from "../interfaces/common"
 
 export const personsService = {
   async getPersons(limit: number, offset: number, orderBy?: string, order?: string, search?: string, status?: boolean) : Promise<ServiceResponse<IPersonsRequestResponse | null>> {
-    console.log({
-      limit,
-      offset,
-      orderBy,
-      order,
-      search,
-      status,
-    })
     try {
       const {data:persons} =await apiCommunity.get<IPersonsRequestResponse>("/persons", {
         params: {

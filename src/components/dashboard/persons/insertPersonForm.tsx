@@ -31,6 +31,7 @@ import { Events } from "@/interfaces/enums"
 import { useNeighborhoodsStore } from "@/hooks/store/useNeighborhoodsStore"
 import { useEffect } from "react"
 import { Neighborhood } from "@/store/neighborhoodsStore"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const formSchema = z.object({
   identification: z.string().min(1, "La cédula es requerida"),
@@ -74,7 +75,7 @@ export default function InsertPersonForm() {
 
   // Neighborhood options for Select
   // This variable is outside the JSX for better readability
-  const neighborhoodsOptions = neighborhoods.map((neighborhood: Neighborhood) => (
+  const neighborhoodsOptions = neighborhoods?.map((neighborhood: Neighborhood) => (
     <SelectItem key={neighborhood.neighborhoodId} value={neighborhood.neighborhoodId}>
       {neighborhood.neighborhoodName}
     </SelectItem>
@@ -160,6 +161,7 @@ export default function InsertPersonForm() {
                   </FormItem>
                 )}
               />
+              {isLoading && <Skeleton className="h-10 w-full" />}
               <FormField
                 control={form.control}
                 name="neighborhoodId"
@@ -174,7 +176,7 @@ export default function InsertPersonForm() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {neighborhoodsOptions}
+                        {isLoading ? <Skeleton className="h-10 w-full" /> : neighborhoodsOptions}
                       </SelectContent>
                     </Select>
                     <FormMessage />

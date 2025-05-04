@@ -4,13 +4,13 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { Person } from "@/interfaces/persons"
 import { ColumnDef } from "@tanstack/react-table"
-import { useNeighborhoodsList } from "@/hooks/store/useNeighborhoodsStore"
+import { useNeighborhoodsStore } from "@/hooks/store/useNeighborhoodsStore"
+import { Skeleton } from "@/components/ui/skeleton"
 // import { useState } from "react"
 
 export function usePersonsTableColumns({ onEdit }: { onEdit: (person: Person) => void }) {
-  const { neighborhoods } = useNeighborhoodsList()
   // const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
-
+  const { neighborhoods, isLoading } = useNeighborhoodsStore(state => state)
   const columns: ColumnDef<Person>[] = [
     {
       id: "selection",
@@ -119,8 +119,14 @@ export function usePersonsTableColumns({ onEdit }: { onEdit: (person: Person) =>
       header: () => <Button variant="ghost" className="flex items-center min-w-[100px] w-full justify-start">Barrio</Button>,
       cell: ({ row }) => {
         const neighborhoodId = row.getValue("neighborhoodId") as string
-        const neighborhood = neighborhoods.find((n) => n.neighborhoodId === neighborhoodId)
-        return <div className="min-w-[100px] w-full">{neighborhood?.neighborhoodName ?? "-"}</div>
+        const neighborhood = neighborhoods?.find((n) => n.neighborhoodId === neighborhoodId)
+        return (
+          <div className="min-w-[100px] w-full">
+            {isLoading ? <Skeleton className="h-4 w-full" /> :
+              <div className="min-w-[100px] w-full">{neighborhood?.neighborhoodName ?? "-"}</div>
+            }
+          </div>
+        )
       },
       size: 100,
     },

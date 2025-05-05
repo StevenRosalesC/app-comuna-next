@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { useRequirementsStore, Requirement } from '@/hooks/store/useRequirementsStore';
+import { toast } from 'sonner';
 
 export default function RequirementsTable() {
   const { requirements, addRequirement, editRequirement, deleteRequirement } = useRequirementsStore();
@@ -26,6 +27,7 @@ export default function RequirementsTable() {
     e.preventDefault();
     if (editReq) {
       editRequirement(editReq.id, form);
+      toast.success('Requisito actualizado correctamente');
     }
     setModalOpen(false);
   };
@@ -33,6 +35,7 @@ export default function RequirementsTable() {
   // Delete requirement
   const handleDelete = (id: number) => {
     deleteRequirement(id);
+    toast.success('Requisito eliminado');
   };
 
   // Add requirement
@@ -41,10 +44,19 @@ export default function RequirementsTable() {
     addRequirement(addForm);
     setAddModalOpen(false);
     setAddForm({ description: '', mandatory: true });
+    toast.success('Requisito añadido correctamente');
   };
 
   return (
     <>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl font-bold">Requisitos para ser comunero</h2>
+        <button
+          onClick={() => setAddModalOpen(true)}
+          className="bg-primary text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-primary/90 transition-colors">
+          + Nuevo requisito
+        </button>
+      </div>
       <table className="min-w-full divide-y divide-gray-200">
         <thead>
           <tr>

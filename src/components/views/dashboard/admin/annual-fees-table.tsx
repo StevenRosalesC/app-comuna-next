@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { useAnnualFeesStore, AnnualFee } from '@/hooks/store/useAnnualFeesStore';
+import { toast } from 'sonner';
 
 export default function AnnualFeesTable() {
   const { annualFees, addAnnualFee, editAnnualFee, deleteAnnualFee } = useAnnualFeesStore();
@@ -26,6 +27,7 @@ export default function AnnualFeesTable() {
     e.preventDefault();
     if (editFee) {
       editAnnualFee(editFee.id, form);
+      toast.success('Cuota actualizada correctamente');
     }
     setModalOpen(false);
   };
@@ -33,6 +35,7 @@ export default function AnnualFeesTable() {
   // Delete annual fee
   const handleDelete = (id: number) => {
     deleteAnnualFee(id);
+    toast.success('Cuota eliminada');
   };
 
   // Add annual fee
@@ -41,10 +44,19 @@ export default function AnnualFeesTable() {
     addAnnualFee(addForm);
     setAddModalOpen(false);
     setAddForm({ year: new Date().getFullYear(), description: '', amount: 0, mandatory: true });
+    toast.success('Cuota añadida correctamente');
   };
 
   return (
     <>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-2xl font-bold">Cuotas anuales</h2>
+        <button
+          onClick={() => setAddModalOpen(true)}
+          className="bg-primary text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-primary/90 transition-colors">
+          + Nueva cuota
+        </button>
+      </div>
       <table className="min-w-full divide-y divide-gray-200">
         <thead>
           <tr>
@@ -173,14 +185,6 @@ export default function AnnualFeesTable() {
           </form>
         </DialogContent>
       </Dialog>
-      {/* Botón flotante para nueva cuota */}
-      <button
-        className="fixed bottom-8 right-24 bg-primary text-white px-4 py-2 rounded-full shadow-lg hover:bg-primary/90 transition-colors z-50"
-        onClick={() => setAddModalOpen(true)}
-        aria-label="Agregar nueva cuota"
-      >
-        +
-      </button>
     </>
   );
 } 

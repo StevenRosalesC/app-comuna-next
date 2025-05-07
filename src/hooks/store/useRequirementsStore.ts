@@ -1,31 +1,65 @@
 import { create } from 'zustand';
+import { requirementsService } from '@/services/requirements';
+import { Requirement } from '@/interfaces/requirements';
 
-export interface Requirement {
-  id: number;
-  description: string;
-  mandatory: boolean;
-}
+
 
 interface RequirementsState {
   requirements: Requirement[];
-  addRequirement: (req: Omit<Requirement, 'id'>) => void;
-  editRequirement: (id: number, req: Omit<Requirement, 'id'>) => void;
-  deleteRequirement: (id: number) => void;
+  loading: boolean;
+  error: string | null;
+  fetchRequirements: () => Promise<void>;
+  addRequirement: (req: Omit<Requirement, 'requirementId'>) => Promise<void>;
+  editRequirement: (id: string, req: Omit<Requirement, 'requirementId'>) => Promise<void>;
+  deleteRequirement: (id: string) => Promise<void>;
 }
 
 export const useRequirementsStore = create<RequirementsState>((set) => ({
-  requirements: [
-    { id: 1, description: 'Ser mayor de edad', mandatory: true },
-    { id: 2, description: 'Residir en la comunidad', mandatory: true },
-    { id: 3, description: 'Presentar DNI vigente', mandatory: false },
-  ],
-  addRequirement: (req) => set((state) => ({
-    requirements: [...state.requirements, { ...req, id: Date.now() }],
-  })),
-  editRequirement: (id, req) => set((state) => ({
-    requirements: state.requirements.map(r => r.id === id ? { ...r, ...req } : r),
-  })),
-  deleteRequirement: (id) => set((state) => ({
-    requirements: state.requirements.filter(r => r.id !== id),
-  })),
+  requirements: [],
+  loading: false,
+  error: null,
+  fetchRequirements: async () => {
+    set({ loading: true, error: null });
+    try {
+      const data = await requirementsService.list();
+      set({ requirements: data, loading: false });
+    } catch (e) {
+      set({ error: 'Error al cargar requisitos', loading: false });
+    }
+  },
+  addRequirement: async (req: Omit<Requirement, 'requirementId'>) => {
+    try {
+      const newReq = await requirementsService.create(req);
+      set((state) => ({ requirements: [...state.requirements, newReq], loading: false }));
+    } catch (e) {
+      set({ error: 'Error al añadir requisito', loading: false });
+    }
+  },
+  editRequirement: async (id: string, req: Omit<Requirement, 'requirementId'>) => {
+    try {
+      const updated = await requirementsService.update(id, req);
+      if (updated) {
+        set((state) => ({
+          requirements: state.requirements.map(r => r.requirementId === id ? updated : r),
+          loading: false
+        }));
+      } else {
+        set({ error: 'No se encontró el requisito', loading: false });
+      }
+    } catch (e) {
+      set({ error: 'Error al editar requisito', loading: false });
+    }
+  },
+  deleteRequirement: async (id: string) => {
+    try {
+      const ok = await requirementsService.remove(id);
+      if (ok) {
+        set((state) => ({ requirements: state.requirements.filter(r => r.requirementId !== id), loading: false }));
+      } else {
+        set({ error: 'No se pudo eliminar', loading: false });
+      }
+    } catch (e) {
+      set({ error: 'Error al eliminar requisito', loading: false });
+    }
+  },
 })); 

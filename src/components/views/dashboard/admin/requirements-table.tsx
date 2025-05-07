@@ -1,51 +1,96 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { useRequirementsStore, Requirement } from '@/hooks/store/useRequirementsStore';
+import { useRequirementsStore } from '@/hooks/store/useRequirementsStore';
+import { Requirement } from '@/interfaces/requirements';
 import { toast } from 'sonner';
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table';
+import { Icons } from '@/components/icons';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
+import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
+import * as z from 'zod';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const formSchema = z.object({
+  requirement: z.string().min(1, { message: 'Requisito es requerido' }),
+  observation: z.string().min(1, { message: 'Observación es requerida' }).default('Ninguna'),
+  status: z.boolean().default(true)
+});
+
+type FormValue = z.infer<typeof formSchema>;
+
 
 export default function RequirementsTable() {
-  const { requirements, addRequirement, editRequirement, deleteRequirement } = useRequirementsStore();
+  const { requirements, loading, addRequirement, error, editRequirement, deleteRequirement, fetchRequirements } = useRequirementsStore();
   const [modalOpen, setModalOpen] = useState(false);
   const [editReq, setEditReq] = useState<Requirement | null>(null);
-  const [form, setForm] = useState<{ description: string; mandatory: boolean }>({ description: '', mandatory: true });
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [addForm, setAddForm] = useState<{ description: string; mandatory: boolean }>({ description: '', mandatory: true });
+  const [addForm, setAddForm] = useState<FormValue>({ requirement: '', observation: 'Ninguna', status: true });
+
+  const form = useForm<FormValue>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { requirement: '', observation: 'Ninguna', status: true }
+  });
 
   // Open modal for edit
   const openModal = (req: Requirement | null = null) => {
     setEditReq(req);
-    setForm(req ? { description: req.description, mandatory: req.mandatory } : { description: '', mandatory: true });
+    form.reset(req ? { requirement: req.requirement, observation: req.observation, status: req.status } : { requirement: '', observation: '', status: true });
     setModalOpen(true);
   };
 
   // Save requirement (edit)
-  const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (editReq) {
-      editRequirement(editReq.id, form);
-      toast.success('Requisito actualizado correctamente');
+      try {
+        const data = form.getValues();
+        data.observation = data.observation === '' ? 'Ninguna' : data.observation;
+        await editRequirement(editReq.requirementId, data);
+        toast.success('Requisito actualizado correctamente');
+      } catch {
+        toast.error(error);
+      }
     }
     setModalOpen(false);
   };
 
   // Delete requirement
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     deleteRequirement(id);
     toast.success('Requisito eliminado');
   };
 
   // Add requirement
-  const handleAdd = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    addRequirement(addForm);
-    setAddModalOpen(false);
-    setAddForm({ description: '', mandatory: true });
-    toast.success('Requisito añadido correctamente');
+    try {
+      const data = form.getValues();
+      data.observation = data.observation === '' ? 'Ninguna' : data.observation;
+      await addRequirement(data);
+      setAddModalOpen(false);
+      form.reset();
+      toast.success('Requisito añadido correctamente');
+    } catch {
+      toast.error(error);
+    }
   };
+
+  useEffect(() => {
+    fetchRequirements();
+  }, [fetchRequirements]);
 
   return (
     <>
@@ -57,59 +102,107 @@ export default function RequirementsTable() {
           + Nuevo requisito
         </button>
       </div>
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead>
-          <tr>
-            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Requisito</th>
-            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Obligatorio</th>
-            <th className="px-4 py-2"></th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {requirements.map((req) => (
-            <tr key={req.id}>
-              <td className="px-4 py-2">{req.description}</td>
-              <td className="px-4 py-2">
-                {req.mandatory ? (
-                  <span className="text-green-600 font-semibold">Sí</span>
-                ) : (
-                  <span className="text-gray-400">No</span>
-                )}
-              </td>
-              <td className="px-4 py-2 text-right">
-                {/* Actions: edit/delete */}
-                <button className="text-blue-600 hover:underline mr-2" onClick={() => openModal(req)}>Editar</button>
-                <button className="text-red-600 hover:underline" onClick={() => handleDelete(req.id)}>Eliminar</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {loading ? (
+        <DataTableSkeleton columnCount={4} rowCount={6} />
+      ) : (
+        <Table className="min-w-full divide-y divide-gray-200">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase w-1/2">Requisito</TableHead>
+              <TableHead className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase w-1/2">Observación</TableHead>
+              <TableHead className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase w-1/4">Estado</TableHead>
+              <TableHead className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase w-1/4">Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody className="bg-white divide-y divide-gray-200">
+            {requirements.map((req) => (
+              <TableRow key={req.requirementId}>
+                <TableCell className="px-4 py-2">{req.requirement}</TableCell>
+                <TableCell className="px-4 py-2">{req.observation}</TableCell>
+                <TableCell className="px-4 py-2">
+                  {req.status ? (
+                    <span className="text-green-600 font-semibold">Activo</span>
+                  ) : (
+                    <span className="text-gray-400">Inactivo</span>
+                  )}
+                </TableCell>
+                <TableCell className="px-4 py-2 text-right flex gap-2 justify-end">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button className="text-blue-600 hover:text-blue-800 p-1" onClick={() => openModal(req)} aria-label="Editar">
+                          <Icons.userPen className="w-5 h-5" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>Editar</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button className="text-red-600 hover:text-red-800 p-1" onClick={() => handleDelete(req.requirementId)} aria-label="Eliminar">
+                          <Icons.trash className="w-5 h-5" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>Eliminar</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
       {/* Modal for edit */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent>
           <DialogTitle>{editReq ? 'Editar requisito' : 'Nuevo requisito'}</DialogTitle>
-          <form onSubmit={handleSave} className="space-y-4 mt-2">
-            <div>
-              <label className="block text-sm font-medium mb-1">Descripción</label>
-              <Input
-                value={form.description}
-                onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                required
+          <Form {...form}>
+            <form onSubmit={handleSave} className="space-y-4 mt-2">
+              <FormField
+                control={form.control}
+                name="requirement"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Requisito</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="block text-sm font-medium">Obligatorio</label>
-              <Switch
-                checked={form.mandatory}
-                onCheckedChange={v => setForm(f => ({ ...f, mandatory: v }))}
+              <FormField
+                control={form.control}
+                name="observation"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Observación</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder='Ninguna' />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>Cancelar</Button>
-              <Button type="submit">Guardar</Button>
-            </div>
-          </form>
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Estado</FormLabel>
+                    <FormControl>
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormMessage />
+
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>Cancelar</Button>
+                <Button type="submit">Guardar</Button>
+              </div>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
       {/* Modal for add */}
@@ -120,16 +213,21 @@ export default function RequirementsTable() {
             <div>
               <label className="block text-sm font-medium mb-1">Descripción</label>
               <Input
-                value={addForm.description}
-                onChange={e => setAddForm(f => ({ ...f, description: e.target.value }))}
+                value={addForm.requirement}
+                onChange={e => setAddForm(f => ({ ...f, requirement: e.target.value }))}
                 required
+              />
+              <label className="block text-sm font-medium mb-1">Observación</label>
+              <Input
+                value={addForm.observation}
+                onChange={e => setAddForm(f => ({ ...f, observation: e.target.value }))}
               />
             </div>
             <div className="flex items-center gap-2">
               <label className="block text-sm font-medium">Obligatorio</label>
               <Switch
-                checked={addForm.mandatory}
-                onCheckedChange={v => setAddForm(f => ({ ...f, mandatory: v }))}
+                checked={addForm.status}
+                onCheckedChange={v => setAddForm(f => ({ ...f, status: v }))}
               />
             </div>
             <div className="flex justify-end gap-2">

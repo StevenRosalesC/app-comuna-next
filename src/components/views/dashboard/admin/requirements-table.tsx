@@ -55,34 +55,35 @@ export default function RequirementsTable() {
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (editReq) {
-      try {
-        const data = form.getValues();
-        data.observation = data.observation === '' ? 'Ninguna' : data.observation;
-        await editRequirement(editReq.requirementId, data);
-        toast.success('Requisito actualizado correctamente');
-      } catch {
-        toast.error(error);
-      }
+      toast.promise(editRequirement(editReq.requirementId, form.getValues()), {
+        loading: 'Actualizando requisito...',
+        success: 'Requisito actualizado correctamente',
+        error: 'Error al actualizar el requisito'
+      });
     }
     setModalOpen(false);
   };
 
   // Delete requirement
-  const handleDelete = (id: string) => {
-    deleteRequirement(id);
-    toast.success('Requisito eliminado');
+  const handleDelete = async (id: string) => {
+    toast.promise(deleteRequirement(id), {
+      loading: 'Eliminando requisito...',
+      success: 'Requisito eliminado correctamente',
+      error: 'Error al eliminar el requisito'
+    });
   };
 
   // Add requirement
   const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const data = form.getValues();
-      data.observation = data.observation === '' ? 'Ninguna' : data.observation;
-      await addRequirement(data);
+      toast.promise(addRequirement(form.getValues()), {
+        loading: 'Añadiendo requisito...',
+        success: 'Requisito añadido correctamente',
+        error: 'Error al añadir el requisito'
+      });
       setAddModalOpen(false);
       form.reset();
-      toast.success('Requisito añadido correctamente');
     } catch {
       toast.error(error);
     }

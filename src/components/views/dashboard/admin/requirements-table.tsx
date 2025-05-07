@@ -20,6 +20,8 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form';
+import { AlertModal } from '@/components/modal/alert-modal';
+
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -38,6 +40,8 @@ export default function RequirementsTable() {
   const [editReq, setEditReq] = useState<Requirement | null>(null);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [addForm, setAddForm] = useState<FormValue>({ requirement: '', observation: 'Ninguna', status: true });
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteReq, setDeleteReq] = useState<Requirement | null>(null);
 
   const form = useForm<FormValue>({
     resolver: zodResolver(formSchema),
@@ -71,6 +75,7 @@ export default function RequirementsTable() {
       success: 'Requisito eliminado correctamente',
       error: 'Error al eliminar el requisito'
     });
+    setDeleteModalOpen(false);
   };
 
   // Add requirement
@@ -128,7 +133,7 @@ export default function RequirementsTable() {
                   )}
                 </TableCell>
                 <TableCell className="px-4 py-2 text-right flex gap-2 justify-end">
-                  <TooltipProvider>
+                  <TooltipProvider delayDuration={100}>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button className="text-blue-600 hover:text-blue-800 p-1" onClick={() => openModal(req)} aria-label="Editar">
@@ -139,7 +144,7 @@ export default function RequirementsTable() {
                     </Tooltip>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <button className="text-red-600 hover:text-red-800 p-1" onClick={() => handleDelete(req.requirementId)} aria-label="Eliminar">
+                        <button className="text-red-600 hover:text-red-800 p-1" onClick={() => { setDeleteReq(req); setDeleteModalOpen(true); }} aria-label="Eliminar">
                           <Icons.trash className="w-5 h-5" />
                         </button>
                       </TooltipTrigger>
@@ -246,6 +251,14 @@ export default function RequirementsTable() {
       >
         +
       </button>
+      <AlertModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={() => handleDelete(deleteReq?.requirementId || '')}
+        loading={loading}
+        title="¿Estás seguro?"
+        description="Esta acción no se puede deshacer."
+      />
     </>
   );
 } 

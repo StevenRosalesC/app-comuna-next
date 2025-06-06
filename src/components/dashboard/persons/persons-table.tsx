@@ -1,15 +1,10 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { flexRender, getCoreRowModel, useReactTable, SortingState } from "@tanstack/react-table"
-import { usePersonsTableColumns } from "./persons-table-columns"
+import { flexRender, SortingState } from "@tanstack/react-table"
 import { PersonsTableSkeleton } from "./persons-table-skeleton"
 import { Person } from "@/interfaces/persons"
 import { PersonEditDialog } from "./person-edit-dialog"
 import { useState } from "react"
-import { Pencil } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { LayoutList } from "lucide-react"
-import { isAdult } from "@/utils/persons"
+import { usePersonsTable } from "./hooks/use-persons-table"
 
 interface PersonsTableProps {
   data: Person[]
@@ -21,70 +16,21 @@ interface PersonsTableProps {
 }
 
 export function PersonsTable({ data, isLoading, pageSize, sorting, onSortingChange, updatePerson }: PersonsTableProps) {
-
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   
-  const onEdit = (person: Person) => {
-    setSelectedPerson(person)
-    setEditDialogOpen(true)
-  }
-  const onViewRequirements = (person: Person) => {
-    setSelectedPerson(person)
-  }
-  
-  const columns = usePersonsTableColumns({
-    actions: (person: Person) => (
-      <div className="flex items-center justify-end gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onEdit(person)}
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Editar</p>
-            </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-            <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onViewRequirements(person)}
-              disabled={!person.status || !isAdult(new Date(person.birthDate))}
-            >
-              <LayoutList className="h-4 w-4" />
-            </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Ver requisitos</p>
-            </TooltipContent>
-            </Tooltip>
-          </div>
-    )
-  })
-  const table = useReactTable({
+  const { table, columns } = usePersonsTable({
     data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    state: { sorting },
-    onSortingChange: (updater) => {
-      if (typeof updater === 'function') {
-        const newSorting = updater(sorting);
-        onSortingChange(newSorting);
-      } else {
-        onSortingChange(updater);
-      }
+    sorting,
+    onSortingChange,
+    onEdit: (person: Person) => {
+      setSelectedPerson(person)
+      setEditDialogOpen(true)
     },
-    manualSorting: true,
+    onViewRequirements: (person: Person) => {
+      setSelectedPerson(person)
+    }
   })
-
 
   return (
     <>

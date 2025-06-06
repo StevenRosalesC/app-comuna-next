@@ -14,12 +14,16 @@ interface RequirementsState {
   deleteRequirement: (id: string) => Promise<void>;
 }
 
-export const useRequirementsStore = create<RequirementsState>((set) => ({
+export const useRequirementsStore = create<RequirementsState>((set, get) => ({
   requirements: [],
   loading: false,
   error: null,
   fetchRequirements: async () => {
     set({ loading: true, error: null });
+    if (get().requirements.length > 0) {
+      set({ loading: false });
+      return;
+    }
     try {
       const data = await requirementsService.list();
       set({ requirements: data, loading: false });

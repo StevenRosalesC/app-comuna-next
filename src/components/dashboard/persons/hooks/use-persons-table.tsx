@@ -1,4 +1,4 @@
-import { useReactTable, getCoreRowModel, SortingState, ColumnDef } from "@tanstack/react-table"
+import { useReactTable, getCoreRowModel, SortingState } from "@tanstack/react-table"
 import { usePersonsTableColumns } from "../persons-table-columns"
 import { Person } from "@/interfaces/persons"
 import { TableActions } from "../table-actions"

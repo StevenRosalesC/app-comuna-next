@@ -111,15 +111,19 @@ export default function PersonsDataTable() {
 
   const handleEditPerson = async (person: Person) => {
     try {
+      toast.loading("Actualizando persona...")
       const { personId, ...personToUpdate } = person
       const response = await personsService.updatePerson(personId, personToUpdate)
       if (response.status) {
         updatePerson(person)
+        toast.dismiss()
         toast.success(response.message)
       } else {
+        toast.dismiss()
         toast.error(response.message)
       }
     } catch (error) {
+      toast.dismiss()
       toast.error("Error al actualizar la persona")
     }
   }

@@ -5,6 +5,12 @@ import { PersonsTableSkeleton } from "./persons-table-skeleton"
 import { Person } from "@/interfaces/persons"
 import { PersonEditDialog } from "./person-edit-dialog"
 import { useState } from "react"
+import { Pencil } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { LayoutList } from "lucide-react"
+import { isAdult } from "@/utils/persons"
+
 interface PersonsTableProps {
   data: Person[]
   isLoading: boolean
@@ -18,13 +24,51 @@ export function PersonsTable({ data, isLoading, pageSize, sorting, onSortingChan
 
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
+  
+  const onEdit = (person: Person) => {
+    setSelectedPerson(person)
+    setEditDialogOpen(true)
+  }
+  const onViewRequirements = (person: Person) => {
+    setSelectedPerson(person)
+  }
+  
   const columns = usePersonsTableColumns({
-    onEdit: (person) => {
-      setSelectedPerson(person)
-      setEditDialogOpen(true)
-    }
-  })
+    actions: (person: Person) => (
+      <div className="flex items-center justify-end gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
 
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onEdit(person)}
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Editar</p>
+            </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+            <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onViewRequirements(person)}
+              disabled={!person.status || !isAdult(new Date(person.birthDate))}
+            >
+              <LayoutList className="h-4 w-4" />
+            </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Ver requisitos</p>
+            </TooltipContent>
+            </Tooltip>
+          </div>
+    )
+  })
   const table = useReactTable({
     data,
     columns,

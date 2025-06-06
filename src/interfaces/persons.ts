@@ -14,6 +14,7 @@ export interface Person {
   status:         boolean;
   email:          string;
   neighborhoodId: string;
+  requirementApprovals?: RequirementsApprovals[];
 }
 
 export interface IPerson {
@@ -28,3 +29,19 @@ export interface IPerson {
   email?: string;
 }
 
+
+export interface RequirementsApprovals {
+  approvalId:    string;
+  approvalDate:  Date;
+  observation:   string;
+  personId:      string;
+  requirementId: string;
+  requirements:  Requirements;
+}
+
+export interface Requirements {
+  requirementId: string;
+  requirement:   string;
+  observation:   string;
+  status:        boolean;
+}

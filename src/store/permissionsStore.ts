@@ -8,10 +8,12 @@ interface PermissionsState {
   clearPermissions: () => void;
 }
 
-export const usePermissionsStore = create<PermissionsState>((set) => ({
+export const usePermissionsStore = create<PermissionsState>((set, get) => ({
   permissions: null,
   isLoading: false,
   fetchPermissions: async () => {
+    const { isLoading, permissions } = get();
+    if (isLoading || permissions) return; // Prevent infinite loop
     set({ isLoading: true });
     try {
       const { data } = await apiCommunity.get<{ permissions: Record<string, string[]> }>('/users/me');

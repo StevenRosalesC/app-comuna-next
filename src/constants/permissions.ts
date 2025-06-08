@@ -2,7 +2,7 @@ export const modulesPermissions = [
   {
     module: 'persons',
     route: 'persons',
-    actions: ['read', 'write', 'edit', 'delete'],
+    actions: ['read', 'write', 'edit', 'delete', 'approve_requirements'],
     label: 'Personas'
   },
   {

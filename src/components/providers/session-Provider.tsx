@@ -30,20 +30,27 @@ export const SessionProvider = ({
   const pathname = usePathname();
 
   useEffect(() => {
-    // Only fetch permissions on protected routes and if not already loaded
-    if (pathname.startsWith('/dashboard') && !permissions) {
+    if (pathname.startsWith('/dashboard')) {
       fetchPermissions();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  // Do not render anything while loading permissions on protected routes
-  if (pathname.startsWith('/dashboard') && isLoading) return null;
+  useEffect(() => {
+    // Solo redirige si ya terminó de cargar y no hay permisos
+    if (
+      pathname.startsWith('/dashboard') &&
+      !isLoading &&
+      permissions === undefined &&
+      pathname !== '/auth/login'
+    ) {
+      router.replace('/auth/login');
+    }
+  }, [pathname, isLoading, permissions, router]);
 
-  // If permissions are not available on protected routes, redirect to login
-  if (pathname.startsWith('/dashboard') && !permissions) {
-    router.replace('/auth/login');
-    return null;
+  // Mientras carga permisos, no renderiza nada (ni redirige)
+  if (pathname.startsWith('/dashboard') && (isLoading || permissions === null)) {
+    return null; // O un loader si prefieres
   }
 
   return (

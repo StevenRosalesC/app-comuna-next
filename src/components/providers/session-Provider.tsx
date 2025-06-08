@@ -1,6 +1,8 @@
 'use client';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { AuthResponse } from 'types/response';
+import { usePermissionsStore } from '@/store/permissionsStore';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface SessionContextProps {
   session: AuthResponse | null;
@@ -23,9 +25,26 @@ export const SessionProvider = ({
   );
   const [loading, setLoading] = useState(!initialSession);
 
+  const { isLoading, permissions, fetchPermissions } = usePermissionsStore();
+  const router = useRouter();
+  const pathname = usePathname();
+
   useEffect(() => {
-    setSession(initialSession || null);
-  }, [initialSession]);
+    // Only fetch permissions on protected routes and if not already loaded
+    if (pathname.startsWith('/dashboard') && !permissions) {
+      fetchPermissions();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  // Do not render anything while loading permissions on protected routes
+  if (pathname.startsWith('/dashboard') && isLoading) return null;
+
+  // If permissions are not available on protected routes, redirect to login
+  if (pathname.startsWith('/dashboard') && !permissions) {
+    router.replace('/auth/login');
+    return null;
+  }
 
   return (
     <SessionContext.Provider value={{ session, loading }}>

@@ -95,7 +95,6 @@ export const useRequirementsStore = create<RequirementsState>((set, get) => ({
     try {
       await requirementsService.approve(personId, requirementId, data);
       set({ loading: false });
-      // Opcional: podrías actualizar el estado local si lo necesitas
     } catch (e) {
       set({ error: 'Error al aprobar requisito', loading: false });
     }

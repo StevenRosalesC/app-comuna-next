@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { Person } from '@/interfaces/persons'
 import { useRequirementsStore } from '@/hooks/store/useRequirementsStore'
@@ -12,11 +12,13 @@ interface ApproveRequirementsDialogProps {
 }
 
 export const ApproveRequirementsDialog = ({ person, open, onOpenChange }: ApproveRequirementsDialogProps) => {
-  const { requirements, approveRequirement, loading, fetchRequirements } = useRequirementsStore();
+  const { requirements, approveRequirement, loading, getRequirements } = useRequirementsStore();
   const [approved, setApproved] = useState<string[]>([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedReq, setSelectedReq] = useState<string | null>(null);
   const [observation, setObservation] = useState('');
+
+  getRequirements();
 
   // get approved requirements ids
   const approvedIds = person.requirementApprovals?.map(r => r.requirementId) || [];
@@ -36,7 +38,6 @@ export const ApproveRequirementsDialog = ({ person, open, onOpenChange }: Approv
       setConfirmOpen(false);
       setObservation('');
       setSelectedReq(null);
-      fetchRequirements(); // Optional: refresh global list
     }
   };
 

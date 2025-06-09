@@ -242,6 +242,20 @@ export function PersonEditDialog({
             </DialogFooter>
           </form>
         </Form>
+        {
+          person.status && (
+            person.requirementApprovals && person.requirementApprovals.length > 0 && (
+              <div className="flex flex-col gap-2">
+                <p>Requisitos pendientes de aprobación</p>
+                <ul>
+                  {person.requirementApprovals.map((requirement) => (
+                    <li key={requirement.requirementId}>{requirement.requirements.requirement}</li>
+                  ))}
+                </ul>
+              </div>
+            )
+          )
+        }
       </DialogContent>
     </Dialog>
   )

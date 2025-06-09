@@ -37,4 +37,12 @@ export const requirementsService = {
       }, 300);
     });
   },
+  async approve(personId: string, requirementId: string, data: { observation?: string }): Promise<any> {
+    try {
+      const { data: approval } = await apiCommunity.post(`/persons/${personId}/requirements/${requirementId}/approve`, data);
+      return approval;
+    } catch (error) {
+      throw new Error('Error al aprobar el requisito');
+    }
+  },
 }; 

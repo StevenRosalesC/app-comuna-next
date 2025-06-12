@@ -31,6 +31,7 @@ import { useNeighborhoodsStore } from "@/hooks/store/useNeighborhoodsStore"
 import { Neighborhood } from "@/store/neighborhoodsStore"
 import { Switch } from "@/components/ui/switch"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useRequirementsStore } from "@/hooks/store/useRequirementsStore"
 
 const personFormSchema = z.object({
   personId: z.string().optional(),
@@ -68,6 +69,14 @@ export function PersonEditDialog({
     neighborhoods: state.neighborhoods,
   }))
 
+  const { requirements, getRequirements } = useRequirementsStore((state) => ({
+    requirements: state.requirements,
+    getRequirements: state.getRequirements,
+  }))
+
+  useEffect(() => {
+    getRequirements()
+  }, [getRequirements])
 
   useEffect(() => {
     if (person) {
@@ -115,7 +124,7 @@ export function PersonEditDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] ">
         <DialogHeader>
           <DialogTitle>Editar Persona</DialogTitle>
           <DialogDescription>
@@ -214,7 +223,7 @@ export function PersonEditDialog({
                 control={form.control}
                 name="status"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-4">
                     <div className="space-y-0.5">
                       <FormLabel>Estado</FormLabel>
                     </div>
@@ -224,6 +233,22 @@ export function PersonEditDialog({
                   </FormItem>
                 )}
               />
+              {
+                person.status && (
+                  person.requirementApprovals && person.requirementApprovals.length > 0 && (
+                    <div className="flex flex-col gap-2 p-4 rounded-lg border mt-4">
+                      <span className="text-sm font-bold text-center w-full">Requisitos pendientes de aprobación</span>
+                      <ul className="flex flex-col gap-2 list-disc pl-4">
+                        {requirements.map((requirement) => (  
+                          !person.requirementApprovals?.find((approval) => approval.requirementId === requirement.requirementId) && (
+                            <li key={requirement.requirementId} className="text-sm">{requirement.requirement}</li>
+                          )
+                        ))}
+                      </ul>
+                    </div>
+                  )
+                )
+              }
             </ScrollArea>
             <DialogFooter>
               <Button
@@ -242,20 +267,6 @@ export function PersonEditDialog({
             </DialogFooter>
           </form>
         </Form>
-        {
-          person.status && (
-            person.requirementApprovals && person.requirementApprovals.length > 0 && (
-              <div className="flex flex-col gap-2">
-                <p>Requisitos pendientes de aprobación</p>
-                <ul>
-                  {person.requirementApprovals.map((requirement) => (
-                    <li key={requirement.requirementId}>{requirement.requirements.requirement}</li>
-                  ))}
-                </ul>
-              </div>
-            )
-          )
-        }
       </DialogContent>
     </Dialog>
   )

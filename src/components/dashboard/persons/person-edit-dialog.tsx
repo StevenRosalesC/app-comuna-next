@@ -30,6 +30,8 @@ import { Select } from "@/components/ui/select"
 import { useNeighborhoodsStore } from "@/hooks/store/useNeighborhoodsStore"
 import { Neighborhood } from "@/store/neighborhoodsStore"
 import { Switch } from "@/components/ui/switch"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { useRequirementsStore } from "@/hooks/store/useRequirementsStore"
 
 const personFormSchema = z.object({
   personId: z.string().optional(),
@@ -52,6 +54,7 @@ interface PersonEditDialogProps {
   onOpenChange: (open: boolean) => void
   onSave?: (person: Person) => void
 }
+
 export function PersonEditDialog({
   person,
   open,
@@ -66,12 +69,15 @@ export function PersonEditDialog({
     neighborhoods: state.neighborhoods,
   }))
 
+  const { requirements, getRequirements } = useRequirementsStore((state) => ({
+    requirements: state.requirements,
+    getRequirements: state.getRequirements,
+  }))
 
-  const neighborhoodsOptions = neighborhoods.map((neighborhood: Neighborhood) => (
-    <SelectItem key={neighborhood.neighborhoodId} value={neighborhood.neighborhoodId}>
-      {neighborhood.neighborhoodName}
-    </SelectItem>
-  ))
+  useEffect(() => {
+    getRequirements()
+  }, [getRequirements])
+
   useEffect(() => {
     if (person) {
       form.reset({
@@ -86,18 +92,18 @@ export function PersonEditDialog({
     }
   }, [person, form.reset, form])
 
-
   function onSubmit(data: PersonFormValues) {
     try {
-      // Convert form values to a Person object
       const personToSave: Person = {
-        ...person!, // Keep existing fields like id
+        personId: person?.personId || '',
+        gender: person?.gender || 0,
+        phoneNumber: person?.phoneNumber || '',
         identification: data.identification,
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email || '',
-        birthDate: new Date(data.birthDate), // Convert string to Date
-        neighborhoodId: data.neighborhoodId || '', // Ensure neighborhoodId is not undefined
+        birthDate: new Date(data.birthDate),
+        neighborhoodId: data.neighborhoodId || '',
         status: data.status ?? true,
       }
       onSave?.(personToSave)
@@ -108,11 +114,17 @@ export function PersonEditDialog({
     }
   }
 
+  const neighborhoodsOptions = neighborhoods.map((neighborhood: Neighborhood) => (
+    <SelectItem key={neighborhood.neighborhoodId} value={neighborhood.neighborhoodId}>
+      {neighborhood.neighborhoodName}
+    </SelectItem>
+  ))
+
   if (!person) return null
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] ">
         <DialogHeader>
           <DialogTitle>Editar Persona</DialogTitle>
           <DialogDescription>
@@ -121,105 +133,123 @@ export function PersonEditDialog({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="identification"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cédula</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nombres</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Apellidos</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="neighborhoodId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Barrio</FormLabel>
-                  <Select onValueChange={(value) => field.onChange(value)} defaultValue={field.value}>
+            <ScrollArea className="h-[calc(100vh-300px)]">
+              <FormField
+                control={form.control}
+                name="identification"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cédula</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Seleccione el barrio" />
-                      </SelectTrigger>
+                      <Input {...field} />
                     </FormControl>
-                    <SelectContent>
-                      {neighborhoodsOptions}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="email" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="birthDate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Fecha de Nacimiento</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="date" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                  <div className="space-y-0.5">
-                    <FormLabel>Estado</FormLabel>
-                  </div>
-                  <FormControl>
-                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombres</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Apellidos</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="neighborhoodId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Barrio</FormLabel>
+                    <Select onValueChange={(value) => field.onChange(value)} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccione el barrio" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {neighborhoodsOptions}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="email" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="birthDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Fecha de Nacimiento</FormLabel>
+                    <FormControl>
+                      <Input {...field} type="date" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mt-4">
+                    <div className="space-y-0.5">
+                      <FormLabel>Estado</FormLabel>
+                    </div>
+                    <FormControl>
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              {
+                person.status && (
+                  person.requirementApprovals && person.requirementApprovals.length > 0 && (
+                    <div className="flex flex-col gap-2 p-4 rounded-lg border mt-4">
+                      <span className="text-sm font-bold text-center w-full">Requisitos pendientes de aprobación</span>
+                      <ul className="flex flex-col gap-2 list-disc pl-4">
+                        {requirements.map((requirement) => (  
+                          !person.requirementApprovals?.find((approval) => approval.requirementId === requirement.requirementId) && (
+                            <li key={requirement.requirementId} className="text-sm">{requirement.requirement}</li>
+                          )
+                        ))}
+                      </ul>
+                    </div>
+                  )
+                )
+              }
+            </ScrollArea>
             <DialogFooter>
               <Button
                 type="button"
@@ -228,7 +258,12 @@ export function PersonEditDialog({
               >
                 Cancelar
               </Button>
-              <Button type="submit">Guardar cambios</Button>
+              <Button
+                type="submit"
+                disabled={!form.formState.isDirty}
+              >
+                Guardar cambios
+              </Button>
             </DialogFooter>
           </form>
         </Form>

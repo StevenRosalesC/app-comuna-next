@@ -50,6 +50,13 @@ export const navItems: NavItem[] = [
     isActive: false,
     shortcut: ['m', 'm'],
     items: []
+  },
+  {
+    title: 'Administrador',
+    url: '/dashboard/admin',
+    icon: 'list',
+    isActive: false,
+    shortcut: ['r', 'r']
   }
 ];
 

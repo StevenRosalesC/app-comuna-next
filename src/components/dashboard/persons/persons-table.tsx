@@ -1,10 +1,12 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { flexRender, getCoreRowModel, useReactTable, SortingState } from "@tanstack/react-table"
-import { usePersonsTableColumns } from "./persons-table-columns"
+import { flexRender, SortingState } from "@tanstack/react-table"
 import { PersonsTableSkeleton } from "./persons-table-skeleton"
 import { Person } from "@/interfaces/persons"
 import { PersonEditDialog } from "./person-edit-dialog"
 import { useState } from "react"
+import { usePersonsTable } from "./hooks/use-persons-table"
+import { ApproveRequirementsDialog } from "./approve-requirements-dialog" 
+
 interface PersonsTableProps {
   data: Person[]
   isLoading: boolean
@@ -15,32 +17,22 @@ interface PersonsTableProps {
 }
 
 export function PersonsTable({ data, isLoading, pageSize, sorting, onSortingChange, updatePerson }: PersonsTableProps) {
-
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const columns = usePersonsTableColumns({
-    onEdit: (person) => {
+  const [approveRequirementsDialogOpen, setApproveRequirementsDialogOpen] = useState(false)
+  const { table, columns } = usePersonsTable({
+    data,
+    sorting,
+    onSortingChange,
+    onEdit: (person: Person) => {
       setSelectedPerson(person)
       setEditDialogOpen(true)
+    },
+    onViewRequirements: (person: Person) => {
+      setSelectedPerson(person)
+      setApproveRequirementsDialogOpen(true)
     }
   })
-
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    state: { sorting },
-    onSortingChange: (updater) => {
-      if (typeof updater === 'function') {
-        const newSorting = updater(sorting);
-        onSortingChange(newSorting);
-      } else {
-        onSortingChange(updater);
-      }
-    },
-    manualSorting: true,
-  })
-
 
   return (
     <>
@@ -91,6 +83,13 @@ export function PersonsTable({ data, isLoading, pageSize, sorting, onSortingChan
           open={editDialogOpen}
           onOpenChange={setEditDialogOpen}
           onSave={(person) => updatePerson(person)}
+        />
+      )}
+      {selectedPerson && (
+        <ApproveRequirementsDialog
+          person={selectedPerson}
+          open={approveRequirementsDialogOpen}
+          onOpenChange={setApproveRequirementsDialogOpen}
         />
       )}
     </>

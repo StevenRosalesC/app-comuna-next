@@ -48,11 +48,76 @@ import { useSessionContext } from '../providers/session-Provider';
 import { logout } from '@/app/actions/auth-actions';
 import Image from 'next/image';
 import { Link } from 'next-view-transitions';
+import { usePermission } from '@/hooks/usePermission';
+import { modulesPermissions } from '@/constants/permissions';
 
 export const company = {
   name: 'Comuna Bambil Collao',
   logo: GalleryVerticalEnd
 };
+
+function SidebarMenuItemWithPermission({ item, pathname }: { item: NavItem, pathname: string }) {
+  const getModuleFromUrl = (url: string) => {
+    const parts = url.split('/');
+    return parts.length > 2 ? parts[2] : '';
+  };
+  const rawMod = getModuleFromUrl(item.url);
+  const moduleConfig = modulesPermissions.find(m => m.route === rawMod);
+  const mod = moduleConfig?.module || rawMod;
+  const canAccess = usePermission(mod, ['read']);
+  if (!canAccess) return null;
+  const Icon = item.icon ? Icons[item.icon] : Icons.logo;
+  return item?.items && item?.items?.length > 0 ? (
+    <Collapsible
+      key={item.title}
+      asChild
+      defaultOpen={item.isActive}
+      className='group/collapsible'
+    >
+      <SidebarMenuItem>
+        <CollapsibleTrigger asChild>
+          <SidebarMenuButton
+            tooltip={item.title}
+            isActive={pathname === item.url}
+          >
+            {item.icon && <Icon />}
+            <span>{item.title}</span>
+            <ChevronRight className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SidebarMenuSub>
+            {item.items?.map((subItem) => (
+              <SidebarMenuSubItem key={subItem.title}>
+                <SidebarMenuSubButton
+                  asChild
+                  isActive={pathname === subItem.url}
+                >
+                  <Link href={subItem.url}>
+                    <span>{subItem.title}</span>
+                  </Link>
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+            ))}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuItem>
+    </Collapsible>
+  ) : (
+    <SidebarMenuItem key={item.title}>
+      <SidebarMenuButton
+        asChild
+        tooltip={item.title}
+        isActive={pathname === item.url}
+      >
+        <Link href={item.url}>
+          <Icon />
+          <span>{item.title}</span>
+        </Link>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+}
 
 export default function AppSidebar() {
   const { session } = useSessionContext();
@@ -60,37 +125,6 @@ export default function AppSidebar() {
   const [userAccess] = useState<NavItem[]>(navItems);
   const pathname = usePathname();
   // const { state, isMobile } = useSidebar();
-
-  // const access: NavItem[] = [];
-  // userProjects.forEach((userProject) => {
-  //   access.push({
-  //     title: userProject.projects.name,
-  //     url: `/dashboard/projects/${userProject.projects.jira_key}`,
-  //     icon: 'logo'
-  //   });
-  // });
-  // // find if the item already exists in the access array
-  // setUserAccess((prev) => {
-  //   // if not exist 'List task' in access array
-  //   const existList = prev.find((item) => item.title === 'Your Projects');
-  //   if (!existList) {
-  //     return [
-  //       ...prev,
-  //       {
-  //         title: 'Your Projects',
-  //         url: '/dashboard/projects/list',
-  //         icon: 'list',
-  //         items: access
-  //       }
-  //     ];
-  //   }
-  //   return prev;
-  // });
-  // useEffect(() => {
-  //   if (session) {
-  //     handleAccess(session.user_projects as UserProjectsWithProjects[]);
-  //   }
-  // }, [session]);
 
   return (
     <Sidebar collapsible='icon'>
@@ -114,59 +148,9 @@ export default function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Overview</SidebarGroupLabel>
           <SidebarMenu>
-            {userAccess.map((item) => {
-              const Icon = item.icon ? Icons[item.icon] : Icons.logo;
-              return item?.items && item?.items?.length > 0 ? (
-                <Collapsible
-                  key={item.title}
-                  asChild
-                  defaultOpen={item.isActive}
-                  className='group/collapsible'
-                >
-                  <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton
-                        tooltip={item.title}
-                        isActive={pathname === item.url}
-                      >
-                        {item.icon && <Icon />}
-                        <span>{item.title}</span>
-                        <ChevronRight className='ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90' />
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        {item.items?.map((subItem) => (
-                          <SidebarMenuSubItem key={subItem.title}>
-                            <SidebarMenuSubButton
-                              asChild
-                              isActive={pathname === subItem.url}
-                            >
-                              <Link href={subItem.url}>
-                                <span>{subItem.title}</span>
-                              </Link>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  </SidebarMenuItem>
-                </Collapsible>
-              ) : (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    tooltip={item.title}
-                    isActive={pathname === item.url}
-                  >
-                    <Link href={item.url}>
-                      <Icon />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              );
-            })}
+            {userAccess.map((item) => (
+              <SidebarMenuItemWithPermission key={item.title} item={item} pathname={pathname} />
+            ))}
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>

@@ -1,4 +1,4 @@
-import { ArrowUpDown, ArrowUp, ArrowDown, Pencil } from "lucide-react"
+import { ArrowUpDown, ArrowUp, ArrowDown, Pencil,LayoutList } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
@@ -6,10 +6,18 @@ import { Person } from "@/interfaces/persons"
 import { ColumnDef } from "@tanstack/react-table"
 import { useNeighborhoodsStore } from "@/hooks/store/useNeighborhoodsStore"
 import { Skeleton } from "@/components/ui/skeleton"
-// import { useState } from "react"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import React from "react"
 
-export function usePersonsTableColumns({ onEdit }: { onEdit: (person: Person) => void }) {
-  // const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
+interface PersonsTableColumnsProps {
+  actions: (person: Person) => React.ReactNode
+}
+
+export function usePersonsTableColumns({ actions }: PersonsTableColumnsProps) {
   const { neighborhoods, isLoading } = useNeighborhoodsStore(state => state)
   const columns: ColumnDef<Person>[] = [
     {
@@ -158,14 +166,8 @@ export function usePersonsTableColumns({ onEdit }: { onEdit: (person: Person) =>
       cell: ({ row }) => {
         const person = row.original
         return (
-          <div className="flex justify-end gap-2 min-w-[60px] w-full">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onEdit(person)}
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
+          <div className="flex items-center justify-end gap-2">
+            {actions(person)}
           </div>
         )
       },

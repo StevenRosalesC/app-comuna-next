@@ -22,7 +22,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  const onConfirm = async () => {};
+  const onConfirm = async () => { };
 
   return (
     <>
@@ -31,6 +31,8 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         onClose={() => setOpen(false)}
         onConfirm={onConfirm}
         loading={loading}
+        title='Are you sure?'
+        description='This action cannot be undone.'
       />
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>

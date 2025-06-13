@@ -117,18 +117,6 @@ export default function PersonsDataTable() {
     [updateUrl]
   );
 
-  const handleSearchChange = useCallback(
-    (newSearch: string) => {
-      setSearch(newSearch);
-      setPageIndex(0);
-      updateUrl({
-        search: newSearch || null,
-        page: '0'
-      });
-    },
-    [updateUrl]
-  );
-
   const handleEditPerson = async (person: Person) => {
     try {
       toast.loading('Actualizando persona...');

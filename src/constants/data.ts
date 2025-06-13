@@ -57,6 +57,13 @@ export const navItems: NavItem[] = [
     icon: 'list',
     isActive: false,
     shortcut: ['r', 'r']
+  },
+  {
+    title: 'Usuarios',
+    url: '/dashboard/users',
+    icon: 'users',
+    isActive: false,
+    shortcut: ['u', 'u']
   }
 ];
 

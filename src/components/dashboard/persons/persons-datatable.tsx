@@ -2,8 +2,6 @@
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Events } from '../../../interfaces/enums';
-// import { usePersonsStore } from "@/hooks/store/usePersonsStore"
 import { useState, useEffect, useCallback } from 'react';
 import { PersonsTableToolbar } from './persons-table-toolbar';
 import { PersonsTablePagination } from './persons-table-pagination';
@@ -11,14 +9,16 @@ import { PersonsTable } from './persons-table';
 import { personsService } from '@/services/persons';
 import { Person } from '@/interfaces/persons';
 import { Switch } from '@/components/ui/switch';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
+import { ServiceResponse } from '@/interfaces/common';
+import { IPersonsRequestResponse } from '@/interfaces/persons';
+import { Button } from '@/components/ui/button';
+import { RefreshCcw } from 'lucide-react';
 
 export default function PersonsDataTable() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const queryClient = useQueryClient();
-  const [loading, setLoading] = useState(false);
   const [showActive, setShowActive] = useState(true);
 
   const [sorting, setSorting] = useState(() => {
@@ -31,22 +31,32 @@ export default function PersonsDataTable() {
   const [pageSize, setPageSize] = useState(
     () => Number(searchParams.get('size')) || 10
   );
-  const [pageIndex, setPageIndex] = useState(
-    () => Number(searchParams.get('page')) || 0
+  const [pageIndex, setPageIndex] = useState(() =>
+    Math.max(Number(searchParams.get('page') || 1) - 1, 0)
   );
   const [search, setSearch] = useState(() => searchParams.get('search') || '');
-  // const [pageCount, setPageCount] = useState(() => Math.ceil(count / pageSize));
 
   const {
     data: persons,
     isLoading: personsLoading,
-    error
-  } = useQuery({
-    queryKey: ['persons'],
+    error,
+    refetch,
+    isFetching
+  } = useQuery<ServiceResponse<IPersonsRequestResponse | null>, Error>({
+    queryKey: [
+      'persons',
+      {
+        pageSize,
+        pageIndex,
+        sorting,
+        search,
+        showActive
+      }
+    ],
     queryFn: () =>
       personsService.getPersons(
         pageSize,
-        pageIndex,
+        pageIndex * pageSize,
         sorting.length ? sorting[0].id : 'lastName',
         sorting.length && sorting[0].desc ? 'desc' : 'asc',
         search,
@@ -100,7 +110,7 @@ export default function PersonsDataTable() {
   const handlePageIndexChange = useCallback(
     (newIndex: number) => {
       setPageIndex(newIndex);
-      updateUrl({ page: newIndex.toString() });
+      updateUrl({ page: (newIndex + 1).toString() });
     },
     [updateUrl]
   );
@@ -117,23 +127,6 @@ export default function PersonsDataTable() {
     [updateUrl]
   );
 
-  // const fetchData = useCallback(async () => {
-  //   try {
-  //     const orderBy = sorting.length ? sorting[0].id : 'lastName';
-  //     const order = sorting.length && sorting[0].desc ? 'desc' : 'asc';
-  //     await fetchPersons(
-  //       pageSize,
-  //       pageIndex,
-  //       orderBy,
-  //       order,
-  //       search,
-  //       showActive
-  //     );
-  //   } catch (error) {
-  //     toast.error('Error al obtener las personas');
-  //   }
-  // }, [pageSize, pageIndex, sorting, search, fetchPersons, showActive]);
-
   const handleEditPerson = async (person: Person) => {
     try {
       toast.loading('Actualizando persona...');
@@ -143,9 +136,9 @@ export default function PersonsDataTable() {
         personToUpdate
       );
       if (response.status) {
-        // updatePerson(person);
         toast.dismiss();
         toast.success(response.message);
+        await refetch();
       } else {
         toast.dismiss();
         toast.error(response.message);
@@ -156,34 +149,11 @@ export default function PersonsDataTable() {
     }
   };
 
-  // useEffect(() => {
-  //   const handler = setTimeout(fetchData, 300);
-  //   return () => clearTimeout(handler);
-  // }, [fetchData]);
-
-  // useEffect(() => {
-  //   setPageCount(Math.ceil(count / pageSize));
-  // }, [count, pageSize]);
-
-  // useEffect(() => {
-  //   const handlePersonsCreated = (event: CustomEvent) => {
-  //     fetchData();
-  //   };
-  //   document.addEventListener(
-  //     Events.PERSONS_CREATED,
-  //     handlePersonsCreated as EventListener
-  //   );
-  //   return () => {
-  //     document.removeEventListener(
-  //       Events.PERSONS_CREATED,
-  //       handlePersonsCreated as EventListener
-  //     );
-  //   };
-  // }, [fetchData]);
-
-  // useEffect(() => {
-  //   setLoading(personsLoading);
-  // }, [personsLoading]);
+  useEffect(() => {
+    if (error) {
+      toast.error('Error al obtener las personas');
+    }
+  }, [error]);
 
   return (
     <Card>
@@ -197,6 +167,21 @@ export default function PersonsDataTable() {
             checked={showActive}
             onCheckedChange={(checked) => setShowActive(checked)}
           />
+          <Button
+            variant='outline'
+            size='sm'
+            className='ml-2'
+            title='Recargar'
+            onClick={() => {
+              refetch();
+            }}
+            disabled={isFetching}
+          >
+            <RefreshCcw
+              className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`}
+            />
+            Recargar
+          </Button>
         </div>
       </CardHeader>
       <CardContent>
@@ -218,14 +203,13 @@ export default function PersonsDataTable() {
         />
         <div className='mt-4'>
           <div className='mb-2 text-center text-sm text-muted-foreground sm:text-left'>
-            {/* Comentario: Selected rows count logic can be added here if needed */}
             {persons?.data?.count} registros en total.
           </div>
           <PersonsTablePagination
             pageIndex={pageIndex}
-            pageCount={persons?.data?.count || 0}
+            pageCount={Math.ceil((persons?.data?.count || 0) / pageSize)}
             pageSize={pageSize}
-            isLoading={loading}
+            isLoading={personsLoading}
             onPageIndexChange={handlePageIndexChange}
             onPageSizeChange={handlePageSizeChange}
           />

@@ -2,7 +2,7 @@
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { PersonsTableToolbar } from './persons-table-toolbar';
 import { PersonsTablePagination } from './persons-table-pagination';
 import { PersonsTable } from './persons-table';
@@ -14,6 +14,7 @@ import { ServiceResponse } from '@/interfaces/common';
 import { IPersonsRequestResponse } from '@/interfaces/persons';
 import { Button } from '@/components/ui/button';
 import { RefreshCcw } from 'lucide-react';
+import { useDebounce } from './useDebounce';
 
 export default function PersonsDataTable() {
   const router = useRouter();
@@ -35,6 +36,7 @@ export default function PersonsDataTable() {
     Math.max(Number(searchParams.get('page') || 1) - 1, 0)
   );
   const [search, setSearch] = useState(() => searchParams.get('search') || '');
+  const debouncedSearch = useDebounce(search, 400);
 
   const {
     data: persons,
@@ -49,7 +51,7 @@ export default function PersonsDataTable() {
         pageSize,
         pageIndex,
         sorting,
-        search,
+        search: debouncedSearch,
         showActive
       }
     ],
@@ -59,7 +61,7 @@ export default function PersonsDataTable() {
         pageIndex * pageSize,
         sorting.length ? sorting[0].id : 'lastName',
         sorting.length && sorting[0].desc ? 'desc' : 'asc',
-        search,
+        debouncedSearch,
         showActive
       )
   });
@@ -155,6 +157,19 @@ export default function PersonsDataTable() {
     }
   }, [error]);
 
+  useEffect(() => {
+    updateUrl({
+      search: debouncedSearch || null,
+      page: '1'
+    });
+    setPageIndex(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch]);
+
+  const totalCount = useMemo(() => {
+    return persons?.data?.count ?? 0;
+  }, [persons?.data?.count]);
+
   return (
     <Card>
       <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
@@ -185,10 +200,7 @@ export default function PersonsDataTable() {
         </div>
       </CardHeader>
       <CardContent>
-        <PersonsTableToolbar
-          search={search}
-          onSearchChange={handleSearchChange}
-        />
+        <PersonsTableToolbar search={search} onSearchChange={setSearch} />
         <PersonsTable
           data={
             persons?.data?.data.filter((p) =>
@@ -203,11 +215,11 @@ export default function PersonsDataTable() {
         />
         <div className='mt-4'>
           <div className='mb-2 text-center text-sm text-muted-foreground sm:text-left'>
-            {persons?.data?.count} registros en total.
+            {totalCount} registros en total.
           </div>
           <PersonsTablePagination
             pageIndex={pageIndex}
-            pageCount={Math.ceil((persons?.data?.count || 0) / pageSize)}
+            pageCount={Math.ceil(totalCount / pageSize)}
             pageSize={pageSize}
             isLoading={personsLoading}
             onPageIndexChange={handlePageIndexChange}

@@ -29,5 +29,11 @@ export const modulesPermissions = [
     actions: ['read', 'write', 'edit', 'delete'],
     label: 'Noticias'
   },
-  // Agrega aquí otros módulos según tu sistema
+  {
+    module: 'users',
+    route: 'users',
+    actions: ['read', 'write', 'edit', 'delete'],
+    label: 'Usuarios'
+  },
+  // Add more modules here
 ]; 

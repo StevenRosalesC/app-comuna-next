@@ -6,11 +6,15 @@ export const rolesService = {
     return data;
   },
   async updateRolePermissions(roleId: string, permissions: Record<string, string[]>) {
-    const { data } = await apiCommunity.patch(`/user-roles/${roleId}/permissions`, { permissions });
+    const { data } = await apiCommunity.patch(`/user-roles/${roleId}`, { permissions });
     return data;
   },
   async createRole(role: { name: string; permissions: Record<string, string[]> }) {
     const { data } = await apiCommunity.post('/user-roles', role);
+    return data;
+  },
+  async deleteRole(roleId: string) {
+    const { data } = await apiCommunity.delete(`/user-roles/${roleId}`);
     return data;
   }
 }

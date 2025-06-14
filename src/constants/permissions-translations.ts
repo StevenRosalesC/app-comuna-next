@@ -2,9 +2,9 @@
 export const MODULES_TRANSLATIONS: Record<string, string> = {
   persons: "Personas",
   admin: "Administración",
-  dashboard: "Panel",
-  members: "Miembros",
-  notices: "Avisos",
+  dashboard: "Dashboard",
+  members: "Comuneros",
+  notices: "Noticias",
   users: "Usuarios",
   roles: "Roles",
 };

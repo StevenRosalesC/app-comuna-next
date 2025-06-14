@@ -6,8 +6,12 @@ export const rolesService = {
     return data;
   },
   async updateRolePermissions(roleId: string, permissions: Record<string, string[]>) {
-    const { data } = await apiCommunity.patch(`/user-roles/${roleId}`, { permissions });
-    return data;
+    try {
+      const { data } = await apiCommunity.patch(`/user-roles/${roleId}`, { permissions });
+      return data;
+    } catch (error) {
+      throw error;
+    }
   },
   async createRole(role: { name: string; permissions: Record<string, string[]> }) {
     const { data } = await apiCommunity.post('/user-roles', role);

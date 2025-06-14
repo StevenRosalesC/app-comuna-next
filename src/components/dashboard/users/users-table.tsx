@@ -1,0 +1,108 @@
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table';
+import { flexRender, SortingState } from '@tanstack/react-table';
+import { User } from '@/interfaces/users';
+import { useState } from 'react';
+import { useUsersTable } from './hooks/use-users-table';
+import { PersonsTableSkeleton } from '../persons/persons-table-skeleton';
+import { UserEditDialog } from './user-edit-dialog';
+
+interface UsersTableProps {
+  data: User[];
+  isLoading: boolean;
+  pageSize: number;
+  sorting: SortingState;
+  onSortingChange: (sorting: SortingState) => void;
+  updateUser: (user: User) => void;
+}
+
+export function UsersTable({
+  data,
+  isLoading,
+  pageSize,
+  sorting,
+  onSortingChange,
+  updateUser
+}: UsersTableProps) {
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const { table, columns } = useUsersTable({
+    data,
+    sorting,
+    onSortingChange,
+    onEdit: (user: User) => {
+      setSelectedUser(user);
+      setEditDialogOpen(true);
+    }
+  });
+
+  return (
+    <>
+      <div className='overflow-x-auto rounded-md border'>
+        <Table className='min-w-[640px] text-xs sm:text-sm'>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              <PersonsTableSkeleton columns={columns.length} rows={pageSize} />
+            ) : table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                  className='hover:bg-muted/50'
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className='h-24 text-center'
+                >
+                  No hay resultados
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      {selectedUser && (
+        <UserEditDialog
+          user={selectedUser}
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+          onSave={(user) => updateUser(user)}
+        />
+      )}
+    </>
+  );
+}

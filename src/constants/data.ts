@@ -64,6 +64,13 @@ export const navItems: NavItem[] = [
     icon: 'users',
     isActive: false,
     shortcut: ['u', 'u']
+  },
+  {
+    title: 'Roles',
+    url: '/dashboard/roles',
+    icon: 'users',
+    isActive: false,
+    shortcut: ['r', 'r']
   }
 ];
 
@@ -87,5 +94,9 @@ export const pageNavItems: NavItem[] = [
   {
     title: 'Iniciar Sesión',
     url: '/auth/login'
+  },
+  {
+    title: 'Roles',
+    url: '/roles'
   }
 ];

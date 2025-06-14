@@ -1,0 +1,16 @@
+import apiCommunity from "@/utils/communityApi";
+
+export const rolesService = {
+  async getRoles() {
+    const { data } = await apiCommunity.get('/user-roles');
+    return data;
+  },
+  async updateRolePermissions(roleId: string, permissions: Record<string, string[]>) {
+    const { data } = await apiCommunity.patch(`/user-roles/${roleId}/permissions`, { permissions });
+    return data;
+  },
+  async createRole(role: { name: string; permissions: Record<string, string[]> }) {
+    const { data } = await apiCommunity.post('/user-roles', role);
+    return data;
+  }
+}

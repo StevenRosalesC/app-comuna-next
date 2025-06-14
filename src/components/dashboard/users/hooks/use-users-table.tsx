@@ -6,7 +6,7 @@ import {
 import { useUsersTableColumns } from '../users-table-columns';
 import { User } from '@/interfaces/users';
 import React from 'react';
-
+import { UsersTableActions } from '../users-table-actions';
 interface UseUsersTableProps {
   data: User[];
   sorting: SortingState;
@@ -21,9 +21,7 @@ export function useUsersTable({
   onEdit
 }: UseUsersTableProps) {
   const columns = useUsersTableColumns({
-    actions: (user: User) => (
-      <React.Fragment>{/* Actions for user */}</React.Fragment>
-    )
+    actions: (user: User) => <UsersTableActions user={user} onEdit={onEdit} />
   });
 
   const table = useReactTable({

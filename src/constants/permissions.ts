@@ -37,3 +37,24 @@ export const modulesPermissions = [
   },
   // Add more modules here
 ]; 
+
+export enum ValidModules {
+  PERSONS = 'persons',
+  ADMIN = 'admin',
+  DASHBOARD = 'dashboard',
+  MEMBERS = 'members',
+  NOTICES = 'notices',
+  USERS = 'users'
+}
+
+export enum ValidActions {    
+  READ = 'read',
+  WRITE = 'write',
+  EDIT = 'edit',
+  DELETE = 'delete',
+  APPROVE_REQUIREMENTS = 'approve_requirements'
+}
+
+export const validPermissions = [
+  ValidModules.PERSONS,
+]

@@ -1,5 +1,7 @@
 'use client';
 import { useState } from 'react';
+import { SelectPersonDialog } from '@/components/dashboard/persons/select-person-dialog';
+import { Person } from '@/interfaces/persons';
 
 export const CreateUserForm = () => {
   const [userInformation, setUserInformation] = useState({
@@ -7,12 +9,17 @@ export const CreateUserForm = () => {
     userName: '',
     password: ''
   });
+  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
   const onFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!selectedPerson) return;
     const response = await fetch('/api/users', {
       method: 'POST',
-      body: JSON.stringify(userInformation)
+      body: JSON.stringify({
+        ...userInformation,
+        personId: selectedPerson.personId
+      })
     });
     const data = await response.json();
     return data;
@@ -31,6 +38,35 @@ export const CreateUserForm = () => {
         Create an account
       </h1>
       <form className='space-y-4 md:space-y-6' onSubmit={onFormSubmit}>
+        <div>
+          <SelectPersonDialog
+            onSelect={(person) => setSelectedPerson(person)}
+            triggerLabel={
+              selectedPerson
+                ? `${selectedPerson.firstName} ${selectedPerson.lastName} (${selectedPerson.identification})`
+                : 'Seleccionar persona'
+            }
+          />
+          {selectedPerson && (
+            <div className='mt-2 text-sm text-muted-foreground'>
+              <div>
+                <b>Nombre:</b> {selectedPerson.firstName}{' '}
+                {selectedPerson.lastName}
+              </div>
+              <div>
+                <b>Cédula:</b> {selectedPerson.identification}
+              </div>
+              <div>
+                <b>Email:</b> {selectedPerson.email}
+              </div>
+            </div>
+          )}
+          {!selectedPerson && (
+            <div className='mt-2 text-xs text-red-500'>
+              Debes seleccionar una persona para crear el usuario.
+            </div>
+          )}
+        </div>
         <div>
           <label
             htmlFor='email'
@@ -81,10 +117,10 @@ export const CreateUserForm = () => {
             onChange={onInputChange}
           />
         </div>
-
         <button
           type='submit'
           className='hover:bg-primary-700 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 w-full rounded-lg bg-stone-600 px-5 py-2.5 text-center text-sm font-medium text-white focus:outline-none focus:ring-4'
+          disabled={!selectedPerson}
         >
           Create an account
         </button>

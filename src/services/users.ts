@@ -29,7 +29,12 @@ export const usersService = {
     }
   },
 
-  async createUser(user:User): Promise<ServiceResponse<User | null>> {
+  async createUser(user:{
+    password: string;
+    roleId: string;
+    username: string;
+    personId: string;
+}): Promise<ServiceResponse<User | null>> {
     try {
       const { data } = await apiCommunity.post("/users", user);
       return {

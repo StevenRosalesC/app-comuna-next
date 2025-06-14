@@ -35,6 +35,12 @@ export const modulesPermissions = [
     actions: ['read', 'write', 'edit', 'delete'],
     label: 'Usuarios'
   },
+  {
+    module: 'roles',
+    route: 'roles',
+    actions: ['read', 'write', 'edit', 'delete'],
+    label: 'Roles'
+  },
   // Add more modules here
 ]; 
 
@@ -44,7 +50,8 @@ export enum ValidModules {
   DASHBOARD = 'dashboard',
   MEMBERS = 'members',
   NOTICES = 'notices',
-  USERS = 'users'
+  USERS = 'users',
+  ROLES = 'roles'
 }
 
 export enum ValidActions {    
@@ -57,4 +64,6 @@ export enum ValidActions {
 
 export const validPermissions = [
   ValidModules.PERSONS,
+  ValidModules.USERS,
+  ValidModules.ROLES
 ]

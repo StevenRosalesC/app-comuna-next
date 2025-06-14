@@ -9,6 +9,7 @@ import { usePermission } from '@/hooks/usePermission';
 interface SessionContextProps {
   session: AuthResponse | null;
   loading: boolean;
+  setSession: (session: AuthResponse | null) => void;
 }
 
 const SessionContext = createContext<SessionContextProps | undefined>(
@@ -43,7 +44,7 @@ export const SessionProvider = ({
     const parts = pathname.split('/');
     if (parts.length > 2) {
       const route = parts[2];
-      const moduleConfig = modulesPermissions.find(m => m.route === route);
+      const moduleConfig = modulesPermissions.find((m) => m.route === route);
       return moduleConfig?.module || route;
     }
     return 'dashboard'; // Por defecto para /dashboard
@@ -66,17 +67,25 @@ export const SessionProvider = ({
   }, [pathname, isLoading, permissions, hasPermission, router]);
 
   // Mientras carga permisos, no renderiza nada
-  if (pathname.startsWith('/dashboard') && (isLoading || permissions === null)) {
+  if (
+    pathname.startsWith('/dashboard') &&
+    (isLoading || permissions === null)
+  ) {
     return null;
   }
 
   // Si no tiene permiso, no renderiza nada
-  if (pathname.startsWith('/dashboard') && !isLoading && permissions && !hasPermission) {
+  if (
+    pathname.startsWith('/dashboard') &&
+    !isLoading &&
+    permissions &&
+    !hasPermission
+  ) {
     return null;
   }
 
   return (
-    <SessionContext.Provider value={{ session, loading }}>
+    <SessionContext.Provider value={{ session, loading, setSession }}>
       {children}
     </SessionContext.Provider>
   );

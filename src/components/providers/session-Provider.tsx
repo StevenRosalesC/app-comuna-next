@@ -53,7 +53,7 @@ export const SessionProvider = ({
   const mod = getModuleFromPath(pathname);
   const hasPermission = usePermission(mod, ['read']);
 
-  // Redirige a /unauthorized si no tiene permiso (después de cargar)
+  // Redirect to /unauthorized if the user does not have permission
   useEffect(() => {
     if (
       pathname.startsWith('/dashboard') &&
@@ -66,7 +66,7 @@ export const SessionProvider = ({
     }
   }, [pathname, isLoading, permissions, hasPermission, router]);
 
-  // Mientras carga permisos, no renderiza nada
+  // While loading permissions, do not render anything
   if (
     pathname.startsWith('/dashboard') &&
     (isLoading || permissions === null)
@@ -74,7 +74,7 @@ export const SessionProvider = ({
     return null;
   }
 
-  // Si no tiene permiso, no renderiza nada
+  // If the user does not have permission, do not render anything
   if (
     pathname.startsWith('/dashboard') &&
     !isLoading &&

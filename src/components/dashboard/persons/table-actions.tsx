@@ -24,7 +24,7 @@ export function TableActions({
   const canApprove = usePermission(ValidModules.PERSONS, [
     ValidActions.APPROVE_REQUIREMENTS
   ]);
-  const canEdit = usePermission(ValidModules.PERSONS, [ValidActions.EDIT]);
+  const canEdit = usePermission(ValidModules.PERSONS, [ValidActions.UPDATE]);
   return (
     <div className='flex items-center justify-end gap-2'>
       {canEdit && (

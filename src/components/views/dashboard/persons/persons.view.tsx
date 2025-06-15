@@ -5,10 +5,13 @@ import PersonsActionsSection from '@/components/dashboard/persons/personsActions
 import { usePermissionsStore } from '@/store/permissionsStore';
 import { useNeighborhoodsStore } from '@/hooks/store/useNeighborhoodsStore';
 import { useEffect } from 'react';
+import { ValidActions, ValidModules } from '@/constants/permissions';
 
 export default function PersonsDashboardView() {
   const { permissions } = usePermissionsStore();
-  const canCreatePerson = permissions?.['persons']?.includes('create');
+  const canCreatePerson = permissions?.[ValidModules.PERSONS]?.includes(
+    ValidActions.CREATE
+  );
   const { neighborhoods, isLoading, fetchNeighborhoods } =
     useNeighborhoodsStore((state) => ({
       neighborhoods: state.neighborhoods,

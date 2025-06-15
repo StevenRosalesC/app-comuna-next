@@ -51,7 +51,8 @@ export enum ValidModules {
   MEMBERS = 'members',
   NOTICES = 'notices',
   USERS = 'users',
-  ROLES = 'roles'
+  ROLES = 'roles',
+  REQUIREMENTS = 'requirements'
 }
 
 export enum ValidActions {    
@@ -65,5 +66,6 @@ export enum ValidActions {
 export const validPermissions = [
   ValidModules.PERSONS,
   ValidModules.USERS,
-  ValidModules.ROLES
-]
+  ValidModules.ROLES,
+  ValidModules.REQUIREMENTS
+];

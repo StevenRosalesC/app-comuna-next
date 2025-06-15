@@ -7,6 +7,7 @@ export const MODULES_TRANSLATIONS: Record<string, string> = {
   notices: "Noticias",
   users: "Usuarios",
   roles: "Roles",
+  requirements: "Requisitos para ser comunero",
 };
 
 // Traducción de acciones

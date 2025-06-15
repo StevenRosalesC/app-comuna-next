@@ -31,6 +31,7 @@ import {
   AlertDialogAction,
   AlertDialogCancel
 } from '@/components/ui/alert-dialog';
+import { usePermissionsStore } from '@/store/permissionsStore';
 
 export default function RolesView() {
   const {
@@ -46,6 +47,10 @@ export default function RolesView() {
   const [permissions, setPermissions] = useState<Record<string, string[]>>({});
   const [saving, setSaving] = useState(false);
   const [showCreateConfirm, setShowCreateConfirm] = useState(false);
+  const { permissions: permissionsStore } = usePermissionsStore();
+  const canCreateRole = permissionsStore?.[ValidModules.ROLES]?.includes(
+    ValidActions.CREATE
+  );
 
   // Find the selected role
   const selectedRole = useMemo(
@@ -198,7 +203,7 @@ export default function RolesView() {
                 ))}
               </SelectContent>
             </Select>
-            {!selectedRole && (
+            {!selectedRole && canCreateRole && (
               <form
                 className='mt-6 space-y-4'
                 onSubmit={(e) => {

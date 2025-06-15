@@ -23,6 +23,15 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { rolesService } from '@/services/roles';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from '@/components/ui/select';
 
 const userFormSchema = z.object({
   userId: z.string().optional(),
@@ -51,13 +60,18 @@ export function UserEditDialog({
     resolver: zodResolver(userFormSchema)
   });
 
+  const { data: roles, isLoading: rolesLoading } = useQuery({
+    queryKey: ['roles'],
+    queryFn: () => rolesService.getRoles()
+  });
+
   useEffect(() => {
     if (user) {
       form.reset({
         username: user.username,
         email: user.persons.email,
         status: user.status ?? true,
-        role: user.userRoles.name ?? 'user'
+        role: user.roleId || user.userRoles?.roleId || ''
       });
     }
   }, [user, form.reset, form]);
@@ -68,7 +82,7 @@ export function UserEditDialog({
         userId: user?.userId || '',
         username: data.username,
         status: data.status ?? true,
-        roleId: user?.roleId || ''
+        roleId: data.role || ''
       };
       onSave?.(userToSave as User);
       onOpenChange(false);
@@ -125,7 +139,23 @@ export function UserEditDialog({
                 <FormItem>
                   <FormLabel>Rol</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={rolesLoading}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder='Selecciona un rol' />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {roles &&
+                          roles.map((role: any) => (
+                            <SelectItem key={role.roleId} value={role.roleId}>
+                              {role.name}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

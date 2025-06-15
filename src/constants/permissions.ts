@@ -56,7 +56,7 @@ export enum ValidModules {
 
 export enum ValidActions {    
   READ = 'read',
-  WRITE = 'write',
+  CREATE = 'create',
   EDIT = 'edit',
   DELETE = 'delete',
   APPROVE_REQUIREMENTS = 'approve_requirements'

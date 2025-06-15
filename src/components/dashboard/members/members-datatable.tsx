@@ -1,114 +1,138 @@
-"use client"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState, useMemo, useCallback } from "react";
-import { MembersTableToolbar } from "./members-table-toolbar";
-import { MembersTablePagination } from "./members-table-pagination";
-import MembersTable from "./members-table";
-
-type Member = {
-  memberId: string;
-  personId: string;
-  fullName: string;
-  houseNumber: string;
-  joinDate: string;
-  status: string;
-  documents: number;
-  annualFeePaid: boolean;
-};
-
-// Example data for comuneros
-const members: Member[] = [
-  {
-    memberId: '1',
-    personId: 'P-001',
-    fullName: 'Juan Pérez',
-    houseNumber: '12A',
-    joinDate: '2022-01-15',
-    status: 'active',
-    documents: 3,
-    annualFeePaid: true
-  },
-  {
-    memberId: '2',
-    personId: 'P-002',
-    fullName: 'María García',
-    houseNumber: '8B',
-    joinDate: '2021-06-10',
-    status: 'active',
-    documents: 2,
-    annualFeePaid: false
-  },
-  {
-    memberId: '3',
-    personId: 'P-003',
-    fullName: 'Carlos López',
-    houseNumber: '5C',
-    joinDate: '2023-03-20',
-    status: 'inactive',
-    documents: 1,
-    annualFeePaid: false
-  }
-];
+'use client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState, useMemo } from 'react';
+import { MembersTablePagination } from './members-table-pagination';
+import MembersTable from './members-table';
+import { useQuery } from '@tanstack/react-query';
+import { getMembers } from '@/services/members';
+import { Member } from '@/interfaces/members';
+import { useDebounce } from '../persons/useDebounce';
+import { Button } from '@/components/ui/button';
+import { RefreshCcw } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { useMembersTable } from './useMembersTable';
+import { SortingState } from '@tanstack/react-table';
+import { toast } from 'sonner';
 
 export default function MembersDataTable() {
-  // State for search, sorting, pagination
-  const [search, setSearch] = useState("");
+  // State for search, pagination, and sorting
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 400);
   const [pageSize, setPageSize] = useState(10);
   const [pageIndex, setPageIndex] = useState(0);
-  const [sorting, setSorting] = useState<{ id: keyof Member; desc: boolean }[]>([
-    { id: "fullName", desc: false }
-  ]);
-  const [loading, setLoading] = useState(false);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
-  // Filtering
-  const filtered = useMemo(() =>
-    members.filter(c => c.fullName.toLowerCase().includes(search.toLowerCase())),
-    [search]
+  // Fetch members data
+  const { data, isLoading, refetch, isFetching } = useQuery<
+    { data: Member[]; count: number },
+    Error
+  >({
+    queryKey: [
+      'members',
+      { pageSize, pageIndex, search: debouncedSearch, sorting }
+    ],
+    queryFn: () => getMembers(pageSize, pageIndex * pageSize, debouncedSearch)
+  });
+
+  // Calculate total count and page count
+  const totalCount = useMemo(() => data?.count ?? 0, [data?.count]);
+  const pageCount = useMemo(
+    () => Math.ceil(totalCount / pageSize),
+    [totalCount, pageSize]
   );
 
-  // Sorting
-  const sorted = useMemo(() => {
-    if (!sorting.length) return filtered;
-    const { id, desc } = sorting[0];
-    return [...filtered].sort((a, b) => {
-      const aValue = a[id];
-      const bValue = b[id];
-      if (aValue < bValue) return desc ? 1 : -1;
-      if (aValue > bValue) return desc ? -1 : 1;
-      return 0;
-    });
-  }, [filtered, sorting]);
+  // Map API data to table data
+  const mappedData = useMemo(() => {
+    if (!data?.data) return [];
+    return data.data.map((item: any) => ({
+      memberId: item.memberId,
+      personId: item.personId,
+      fullName: item.persons
+        ? `${item.persons.firstName ?? ''} ${
+            item.persons.lastName ?? ''
+          }`.trim()
+        : '',
+      houseNumber: item.houseNumber ?? '',
+      joinDate: item.createdAt ?? '',
+      status: (item.status === true ? 'active' : 'inactive') as
+        | 'active'
+        | 'inactive',
+      documents: item.documents ?? 0,
+      annualFeePaid: item.annualFeePaid ?? false
+    }));
+  }, [data]);
 
-  // Pagination
-  const pageCount = Math.ceil(sorted.length / pageSize);
-  const paginated = useMemo(() =>
-    sorted.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize),
-    [sorted, pageIndex, pageSize]
-  );
+  // Action handlers for table actions
+  const handleEdit = (member: Member) => {
+    // TODO: Implement edit action
+    toast.success(`Editando comunero: ${member.fullName}`);
+  };
+  const handleView = (member: Member) => {
+    // TODO: Implement view action
+    toast.success(`Ver comunero: ${member.fullName}`);
+  };
+  const handleDelete = (member: Member) => {
+    // TODO: Implement delete action
+    toast.success(`Eliminando comunero: ${member.fullName}`);
+  };
 
-  // Handlers
-  const handleSortingChange = useCallback((col: keyof Member) => {
-    setSorting(prev => {
-      if (prev.length && prev[0].id === col) {
-        return [{ id: col, desc: !prev[0].desc }];
-      }
-      return [{ id: col, desc: false }];
-    });
-  }, []);
+  // Table instance and columns
+  const { table, columns } = useMembersTable({
+    data: mappedData,
+    sorting,
+    onSortingChange: setSorting,
+    onEdit: handleEdit,
+    onView: handleView,
+    onDelete: handleDelete
+  });
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
         <CardTitle>Comuneros</CardTitle>
+        <Button
+          variant='outline'
+          size='sm'
+          className='ml-2'
+          title='Reload'
+          onClick={() => refetch()}
+          disabled={isFetching}
+        >
+          <RefreshCcw
+            className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`}
+          />
+          <span className='ml-1'>Reload</span>
+        </Button>
       </CardHeader>
       <CardContent>
+        <div className='mb-4 flex w-full flex-row items-center justify-between gap-2'>
+          <Input
+            placeholder='Buscar comunero'
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            className='max-w-sm'
+          />
+        </div>
         <MembersTable
-          data={paginated}
-          sorting={sorting}
-          onSortingChange={handleSortingChange}
-          isLoading={loading}
+          table={table}
+          columns={columns}
+          isLoading={isLoading}
+          pageSize={pageSize}
         />
+        <div className='mt-4'>
+          <div className='mb-2 text-center text-sm text-muted-foreground sm:text-left'>
+            {totalCount} total records.
+          </div>
+          <MembersTablePagination
+            pageIndex={pageIndex}
+            pageCount={pageCount}
+            pageSize={pageSize}
+            isLoading={isLoading}
+            onPageIndexChange={setPageIndex}
+            onPageSizeChange={setPageSize}
+          />
+        </div>
       </CardContent>
     </Card>
   );
-} 
+}

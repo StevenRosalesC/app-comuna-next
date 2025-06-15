@@ -29,6 +29,24 @@ export const personsService = {
     }
   },
 
+
+  async getPersonsPaginated({ pageParam = 1, search = '', pageSize = 10 }): Promise<{ data: Person[]; nextPage?: number }> {
+    const offset = (pageParam - 1) * pageSize;
+    const { data } = await apiCommunity.get<IPersonsRequestResponse>('/persons', {
+      params: {
+        limit: pageSize,
+        offset,
+        search,
+      },
+    });
+    const total = data?.count || 0;
+    const nextPage = offset + pageSize < total ? pageParam + 1 : undefined;
+    return {
+      data: data?.data || [],
+      nextPage,
+    };
+  },
+
   async createPerson(person: IPerson): Promise<ServiceResponse<IPerson | null>> {
     try {
       const { data } = await apiCommunity.post('/persons', person);

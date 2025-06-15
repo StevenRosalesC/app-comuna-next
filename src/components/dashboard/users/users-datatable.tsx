@@ -3,20 +3,21 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { PersonsTableToolbar } from './persons-table-toolbar';
-import { PersonsTablePagination } from './persons-table-pagination';
-import { PersonsTable } from './persons-table';
-import { personsService } from '@/services/persons';
-import { Person } from '@/interfaces/persons';
+
+import { PersonsTablePagination } from '../persons/persons-table-pagination';
+import { UsersTable } from './users-table';
+import { usersService } from '@/services/users';
+import { User } from '@/interfaces/users';
 import { Switch } from '@/components/ui/switch';
 import { useQuery } from '@tanstack/react-query';
 import { ServiceResponse } from '@/interfaces/common';
-import { IPersonsRequestResponse } from '@/interfaces/persons';
+import { IUsersRequestResponse } from '@/interfaces/users';
 import { Button } from '@/components/ui/button';
 import { RefreshCcw } from 'lucide-react';
 import { useDebounce } from './useDebounce';
+import { UsersTableToolbar } from './users-table-toolbar';
 
-export default function PersonsDataTable() {
+export default function UsersDataTable() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -39,14 +40,14 @@ export default function PersonsDataTable() {
   const debouncedSearch = useDebounce(search, 400);
 
   const {
-    data: persons,
-    isLoading: personsLoading,
+    data: users,
+    isLoading: usersLoading,
     error,
     refetch,
     isFetching
-  } = useQuery<ServiceResponse<IPersonsRequestResponse | null>, Error>({
+  } = useQuery<ServiceResponse<IUsersRequestResponse | null>, Error>({
     queryKey: [
-      'persons',
+      'users',
       {
         pageSize,
         pageIndex,
@@ -56,10 +57,10 @@ export default function PersonsDataTable() {
       }
     ],
     queryFn: () =>
-      personsService.getPersons(
+      usersService.getUsers(
         pageSize,
         pageIndex * pageSize,
-        sorting.length ? sorting[0].id : 'lastName',
+        sorting.length ? sorting[0].id : 'username',
         sorting.length && sorting[0].desc ? 'desc' : 'asc',
         debouncedSearch,
         showActive
@@ -117,14 +118,11 @@ export default function PersonsDataTable() {
     [updateUrl]
   );
 
-  const handleEditPerson = async (person: Person) => {
+  const handleEditUser = async (user: User) => {
     try {
-      toast.loading('Actualizando persona...');
-      const { personId, ...personToUpdate } = person;
-      const response = await personsService.updatePerson(
-        personId,
-        personToUpdate
-      );
+      toast.loading('Actualizando usuario...');
+      const { userId, ...userToUpdate } = user;
+      const response = await usersService.updateUser(userId, userToUpdate);
       if (response.status) {
         toast.dismiss();
         toast.success(response.message);
@@ -135,13 +133,13 @@ export default function PersonsDataTable() {
       }
     } catch (error) {
       toast.dismiss();
-      toast.error('Error al actualizar la persona');
+      toast.error('Error al actualizar el usuario');
     }
   };
 
   useEffect(() => {
     if (error) {
-      toast.error('Error al obtener las personas');
+      toast.error('Error al obtener los usuarios');
     }
   }, [error]);
 
@@ -155,13 +153,13 @@ export default function PersonsDataTable() {
   }, [debouncedSearch]);
 
   const totalCount = useMemo(() => {
-    return persons?.data?.count ?? 0;
-  }, [persons?.data?.count]);
+    return users?.data?.count ?? 0;
+  }, [users?.data?.count]);
 
   return (
     <Card>
       <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-        <CardTitle>Personas</CardTitle>
+        <CardTitle>Usuarios</CardTitle>
         <div className='flex items-center gap-2'>
           <span className='text-sm'>
             {showActive ? 'Activos' : 'Inactivos'}
@@ -188,18 +186,18 @@ export default function PersonsDataTable() {
         </div>
       </CardHeader>
       <CardContent>
-        <PersonsTableToolbar search={search} onSearchChange={setSearch} />
-        <PersonsTable
+        <UsersTableToolbar search={search} onSearchChange={setSearch} />
+        <UsersTable
           data={
-            persons?.data?.data.filter((p) =>
-              showActive ? p.status : !p.status
+            users?.data?.data.filter((u) =>
+              showActive ? u.status : !u.status
             ) || []
           }
-          isLoading={personsLoading}
+          isLoading={usersLoading}
           pageSize={pageSize}
           sorting={sorting}
           onSortingChange={handleSortingChange}
-          updatePerson={handleEditPerson}
+          updateUser={handleEditUser}
         />
         <div className='mt-4'>
           <div className='mb-2 text-center text-sm text-muted-foreground sm:text-left'>
@@ -209,7 +207,7 @@ export default function PersonsDataTable() {
             pageIndex={pageIndex}
             pageCount={Math.ceil(totalCount / pageSize)}
             pageSize={pageSize}
-            isLoading={personsLoading}
+            isLoading={usersLoading}
             onPageIndexChange={handlePageIndexChange}
             onPageSizeChange={handlePageSizeChange}
           />

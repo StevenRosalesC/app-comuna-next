@@ -50,19 +50,26 @@ import Image from 'next/image';
 import { Link } from 'next-view-transitions';
 import { usePermission } from '@/hooks/usePermission';
 import { modulesPermissions } from '@/constants/permissions';
+import { usePermissionsStore } from '@/store/permissionsStore';
 
 export const company = {
   name: 'Comuna Bambil Collao',
   logo: GalleryVerticalEnd
 };
 
-function SidebarMenuItemWithPermission({ item, pathname }: { item: NavItem, pathname: string }) {
+function SidebarMenuItemWithPermission({
+  item,
+  pathname
+}: {
+  item: NavItem;
+  pathname: string;
+}) {
   const getModuleFromUrl = (url: string) => {
     const parts = url.split('/');
     return parts.length > 2 ? parts[2] : '';
   };
   const rawMod = getModuleFromUrl(item.url);
-  const moduleConfig = modulesPermissions.find(m => m.route === rawMod);
+  const moduleConfig = modulesPermissions.find((m) => m.route === rawMod);
   const mod = moduleConfig?.module || rawMod;
   const canAccess = usePermission(mod, ['read']);
   if (!canAccess) return null;
@@ -120,7 +127,8 @@ function SidebarMenuItemWithPermission({ item, pathname }: { item: NavItem, path
 }
 
 export default function AppSidebar() {
-  const { session } = useSessionContext();
+  const { session, setSession } = useSessionContext();
+  const { clearPermissions } = usePermissionsStore();
   // const { data: session } = useSession();
   const [userAccess] = useState<NavItem[]>(navItems);
   const pathname = usePathname();
@@ -149,7 +157,11 @@ export default function AppSidebar() {
           <SidebarGroupLabel>Overview</SidebarGroupLabel>
           <SidebarMenu>
             {userAccess.map((item) => (
-              <SidebarMenuItemWithPermission key={item.title} item={item} pathname={pathname} />
+              <SidebarMenuItemWithPermission
+                key={item.title}
+                item={item}
+                pathname={pathname}
+              />
             ))}
           </SidebarMenu>
         </SidebarGroup>
@@ -224,9 +236,15 @@ export default function AppSidebar() {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => logout()}>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setSession(null);
+                    clearPermissions();
+                    logout();
+                  }}
+                >
                   <LogOut />
-                  Log out
+                  Cerrar sesión
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { usePathname, useRouter } from 'next/navigation';
+import { notFound, usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Input } from '../ui/input';
@@ -25,6 +25,8 @@ import { NoticeType } from 'types/notices';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Link } from 'next-view-transitions';
+import { usePermissionsStore } from '@/store/permissionsStore';
+import { ValidActions, ValidModules } from '@/constants/permissions';
 
 interface PostForm {
   title: string;
@@ -40,6 +42,10 @@ interface Props {
 }
 
 export default function EditNoticeForm({ id }: Props) {
+  const { permissions } = usePermissionsStore();
+  const canCreateNotice = permissions?.[ValidModules.NOTICES]?.includes(
+    ValidActions.CREATE
+  );
   const editorRef = useRef<TiptapEditorRef>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -144,22 +150,30 @@ export default function EditNoticeForm({ id }: Props) {
     };
   }, [watch, pathname, id, router]);
 
-  if (isLoading) return <div className="flex justify-center items-center min-h-[400px]">
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-  </div>;
+  if (isLoading)
+    return (
+      <div className='flex min-h-[400px] items-center justify-center'>
+        <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-primary'></div>
+      </div>
+    );
+
+  if (!canCreateNotice) return notFound();
 
   return (
-    <div className="container mx-auto px-4 py-6 ">
-      <div className="space-y-8">
+    <div className='container mx-auto px-4 py-6 '>
+      <div className='space-y-8'>
         {/* Header con controles principales */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card p-4 rounded-lg border">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div className='flex flex-col items-start justify-between gap-4 rounded-lg border bg-card p-4 sm:flex-row sm:items-center'>
+          <div className='flex flex-col items-start gap-4 sm:flex-row sm:items-center'>
             <Controller
               control={control}
-              name="type"
+              name='type'
               render={({ field }) => (
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <SelectTrigger className="w-[180px]">
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <SelectTrigger className='w-[180px]'>
                     <SelectValue>{field.value}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
@@ -177,12 +191,12 @@ export default function EditNoticeForm({ id }: Props) {
             />
             <Controller
               control={control}
-              name="published"
+              name='published'
               render={({ field }) => (
-                <div className="flex items-center gap-2">
-                  <Label htmlFor="published">Publicado</Label>
+                <div className='flex items-center gap-2'>
+                  <Label htmlFor='published'>Publicado</Label>
                   <Switch
-                    id="published"
+                    id='published'
                     checked={field.value}
                     onCheckedChange={field.onChange}
                   />
@@ -190,9 +204,9 @@ export default function EditNoticeForm({ id }: Props) {
               )}
             />
           </div>
-          <div className="flex gap-2">
+          <div className='flex gap-2'>
             {id && (
-              <Button variant="outline" asChild>
+              <Button variant='outline' asChild>
                 <Link href={`/dashboard/notices/${id}/preview`}>
                   Previsualizar
                 </Link>
@@ -217,54 +231,54 @@ export default function EditNoticeForm({ id }: Props) {
         </div>
 
         {/* Formulario principal */}
-        <div className="space-y-6">
+        <div className='space-y-6'>
           {/* Título */}
-          <div className="space-y-2">
-            <Label className="text-base font-semibold">Título</Label>
+          <div className='space-y-2'>
+            <Label className='text-base font-semibold'>Título</Label>
             <Controller
               control={control}
-              name="title"
+              name='title'
               render={({ field }) => (
                 <Input
                   {...field}
-                  type="text"
-                  className="w-full"
-                  placeholder="Ingrese el título de la noticia..."
+                  type='text'
+                  className='w-full'
+                  placeholder='Ingrese el título de la noticia...'
                 />
               )}
             />
           </div>
 
           {/* Imagen de portada */}
-          <div className="space-y-4">
-            <Label className="text-base font-semibold">Imagen de portada</Label>
+          <div className='space-y-4'>
+            <Label className='text-base font-semibold'>Imagen de portada</Label>
             <Controller
               control={control}
-              name="coverImageUrl"
+              name='coverImageUrl'
               render={({ field }) => (
-                <div className="space-y-4">
-                  <div className="relative aspect-video w-full overflow-hidden rounded-lg border bg-muted">
+                <div className='space-y-4'>
+                  <div className='relative aspect-video w-full overflow-hidden rounded-lg border bg-muted'>
                     <Image
                       src={field.value || '/not-found-1.webp'}
-                      alt="Cover image"
+                      alt='Cover image'
                       fill
-                      className="object-cover"
+                      className='object-cover'
                     />
                   </div>
                   <Button
-                    variant="outline"
+                    variant='outline'
                     onClick={() => setOpenDialog(true)}
-                    className="w-full sm:w-auto"
+                    className='w-full sm:w-auto'
                   >
                     Seleccionar imagen
                   </Button>
                   <Dialog
-                    key="media-library"
+                    key='media-library'
                     open={openDialog}
                     onOpenChange={handleClose}
                   >
                     <MediaLibrary
-                      key="media-library-content"
+                      key='media-library-content'
                       onClose={handleClose}
                       onInsert={(image) => {
                         field.onChange(image.url);
@@ -278,36 +292,36 @@ export default function EditNoticeForm({ id }: Props) {
           </div>
 
           {/* Descripción */}
-          <div className="space-y-2">
-            <Label className="text-base font-semibold">Descripción</Label>
+          <div className='space-y-2'>
+            <Label className='text-base font-semibold'>Descripción</Label>
             <Controller
               control={control}
-              name="description"
+              name='description'
               render={({ field }) => (
                 <Textarea
                   {...field}
-                  className="min-h-[100px]"
-                  placeholder="Ingrese la descripción de la noticia..."
+                  className='min-h-[100px]'
+                  placeholder='Ingrese la descripción de la noticia...'
                 />
               )}
             />
           </div>
 
           {/* Editor de contenido */}
-          <div className="space-y-2">
-            <Label className="text-base font-semibold">Contenido</Label>
+          <div className='space-y-2'>
+            <Label className='text-base font-semibold'>Contenido</Label>
             <Controller
               control={control}
-              name="content"
+              name='content'
               render={({ field }) => (
-                <div className="border rounded-lg">
+                <div className='rounded-lg border'>
                   <TiptapEditor
                     ref={editorRef}
                     ssr={true}
-                    output="html"
+                    output='html'
                     placeholder={{
-                      paragraph: "Escribe tu noticia aquí...",
-                      imageCaption: "Type caption for image (optional)"
+                      paragraph: 'Escribe tu noticia aquí...',
+                      imageCaption: 'Type caption for image (optional)'
                     }}
                     contentMinHeight={256}
                     contentMaxHeight={640}

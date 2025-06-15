@@ -11,6 +11,15 @@ import { getAllNotices } from '@/services/notices';
 import { Notice } from 'types/dashboard';
 import { Link } from 'next-view-transitions';
 import { format } from 'date-fns';
+import { usePermissionsStore } from '@/store/permissionsStore';
+import { ValidActions, ValidModules } from '@/constants/permissions';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 
 interface NoticesTableToolbarProps {
   search: string;
@@ -21,6 +30,10 @@ function NoticesTableToolbar({
   search,
   onSearchChange
 }: NoticesTableToolbarProps) {
+  const { permissions } = usePermissionsStore();
+  const canCreateNotice = permissions?.[ValidModules.NOTICES]?.includes(
+    ValidActions.CREATE
+  );
   return (
     <div className='mb-4 flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
       <div className='flex flex-1 items-center gap-2'>
@@ -32,14 +45,21 @@ function NoticesTableToolbar({
           className='input input-bordered w-full max-w-xs'
         />
       </div>
-      <Button asChild variant='default' size='sm' className='whitespace-nowrap'>
-        <Link
-          href='/dashboard/notices/create'
-          className='flex items-center gap-2'
+      {canCreateNotice && (
+        <Button
+          asChild
+          variant='default'
+          size='sm'
+          className='whitespace-nowrap'
         >
-          <Plus className='h-4 w-4' /> Crear noticia
-        </Link>
-      </Button>
+          <Link
+            href='/dashboard/notices/create'
+            className='flex items-center gap-2'
+          >
+            <Plus className='h-4 w-4' /> Crear noticia
+          </Link>
+        </Button>
+      )}
     </div>
   );
 }
@@ -62,44 +82,70 @@ function NoticesTablePagination({
   onPageSizeChange
 }: NoticesTablePaginationProps) {
   return (
-    <div className='mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
-      <div className='flex items-center gap-2'>
+    <div className='mt-4 flex w-full flex-col items-center justify-between space-y-4 sm:flex-row sm:space-x-6 sm:space-y-0 lg:space-x-8'>
+      <div className='flex items-center space-x-2'>
+        <p className='whitespace-nowrap text-sm font-medium'>
+          Registros por página
+        </p>
+        <Select
+          value={pageSize.toString()}
+          onValueChange={(value) => onPageSizeChange(Number(value))}
+        >
+          <SelectTrigger className='h-8 w-[70px]'>
+            <SelectValue placeholder={pageSize} />
+          </SelectTrigger>
+          <SelectContent side='top'>
+            {[6, 12, 24, 48, 96].map((size) => (
+              <SelectItem key={size} value={size.toString()}>
+                {size}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className='flex items-center justify-center gap-2'>
+        <div className='hidden items-center sm:flex'>
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() => onPageIndexChange(0)}
+            disabled={pageIndex === 0 || isLoading}
+            className='px-2'
+          >
+            {'<<'}
+          </Button>
+        </div>
         <Button
           variant='outline'
           size='sm'
-          onClick={() => onPageIndexChange(Math.max(pageIndex - 1, 0))}
+          onClick={() => onPageIndexChange(pageIndex - 1)}
           disabled={pageIndex === 0 || isLoading}
         >
           Anterior
         </Button>
-        <span className='text-sm text-muted-foreground'>
-          Página <span className='font-semibold'>{pageIndex + 1}</span> de{' '}
-          <span className='font-semibold'>{pageCount}</span>
-        </span>
+        <div className='flex min-w-[100px] items-center justify-center text-sm'>
+          <span className='hidden sm:inline'>Página </span>
+          {pageIndex + 1} de {pageCount}
+        </div>
         <Button
           variant='outline'
           size='sm'
-          onClick={() =>
-            onPageIndexChange(Math.min(pageIndex + 1, pageCount - 1))
-          }
-          disabled={pageIndex + 1 >= pageCount || isLoading}
+          onClick={() => onPageIndexChange(pageIndex + 1)}
+          disabled={pageIndex >= pageCount - 1 || isLoading}
         >
           Siguiente
         </Button>
-      </div>
-      <div className='flex items-center gap-2'>
-        <span className='text-sm text-muted-foreground'>Mostrar</span>
-        <select
-          className='select select-bordered select-sm'
-          value={pageSize}
-          onChange={(e) => onPageSizeChange(Number(e.target.value))}
-        >
-          {[6, 12, 24].map((size) => (
-            <option key={size} value={size}>
-              {size} por página
-            </option>
-          ))}
-        </select>
+        <div className='hidden items-center sm:flex'>
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() => onPageIndexChange(pageCount - 1)}
+            disabled={pageIndex >= pageCount - 1 || isLoading}
+            className='px-2'
+          >
+            {'>>'}
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -231,7 +277,9 @@ export default function NoticesDataTable() {
                         size='icon'
                         title='Ver detalle'
                       >
-                        <Link href={`/dashboard/notices/${notice.newsId}`}>
+                        <Link
+                          href={`/dashboard/notices/${notice.newsId}/preview`}
+                        >
                           <Eye className='h-4 w-4' />
                         </Link>
                       </Button>

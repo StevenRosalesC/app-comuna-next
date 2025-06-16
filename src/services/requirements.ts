@@ -1,11 +1,5 @@
 import { Requirement } from '@/interfaces/requirements';
 import apiCommunity from '@/utils/communityApi';
-// Simulación de base de datos local
-let requirementsDB: Requirement[] = [
-  { requirementId: '1', requirement: 'Ser mayor de edad', observation: '', status: true },
-  { requirementId: '2', requirement: 'Residir en la comunidad', observation: '', status: true },
-  { requirementId: '3', requirement: 'Presentar DNI vigente', observation: '', status: false },
-];
 
 export const requirementsService = {
   async list(): Promise<Requirement[]> {
@@ -29,13 +23,12 @@ export const requirementsService = {
     }
   },
   async remove(id: string): Promise<boolean> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const before = requirementsDB.length;
-        requirementsDB = requirementsDB.filter(r => r.requirementId !== id);
-        resolve(requirementsDB.length < before);
-      }, 300);
-    });
+    try {
+      const {data:removedReq} = await apiCommunity.delete(`/requirements/${id}`);
+      return removedReq;
+    } catch (error) {
+      throw new Error('Error al eliminar el requisito');
+    }
   },
   async approve(personId: string, requirementId: string, data: { observation?: string }): Promise<any> {
     try {

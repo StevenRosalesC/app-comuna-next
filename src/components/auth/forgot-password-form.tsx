@@ -15,6 +15,8 @@ import {
   FormMessage
 } from '../ui/form';
 import { Input } from '../ui/input';
+import { AuthService } from '@/services/auth';
+import { toast } from 'sonner';
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
   isTermsAccepted: z.boolean().refine((value) => value === true, {
@@ -36,11 +38,11 @@ export const ForgotPasswordForm = () => {
 
   const onSubmit = async (data: UserFormValue) => {
     try {
-      // API call here
-      // Show success message
+      const response = await AuthService.forgotPassword(data.email);
+      console.log(response);
+      toast.success('Correo de recuperación enviado');
     } catch (error) {
-      // Show error message
-    } finally {
+      toast.error('Error al enviar el correo de recuperación');
     }
   };
 

@@ -4,8 +4,6 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { useRequirementsStore } from '@/hooks/store/useRequirementsStore';
-import { Requirement } from '@/interfaces/requirements';
 import { toast } from 'sonner';
 import {
   Table,
@@ -36,9 +34,12 @@ import { AlertModal } from '@/components/modal/alert-modal';
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus } from 'lucide-react';
+import { Plus, RotateCw } from 'lucide-react';
 import { usePermissionsStore } from '@/store/permissionsStore';
 import { ValidActions, ValidModules } from '@/constants/permissions';
+import { useQuery } from '@tanstack/react-query';
+import { requirementsService } from '@/services/requirements';
+import { Requirement } from '@/interfaces/requirements';
 
 const formSchema = z.object({
   requirement: z.string().min(1, { message: 'Requisito es requerido' }),
@@ -56,15 +57,19 @@ export default function RequirementsTable() {
   const canCreateRequirement = permissions?.[
     ValidModules.REQUIREMENTS
   ]?.includes(ValidActions.CREATE);
+
+  // React Query
   const {
-    requirements,
-    loading,
-    addRequirement,
+    data: requirements,
+    isLoading,
     error,
-    editRequirement,
-    deleteRequirement,
-    fetchRequirements
-  } = useRequirementsStore();
+    refetch,
+    isFetching
+  } = useQuery<Requirement[]>({
+    queryKey: ['requirements'],
+    queryFn: () => requirementsService.list()
+  });
+
   const [modalOpen, setModalOpen] = useState(false);
   const [editReq, setEditReq] = useState<Requirement | null>(null);
   const [addModalOpen, setAddModalOpen] = useState(false);
@@ -99,60 +104,85 @@ export default function RequirementsTable() {
   // Save requirement (edit)
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const values = form.getValues();
     if (editReq) {
-      toast.promise(editRequirement(editReq.requirementId, form.getValues()), {
-        loading: 'Actualizando requisito...',
-        success: 'Requisito actualizado correctamente',
-        error: 'Error al actualizar el requisito'
-      });
+      toast.promise(
+        requirementsService.update(editReq.requirementId, form.getValues()),
+        {
+          loading: 'Actualizando requisito...',
+          success: 'Requisito actualizado correctamente',
+          error: 'Error al actualizar el requisito'
+        }
+      );
+      refetch();
+      setModalOpen(false);
+      form.reset();
     }
-    setModalOpen(false);
   };
 
   // Delete requirement
   const handleDelete = async (id: string) => {
-    toast.promise(deleteRequirement(id), {
+    toast.promise(requirementsService.remove(id), {
       loading: 'Eliminando requisito...',
       success: 'Requisito eliminado correctamente',
       error: 'Error al eliminar el requisito'
     });
+    refetch();
     setDeleteModalOpen(false);
   };
 
   // Add requirement
   const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const values = form.getValues();
     try {
-      toast.promise(addRequirement(form.getValues()), {
+      toast.promise(requirementsService.create(values), {
         loading: 'Añadiendo requisito...',
         success: 'Requisito añadido correctamente',
         error: 'Error al añadir el requisito'
       });
+      refetch();
       setAddModalOpen(false);
       form.reset();
     } catch {
-      toast.error(error);
+      toast.error('Error al añadir el requisito');
     }
   };
 
   useEffect(() => {
-    fetchRequirements();
-  }, [fetchRequirements]);
+    if (error) {
+      toast.error('Error al cargar los requisitos');
+    }
+  }, [error]);
 
   return (
     <>
       <div className='mb-4 flex items-center justify-between'>
         <h2 className='text-2xl font-bold'>Requisitos para ser comunero</h2>
-        {canCreateRequirement && (
-          <Button
-            onClick={() => setAddModalOpen(true)}
-            className='rounded-lg bg-primary px-4 py-2 font-semibold text-white shadow transition-colors hover:bg-primary/90'
-          >
-            <Plus className='h-4 w-4' /> Nuevo requisito
-          </Button>
-        )}
+        <div className='flex gap-2'>
+          {canCreateRequirement && (
+            <>
+              <Button
+                onClick={() => setAddModalOpen(true)}
+                className='rounded-lg bg-primary px-4 py-2 font-semibold text-white shadow transition-colors hover:bg-primary/90'
+              >
+                <Plus className='h-4 w-4' /> Nuevo requisito
+              </Button>
+              <Button
+                onClick={() => refetch()}
+                variant='outline'
+                className='px-4 py-2 font-semibold shadow'
+                title='Recargar requisitos'
+              >
+                <RotateCw
+                  className={`h-4 w-4 ${isFetching ? 'animate-spin ' : ''}`}
+                />
+              </Button>
+            </>
+          )}
+        </div>
       </div>
-      {loading ? (
+      {isLoading ? (
         <DataTableSkeleton columnCount={4} rowCount={6} />
       ) : (
         <Table className='min-w-full divide-y divide-gray-200'>
@@ -173,7 +203,7 @@ export default function RequirementsTable() {
             </TableRow>
           </TableHeader>
           <TableBody className='divide-y divide-gray-200 bg-white'>
-            {requirements.map((req) => (
+            {requirements?.map((req: Requirement) => (
               <TableRow key={req.requirementId}>
                 <TableCell className='px-4 py-2'>{req.requirement}</TableCell>
                 <TableCell className='px-4 py-2'>{req.observation}</TableCell>
@@ -293,37 +323,20 @@ export default function RequirementsTable() {
               <label className='mb-1 block text-sm font-medium'>
                 Descripción
               </label>
-              <Input
-                value={addForm.requirement}
-                onChange={(e) =>
-                  setAddForm((f) => ({ ...f, requirement: e.target.value }))
-                }
-                required
-              />
+              <Input {...form.register('requirement')} required />
               <label className='mb-1 block text-sm font-medium'>
                 Observación
               </label>
-              <Input
-                value={addForm.observation}
-                onChange={(e) =>
-                  setAddForm((f) => ({ ...f, observation: e.target.value }))
-                }
-              />
-            </div>
-            <div className='flex items-center gap-2'>
-              <label className='block text-sm font-medium'>Obligatorio</label>
-              <Switch
-                checked={addForm.status}
-                onCheckedChange={(v) =>
-                  setAddForm((f) => ({ ...f, status: v }))
-                }
-              />
+              <Input {...form.register('observation')} />
             </div>
             <div className='flex justify-end gap-2'>
               <Button
                 type='button'
                 variant='outline'
-                onClick={() => setAddModalOpen(false)}
+                onClick={() => {
+                  form.reset();
+                  setAddModalOpen(false);
+                }}
               >
                 Cancelar
               </Button>
@@ -344,7 +357,7 @@ export default function RequirementsTable() {
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={() => handleDelete(deleteReq?.requirementId || '')}
-        loading={loading}
+        loading={isLoading}
         title='¿Estás seguro?'
         description='Esta acción no se puede deshacer.'
       />

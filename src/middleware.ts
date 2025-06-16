@@ -7,7 +7,8 @@ import { cookies } from 'next/headers';
 const PATHS = {
   LOGIN: '/auth/login',
   FORGOT_PASSWORD: '/auth/forgot-password',
-  DASHBOARD: '/dashboard/overview'
+  DASHBOARD: '/dashboard/overview',
+  RESET_PASSWORD: '/auth/reset-password/:token'
 } as const;
 
 const COOKIE_SETTINGS = {
@@ -23,7 +24,10 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Handle public routes
-  if (pathname === PATHS.FORGOT_PASSWORD) {
+  if (
+    pathname === PATHS.FORGOT_PASSWORD ||
+    pathname.startsWith('/auth/reset-password/')
+  ) {
     return NextResponse.next();
   }
 

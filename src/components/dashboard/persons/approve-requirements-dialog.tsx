@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -8,9 +8,11 @@ import {
   DialogFooter
 } from '@/components/ui/dialog';
 import { Person } from '@/interfaces/persons';
-import { useRequirementsStore } from '@/hooks/store/useRequirementsStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useQuery } from '@tanstack/react-query';
+import { requirementsService } from '@/services/requirements';
+import { toast } from 'sonner';
 
 interface ApproveRequirementsDialogProps {
   person: Person;
@@ -23,16 +25,16 @@ export const ApproveRequirementsDialog = ({
   open,
   onOpenChange
 }: ApproveRequirementsDialogProps) => {
-  const { requirements, approveRequirement, loading, getRequirements } =
-    useRequirementsStore();
   const [approved, setApproved] = useState<string[]>([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedReq, setSelectedReq] = useState<string | null>(null);
   const [observation, setObservation] = useState('');
 
-  useEffect(() => {
-    getRequirements();
-  }, [getRequirements]);
+  // Obtener requisitos con React Query
+  const { data: requirements = [], isLoading } = useQuery({
+    queryKey: ['requirements'],
+    queryFn: requirementsService.list
+  });
 
   // get approved requirements ids
   const approvedIds =
@@ -48,7 +50,16 @@ export const ApproveRequirementsDialog = ({
 
   const handleConfirmApprove = async () => {
     if (selectedReq) {
-      await approveRequirement(person.personId, selectedReq, { observation });
+      toast.promise(
+        requirementsService.approve(person.personId, selectedReq, {
+          observation
+        }),
+        {
+          loading: 'Aprobando requisito...',
+          success: 'Requisito aprobado correctamente',
+          error: 'Error al aprobar el requisito'
+        }
+      );
       setApproved((prev) => [...prev, selectedReq]);
       setConfirmOpen(false);
       setObservation('');
@@ -86,7 +97,7 @@ export const ApproveRequirementsDialog = ({
                       <p className='flex-1'>{req.requirement}</p>
                       <Button
                         size='sm'
-                        disabled={loading || isApproved}
+                        disabled={isLoading || isApproved}
                         onClick={() => handleApproveClick(req.requirementId)}
                       >
                         {isApproved ? 'Aprobado' : 'Aprobar'}
@@ -122,7 +133,7 @@ export const ApproveRequirementsDialog = ({
             <Button variant='outline' onClick={() => setConfirmOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleConfirmApprove} disabled={loading}>
+            <Button onClick={handleConfirmApprove} disabled={isLoading}>
               Aprobar
             </Button>
           </DialogFooter>

@@ -20,7 +20,6 @@ import { toast } from 'sonner';
 export const CreateUserForm = () => {
   const [userInformation, setUserInformation] = useState({
     email: '',
-    userName: '',
     roleId: ''
   });
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
@@ -47,19 +46,13 @@ export const CreateUserForm = () => {
         status: selectedPerson.status
       });
     }
-    // Use the identification as the default password and the first name of the person without spaces
-    const password =
-      selectedPerson.identification +
-      selectedPerson.firstName.replace(/\s/g, '');
-    const response = await usersService.createUser({
-      username: userInformation.userName,
-      roleId: userInformation.roleId,
-      personId: selectedPerson.personId,
-      password
-    });
-    if (response.status) {
-      toast.success('Usuario creado correctamente');
-    } else {
+    try {
+      const response = await usersService.createUser({
+        roleId: userInformation.roleId,
+        personId: selectedPerson.personId
+      });
+      toast.success(response.message);
+    } catch (error) {
       toast.error('Error al crear el usuario');
     }
   };
@@ -132,23 +125,7 @@ export const CreateUserForm = () => {
             disabled={!!selectedPerson?.email}
           />
         </div>
-        <div>
-          <label
-            htmlFor='userName'
-            className='mb-2 block text-sm font-medium text-gray-900 dark:text-white'
-          >
-            Nombre de usuario
-          </label>
-          <Input
-            type='text'
-            name='userName'
-            id='userName'
-            placeholder='Username'
-            value={userInformation.userName}
-            onChange={onInputChange}
-            required
-          />
-        </div>
+
         <div>
           <label
             htmlFor='roleId'

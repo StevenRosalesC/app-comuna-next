@@ -9,6 +9,21 @@ import {
   AnnualFee
 } from '@/hooks/store/useAnnualFeesStore';
 import { toast } from 'sonner';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
+import { Icons } from '@/components/icons';
 
 export default function AnnualFeesTable() {
   const { annualFees, addAnnualFee, editAnnualFee, deleteAnnualFee } =
@@ -94,63 +109,77 @@ export default function AnnualFeesTable() {
     <>
       <div className='mb-4 flex items-center justify-between'>
         <h2 className='text-2xl font-bold'>Cuotas anuales</h2>
-        <button
-          onClick={() => setAddModalOpen(true)}
-          className='rounded-lg bg-primary px-4 py-2 font-semibold text-white shadow transition-colors hover:bg-primary/90'
-        >
-          + Nueva cuota
-        </button>
+        <Button onClick={() => setAddModalOpen(true)}>+ Nueva cuota</Button>
       </div>
-      <table className='min-w-full divide-y divide-gray-200'>
-        <thead>
-          <tr>
-            <th className='px-4 py-2 text-left text-xs font-medium uppercase'>
-              Año
-            </th>
-            <th className='px-4 py-2 text-left text-xs font-medium uppercase'>
-              Descripción
-            </th>
-            <th className='px-4 py-2 text-left text-xs font-medium uppercase'>
-              Monto (S/.)
-            </th>
-            <th className='px-4 py-2 text-left text-xs font-medium uppercase'>
-              Obligatorio
-            </th>
-            <th className='px-4 py-2'></th>
-          </tr>
-        </thead>
-        <tbody className='divide-y divide-gray-200'>
-          {annualFees.map((fee) => (
-            <tr key={fee.id}>
-              <td className='px-4 py-2'>{fee.year}</td>
-              <td className='px-4 py-2'>{fee.description}</td>
-              <td className='px-4 py-2'>S/. {fee.amount}</td>
-              <td className='px-4 py-2'>
-                {fee.mandatory ? (
-                  <span className='font-semibold text-green-600'>Sí</span>
-                ) : (
-                  <span className='text-gray-400'>No</span>
-                )}
-              </td>
-              <td className='px-4 py-2 text-right'>
-                {/* Actions: edit/delete */}
-                <button
-                  className='mr-2 text-blue-600 hover:underline'
-                  onClick={() => openModal(fee)}
-                >
-                  Editar
-                </button>
-                <button
-                  className='text-red-600 hover:underline'
-                  onClick={() => handleDelete(fee.id)}
-                >
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className='rounded-md border'>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Año</TableHead>
+              <TableHead>Descripción</TableHead>
+              <TableHead>Monto (S/.)</TableHead>
+              <TableHead>Obligatorio</TableHead>
+              <TableHead className='text-right'>Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {annualFees.length > 0 ? (
+              annualFees.map((fee) => (
+                <TableRow key={fee.id}>
+                  <TableCell>{fee.year}</TableCell>
+                  <TableCell>{fee.description}</TableCell>
+                  <TableCell>S/. {fee.amount}</TableCell>
+                  <TableCell>
+                    {fee.mandatory ? (
+                      <span className='font-semibold text-green-600'>Sí</span>
+                    ) : (
+                      <span className='text-gray-400'>No</span>
+                    )}
+                  </TableCell>
+                  <TableCell className='text-right'>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant='ghost'
+                            size='icon'
+                            onClick={() => openModal(fee)}
+                          >
+                            <Icons.userPen className='h-4 w-4' />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Editar</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant='ghost'
+                            size='icon'
+                            onClick={() => handleDelete(fee.id)}
+                          >
+                            <Icons.trash className='h-4 w-4 text-red-600' />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Eliminar</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} className='h-24 text-center'>
+                  No hay cuotas anuales registradas.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
       {/* Modal for edit */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent>

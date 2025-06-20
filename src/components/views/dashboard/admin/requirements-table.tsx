@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -37,16 +37,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus, RotateCw } from 'lucide-react';
 import { usePermissionsStore } from '@/store/permissionsStore';
 import { ValidActions, ValidModules } from '@/constants/permissions';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { requirementsService } from '@/services/requirements';
 import { Requirement } from '@/interfaces/requirements';
 
 const formSchema = z.object({
   requirement: z.string().min(1, { message: 'Requisito es requerido' }),
-  observation: z
-    .string()
-    .min(1, { message: 'Observación es requerida' })
-    .default('Ninguna'),
+  observation: z.string().optional().default('Ninguna'),
   status: z.boolean().default(true)
 });
 
@@ -54,30 +51,24 @@ type FormValue = z.infer<typeof formSchema>;
 
 export default function RequirementsTable() {
   const { permissions } = usePermissionsStore();
+  const queryClient = useQueryClient();
   const canCreateRequirement = permissions?.[
     ValidModules.REQUIREMENTS
   ]?.includes(ValidActions.CREATE);
 
-  // React Query
+  // React Query for fetching data
   const {
     data: requirements,
     isLoading,
-    error,
     refetch,
     isFetching
-  } = useQuery<Requirement[]>({
+  } = useQuery({
     queryKey: ['requirements'],
     queryFn: () => requirementsService.list()
   });
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editReq, setEditReq] = useState<Requirement | null>(null);
-  const [addModalOpen, setAddModalOpen] = useState(false);
-  const [addForm, setAddForm] = useState<FormValue>({
-    requirement: '',
-    observation: 'Ninguna',
-    status: true
-  });
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteReq, setDeleteReq] = useState<Requirement | null>(null);
 
@@ -86,7 +77,35 @@ export default function RequirementsTable() {
     defaultValues: { requirement: '', observation: 'Ninguna', status: true }
   });
 
-  // Open modal for edit
+  // Mutation for creating/updating
+  const mutation = useMutation({
+    mutationFn: async (data: FormValue) => {
+      if (editReq) {
+        return requirementsService.update(editReq.requirementId, data);
+      } else {
+        return requirementsService.create(data);
+      }
+    },
+    onSuccess: () => {
+      toast.success(
+        editReq
+          ? 'Requisito actualizado correctamente'
+          : 'Requisito añadido correctamente'
+      );
+      queryClient.invalidateQueries({ queryKey: ['requirements'] });
+      setModalOpen(false);
+      form.reset();
+    },
+    onError: () => {
+      toast.error(
+        editReq
+          ? 'Error al actualizar el requisito'
+          : 'Error al añadir el requisito'
+      );
+    }
+  });
+
+  // Open modal for edit or add
   const openModal = (req: Requirement | null = null) => {
     setEditReq(req);
     form.reset(
@@ -96,32 +115,20 @@ export default function RequirementsTable() {
             observation: req.observation,
             status: req.status
           }
-        : { requirement: '', observation: '', status: true }
+        : { requirement: '', observation: 'Ninguna', status: true }
     );
     setModalOpen(true);
   };
 
-  // Save requirement (edit)
-  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (editReq) {
-      toast.promise(
-        requirementsService.update(editReq.requirementId, form.getValues()),
-        {
-          loading: 'Actualizando requisito...',
-          success: 'Requisito actualizado correctamente',
-          error: 'Error al actualizar el requisito'
-        }
-      );
-      refetch();
-      setModalOpen(false);
-      form.reset();
-    }
+  // Handle form submission
+  const onSubmit = (data: FormValue) => {
+    mutation.mutate(data);
   };
 
   // Delete requirement
-  const handleDelete = async (id: string) => {
-    toast.promise(requirementsService.remove(id), {
+  const handleDelete = async () => {
+    if (!deleteReq) return;
+    toast.promise(requirementsService.remove(deleteReq.requirementId), {
       loading: 'Eliminando requisito...',
       success: 'Requisito eliminado correctamente',
       error: 'Error al eliminar el requisito'
@@ -130,133 +137,117 @@ export default function RequirementsTable() {
     setDeleteModalOpen(false);
   };
 
-  // Add requirement
-  const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const values = form.getValues();
-    try {
-      toast.promise(requirementsService.create(values), {
-        loading: 'Añadiendo requisito...',
-        success: 'Requisito añadido correctamente',
-        error: 'Error al añadir el requisito'
-      });
-      refetch();
-      setAddModalOpen(false);
-      form.reset();
-    } catch {
-      toast.error('Error al añadir el requisito');
-    }
-  };
-
-  useEffect(() => {
-    if (error) {
-      toast.error('Error al cargar los requisitos');
-    }
-  }, [error]);
-
   return (
     <>
       <div className='mb-4 flex items-center justify-between'>
         <h2 className='text-2xl font-bold'>Requisitos para ser comunero</h2>
         <div className='flex gap-2'>
           {canCreateRequirement && (
-            <>
-              <Button
-                onClick={() => setAddModalOpen(true)}
-                className='rounded-lg bg-primary px-4 py-2 font-semibold text-white shadow transition-colors hover:bg-primary/90'
-              >
-                <Plus className='h-4 w-4' /> Nuevo requisito
-              </Button>
-              <Button
-                onClick={() => refetch()}
-                variant='outline'
-                className='px-4 py-2 font-semibold shadow'
-                title='Recargar requisitos'
-              >
-                <RotateCw
-                  className={`h-4 w-4 ${isFetching ? 'animate-spin ' : ''}`}
-                />
-              </Button>
-            </>
+            <Button onClick={() => openModal(null)}>
+              <Plus className='mr-2 h-4 w-4' /> Nuevo requisito
+            </Button>
           )}
+          <Button
+            onClick={() => refetch()}
+            variant='outline'
+            title='Recargar requisitos'
+            size='icon'
+          >
+            <RotateCw
+              className={`h-4 w-4 ${isFetching ? 'animate-spin ' : ''}`}
+            />
+          </Button>
         </div>
       </div>
       {isLoading ? (
         <DataTableSkeleton columnCount={4} rowCount={6} />
       ) : (
-        <Table className='min-w-full divide-y divide-gray-200'>
-          <TableHeader>
-            <TableRow>
-              <TableHead className='w-1/2 px-4 py-2 text-left text-xs font-medium uppercase'>
-                Requisito
-              </TableHead>
-              <TableHead className='w-1/2 px-4 py-2 text-left text-xs font-medium uppercase'>
-                Observación
-              </TableHead>
-              <TableHead className='w-1/4 px-4 py-2 text-left text-xs font-medium uppercase'>
-                Estado
-              </TableHead>
-              <TableHead className='w-1/4 px-4 py-2 text-left text-xs font-medium uppercase'>
-                Acciones
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody className='divide-y divide-gray-200'>
-            {requirements?.map((req: Requirement) => (
-              <TableRow key={req.requirementId}>
-                <TableCell className='px-4 py-2'>{req.requirement}</TableCell>
-                <TableCell className='px-4 py-2'>{req.observation}</TableCell>
-                <TableCell className='px-4 py-2'>
-                  {req.status ? (
-                    <span className='font-semibold text-green-600'>Activo</span>
-                  ) : (
-                    <span className='text-gray-400'>Inactivo</span>
-                  )}
-                </TableCell>
-                <TableCell className='flex justify-end gap-2 px-4 py-2 text-right'>
-                  <TooltipProvider delayDuration={100}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          className='p-1 text-blue-600 hover:text-blue-800'
-                          onClick={() => openModal(req)}
-                          aria-label='Editar'
-                        >
-                          <Icons.userPen className='h-5 w-5' />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent>Editar</TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          className='p-1 text-red-600 hover:text-red-800'
-                          onClick={() => {
-                            setDeleteReq(req);
-                            setDeleteModalOpen(true);
-                          }}
-                          aria-label='Eliminar'
-                        >
-                          <Icons.trash className='h-5 w-5' />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent>Eliminar</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </TableCell>
+        <div className='rounded-md border'>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Requisito</TableHead>
+                <TableHead>Observación</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead className='text-right'>Acciones</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {requirements && requirements.length > 0 ? (
+                requirements.map((req: Requirement) => (
+                  <TableRow key={req.requirementId}>
+                    <TableCell className='font-medium'>
+                      {req.requirement}
+                    </TableCell>
+                    <TableCell>{req.observation}</TableCell>
+                    <TableCell>
+                      {req.status ? (
+                        <span className='font-semibold text-green-600'>
+                          Activo
+                        </span>
+                      ) : (
+                        <span className='text-gray-400'>Inactivo</span>
+                      )}
+                    </TableCell>
+                    <TableCell className='text-right'>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant='ghost'
+                              size='icon'
+                              onClick={() => openModal(req)}
+                            >
+                              <Icons.userPen className='h-4 w-4' />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Editar</p>
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant='ghost'
+                              size='icon'
+                              onClick={() => {
+                                setDeleteReq(req);
+                                setDeleteModalOpen(true);
+                              }}
+                            >
+                              <Icons.trash className='h-4 w-4 text-red-600' />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Eliminar</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className='h-24 text-center'>
+                    No hay requisitos registrados.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       )}
-      {/* Modal for edit */}
+      {/* Modal for Add/Edit */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent>
           <DialogTitle>
             {editReq ? 'Editar requisito' : 'Nuevo requisito'}
           </DialogTitle>
           <Form {...form}>
-            <form onSubmit={handleSave} className='mt-2 space-y-4'>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className='mt-2 space-y-4'
+            >
               <FormField
                 control={form.control}
                 name='requirement'
@@ -277,7 +268,7 @@ export default function RequirementsTable() {
                   <FormItem>
                     <FormLabel>Observación</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder='Ninguna' />
+                      <Input {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -287,15 +278,16 @@ export default function RequirementsTable() {
                 control={form.control}
                 name='status'
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Estado</FormLabel>
+                  <FormItem className='flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm'>
+                    <div className='space-y-0.5'>
+                      <FormLabel>Estado</FormLabel>
+                    </div>
                     <FormControl>
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -307,55 +299,19 @@ export default function RequirementsTable() {
                 >
                   Cancelar
                 </Button>
-                <Button type='submit'>Guardar</Button>
+                <Button type='submit' disabled={mutation.isPending}>
+                  {mutation.isPending ? 'Guardando...' : 'Guardar'}
+                </Button>
               </div>
             </form>
           </Form>
         </DialogContent>
       </Dialog>
-      {/* Modal for add */}
-      <Dialog open={addModalOpen} onOpenChange={setAddModalOpen}>
-        <DialogContent>
-          <DialogTitle>Nuevo requisito</DialogTitle>
-          <form onSubmit={handleAdd} className='mt-2 space-y-4'>
-            <div>
-              <label className='mb-1 block text-sm font-medium'>
-                Descripción
-              </label>
-              <Input {...form.register('requirement')} required />
-              <label className='mb-1 block text-sm font-medium'>
-                Observación
-              </label>
-              <Input {...form.register('observation')} />
-            </div>
-            <div className='flex justify-end gap-2'>
-              <Button
-                type='button'
-                variant='outline'
-                onClick={() => {
-                  form.reset();
-                  setAddModalOpen(false);
-                }}
-              >
-                Cancelar
-              </Button>
-              <Button type='submit'>Guardar</Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-      {/* Botón flotante para nuevo requisito */}
-      <button
-        className='fixed bottom-8 right-8 z-50 rounded-full bg-primary px-4 py-2 text-white shadow-lg transition-colors hover:bg-primary/90'
-        onClick={() => setAddModalOpen(true)}
-        aria-label='Agregar nuevo requisito'
-      >
-        +
-      </button>
+
       <AlertModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
-        onConfirm={() => handleDelete(deleteReq?.requirementId || '')}
+        onConfirm={handleDelete}
         loading={isLoading}
         title='¿Estás seguro?'
         description='Esta acción no se puede deshacer.'

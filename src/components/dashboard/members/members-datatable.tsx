@@ -141,15 +141,14 @@ export default function MembersDataTable() {
   }, [data]);
 
   // Action handlers for table actions
-  const handleEdit = (member: Member) => {
+  const handleEdit = (member: any) => {
     // TODO: Implement edit action
     toast.success(`Editando comunero: ${member.lastName} ${member.firstName}`);
   };
-  const handleView = (member: Member) => {
-    // TODO: Implement view action
-    toast.success(`Ver comunero: ${member.lastName} ${member.firstName}`);
+  const handleView = (member: any) => {
+    router.push(`/dashboard/members/${member.memberId}`);
   };
-  const handleDelete = (member: Member) => {
+  const handleDelete = (member: any) => {
     // TODO: Implement delete action
     toast.success(
       `Eliminando comunero: ${member.lastName} ${member.firstName}`
@@ -158,7 +157,7 @@ export default function MembersDataTable() {
 
   // Table instance and columns
   const { table, columns } = useMembersTable({
-    data: mappedData,
+    data: mappedData as any,
     sorting,
     onSortingChange: handleSortingChange,
     onEdit: handleEdit,

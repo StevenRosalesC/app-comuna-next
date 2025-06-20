@@ -142,8 +142,7 @@ export default function MembersDataTable() {
 
   // Action handlers for table actions
   const handleEdit = (member: any) => {
-    // TODO: Implement edit action
-    toast.success(`Editando comunero: ${member.lastName} ${member.firstName}`);
+    router.push(`/dashboard/members/${member.memberId}/edit`);
   };
   const handleView = (member: any) => {
     router.push(`/dashboard/members/${member.memberId}`);

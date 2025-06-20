@@ -32,4 +32,9 @@ export const createMember = async (data: Partial<Member>) => {
 export const updateMember = async (id: string, data: Partial<Member>) => {
   const response = await apiCommunity.patch(`/members/${id}`, data);
   return response.data;
+};
+
+export const getMemberById = async (id: string): Promise<Member> => {
+  const { data } = await apiCommunity.get<Member>(`/members/${id}`);
+  return data;
 }; 

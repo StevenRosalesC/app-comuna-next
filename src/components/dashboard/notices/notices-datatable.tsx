@@ -230,12 +230,14 @@ export default function NoticesDataTable() {
       </CardHeader>
       <CardContent>
         <NoticesTableToolbar search={search} onSearchChange={setSearch} />
-        <div className='overflow-x-auto rounded-lg border border-gray-100 bg-white'>
+        <div className='overflow-x-auto rounded-lg border'>
           <table className='table w-full'>
             <thead>
               <tr className='bg-muted/50'>
-                <th className='px-4 py-2 text-left font-semibold'>Título</th>
-                <th className='max-w-xs px-4 py-2 text-left font-semibold'>
+                <th className='max-w-[300px] px-4 py-2 text-left font-semibold'>
+                  Título
+                </th>
+                <th className='max-w-[300px] px-4 py-2 text-left font-semibold'>
                   Descripción
                 </th>
                 <th className='px-4 py-2 text-center font-semibold'>Fecha</th>
@@ -257,10 +259,10 @@ export default function NoticesDataTable() {
                     key={notice.newsId}
                     className='transition-colors hover:bg-muted/30'
                   >
-                    <td className='px-4 py-2 align-middle font-medium'>
+                    <td className='max-w-[100] truncate px-4 py-2 align-middle font-medium'>
                       {notice.title}
                     </td>
-                    <td className='max-w-xs truncate px-4 py-2 align-middle'>
+                    <td className='max-w-[100] truncate px-4 py-2 align-middle'>
                       <span className='line-clamp-2 block'>
                         {notice.description}
                       </span>

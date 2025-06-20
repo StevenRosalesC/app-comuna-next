@@ -254,25 +254,45 @@ export function PersonEditDialog({
                   </FormItem>
                 )}
               />
-              {person.status && pendingRequirements.length > 0 ? (
-                <div className='mt-4 flex flex-col gap-2 rounded-lg border p-4'>
-                  <span className='w-full text-center text-sm font-bold'>
-                    Requisitos pendientes de aprobación
-                  </span>
-                  <ul className='flex list-disc flex-col gap-2 pl-4'>
-                    {pendingRequirements.map((requirement) => (
-                      <li key={requirement.requirementId}>
-                        {requirement.requirement}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : (
-                <div className='mt-4 flex flex-col gap-2 rounded-lg border p-4'>
-                  <span className='w-full text-center text-sm font-bold'>
-                    No hay requisitos pendientes de aprobación
-                  </span>
-                </div>
+              {person.status && (
+                <>
+                  {pendingRequirements.length > 0 && (
+                    <div className='mt-4 flex flex-col gap-2 rounded-lg border p-4'>
+                      <span className='w-full text-center text-sm font-bold'>
+                        Requisitos pendientes de aprobación
+                      </span>
+                      <ul className='flex list-disc flex-col gap-2 pl-4'>
+                        {pendingRequirements.map((requirement) => (
+                          <li key={requirement.requirementId}>
+                            {requirement.requirement}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {person.requirementApprovals &&
+                    person.requirementApprovals.length > 0 && (
+                      <div className='mt-4 flex flex-col gap-2 rounded-lg border p-4'>
+                        <span className='w-full text-center text-sm font-bold'>
+                          Requisitos aprobados
+                        </span>
+                        <ul className='flex flex-col gap-3 pl-2'>
+                          {person.requirementApprovals.map((approval) => (
+                            <li key={approval.approvalId} className='text-sm'>
+                              <p className='font-semibold'>
+                                {approval.requirements.requirement}
+                              </p>
+                              <p className='text-xs text-gray-500'>
+                                Aprobado por:{' '}
+                                {approval.approvedByUser.persons.firstName}{' '}
+                                {approval.approvedByUser.persons.lastName}
+                              </p>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                </>
               )}
             </ScrollArea>
             <DialogFooter>

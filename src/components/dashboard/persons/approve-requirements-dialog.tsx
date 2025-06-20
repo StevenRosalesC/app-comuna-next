@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -35,6 +35,12 @@ export const ApproveRequirementsDialog = ({
     queryKey: ['requirements'],
     queryFn: requirementsService.list
   });
+
+  useEffect(() => {
+    if (open) {
+      setApproved([]);
+    }
+  }, [open, person]);
 
   // get approved requirements ids
   const approvedIds =

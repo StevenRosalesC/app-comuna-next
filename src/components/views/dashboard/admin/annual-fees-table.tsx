@@ -1,13 +1,10 @@
 'use client';
 import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import {
-  useAnnualFeesStore,
-  AnnualFee
-} from '@/hooks/store/useAnnualFeesStore';
 import { toast } from 'sonner';
 import {
   Table,
@@ -24,34 +21,82 @@ import {
   TooltipTrigger
 } from '@/components/ui/tooltip';
 import { Icons } from '@/components/icons';
+import {
+  getAnnualFees,
+  createAnnualFee,
+  updateAnnualFee,
+  deleteAnnualFee
+} from '@/services/annual-fee';
+import {
+  AnnualFee,
+  CreateAnnualFee,
+  UpdateAnnualFee
+} from '@/interfaces/annual-fee';
 
 export default function AnnualFeesTable() {
-  const { annualFees, addAnnualFee, editAnnualFee, deleteAnnualFee } =
-    useAnnualFeesStore();
+  const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
   const [editFee, setEditFee] = useState<AnnualFee | null>(null);
-  const [form, setForm] = useState<{
-    year: number;
-    description: string;
-    amount: number;
-    mandatory: boolean;
-  }>({
-    year: new Date().getFullYear(),
+  const [form, setForm] = useState<UpdateAnnualFee>({
     description: '',
     amount: 0,
-    mandatory: true
+    status: true
   });
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [addForm, setAddForm] = useState<{
-    year: number;
-    description: string;
-    amount: number;
-    mandatory: boolean;
-  }>({
-    year: new Date().getFullYear(),
+  const [addForm, setAddForm] = useState<CreateAnnualFee>({
     description: '',
     amount: 0,
-    mandatory: true
+    status: true
+  });
+
+  const {
+    data: annualFees = [],
+    isLoading,
+    isError
+  } = useQuery<AnnualFee[]>({
+    queryKey: ['annualFees'],
+    queryFn: getAnnualFees
+  });
+
+  const createMutation = useMutation({
+    mutationFn: createAnnualFee,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['annualFees'] });
+      toast.success('Cuota añadida correctamente');
+      setAddModalOpen(false);
+      setAddForm({
+        description: '',
+        amount: 0,
+        status: true
+      });
+    },
+    onError: () => {
+      toast.error('Error al añadir la cuota');
+    }
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ feeId, fee }: { feeId: string; fee: UpdateAnnualFee }) =>
+      updateAnnualFee(feeId, fee),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['annualFees'] });
+      toast.success('Cuota actualizada correctamente');
+      setModalOpen(false);
+    },
+    onError: () => {
+      toast.error('Error al actualizar la cuota');
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteAnnualFee,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['annualFees'] });
+      toast.success('Cuota eliminada');
+    },
+    onError: () => {
+      toast.error('Error al eliminar la cuota');
+    }
   });
 
   // Open modal for edit
@@ -60,16 +105,14 @@ export default function AnnualFeesTable() {
     setForm(
       fee
         ? {
-            year: fee.year,
             description: fee.description,
             amount: fee.amount,
-            mandatory: fee.mandatory
+            status: fee.status
           }
         : {
-            year: new Date().getFullYear(),
             description: '',
             amount: 0,
-            mandatory: true
+            status: true
           }
     );
     setModalOpen(true);
@@ -79,31 +122,28 @@ export default function AnnualFeesTable() {
   const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (editFee) {
-      editAnnualFee(editFee.id, form);
-      toast.success('Cuota actualizada correctamente');
+      updateMutation.mutate({ feeId: editFee.feeId, fee: form });
     }
-    setModalOpen(false);
   };
 
   // Delete annual fee
-  const handleDelete = (id: number) => {
-    deleteAnnualFee(id);
-    toast.success('Cuota eliminada');
+  const handleDelete = (feeId: string) => {
+    deleteMutation.mutate(feeId);
   };
 
   // Add annual fee
   const handleAdd = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    addAnnualFee(addForm);
-    setAddModalOpen(false);
-    setAddForm({
-      year: new Date().getFullYear(),
-      description: '',
-      amount: 0,
-      mandatory: true
-    });
-    toast.success('Cuota añadida correctamente');
+    createMutation.mutate(addForm);
   };
+
+  if (isLoading) {
+    return <div>Cargando...</div>;
+  }
+
+  if (isError) {
+    return <div>Error al cargar las cuotas anuales.</div>;
+  }
 
   return (
     <>
@@ -115,25 +155,25 @@ export default function AnnualFeesTable() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Año</TableHead>
               <TableHead>Descripción</TableHead>
-              <TableHead>Monto (S/.)</TableHead>
-              <TableHead>Obligatorio</TableHead>
+              <TableHead>Monto ($)</TableHead>
+              <TableHead>Estado</TableHead>
               <TableHead className='text-right'>Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {annualFees.length > 0 ? (
               annualFees.map((fee) => (
-                <TableRow key={fee.id}>
-                  <TableCell>{fee.year}</TableCell>
+                <TableRow key={fee.feeId}>
                   <TableCell>{fee.description}</TableCell>
-                  <TableCell>S/. {fee.amount}</TableCell>
+                  <TableCell>$ {fee.amount}</TableCell>
                   <TableCell>
-                    {fee.mandatory ? (
-                      <span className='font-semibold text-green-600'>Sí</span>
+                    {fee.status ? (
+                      <span className='font-semibold text-green-600'>
+                        Activo
+                      </span>
                     ) : (
-                      <span className='text-gray-400'>No</span>
+                      <span className='text-gray-400'>Inactivo</span>
                     )}
                   </TableCell>
                   <TableCell className='text-right'>
@@ -157,7 +197,8 @@ export default function AnnualFeesTable() {
                           <Button
                             variant='ghost'
                             size='icon'
-                            onClick={() => handleDelete(fee.id)}
+                            onClick={() => handleDelete(fee.feeId)}
+                            disabled={deleteMutation.isPending}
                           >
                             <Icons.trash className='h-4 w-4 text-red-600' />
                           </Button>
@@ -172,7 +213,7 @@ export default function AnnualFeesTable() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className='h-24 text-center'>
+                <TableCell colSpan={4} className='h-24 text-center'>
                   No hay cuotas anuales registradas.
                 </TableCell>
               </TableRow>
@@ -185,19 +226,6 @@ export default function AnnualFeesTable() {
         <DialogContent>
           <DialogTitle>{editFee ? 'Editar cuota' : 'Nueva cuota'}</DialogTitle>
           <form onSubmit={handleSave} className='mt-2 space-y-4'>
-            <div>
-              <label className='mb-1 block text-sm font-medium'>Año</label>
-              <Input
-                type='number'
-                value={form.year}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, year: Number(e.target.value) }))
-                }
-                required
-                min={2000}
-                max={2100}
-              />
-            </div>
             <div>
               <label className='mb-1 block text-sm font-medium'>
                 Descripción
@@ -212,7 +240,7 @@ export default function AnnualFeesTable() {
             </div>
             <div>
               <label className='mb-1 block text-sm font-medium'>
-                Monto (S/.)
+                Monto ($)
               </label>
               <Input
                 type='number'
@@ -225,12 +253,10 @@ export default function AnnualFeesTable() {
               />
             </div>
             <div className='flex items-center gap-2'>
-              <label className='block text-sm font-medium'>Obligatorio</label>
+              <label className='block text-sm font-medium'>Estado</label>
               <Switch
-                checked={form.mandatory}
-                onCheckedChange={(v) =>
-                  setForm((f) => ({ ...f, mandatory: v }))
-                }
+                checked={form.status}
+                onCheckedChange={(v) => setForm((f) => ({ ...f, status: v }))}
               />
             </div>
             <div className='flex justify-end gap-2'>
@@ -241,7 +267,9 @@ export default function AnnualFeesTable() {
               >
                 Cancelar
               </Button>
-              <Button type='submit'>Guardar</Button>
+              <Button type='submit' disabled={updateMutation.isPending}>
+                {updateMutation.isPending ? 'Guardando...' : 'Guardar'}
+              </Button>
             </div>
           </form>
         </DialogContent>
@@ -251,19 +279,6 @@ export default function AnnualFeesTable() {
         <DialogContent>
           <DialogTitle>Nueva cuota</DialogTitle>
           <form onSubmit={handleAdd} className='mt-2 space-y-4'>
-            <div>
-              <label className='mb-1 block text-sm font-medium'>Año</label>
-              <Input
-                type='number'
-                value={addForm.year}
-                onChange={(e) =>
-                  setAddForm((f) => ({ ...f, year: Number(e.target.value) }))
-                }
-                required
-                min={2000}
-                max={2100}
-              />
-            </div>
             <div>
               <label className='mb-1 block text-sm font-medium'>
                 Descripción
@@ -278,7 +293,7 @@ export default function AnnualFeesTable() {
             </div>
             <div>
               <label className='mb-1 block text-sm font-medium'>
-                Monto (S/.)
+                Monto ($)
               </label>
               <Input
                 type='number'
@@ -291,11 +306,11 @@ export default function AnnualFeesTable() {
               />
             </div>
             <div className='flex items-center gap-2'>
-              <label className='block text-sm font-medium'>Obligatorio</label>
+              <label className='block text-sm font-medium'>Estado</label>
               <Switch
-                checked={addForm.mandatory}
+                checked={addForm.status}
                 onCheckedChange={(v) =>
-                  setAddForm((f) => ({ ...f, mandatory: v }))
+                  setAddForm((f) => ({ ...f, status: v }))
                 }
               />
             </div>
@@ -307,7 +322,9 @@ export default function AnnualFeesTable() {
               >
                 Cancelar
               </Button>
-              <Button type='submit'>Guardar</Button>
+              <Button type='submit' disabled={createMutation.isPending}>
+                {createMutation.isPending ? 'Guardando...' : 'Guardar'}
+              </Button>
             </div>
           </form>
         </DialogContent>

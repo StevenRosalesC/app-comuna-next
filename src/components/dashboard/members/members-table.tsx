@@ -20,8 +20,8 @@ export default function MembersTable({
   pageSize
 }: MembersTableProps) {
   return (
-    <div className='overflow-x-auto rounded-md border'>
-      <table className='min-w-[640px] text-xs sm:text-sm'>
+    <div className='w-full overflow-x-auto rounded-md border'>
+      <table className='w-full min-w-[640px] text-xs sm:text-sm'>
         <thead className=''>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>

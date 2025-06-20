@@ -35,7 +35,12 @@ import {
   ListTodo,
   UsersRound,
   UserRound,
-  ChevronsDown
+  ChevronsDown,
+  BookOpenText,
+  Contact,
+  ShieldCheck,
+  UserSearchIcon,
+  ShieldQuestion
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
@@ -92,5 +97,10 @@ export const Icons = {
     </svg>
   ),
   twitter: Twitter,
-  check: Check
+  check: Check,
+  contact: Contact,
+  bookOpenText: BookOpenText,
+  shieldCheck: ShieldCheck,
+  userSearch: UserSearchIcon,
+  shieldQuestion: ShieldQuestion
 };

@@ -20,15 +20,15 @@ export default function MembersTable({
   pageSize
 }: MembersTableProps) {
   return (
-    <div className='overflow-x-auto rounded-md border'>
-      <table className='min-w-[640px] text-xs sm:text-sm'>
-        <thead className='bg-gray-50'>
+    <div className='w-full overflow-x-auto rounded-md border'>
+      <table className='w-full min-w-[640px] text-xs sm:text-sm'>
+        <thead className=''>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className='px-4 py-2 text-left font-semibold text-gray-700'
+                  className='px-4 py-2 text-left font-semibold '
                 >
                   {header.isPlaceholder
                     ? null
@@ -41,7 +41,7 @@ export default function MembersTable({
             </tr>
           ))}
         </thead>
-        <tbody className='divide-y divide-gray-200 bg-white'>
+        <tbody className='divide-y divide-gray-200'>
           {isLoading ? (
             <tr>
               <td colSpan={columns.length} className='py-8 text-center'>
@@ -50,7 +50,7 @@ export default function MembersTable({
             </tr>
           ) : table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className='transition-colors hover:bg-gray-50'>
+              <tr key={row.id} className='transition-colors'>
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className='whitespace-nowrap px-4 py-2'>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

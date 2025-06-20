@@ -1,8 +1,10 @@
 export interface AnnualFee {
-  id: string;
-  personId: string;
-  year: number;
+  feeId: string;
+  description: string;
   amount: number;
-  status: 'paid' | 'pending';
-  paymentDate?: string;
-} 
+  status: boolean;
+}
+
+export type CreateAnnualFee = Omit<AnnualFee, 'feeId'>;
+
+export type UpdateAnnualFee = Partial<CreateAnnualFee>; 

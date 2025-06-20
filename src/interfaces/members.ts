@@ -1,11 +1,12 @@
+import { Person } from "./persons";
+
 export interface Member {
-  memberId: string;
-  personId: string;
-  fullName: string;
-  houseNumber: string;
-  joinDate: string;
-  status: 'active' | 'inactive';
-  documents: number;
-  annualFeePaid: boolean;
-  // Puedes agregar más campos según necesidades
-} 
+  memberId:            string;
+  personId:            string;
+  houseNumber:         string;
+  createdAt:           Date;
+  status:              'active' | 'inactive';
+  persons:             Person;
+  invoices:            any[];
+  memberDocumentTypes: any[];
+}

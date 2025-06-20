@@ -79,6 +79,27 @@ export const personsService = {
         status: false
       }
     }
+  },
+
+  async getAllWithAllRequirementsApproved({ limit = 10, offset = 0 }: { limit?: number, offset?: number }): Promise<ServiceResponse<Person[] | null>> {
+    try {
+      const { data } = await apiCommunity.get('/persons/with-all-requirements-approved', {
+        params: {
+          limit,
+          offset
+        }
+      });
+      return {
+        data: data,
+        message: 'Personas obtenidas correctamente',
+        status: true
+      }
+    } catch (error) {
+      return {
+        data: null,
+        message: 'Error al obtener las personas',
+        status: false
+      }
+    }
   }
 }
-

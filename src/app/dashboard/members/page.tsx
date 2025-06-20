@@ -1,7 +1,4 @@
-// Página inicial del módulo de comuneros
-// Los comentarios están en inglés como indicaste
-
-import MembersDashboardView from "@/components/views/dashboard/members/members.view";
+import MembersDashboardView from '@/components/views/dashboard/members/members.view';
 
 export const metadata = {
   title: 'Bambil Collao APP : Comuneros',
@@ -9,7 +6,5 @@ export const metadata = {
 };
 
 export default function MembersDashboardPage() {
-  return (
-    <MembersDashboardView />
-  )
-} 
+  return <MembersDashboardView />;
+}

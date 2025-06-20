@@ -1,11 +1,9 @@
 export interface Member {
   memberId: string;
   personId: string;
-  fullName: string;
+  lastName: string;
+  firstName: string;
   houseNumber: string;
   joinDate: string;
   status: 'active' | 'inactive';
-  documents: number;
-  annualFeePaid: boolean;
-  // Puedes agregar más campos según necesidades
-} 
+}

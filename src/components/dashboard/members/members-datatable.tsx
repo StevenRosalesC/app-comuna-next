@@ -1,6 +1,7 @@
 'use client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { MembersTablePagination } from './members-table-pagination';
 import MembersTable from './members-table';
 import { useQuery } from '@tanstack/react-query';
@@ -15,12 +16,28 @@ import { SortingState } from '@tanstack/react-table';
 import { toast } from 'sonner';
 
 export default function MembersDataTable() {
-  // State for search, pagination, and sorting
-  const [search, setSearch] = useState('');
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // State for search, pagination, and sorting from URL
+  const [search, setSearch] = useState(() => searchParams.get('search') || '');
   const debouncedSearch = useDebounce(search, 400);
-  const [pageSize, setPageSize] = useState(10);
-  const [pageIndex, setPageIndex] = useState(0);
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const [pageSize, setPageSize] = useState(
+    () => Number(searchParams.get('size')) || 10
+  );
+  const [pageIndex, setPageIndex] = useState(() =>
+    Math.max(Number(searchParams.get('page') || 1) - 1, 0)
+  );
+  const [sorting, setSorting] = useState<SortingState>(() => {
+    const sortField = searchParams.get('sort');
+    const sortDir = searchParams.get('dir');
+    return sortField && sortDir
+      ? [{ id: sortField, desc: sortDir === 'desc' }]
+      : [];
+  });
+
+  const isInitialMount = useRef(true);
 
   // Fetch members data
   const { data, isLoading, refetch, isFetching } = useQuery<
@@ -31,7 +48,8 @@ export default function MembersDataTable() {
       'members',
       { pageSize, pageIndex, search: debouncedSearch, sorting }
     ],
-    queryFn: () => getMembers(pageSize, pageIndex * pageSize, debouncedSearch)
+    queryFn: () =>
+      getMembers(pageSize, pageIndex * pageSize, debouncedSearch, sorting)
   });
 
   // Calculate total count and page count
@@ -41,46 +59,108 @@ export default function MembersDataTable() {
     [totalCount, pageSize]
   );
 
+  const updateUrl = useCallback(
+    (updates: Record<string, string | null>) => {
+      const params = new URLSearchParams(searchParams.toString());
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value === null) {
+          params.delete(key);
+        } else {
+          params.set(key, value);
+        }
+      });
+      router.replace(`${pathname}?${params.toString()}`, {
+        scroll: false
+      });
+    },
+    [pathname, router, searchParams]
+  );
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    updateUrl({
+      search: debouncedSearch || null,
+      page: '1'
+    });
+    setPageIndex(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch]);
+
+  const handleSortingChange = useCallback(
+    (newSorting: SortingState) => {
+      setSorting(newSorting);
+      if (newSorting.length > 0) {
+        updateUrl({
+          sort: newSorting[0].id,
+          dir: newSorting[0].desc ? 'desc' : 'asc'
+        });
+      } else {
+        updateUrl({ sort: null, dir: null });
+      }
+    },
+    [updateUrl]
+  );
+
+  const handlePageSizeChange = useCallback(
+    (newSize: number) => {
+      setPageSize(newSize);
+      setPageIndex(0);
+      updateUrl({
+        size: newSize.toString(),
+        page: '1'
+      });
+    },
+    [updateUrl]
+  );
+
+  const handlePageIndexChange = useCallback(
+    (newIndex: number) => {
+      setPageIndex(newIndex);
+      updateUrl({ page: (newIndex + 1).toString() });
+    },
+    [updateUrl]
+  );
+
   // Map API data to table data
   const mappedData = useMemo(() => {
     if (!data?.data) return [];
     return data.data.map((item: any) => ({
       memberId: item.memberId,
       personId: item.personId,
-      fullName: item.persons
-        ? `${item.persons.firstName ?? ''} ${
-            item.persons.lastName ?? ''
-          }`.trim()
-        : '',
+      lastName: item.persons.lastName ?? '',
+      firstName: item.persons.firstName ?? '',
       houseNumber: item.houseNumber ?? '',
       joinDate: item.createdAt ?? '',
       status: (item.status === true ? 'active' : 'inactive') as
         | 'active'
-        | 'inactive',
-      documents: item.documents ?? 0,
-      annualFeePaid: item.annualFeePaid ?? false
+        | 'inactive'
     }));
   }, [data]);
 
   // Action handlers for table actions
   const handleEdit = (member: Member) => {
     // TODO: Implement edit action
-    toast.success(`Editando comunero: ${member.fullName}`);
+    toast.success(`Editando comunero: ${member.lastName} ${member.firstName}`);
   };
   const handleView = (member: Member) => {
     // TODO: Implement view action
-    toast.success(`Ver comunero: ${member.fullName}`);
+    toast.success(`Ver comunero: ${member.lastName} ${member.firstName}`);
   };
   const handleDelete = (member: Member) => {
     // TODO: Implement delete action
-    toast.success(`Eliminando comunero: ${member.fullName}`);
+    toast.success(
+      `Eliminando comunero: ${member.lastName} ${member.firstName}`
+    );
   };
 
   // Table instance and columns
   const { table, columns } = useMembersTable({
     data: mappedData,
     sorting,
-    onSortingChange: setSorting,
+    onSortingChange: handleSortingChange,
     onEdit: handleEdit,
     onView: handleView,
     onDelete: handleDelete
@@ -128,8 +208,8 @@ export default function MembersDataTable() {
             pageCount={pageCount}
             pageSize={pageSize}
             isLoading={isLoading}
-            onPageIndexChange={setPageIndex}
-            onPageSizeChange={setPageSize}
+            onPageIndexChange={handlePageIndexChange}
+            onPageSizeChange={handlePageSizeChange}
           />
         </div>
       </CardContent>

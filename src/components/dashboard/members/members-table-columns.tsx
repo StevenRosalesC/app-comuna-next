@@ -36,14 +36,14 @@ export function useMembersTableColumns({ actions }: MembersTableColumnsProps) {
       size: 32
     },
     {
-      accessorKey: 'fullName',
+      accessorKey: 'lastName',
       header: ({ column }) => (
         <Button
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className='flex w-full min-w-[180px] items-center justify-start'
+          className='flex w-full min-w-[220px] items-center justify-start'
         >
-          Nombre completo
+          Apellidos
           {column.getIsSorted() === 'asc' ? (
             <ArrowUp className='ml-1 h-4 w-4' />
           ) : column.getIsSorted() === 'desc' ? (
@@ -54,9 +54,29 @@ export function useMembersTableColumns({ actions }: MembersTableColumnsProps) {
         </Button>
       ),
       cell: ({ row }) => (
-        <span className='font-medium'>{row.getValue('fullName') || '-'}</span>
+        <span className='font-medium'>{row.getValue('lastName') || '-'}</span>
       ),
-      size: 180
+      size: 240,
+      enableSorting: true,
+      sortDescFirst: true
+    },
+    {
+      accessorKey: 'firstName',
+      header: ({ column }) => (
+        <Button
+          variant='ghost'
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          className='flex w-full min-w-[240px] items-center justify-start'
+        >
+          Nombres
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <span className='font-medium'>{row.getValue('firstName') || '-'}</span>
+      ),
+      size: 240,
+      enableSorting: true,
+      sortDescFirst: true
     },
     {
       accessorKey: 'houseNumber',
@@ -64,7 +84,7 @@ export function useMembersTableColumns({ actions }: MembersTableColumnsProps) {
         <Button
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className='flex w-full min-w-[80px] items-center justify-start'
+          className='flex w-full min-w-[100px] items-center justify-start'
         >
           N° Casa
           {column.getIsSorted() === 'asc' ? (
@@ -77,7 +97,7 @@ export function useMembersTableColumns({ actions }: MembersTableColumnsProps) {
         </Button>
       ),
       cell: ({ row }) => <span>{row.getValue('houseNumber') || '-'}</span>,
-      size: 80
+      size: 100
     },
     {
       accessorKey: 'joinDate',
@@ -85,7 +105,7 @@ export function useMembersTableColumns({ actions }: MembersTableColumnsProps) {
         <Button
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className='flex w-full min-w-[110px] items-center justify-start'
+          className='flex w-full min-w-[120px] items-center justify-start'
         >
           Fecha ingreso
           {column.getIsSorted() === 'asc' ? (
@@ -105,7 +125,7 @@ export function useMembersTableColumns({ actions }: MembersTableColumnsProps) {
           <span>-</span>
         );
       },
-      size: 110
+      size: 120
     },
     {
       accessorKey: 'status',
@@ -113,7 +133,7 @@ export function useMembersTableColumns({ actions }: MembersTableColumnsProps) {
         <Button
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className='flex w-full min-w-[80px] items-center justify-start'
+          className='flex w-full min-w-[100px] items-center justify-start'
         >
           Estado
           {column.getIsSorted() === 'asc' ? (
@@ -133,59 +153,6 @@ export function useMembersTableColumns({ actions }: MembersTableColumnsProps) {
           className='w-full min-w-[70px] text-center'
         >
           {row.getValue('status') === 'active' ? 'Activo' : 'Inactivo'}
-        </Badge>
-      ),
-      size: 80
-    },
-    {
-      accessorKey: 'documents',
-      header: ({ column }) => (
-        <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className='flex w-full min-w-[80px] items-center justify-start'
-        >
-          Documentos
-          {column.getIsSorted() === 'asc' ? (
-            <ArrowUp className='ml-1 h-4 w-4' />
-          ) : column.getIsSorted() === 'desc' ? (
-            <ArrowDown className='ml-1 h-4 w-4' />
-          ) : (
-            <ArrowUpDown className='ml-1 h-4 w-4 opacity-50' />
-          )}
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <Badge variant='outline' className='w-full min-w-[40px] text-center'>
-          {row.getValue('documents') ?? 0}
-        </Badge>
-      ),
-      size: 80
-    },
-    {
-      accessorKey: 'annualFeePaid',
-      header: ({ column }) => (
-        <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className='flex w-full min-w-[100px] items-center justify-start'
-        >
-          Cuota anual
-          {column.getIsSorted() === 'asc' ? (
-            <ArrowUp className='ml-1 h-4 w-4' />
-          ) : column.getIsSorted() === 'desc' ? (
-            <ArrowDown className='ml-1 h-4 w-4' />
-          ) : (
-            <ArrowUpDown className='ml-1 h-4 w-4 opacity-50' />
-          )}
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <Badge
-          variant={row.getValue('annualFeePaid') ? 'default' : 'destructive'}
-          className='w-full min-w-[80px] text-center'
-        >
-          {row.getValue('annualFeePaid') ? 'Pagada' : 'Pendiente'}
         </Badge>
       ),
       size: 100

@@ -104,7 +104,6 @@ export default function RequirementsTable() {
   // Save requirement (edit)
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const values = form.getValues();
     if (editReq) {
       toast.promise(
         requirementsService.update(editReq.requirementId, form.getValues()),
@@ -188,21 +187,21 @@ export default function RequirementsTable() {
         <Table className='min-w-full divide-y divide-gray-200'>
           <TableHeader>
             <TableRow>
-              <TableHead className='w-1/2 px-4 py-2 text-left text-xs font-medium uppercase text-gray-500'>
+              <TableHead className='w-1/2 px-4 py-2 text-left text-xs font-medium uppercase'>
                 Requisito
               </TableHead>
-              <TableHead className='w-1/2 px-4 py-2 text-left text-xs font-medium uppercase text-gray-500'>
+              <TableHead className='w-1/2 px-4 py-2 text-left text-xs font-medium uppercase'>
                 Observación
               </TableHead>
-              <TableHead className='w-1/4 px-4 py-2 text-left text-xs font-medium uppercase text-gray-500'>
+              <TableHead className='w-1/4 px-4 py-2 text-left text-xs font-medium uppercase'>
                 Estado
               </TableHead>
-              <TableHead className='w-1/4 px-4 py-2 text-left text-xs font-medium uppercase text-gray-500'>
+              <TableHead className='w-1/4 px-4 py-2 text-left text-xs font-medium uppercase'>
                 Acciones
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody className='divide-y divide-gray-200 bg-white'>
+          <TableBody className='divide-y divide-gray-200'>
             {requirements?.map((req: Requirement) => (
               <TableRow key={req.requirementId}>
                 <TableCell className='px-4 py-2'>{req.requirement}</TableCell>

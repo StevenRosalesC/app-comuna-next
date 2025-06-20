@@ -28,6 +28,21 @@ export interface IPerson {
   phoneNumber?: string;
   email?: string;
 }
+export interface ApprovedByUser {
+  username:  string;
+  userRoles: UserRoles;
+  persons:   Persons;
+}
+
+export interface Persons {
+  lastName:       string;
+  firstName:      string;
+  identification: string;
+}
+
+export interface UserRoles {
+  name: string;
+}
 
 
 export interface RequirementsApprovals {
@@ -37,6 +52,7 @@ export interface RequirementsApprovals {
   personId:      string;
   requirementId: string;
   requirements:  Requirements;
+  approvedByUser: ApprovedByUser;
 }
 
 export interface Requirements {

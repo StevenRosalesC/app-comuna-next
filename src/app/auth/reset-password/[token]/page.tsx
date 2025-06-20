@@ -49,15 +49,12 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
 
   const onSubmit = async (data: ResetPasswordFormValues) => {
     try {
-      console.log({ token, password: data.password });
-      const response = await AuthService.resetPassword(token, {
+      await AuthService.resetPassword(token, {
         newPassword: data.password
       });
-      console.log(response);
       toast.success('Contraseña restablecida');
       router.push('/auth/login');
-    } catch (error) {
-      console.log(error);
+    } catch {
       toast.error('Error al restablecer la contraseña');
     }
   };
@@ -66,14 +63,13 @@ export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
     const validateToken = async () => {
       try {
         const response = await AuthService.validateToken(token);
-        console.log(response);
         if (response.status === 200) {
           toast.success('Token valido');
         } else {
           toast.error('Token invalido');
           router.push('/auth/forgot-password');
         }
-      } catch (error) {
+      } catch {
         toast.error('Error al validar el token');
         router.push('/auth/forgot-password');
       }

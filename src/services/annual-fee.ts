@@ -1,16 +1,23 @@
 // Service for annual fee operations (skeleton)
 
-export const getAnnualFees = async () => {
-  // Fetch annual fees from backend (to be implemented)
-  return [];
+import apiCommunity from '@/utils/communityApi';
+import { AnnualFee, CreateAnnualFee, UpdateAnnualFee } from '@/interfaces/annual-fee';
+
+export const getAnnualFees = async (): Promise<AnnualFee[]> => {
+  const { data } = await apiCommunity.get<AnnualFee[]>('/annual-fees');
+  return data;
 };
 
-export const createAnnualFee = async (data: any) => {
-  // Create a new annual fee record (to be implemented)
-  return null;
+export const createAnnualFee = async (fee: CreateAnnualFee): Promise<AnnualFee> => {
+  const { data } = await apiCommunity.post<AnnualFee>('/annual-fees', fee);
+  return data;
 };
 
-export const updateAnnualFee = async (id: string, data: any) => {
-  // Update an existing annual fee record (to be implemented)
-  return null;
+export const updateAnnualFee = async (feeId: string, fee: UpdateAnnualFee): Promise<AnnualFee> => {
+  const { data } = await apiCommunity.put<AnnualFee>(`/annual-fees/${feeId}`, fee);
+  return data;
+};
+
+export const deleteAnnualFee = async (feeId: string): Promise<void> => {
+  await apiCommunity.delete(`/annual-fees/${feeId}`);
 }; 

@@ -1,24 +1,120 @@
-'use client'
+'use client';
 import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { useAnnualFeesStore, AnnualFee } from '@/hooks/store/useAnnualFeesStore';
 import { toast } from 'sonner';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from '@/components/ui/tooltip';
+import { Icons } from '@/components/icons';
+import {
+  getAnnualFees,
+  createAnnualFee,
+  updateAnnualFee,
+  deleteAnnualFee
+} from '@/services/annual-fee';
+import {
+  AnnualFee,
+  CreateAnnualFee,
+  UpdateAnnualFee
+} from '@/interfaces/annual-fee';
 
 export default function AnnualFeesTable() {
-  const { annualFees, addAnnualFee, editAnnualFee, deleteAnnualFee } = useAnnualFeesStore();
+  const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
   const [editFee, setEditFee] = useState<AnnualFee | null>(null);
-  const [form, setForm] = useState<{ year: number; description: string; amount: number; mandatory: boolean }>({ year: new Date().getFullYear(), description: '', amount: 0, mandatory: true });
+  const [form, setForm] = useState<UpdateAnnualFee>({
+    description: '',
+    amount: 0,
+    status: true
+  });
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [addForm, setAddForm] = useState<{ year: number; description: string; amount: number; mandatory: boolean }>({ year: new Date().getFullYear(), description: '', amount: 0, mandatory: true });
+  const [addForm, setAddForm] = useState<CreateAnnualFee>({
+    description: '',
+    amount: 0,
+    status: true
+  });
+
+  const {
+    data: annualFees = [],
+    isLoading,
+    isError
+  } = useQuery<AnnualFee[]>({
+    queryKey: ['annualFees'],
+    queryFn: getAnnualFees
+  });
+
+  const createMutation = useMutation({
+    mutationFn: createAnnualFee,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['annualFees'] });
+      toast.success('Cuota añadida correctamente');
+      setAddModalOpen(false);
+      setAddForm({
+        description: '',
+        amount: 0,
+        status: true
+      });
+    },
+    onError: () => {
+      toast.error('Error al añadir la cuota');
+    }
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ feeId, fee }: { feeId: string; fee: UpdateAnnualFee }) =>
+      updateAnnualFee(feeId, fee),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['annualFees'] });
+      toast.success('Cuota actualizada correctamente');
+      setModalOpen(false);
+    },
+    onError: () => {
+      toast.error('Error al actualizar la cuota');
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteAnnualFee,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['annualFees'] });
+      toast.success('Cuota eliminada');
+    },
+    onError: () => {
+      toast.error('Error al eliminar la cuota');
+    }
+  });
 
   // Open modal for edit
   const openModal = (fee: AnnualFee | null = null) => {
     setEditFee(fee);
-    setForm(fee ? { year: fee.year, description: fee.description, amount: fee.amount, mandatory: fee.mandatory } : { year: new Date().getFullYear(), description: '', amount: 0, mandatory: true });
+    setForm(
+      fee
+        ? {
+            description: fee.description,
+            amount: fee.amount,
+            status: fee.status
+          }
+        : {
+            description: '',
+            amount: 0,
+            status: true
+          }
+    );
     setModalOpen(true);
   };
 
@@ -26,113 +122,154 @@ export default function AnnualFeesTable() {
   const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (editFee) {
-      editAnnualFee(editFee.id, form);
-      toast.success('Cuota actualizada correctamente');
+      updateMutation.mutate({ feeId: editFee.feeId, fee: form });
     }
-    setModalOpen(false);
   };
 
   // Delete annual fee
-  const handleDelete = (id: number) => {
-    deleteAnnualFee(id);
-    toast.success('Cuota eliminada');
+  const handleDelete = (feeId: string) => {
+    deleteMutation.mutate(feeId);
   };
 
   // Add annual fee
   const handleAdd = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    addAnnualFee(addForm);
-    setAddModalOpen(false);
-    setAddForm({ year: new Date().getFullYear(), description: '', amount: 0, mandatory: true });
-    toast.success('Cuota añadida correctamente');
+    createMutation.mutate(addForm);
   };
+
+  if (isLoading) {
+    return <div>Cargando...</div>;
+  }
+
+  if (isError) {
+    return <div>Error al cargar las cuotas anuales.</div>;
+  }
 
   return (
     <>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold">Cuotas anuales</h2>
-        <button
-          onClick={() => setAddModalOpen(true)}
-          className="bg-primary text-white px-4 py-2 rounded-lg font-semibold shadow hover:bg-primary/90 transition-colors">
-          + Nueva cuota
-        </button>
+      <div className='mb-4 flex items-center justify-between'>
+        <h2 className='text-2xl font-bold'>Cuotas anuales</h2>
+        <Button onClick={() => setAddModalOpen(true)}>+ Nueva cuota</Button>
       </div>
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead>
-          <tr>
-            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Año</th>
-            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Descripción</th>
-            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Monto (S/.)</th>
-            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Obligatorio</th>
-            <th className="px-4 py-2"></th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {annualFees.map((fee) => (
-            <tr key={fee.id}>
-              <td className="px-4 py-2">{fee.year}</td>
-              <td className="px-4 py-2">{fee.description}</td>
-              <td className="px-4 py-2">S/. {fee.amount}</td>
-              <td className="px-4 py-2">
-                {fee.mandatory ? (
-                  <span className="text-green-600 font-semibold">Sí</span>
-                ) : (
-                  <span className="text-gray-400">No</span>
-                )}
-              </td>
-              <td className="px-4 py-2 text-right">
-                {/* Actions: edit/delete */}
-                <button className="text-blue-600 hover:underline mr-2" onClick={() => openModal(fee)}>Editar</button>
-                <button className="text-red-600 hover:underline" onClick={() => handleDelete(fee.id)}>Eliminar</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className='rounded-md border'>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Descripción</TableHead>
+              <TableHead>Monto ($)</TableHead>
+              <TableHead>Estado</TableHead>
+              <TableHead className='text-right'>Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {annualFees.length > 0 ? (
+              annualFees.map((fee) => (
+                <TableRow key={fee.feeId}>
+                  <TableCell>{fee.description}</TableCell>
+                  <TableCell>$ {fee.amount}</TableCell>
+                  <TableCell>
+                    {fee.status ? (
+                      <span className='font-semibold text-green-600'>
+                        Activo
+                      </span>
+                    ) : (
+                      <span className='text-gray-400'>Inactivo</span>
+                    )}
+                  </TableCell>
+                  <TableCell className='text-right'>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant='ghost'
+                            size='icon'
+                            onClick={() => openModal(fee)}
+                          >
+                            <Icons.userPen className='h-4 w-4' />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Editar</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant='ghost'
+                            size='icon'
+                            onClick={() => handleDelete(fee.feeId)}
+                            disabled={deleteMutation.isPending}
+                          >
+                            <Icons.trash className='h-4 w-4 text-red-600' />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Eliminar</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={4} className='h-24 text-center'>
+                  No hay cuotas anuales registradas.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
       {/* Modal for edit */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent>
           <DialogTitle>{editFee ? 'Editar cuota' : 'Nueva cuota'}</DialogTitle>
-          <form onSubmit={handleSave} className="space-y-4 mt-2">
+          <form onSubmit={handleSave} className='mt-2 space-y-4'>
             <div>
-              <label className="block text-sm font-medium mb-1">Año</label>
-              <Input
-                type="number"
-                value={form.year}
-                onChange={e => setForm(f => ({ ...f, year: Number(e.target.value) }))}
-                required
-                min={2000}
-                max={2100}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Descripción</label>
+              <label className='mb-1 block text-sm font-medium'>
+                Descripción
+              </label>
               <Input
                 value={form.description}
-                onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, description: e.target.value }))
+                }
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Monto (S/.)</label>
+              <label className='mb-1 block text-sm font-medium'>
+                Monto ($)
+              </label>
               <Input
-                type="number"
+                type='number'
                 value={form.amount}
-                onChange={e => setForm(f => ({ ...f, amount: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, amount: Number(e.target.value) }))
+                }
                 required
                 min={0}
               />
             </div>
-            <div className="flex items-center gap-2">
-              <label className="block text-sm font-medium">Obligatorio</label>
+            <div className='flex items-center gap-2'>
+              <label className='block text-sm font-medium'>Estado</label>
               <Switch
-                checked={form.mandatory}
-                onCheckedChange={v => setForm(f => ({ ...f, mandatory: v }))}
+                checked={form.status}
+                onCheckedChange={(v) => setForm((f) => ({ ...f, status: v }))}
               />
             </div>
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>Cancelar</Button>
-              <Button type="submit">Guardar</Button>
+            <div className='flex justify-end gap-2'>
+              <Button
+                type='button'
+                variant='outline'
+                onClick={() => setModalOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button type='submit' disabled={updateMutation.isPending}>
+                {updateMutation.isPending ? 'Guardando...' : 'Guardar'}
+              </Button>
             </div>
           </form>
         </DialogContent>
@@ -141,50 +278,57 @@ export default function AnnualFeesTable() {
       <Dialog open={addModalOpen} onOpenChange={setAddModalOpen}>
         <DialogContent>
           <DialogTitle>Nueva cuota</DialogTitle>
-          <form onSubmit={handleAdd} className="space-y-4 mt-2">
+          <form onSubmit={handleAdd} className='mt-2 space-y-4'>
             <div>
-              <label className="block text-sm font-medium mb-1">Año</label>
-              <Input
-                type="number"
-                value={addForm.year}
-                onChange={e => setAddForm(f => ({ ...f, year: Number(e.target.value) }))}
-                required
-                min={2000}
-                max={2100}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Descripción</label>
+              <label className='mb-1 block text-sm font-medium'>
+                Descripción
+              </label>
               <Input
                 value={addForm.description}
-                onChange={e => setAddForm(f => ({ ...f, description: e.target.value }))}
+                onChange={(e) =>
+                  setAddForm((f) => ({ ...f, description: e.target.value }))
+                }
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Monto (S/.)</label>
+              <label className='mb-1 block text-sm font-medium'>
+                Monto ($)
+              </label>
               <Input
-                type="number"
+                type='number'
                 value={addForm.amount}
-                onChange={e => setAddForm(f => ({ ...f, amount: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setAddForm((f) => ({ ...f, amount: Number(e.target.value) }))
+                }
                 required
                 min={0}
               />
             </div>
-            <div className="flex items-center gap-2">
-              <label className="block text-sm font-medium">Obligatorio</label>
+            <div className='flex items-center gap-2'>
+              <label className='block text-sm font-medium'>Estado</label>
               <Switch
-                checked={addForm.mandatory}
-                onCheckedChange={v => setAddForm(f => ({ ...f, mandatory: v }))}
+                checked={addForm.status}
+                onCheckedChange={(v) =>
+                  setAddForm((f) => ({ ...f, status: v }))
+                }
               />
             </div>
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => setAddModalOpen(false)}>Cancelar</Button>
-              <Button type="submit">Guardar</Button>
+            <div className='flex justify-end gap-2'>
+              <Button
+                type='button'
+                variant='outline'
+                onClick={() => setAddModalOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button type='submit' disabled={createMutation.isPending}>
+                {createMutation.isPending ? 'Guardando...' : 'Guardar'}
+              </Button>
             </div>
           </form>
         </DialogContent>
       </Dialog>
     </>
   );
-} 
+}

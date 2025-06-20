@@ -30,9 +30,7 @@ export const usersService = {
   },
 
   async createUser(user:{
-    password: string;
     roleId: string;
-    username: string;
     personId: string;
 }): Promise<ServiceResponse<User | null>> {
     try {

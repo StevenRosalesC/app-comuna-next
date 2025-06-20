@@ -32,6 +32,7 @@ import {
   SelectContent,
   SelectItem
 } from '@/components/ui/select';
+import { useSessionContext } from '@/components/providers/session-Provider';
 
 const userFormSchema = z.object({
   userId: z.string().optional(),
@@ -64,6 +65,8 @@ export function UserEditDialog({
     queryKey: ['roles'],
     queryFn: () => rolesService.getRoles()
   });
+
+  const { session } = useSessionContext();
 
   useEffect(() => {
     if (user) {
@@ -164,18 +167,27 @@ export function UserEditDialog({
             <FormField
               control={form.control}
               name='status'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Estado</FormLabel>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                const isCurrentUser = session?.id === user?.userId;
+                return (
+                  <FormItem>
+                    <FormLabel>Estado</FormLabel>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={isCurrentUser}
+                      />
+                    </FormControl>
+                    {isCurrentUser && (
+                      <p className='text-xs text-muted-foreground'>
+                        No puedes desactivar tu propio usuario.
+                      </p>
+                    )}
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
             <DialogFooter>
               <Button type='submit'>Guardar</Button>

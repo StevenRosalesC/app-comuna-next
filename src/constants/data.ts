@@ -32,14 +32,14 @@ export const navItems: NavItem[] = [
   {
     title: 'Personas',
     url: '/dashboard/persons',
-    icon: 'users',
+    icon: 'contact',
     isActive: false,
     shortcut: ['u', 'u']
   },
   {
     title: 'Noticias',
     url: '/dashboard/notices',
-    icon: 'page',
+    icon: 'bookOpenText',
     isActive: false,
     shortcut: ['u', 'u']
   },
@@ -54,21 +54,21 @@ export const navItems: NavItem[] = [
   {
     title: 'Administrador',
     url: '/dashboard/admin',
-    icon: 'list',
+    icon: 'shieldCheck',
     isActive: false,
     shortcut: ['r', 'r']
   },
   {
     title: 'Usuarios',
     url: '/dashboard/users',
-    icon: 'users',
+    icon: 'userSearch',
     isActive: false,
     shortcut: ['u', 'u']
   },
   {
     title: 'Roles',
     url: '/dashboard/roles',
-    icon: 'users',
+    icon: 'shieldQuestion',
     isActive: false,
     shortcut: ['r', 'r']
   }

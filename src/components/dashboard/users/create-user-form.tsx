@@ -66,7 +66,7 @@ export const CreateUserForm = () => {
   };
 
   return (
-    <div className='dark:shadow-dark-lg flex h-full w-full flex-col rounded-lg bg-gray-50 shadow-lg dark:bg-gray-800  md:space-y-6 md:p-6'>
+    <div className='dark:shadow-dark-lg flex h-full w-full flex-col rounded-lg border md:space-y-6 md:p-6'>
       <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl'>
         Crear usuario
       </h1>

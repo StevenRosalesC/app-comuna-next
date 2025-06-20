@@ -11,12 +11,12 @@ export default function UsersView() {
     ValidActions.CREATE
   );
   return (
-    <div>
-      <div className='container mx-auto max-w-[1400px] space-y-6 px-2 py-4 sm:px-4'>
+    <div className='container mx-auto max-w-[1400px] space-y-6 px-2 py-4 sm:px-4'>
+      <div className='grid grid-cols-1 gap-4'>
+        <div className='w-full'>{canCreateUser && <CreateUserForm />}</div>
         <div className='w-full overflow-hidden'>
-          {canCreateUser && <CreateUserForm />}
+          <UsersDataTable />
         </div>
-        <UsersDataTable />
       </div>
     </div>
   );

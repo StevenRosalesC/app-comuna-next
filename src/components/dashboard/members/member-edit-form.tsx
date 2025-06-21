@@ -94,7 +94,7 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
       };
 
       // Remove non-updatable fields from person data and handle nulls
-      const { personId, requirementApprovals, email, phoneNumber, ...rest } =
+      const { personId, personRequirement, email, phoneNumber, ...rest } =
         personDataToUpdate;
 
       const updatablePersonData = {

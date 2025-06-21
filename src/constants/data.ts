@@ -22,12 +22,12 @@ export const navItems: NavItem[] = [
     items: [] // Empty array as there are no child items for Dashboard
   },
   {
-    title: 'Kanban',
-    url: '/dashboard/kanban',
-    icon: 'kanban',
-    shortcut: ['k', 'k'],
+    title: 'Comuneros',
+    url: '/dashboard/members',
+    icon: 'users',
     isActive: false,
-    items: [] // No child items
+    shortcut: ['m', 'm'],
+    items: []
   },
   {
     title: 'Personas',
@@ -44,12 +44,12 @@ export const navItems: NavItem[] = [
     shortcut: ['u', 'u']
   },
   {
-    title: 'Comuneros',
-    url: '/dashboard/members',
-    icon: 'users',
+    title: 'Kanban',
+    url: '/dashboard/kanban',
+    icon: 'kanban',
+    shortcut: ['k', 'k'],
     isActive: false,
-    shortcut: ['m', 'm'],
-    items: []
+    items: [] // No child items
   },
   {
     title: 'Administrador',

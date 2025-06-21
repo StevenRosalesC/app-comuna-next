@@ -130,8 +130,8 @@ export default function MembersDataTable() {
     return data.data.map((item: any) => ({
       memberId: item.memberId,
       personId: item.personId,
-      lastName: item.persons.lastName ?? '',
-      firstName: item.persons.firstName ?? '',
+      lastName: item.person.lastName ?? '',
+      firstName: item.person.firstName ?? '',
       houseNumber: item.houseNumber ?? '',
       joinDate: item.createdAt ?? '',
       status: (item.status === true ? 'active' : 'inactive') as

@@ -58,7 +58,7 @@ export default function MemberPage({ params }: { params: { id: string } }) {
     );
   }
 
-  const { persons } = member;
+  const { person } = member;
 
   return (
     <div className='p-4 pt-6 md:p-8'>
@@ -67,19 +67,19 @@ export default function MemberPage({ params }: { params: { id: string } }) {
           <Avatar className='h-24 w-24'>
             <AvatarImage
               src={'/avatar.jpg'}
-              alt={`${persons.firstName} ${persons.lastName}`}
+              alt={`${person.firstName} ${person.lastName}`}
             />
             <AvatarFallback>
-              {persons.firstName.charAt(0)}
-              {persons.lastName.charAt(0)}
+              {person.firstName.charAt(0)}
+              {person.lastName.charAt(0)}
             </AvatarFallback>
           </Avatar>
           <div className='flex-1'>
             <CardTitle className='text-3xl'>
-              {persons.firstName} {persons.lastName}
+              {person.firstName} {person.lastName}
             </CardTitle>
             <CardDescription className='text-lg'>
-              {persons.identification}
+              {person.identification}
             </CardDescription>
             <Badge
               className={`mt-2 ${
@@ -95,11 +95,11 @@ export default function MemberPage({ params }: { params: { id: string } }) {
             <TableBody>
               <TableRow>
                 <TableHead>Email</TableHead>
-                <TableCell>{persons.email}</TableCell>
+                <TableCell>{person.email}</TableCell>
               </TableRow>
               <TableRow>
                 <TableHead>Teléfono</TableHead>
-                <TableCell>{persons.phoneNumber}</TableCell>
+                <TableCell>{person.phoneNumber}</TableCell>
               </TableRow>
               <TableRow>
                 <TableHead>Número de casa</TableHead>
@@ -114,7 +114,7 @@ export default function MemberPage({ params }: { params: { id: string } }) {
               <TableRow>
                 <TableHead>Fecha de nacimiento</TableHead>
                 <TableCell>
-                  {new Date(persons.birthDate).toLocaleDateString()}
+                  {new Date(person.birthDate).toLocaleDateString()}
                 </TableCell>
               </TableRow>
             </TableBody>

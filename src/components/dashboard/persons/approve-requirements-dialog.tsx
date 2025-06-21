@@ -10,7 +10,7 @@ import {
 import { Person } from '@/interfaces/persons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { requirementsService } from '@/services/requirements';
 import { toast } from 'sonner';
 
@@ -30,11 +30,6 @@ export const ApproveRequirementsDialog = ({
   const [selectedReq, setSelectedReq] = useState<string | null>(null);
   const [observation, setObservation] = useState('');
 
-  const { data: requirements = [], isLoading } = useQuery({
-    queryKey: ['requirements', 'all'],
-    queryFn: requirementsService.listAll
-  });
-
   const approveMutation = useMutation({
     mutationFn: ({
       personId,
@@ -48,7 +43,6 @@ export const ApproveRequirementsDialog = ({
     onSuccess: () => {
       toast.success('Requisito aprobado correctamente');
       queryClient.invalidateQueries({ queryKey: ['persons'] });
-      queryClient.invalidateQueries({ queryKey: ['requirements', 'all'] });
     },
     onError: () => {
       toast.error('Error al aprobar el requisito');
@@ -79,6 +73,7 @@ export const ApproveRequirementsDialog = ({
       setConfirmOpen(false);
       setSelectedReq(null);
       setObservation('');
+      onOpenChange(false);
     }
   };
 
@@ -102,24 +97,25 @@ export const ApproveRequirementsDialog = ({
               <p>{person.gender === 1 ? 'Masculino' : 'Femenino'}</p>
 
               <div className='mt-4 flex flex-col gap-2'>
-                {requirements.map((req) => {
-                  const personReq = person.personRequirements?.find(
-                    (pr) => pr.requirement.requirementId === req.requirementId
-                  );
-                  const isApproved = personReq?.status === 'APPROVED';
+                {person.personRequirement?.map((personReq) => {
+                  const isApproved = personReq.status === 'APPROVED';
 
                   return (
                     <div
-                      key={req.requirementId}
+                      key={personReq.requirement.requirementId}
                       className='flex items-center gap-2'
                     >
-                      <p className='flex-1'>{req.requirement}</p>
+                      <p className='flex-1'>
+                        {personReq.requirement.requirement}
+                      </p>
                       <Button
                         size='sm'
-                        disabled={
-                          isLoading || isApproved || approveMutation.isPending
+                        disabled={isApproved || approveMutation.isPending}
+                        onClick={() =>
+                          handleApproveClick(
+                            personReq.requirement.requirementId
+                          )
                         }
-                        onClick={() => handleApproveClick(req.requirementId)}
                       >
                         {isApproved ? 'Aprobado' : 'Aprobar'}
                       </Button>
@@ -156,7 +152,7 @@ export const ApproveRequirementsDialog = ({
             </Button>
             <Button
               onClick={handleConfirmApprove}
-              disabled={isLoading || approveMutation.isPending}
+              disabled={approveMutation.isPending}
             >
               Aprobar
             </Button>

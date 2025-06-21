@@ -71,6 +71,13 @@ export const navItems: NavItem[] = [
     icon: 'shieldQuestion',
     isActive: false,
     shortcut: ['r', 'r']
+  },
+  {
+    title: 'Caja',
+    url: '/dashboard/cash-management',
+    icon: 'dollar',
+    isActive: false,
+    shortcut: ['c', 'c']
   }
 ];
 

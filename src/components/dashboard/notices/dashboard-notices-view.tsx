@@ -10,7 +10,9 @@ export default function DashboardNoticesView() {
         <div className='w-full'></div>
         <PersonsActionsSection />
       </div>
-      <NoticesDataTable />
+      <div className='grid grid-cols-1 gap-6'>
+        <NoticesDataTable />
+      </div>
     </div>
   );
 }

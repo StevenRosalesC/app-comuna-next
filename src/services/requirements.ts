@@ -2,13 +2,23 @@ import { Requirement } from '@/interfaces/requirements';
 import apiCommunity from '@/utils/communityApi';
 
 export const requirementsService = {
-  async list(): Promise<Requirement[]> {
-    const {data:requirements} = await apiCommunity.get<Requirement[]>('/requirements');
-    return requirements;
+  async list(
+    limit: number,
+    offset: number
+  ): Promise<{ data: Requirement[]; count: number }> {
+    const response = await apiCommunity.get<Requirement[]>('/requirements', {
+      params: { limit, offset }
+    });
+    const count = Number(response.headers['x-total-count']) || 0;
+    return { data: response.data, count };
+  },
+  async listAll(): Promise<Requirement[]> {
+    const { data } = await apiCommunity.get<Requirement[]>('/requirements');
+    return data;
   },
   async create(data: Omit<Requirement, 'requirementId'>): Promise<Requirement> {
     try {
-      const {data:newReq} = await apiCommunity.post('/requirements', data);
+      const { data: newReq } = await apiCommunity.post('/requirements', data);
       return newReq;
     } catch (error) {
       throw new Error('Error al añadir el requisito');
@@ -16,7 +26,7 @@ export const requirementsService = {
   },
   async update(id: string, data: Omit<Requirement, 'requirementId'>): Promise<Requirement | null> {
     try {
-      const {data:updatedReq} = await apiCommunity.patch(`/requirements/${id}`, data);
+      const { data: updatedReq } = await apiCommunity.patch(`/requirements/${id}`, data);
       return updatedReq;
     } catch (error) {
       throw new Error('Error al actualizar el requisito');
@@ -24,7 +34,7 @@ export const requirementsService = {
   },
   async remove(id: string): Promise<boolean> {
     try {
-      const {data:removedReq} = await apiCommunity.delete(`/requirements/${id}`);
+      const { data: removedReq } = await apiCommunity.delete(`/requirements/${id}`);
       return removedReq;
     } catch (error) {
       throw new Error('Error al eliminar el requisito');

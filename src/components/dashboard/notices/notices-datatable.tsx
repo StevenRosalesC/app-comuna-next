@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import { NoticesTableRowSkeleton } from './notices-table-row-skeleton';
 
 interface NoticesTableToolbarProps {
   search: string;
@@ -248,11 +249,9 @@ export default function NoticesDataTable() {
             </thead>
             <tbody>
               {isLoading ? (
-                <tr>
-                  <td colSpan={4} className='py-6 text-center'>
-                    Cargando...
-                  </td>
-                </tr>
+                Array.from({ length: pageSize }).map((_, index) => (
+                  <NoticesTableRowSkeleton key={index} />
+                ))
               ) : data && data.data.length > 0 ? (
                 data.data.map((notice) => (
                   <tr

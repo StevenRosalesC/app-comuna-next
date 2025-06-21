@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -20,7 +20,7 @@ import {
   TooltipContent,
   TooltipProvider
 } from '@/components/ui/tooltip';
-import { DataTableSkeleton } from '@/components/ui/table/data-table-skeleton';
+import { RequirementsTableRowSkeleton } from './requirements-table-row-skeleton';
 import * as z from 'zod';
 import {
   Form,
@@ -40,6 +40,7 @@ import { ValidActions, ValidModules } from '@/constants/permissions';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { requirementsService } from '@/services/requirements';
 import { Requirement } from '@/interfaces/requirements';
+import { DataTablePagination } from '@/components/ui/table/data-table-pagination';
 
 const formSchema = z.object({
   requirement: z.string().min(1, { message: 'Requisito es requerido' }),
@@ -56,16 +57,19 @@ export default function RequirementsTable() {
     ValidModules.REQUIREMENTS
   ]?.includes(ValidActions.CREATE);
 
-  // React Query for fetching data
-  const {
-    data: requirements,
-    isLoading,
-    refetch,
-    isFetching
-  } = useQuery({
-    queryKey: ['requirements'],
-    queryFn: () => requirementsService.list()
+  const [pageSize, setPageSize] = useState(5);
+  const [pageIndex, setPageIndex] = useState(0);
+
+  const { data, isLoading, refetch, isFetching } = useQuery({
+    queryKey: ['requirements', { pageSize, pageIndex }],
+    queryFn: () => requirementsService.list(pageSize, pageIndex * pageSize)
   });
+  const requirements = useMemo(() => data?.data ?? [], [data]);
+  const totalCount = useMemo(() => data?.count ?? 0, [data]);
+  const pageCount = useMemo(
+    () => Math.ceil(totalCount / pageSize),
+    [totalCount, pageSize]
+  );
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editReq, setEditReq] = useState<Requirement | null>(null);
@@ -159,84 +163,97 @@ export default function RequirementsTable() {
           </Button>
         </div>
       </div>
-      {isLoading ? (
-        <DataTableSkeleton columnCount={4} rowCount={6} />
-      ) : (
-        <div className='rounded-md border'>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Requisito</TableHead>
-                <TableHead>Observación</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead className='text-right'>Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {requirements && requirements.length > 0 ? (
-                requirements.map((req: Requirement) => (
-                  <TableRow key={req.requirementId}>
-                    <TableCell className='font-medium'>
-                      {req.requirement}
-                    </TableCell>
-                    <TableCell>{req.observation}</TableCell>
-                    <TableCell>
-                      {req.status ? (
-                        <span className='font-semibold text-green-600'>
-                          Activo
-                        </span>
-                      ) : (
-                        <span className='text-gray-400'>Inactivo</span>
-                      )}
-                    </TableCell>
-                    <TableCell className='text-right'>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant='ghost'
-                              size='icon'
-                              onClick={() => openModal(req)}
-                            >
-                              <Icons.userPen className='h-4 w-4' />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Editar</p>
-                          </TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant='ghost'
-                              size='icon'
-                              onClick={() => {
-                                setDeleteReq(req);
-                                setDeleteModalOpen(true);
-                              }}
-                            >
-                              <Icons.trash className='h-4 w-4 text-red-600' />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Eliminar</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={4} className='h-24 text-center'>
-                    No hay requisitos registrados.
+      <div className='rounded-md border'>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Requisito</TableHead>
+              <TableHead>Observación</TableHead>
+              <TableHead>Estado</TableHead>
+              <TableHead className='text-right'>Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              Array.from({ length: pageSize }).map((_, i) => (
+                <RequirementsTableRowSkeleton key={i} />
+              ))
+            ) : requirements && requirements.length > 0 ? (
+              requirements.map((req: Requirement) => (
+                <TableRow key={req.requirementId}>
+                  <TableCell className='font-medium'>
+                    {req.requirement}
+                  </TableCell>
+                  <TableCell>{req.observation}</TableCell>
+                  <TableCell>
+                    {req.status ? (
+                      <span className='font-semibold text-green-600'>
+                        Activo
+                      </span>
+                    ) : (
+                      <span className='text-gray-400'>Inactivo</span>
+                    )}
+                  </TableCell>
+                  <TableCell className='text-right'>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant='ghost'
+                            size='icon'
+                            onClick={() => openModal(req)}
+                          >
+                            <Icons.userPen className='h-4 w-4' />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Editar</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant='ghost'
+                            size='icon'
+                            onClick={() => {
+                              setDeleteReq(req);
+                              setDeleteModalOpen(true);
+                            }}
+                          >
+                            <Icons.trash className='h-4 w-4 text-red-600' />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Eliminar</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={4} className='h-24 text-center'>
+                  No hay requisitos registrados.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <div className='mt-4'>
+        <div className='mb-2 text-center text-sm text-muted-foreground sm:text-left'>
+          {totalCount} registros en total.
         </div>
-      )}
+        <DataTablePagination
+          pageIndex={pageIndex}
+          pageCount={pageCount}
+          pageSize={pageSize}
+          isLoading={isLoading}
+          onPageIndexChange={setPageIndex}
+          onPageSizeChange={setPageSize}
+        />
+      </div>
       {/* Modal for Add/Edit */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent>
@@ -255,7 +272,10 @@ export default function RequirementsTable() {
                   <FormItem>
                     <FormLabel>Requisito</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input
+                        placeholder='Ej: Partida de nacimiento'
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -268,7 +288,7 @@ export default function RequirementsTable() {
                   <FormItem>
                     <FormLabel>Observación</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input placeholder='Ej: Opcional' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -278,42 +298,31 @@ export default function RequirementsTable() {
                 control={form.control}
                 name='status'
                 render={({ field }) => (
-                  <FormItem className='flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm'>
-                    <div className='space-y-0.5'>
-                      <FormLabel>Estado</FormLabel>
-                    </div>
+                  <FormItem className='flex items-center gap-2 space-y-0'>
+                    <FormLabel>Estado</FormLabel>
                     <FormControl>
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
-              <div className='flex justify-end gap-2'>
-                <Button
-                  type='button'
-                  variant='outline'
-                  onClick={() => setModalOpen(false)}
-                >
-                  Cancelar
-                </Button>
-                <Button type='submit' disabled={mutation.isPending}>
-                  {mutation.isPending ? 'Guardando...' : 'Guardar'}
-                </Button>
-              </div>
+              <Button type='submit' disabled={mutation.isPending}>
+                {mutation.isPending ? 'Guardando...' : 'Guardar'}
+              </Button>
             </form>
           </Form>
         </DialogContent>
       </Dialog>
-
       <AlertModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleDelete}
-        loading={isLoading}
-        title='¿Estás seguro?'
+        loading={false}
+        title='¿Estás seguro de eliminar este requisito?'
         description='Esta acción no se puede deshacer.'
       />
     </>

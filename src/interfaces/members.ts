@@ -6,7 +6,7 @@ export interface Member {
   houseNumber:         string;
   createdAt:           Date;
   status:              'active' | 'inactive';
-  persons:             Person;
+  person:             Person;
   invoices:            any[];
   memberDocumentTypes: any[];
 }

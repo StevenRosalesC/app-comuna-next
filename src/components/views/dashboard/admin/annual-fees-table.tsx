@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -52,7 +52,9 @@ export default function AnnualFeesTable() {
   const [addForm, setAddForm] = useState<CreateAnnualFee>({
     description: '',
     amount: 0,
-    status: true
+    status: true,
+    name: '',
+    year: new Date().getFullYear()
   });
 
   const { data, isLoading, isError } = useQuery<{
@@ -79,7 +81,9 @@ export default function AnnualFeesTable() {
       setAddForm({
         description: '',
         amount: 0,
-        status: true
+        status: true,
+        name: '',
+        year: new Date().getFullYear()
       });
     },
     onError: () => {
@@ -119,12 +123,16 @@ export default function AnnualFeesTable() {
         ? {
             description: fee.description,
             amount: fee.amount,
-            status: fee.status
+            status: fee.status,
+            name: fee.name,
+            year: fee.year
           }
         : {
             description: '',
             amount: 0,
-            status: true
+            status: true,
+            name: '',
+            year: new Date().getFullYear()
           }
     );
     setModalOpen(true);
@@ -163,9 +171,11 @@ export default function AnnualFeesTable() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Nombre</TableHead>
               <TableHead>Descripción</TableHead>
               <TableHead>Monto ($)</TableHead>
               <TableHead>Estado</TableHead>
+              <TableHead>Año</TableHead>
               <TableHead className='text-right'>Acciones</TableHead>
             </TableRow>
           </TableHeader>
@@ -177,7 +187,8 @@ export default function AnnualFeesTable() {
             ) : annualFees.length > 0 ? (
               annualFees.map((fee) => (
                 <TableRow key={fee.feeId}>
-                  <TableCell>{fee.description}</TableCell>
+                  <TableCell>{fee.name}</TableCell>
+                  <TableCell>{fee.description || 'N/A'}</TableCell>
                   <TableCell>$ {fee.amount}</TableCell>
                   <TableCell>
                     {fee.status ? (
@@ -188,6 +199,7 @@ export default function AnnualFeesTable() {
                       <span className='text-gray-400'>Inactivo</span>
                     )}
                   </TableCell>
+                  <TableCell>{fee.year}</TableCell>
                   <TableCell className='text-right'>
                     <TooltipProvider>
                       <Tooltip>
@@ -285,6 +297,17 @@ export default function AnnualFeesTable() {
                 }
               />
             </div>
+            <div>
+              <label className='mb-1 block text-sm font-medium'>Año</label>
+              <Input
+                type='number'
+                value={form.year}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, year: Number(e.target.value) }))
+                }
+                required
+              />
+            </div>
             <div className='flex justify-end gap-2'>
               <Button
                 type='button'
@@ -306,6 +329,14 @@ export default function AnnualFeesTable() {
           <DialogTitle>Añadir nueva cuota</DialogTitle>
           <form onSubmit={handleAdd} className='mt-2 space-y-4'>
             <div>
+              <label className='mb-1 block text-sm font-medium'>Nombre</label>
+              <Input
+                value={addForm.name}
+                onChange={(e) =>
+                  setAddForm((f) => ({ ...f, name: e.target.value }))
+                }
+                required
+              />
               <label className='mb-1 block text-sm font-medium'>
                 Descripción
               </label>
@@ -337,6 +368,17 @@ export default function AnnualFeesTable() {
                 onCheckedChange={(checked) =>
                   setAddForm((f) => ({ ...f, status: checked }))
                 }
+              />
+            </div>
+            <div>
+              <label className='mb-1 block text-sm font-medium'>Año</label>
+              <Input
+                type='number'
+                value={addForm.year}
+                onChange={(e) =>
+                  setAddForm((f) => ({ ...f, year: Number(e.target.value) }))
+                }
+                required
               />
             </div>
             <div className='flex justify-end gap-2'>

@@ -68,14 +68,14 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     values: {
-      firstName: member?.persons.firstName ?? '',
-      lastName: member?.persons.lastName ?? '',
-      identification: member?.persons.identification ?? '',
-      email: member?.persons.email ?? null,
-      phoneNumber: member?.persons.phoneNumber ?? null,
-      gender: member?.persons.gender.toString() ?? '0',
-      birthDate: member?.persons.birthDate
-        ? new Date(member.persons.birthDate)
+      firstName: member?.person.firstName ?? '',
+      lastName: member?.person.lastName ?? '',
+      identification: member?.person.identification ?? '',
+      email: member?.person.email ?? null,
+      phoneNumber: member?.person.phoneNumber ?? null,
+      gender: member?.person.gender.toString() ?? '0',
+      birthDate: member?.person.birthDate
+        ? new Date(member.person.birthDate)
         : new Date(),
       houseNumber: member?.houseNumber ?? ''
     }
@@ -88,7 +88,7 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
       const { houseNumber, ...personValues } = values;
 
       const personDataToUpdate = {
-        ...member.persons,
+        ...member.person,
         ...personValues,
         gender: parseInt(personValues.gender, 10)
       };

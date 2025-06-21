@@ -1,4 +1,4 @@
-import { ArrowUpDown, ArrowUp, ArrowDown, Pencil } from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
@@ -59,7 +59,7 @@ export function useUsersTableColumns({ actions }: UsersTableColumnsProps) {
       size: 120
     },
     {
-      accessorFn: (row) => row.persons?.email,
+      accessorFn: (row) => row.person?.email,
       id: 'email',
       header: ({ column }) => (
         <Button
@@ -79,7 +79,7 @@ export function useUsersTableColumns({ actions }: UsersTableColumnsProps) {
       ),
       cell: ({ row }) => (
         <div className='w-full min-w-[140px]'>
-          {row.original.persons?.email || '-'}
+          {row.original.person?.email || '-'}
         </div>
       ),
       size: 140

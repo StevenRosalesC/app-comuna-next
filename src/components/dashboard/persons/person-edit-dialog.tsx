@@ -35,8 +35,6 @@ import { useNeighborhoodsStore } from '@/hooks/store/useNeighborhoodsStore';
 import { Neighborhood } from '@/store/neighborhoodsStore';
 import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useQuery } from '@tanstack/react-query';
-import { requirementsService } from '@/services/requirements';
 
 const personFormSchema = z.object({
   personId: z.string().optional(),
@@ -73,11 +71,6 @@ export function PersonEditDialog({
   const { neighborhoods } = useNeighborhoodsStore((state) => ({
     neighborhoods: state.neighborhoods
   }));
-
-  const { data: requirements = [], isFetching } = useQuery({
-    queryKey: ['requirements'],
-    queryFn: requirementsService.list
-  });
 
   useEffect(() => {
     if (person) {
@@ -129,15 +122,6 @@ export function PersonEditDialog({
   );
 
   if (!person) return null;
-
-  // Get approved requirement IDs for the person
-  const approvedIds =
-    person.requirementApprovals?.map((a) => a.requirementId) || [];
-  // Get requirements that are not approved
-  const pendingRequirements = requirements.filter(
-    (req) => !approvedIds.includes(req.requirementId)
-  );
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className='sm:max-w-[425px] '>
@@ -256,20 +240,6 @@ export function PersonEditDialog({
               />
               {person.status && (
                 <>
-                  {pendingRequirements.length > 0 && (
-                    <div className='mt-4 flex flex-col gap-2 rounded-lg border p-4'>
-                      <span className='w-full text-center text-sm font-bold'>
-                        Requisitos pendientes de aprobación
-                      </span>
-                      <ul className='flex list-disc flex-col gap-2 pl-4'>
-                        {pendingRequirements.map((requirement) => (
-                          <li key={requirement.requirementId}>
-                            {requirement.requirement}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
                   {person.requirementApprovals &&
                     person.requirementApprovals.length > 0 && (
                       <div className='mt-4 flex flex-col gap-2 rounded-lg border p-4'>

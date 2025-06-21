@@ -85,7 +85,7 @@ export function useUsersTableColumns({ actions }: UsersTableColumnsProps) {
       size: 140
     },
     {
-      accessorFn: (row) => row.userRoles?.name,
+      accessorFn: (row) => row.role?.name,
       id: 'role',
       header: ({ column }) => (
         <Button
@@ -105,7 +105,7 @@ export function useUsersTableColumns({ actions }: UsersTableColumnsProps) {
       ),
       cell: ({ row }) => (
         <div className='w-full min-w-[100px]'>
-          {row.original.userRoles?.name || '-'}
+          {row.original.role?.name || '-'}
         </div>
       ),
       size: 100

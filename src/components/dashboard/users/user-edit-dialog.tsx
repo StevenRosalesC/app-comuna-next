@@ -74,7 +74,7 @@ export function UserEditDialog({
         username: user.username,
         email: user.person.email,
         status: user.status ?? true,
-        role: user.roleId || user.userRoles?.roleId || ''
+        role: user.roleId || user.role?.roleId || ''
       });
     }
   }, [user, form.reset, form]);

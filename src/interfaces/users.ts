@@ -14,7 +14,7 @@ export interface User {
   roleId:    string;
   personId:  string;
   person:    Persons;
-  userRoles: UserRoles;
+  role: UserRoles;
 }
 
 export interface Persons {

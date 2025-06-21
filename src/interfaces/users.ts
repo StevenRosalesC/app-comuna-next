@@ -13,7 +13,7 @@ export interface User {
   token:     string;
   roleId:    string;
   personId:  string;
-  persons:   Persons;
+  person:    Persons;
   userRoles: UserRoles;
 }
 

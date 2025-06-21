@@ -3,9 +3,15 @@
 import apiCommunity from '@/utils/communityApi';
 import { AnnualFee, CreateAnnualFee, UpdateAnnualFee } from '@/interfaces/annual-fee';
 
-export const getAnnualFees = async (): Promise<AnnualFee[]> => {
-  const { data } = await apiCommunity.get<AnnualFee[]>('/annual-fees');
-  return data;
+export const getAnnualFees = async (
+  limit: number,
+  offset: number
+): Promise<{ data: AnnualFee[]; count: number }> => {
+  const response = await apiCommunity.get<AnnualFee[]>('/annual-fees', {
+    params: { limit, offset }
+  });
+  const count = Number(response.headers['x-total-count']) || 0;
+  return { data: response.data, count };
 };
 
 export const createAnnualFee = async (fee: CreateAnnualFee): Promise<AnnualFee> => {

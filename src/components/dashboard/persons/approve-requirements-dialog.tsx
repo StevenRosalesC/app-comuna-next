@@ -30,10 +30,9 @@ export const ApproveRequirementsDialog = ({
   const [selectedReq, setSelectedReq] = useState<string | null>(null);
   const [observation, setObservation] = useState('');
 
-  // Obtener requisitos con React Query
   const { data: requirements = [], isLoading } = useQuery({
-    queryKey: ['requirements'],
-    queryFn: requirementsService.list
+    queryKey: ['requirements', 'all'],
+    queryFn: requirementsService.listAll
   });
 
   useEffect(() => {

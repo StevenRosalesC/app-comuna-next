@@ -43,7 +43,7 @@ import {
 import { usePathname } from 'next/navigation';
 import { Icons } from '../icons';
 import { NavItem } from 'types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSessionContext } from '../providers/session-Provider';
 import { logout } from '@/app/actions/auth-actions';
 import Image from 'next/image';
@@ -111,7 +111,14 @@ function SidebarMenuItemWithPermission({
       </SidebarMenuItem>
     </Collapsible>
   ) : (
-    <SidebarMenuItem key={item.title}>
+    <SidebarMenuItem
+      key={item.title}
+      className={`${
+        pathname === item.url
+          ? 'rounded-lg bg-green-100 font-bold text-green-900 dark:bg-green-900 dark:text-green-100'
+          : ''
+      } transition-all duration-300 ease-in-out hover:rounded-lg hover:bg-green-100 hover:text-green-900 dark:hover:bg-green-900 dark:hover:text-green-100`}
+    >
       <SidebarMenuButton
         asChild
         tooltip={item.title}
@@ -119,7 +126,13 @@ function SidebarMenuItemWithPermission({
       >
         <Link href={item.url}>
           <Icon />
-          <span>{item.title}</span>
+          <span
+            className={`${
+              pathname === item.url ? 'font-bold text-green-900' : ''
+            }`}
+          >
+            {item.title}
+          </span>
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>
@@ -129,10 +142,15 @@ function SidebarMenuItemWithPermission({
 export default function AppSidebar() {
   const { session, setSession } = useSessionContext();
   const { clearPermissions } = usePermissionsStore();
+  const pathname = usePathname();
+  const [currentPath, setCurrentPath] = useState<string>(pathname);
   // const { data: session } = useSession();
   const [userAccess] = useState<NavItem[]>(navItems);
-  const pathname = usePathname();
   // const { state, isMobile } = useSidebar();
+
+  useEffect(() => {
+    setCurrentPath(pathname);
+  }, [pathname]);
 
   return (
     <Sidebar collapsible='icon'>
@@ -154,13 +172,13 @@ export default function AppSidebar() {
       </SidebarHeader>
       <SidebarContent className='overflow-x-hidden'>
         <SidebarGroup>
-          <SidebarGroupLabel>Overview</SidebarGroupLabel>
+          <SidebarGroupLabel>Menú</SidebarGroupLabel>
           <SidebarMenu>
             {userAccess.map((item) => (
               <SidebarMenuItemWithPermission
                 key={item.title}
                 item={item}
-                pathname={pathname}
+                pathname={currentPath}
               />
             ))}
           </SidebarMenu>

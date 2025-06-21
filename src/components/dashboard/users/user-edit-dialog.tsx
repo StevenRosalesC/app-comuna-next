@@ -72,7 +72,7 @@ export function UserEditDialog({
     if (user) {
       form.reset({
         username: user.username,
-        email: user.persons.email,
+        email: user.person.email,
         status: user.status ?? true,
         role: user.roleId || user.userRoles?.roleId || ''
       });

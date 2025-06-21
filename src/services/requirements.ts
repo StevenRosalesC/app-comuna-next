@@ -13,7 +13,7 @@ export const requirementsService = {
     return { data: response.data, count };
   },
   async listAll(): Promise<Requirement[]> {
-    const { data } = await apiCommunity.get<Requirement[]>('/requirements');
+    const { data } = await apiCommunity.get<Requirement[]>('/requirements?limit=1000');
     return data;
   },
   async create(data: Omit<Requirement, 'requirementId'>): Promise<Requirement> {

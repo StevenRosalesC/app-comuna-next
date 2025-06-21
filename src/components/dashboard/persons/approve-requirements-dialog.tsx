@@ -10,7 +10,7 @@ import {
 import { Person } from '@/interfaces/persons';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { requirementsService } from '@/services/requirements';
 import { toast } from 'sonner';
 
@@ -25,7 +25,7 @@ export const ApproveRequirementsDialog = ({
   open,
   onOpenChange
 }: ApproveRequirementsDialogProps) => {
-  const [approved, setApproved] = useState<string[]>([]);
+  const queryClient = useQueryClient();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedReq, setSelectedReq] = useState<string | null>(null);
   const [observation, setObservation] = useState('');
@@ -35,17 +35,33 @@ export const ApproveRequirementsDialog = ({
     queryFn: requirementsService.listAll
   });
 
-  useEffect(() => {
-    if (open) {
-      setApproved([]);
+  const approveMutation = useMutation({
+    mutationFn: ({
+      personId,
+      requirementId,
+      observation
+    }: {
+      personId: string;
+      requirementId: string;
+      observation: string;
+    }) => requirementsService.approve(personId, requirementId, { observation }),
+    onSuccess: () => {
+      toast.success('Requisito aprobado correctamente');
+      queryClient.invalidateQueries({ queryKey: ['persons'] });
+      queryClient.invalidateQueries({ queryKey: ['requirements', 'all'] });
+    },
+    onError: () => {
+      toast.error('Error al aprobar el requisito');
     }
-  }, [open, person]);
+  });
 
-  // get approved requirements ids
-  const approvedIds =
-    person.requirementApprovals?.map((r) => r.requirementId) || [];
-  // join approved requirements with approved requirements in this session
-  const allApproved = new Set([...approvedIds, ...approved]);
+  useEffect(() => {
+    if (!open) {
+      setConfirmOpen(false);
+      setSelectedReq(null);
+      setObservation('');
+    }
+  }, [open]);
 
   const handleApproveClick = (requirementId: string) => {
     setSelectedReq(requirementId);
@@ -55,20 +71,14 @@ export const ApproveRequirementsDialog = ({
 
   const handleConfirmApprove = async () => {
     if (selectedReq) {
-      toast.promise(
-        requirementsService.approve(person.personId, selectedReq, {
-          observation
-        }),
-        {
-          loading: 'Aprobando requisito...',
-          success: 'Requisito aprobado correctamente',
-          error: 'Error al aprobar el requisito'
-        }
-      );
-      setApproved((prev) => [...prev, selectedReq]);
+      approveMutation.mutate({
+        personId: person.personId,
+        requirementId: selectedReq,
+        observation
+      });
       setConfirmOpen(false);
-      setObservation('');
       setSelectedReq(null);
+      setObservation('');
     }
   };
 
@@ -93,7 +103,11 @@ export const ApproveRequirementsDialog = ({
 
               <div className='mt-4 flex flex-col gap-2'>
                 {requirements.map((req) => {
-                  const isApproved = allApproved.has(req.requirementId);
+                  const personReq = person.personRequirements?.find(
+                    (pr) => pr.requirement.requirementId === req.requirementId
+                  );
+                  const isApproved = personReq?.status === 'APPROVED';
+
                   return (
                     <div
                       key={req.requirementId}
@@ -102,7 +116,9 @@ export const ApproveRequirementsDialog = ({
                       <p className='flex-1'>{req.requirement}</p>
                       <Button
                         size='sm'
-                        disabled={isLoading || isApproved}
+                        disabled={
+                          isLoading || isApproved || approveMutation.isPending
+                        }
                         onClick={() => handleApproveClick(req.requirementId)}
                       >
                         {isApproved ? 'Aprobado' : 'Aprobar'}
@@ -138,7 +154,10 @@ export const ApproveRequirementsDialog = ({
             <Button variant='outline' onClick={() => setConfirmOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleConfirmApprove} disabled={isLoading}>
+            <Button
+              onClick={handleConfirmApprove}
+              disabled={isLoading || approveMutation.isPending}
+            >
               Aprobar
             </Button>
           </DialogFooter>

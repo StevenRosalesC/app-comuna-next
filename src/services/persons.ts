@@ -81,25 +81,28 @@ export const personsService = {
     }
   },
 
-  async getAllWithAllRequirementsApproved({ limit = 10, offset = 0 }: { limit?: number, offset?: number }): Promise<ServiceResponse<Person[] | null>> {
-    try {
-      const { data } = await apiCommunity.get('/persons/with-all-requirements-approved', {
+  async getAllWithAllRequirementsApproved({
+    limit = 10,
+    offset = 0,
+    search = ''
+  }: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+  }): Promise<{ data: Person[]; count: number }> {
+    const { data } = await apiCommunity.get<IPersonsRequestResponse>(
+      '/persons/with-all-requirements-approved',
+      {
         params: {
           limit,
-          offset
+          offset,
+          search
         }
-      });
-      return {
-        data: data,
-        message: 'Personas obtenidas correctamente',
-        status: true
       }
-    } catch (error) {
-      return {
-        data: null,
-        message: 'Error al obtener las personas',
-        status: false
-      }
-    }
+    );
+    return {
+      data: data.data,
+      count: data.count
+    };
   }
 }

@@ -9,4 +9,11 @@ export interface AnnualFee {
 
 export type CreateAnnualFee = Omit<AnnualFee, 'feeId'>;
 
-export type UpdateAnnualFee = Partial<CreateAnnualFee>; 
+export type UpdateAnnualFee = Partial<CreateAnnualFee>;
+
+export interface GetAnnualFeesParams {
+  limit: number;
+  offset: number;
+  year?: number;
+  search?: string;
+} 

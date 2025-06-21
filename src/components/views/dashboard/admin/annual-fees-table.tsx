@@ -34,12 +34,19 @@ import {
 } from '@/interfaces/annual-fee';
 import { AnnualFeesTableRowSkeleton } from './annual-fees-table-row-skeleton';
 import { DataTablePagination } from '@/components/ui/table/data-table-pagination';
+import { useDebounce } from '@/hooks/use-debounce';
+import { AxiosError } from 'axios';
 
 export default function AnnualFeesTable() {
   const queryClient = useQueryClient();
 
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
+
+  const [search, setSearch] = useState('');
+  const [year, setYear] = useState<string>('');
+
+  const debouncedSearch = useDebounce(search, 500);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editFee, setEditFee] = useState<AnnualFee | null>(null);
@@ -57,12 +64,22 @@ export default function AnnualFeesTable() {
     year: new Date().getFullYear()
   });
 
+  React.useEffect(() => {
+    setPageIndex(0);
+  }, [debouncedSearch, year]);
+
   const { data, isLoading, isError } = useQuery<{
     data: AnnualFee[];
     count: number;
   }>({
-    queryKey: ['annualFees', { pageIndex, pageSize }],
-    queryFn: () => getAnnualFees(pageSize, pageIndex * pageSize)
+    queryKey: ['annualFees', { pageIndex, pageSize, debouncedSearch, year }],
+    queryFn: () =>
+      getAnnualFees({
+        limit: pageSize,
+        offset: pageIndex * pageSize,
+        search: debouncedSearch,
+        year: year ? Number(year) : undefined
+      })
   });
 
   const annualFees = useMemo(() => data?.data ?? [], [data]);
@@ -110,8 +127,10 @@ export default function AnnualFeesTable() {
       queryClient.invalidateQueries({ queryKey: ['annualFees'] });
       toast.success('Cuota eliminada');
     },
-    onError: () => {
-      toast.error('Error al eliminar la cuota');
+    onError: (error: AxiosError<{ message: string }>) => {
+      const errorMessage =
+        error.response?.data?.message || 'Error al eliminar la cuota';
+      toast.error(errorMessage);
     }
   });
 
@@ -166,6 +185,21 @@ export default function AnnualFeesTable() {
       <div className='mb-4 flex items-center justify-between'>
         <h2 className='text-2xl font-bold'>Cuotas anuales</h2>
         <Button onClick={() => setAddModalOpen(true)}>+ Nueva cuota</Button>
+      </div>
+      <div className='mb-4 flex items-center gap-2'>
+        <Input
+          placeholder='Buscar por nombre...'
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className='max-w-sm'
+        />
+        <Input
+          type='number'
+          placeholder='Filtrar por año...'
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+          className='max-w-xs'
+        />
       </div>
       <div className='rounded-md border'>
         <Table>

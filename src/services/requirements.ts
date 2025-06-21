@@ -40,9 +40,16 @@ export const requirementsService = {
       throw new Error('Error al eliminar el requisito');
     }
   },
-  async approve(personId: string, requirementId: string, data: { observation?: string }): Promise<any> {
+  async approve(
+    personId: string,
+    requirementId: string,
+    data: { observation?: string }
+  ): Promise<any> {
     try {
-      const { data: approval } = await apiCommunity.post(`/persons/${personId}/requirements/${requirementId}/approve`, data);
+      const { data: approval } = await apiCommunity.patch(
+        `/persons/${personId}/requirements/${requirementId}/approve`,
+        data
+      );
       return approval;
     } catch (error) {
       throw new Error('Error al aprobar el requisito');

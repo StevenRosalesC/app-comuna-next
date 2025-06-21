@@ -35,6 +35,7 @@ import { useNeighborhoodsStore } from '@/hooks/store/useNeighborhoodsStore';
 import { Neighborhood } from '@/store/neighborhoodsStore';
 import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { isAdult } from '@/utils/persons';
 
 const personFormSchema = z.object({
   personId: z.string().optional(),
@@ -238,31 +239,66 @@ export function PersonEditDialog({
                   </FormItem>
                 )}
               />
-              {person.status && (
-                <>
-                  {person.requirementApprovals &&
-                    person.requirementApprovals.length > 0 && (
+              {person.status && isAdult(new Date(person.birthDate)) && (
+                <div className='flex flex-col gap-2'>
+                  {person.personRequirement &&
+                    person.personRequirement.filter(
+                      (req) => req.status === 'APPROVED'
+                    ).length > 0 && (
                       <div className='mt-4 flex flex-col gap-2 rounded-lg border p-4'>
                         <span className='w-full text-center text-sm font-bold'>
                           Requisitos aprobados
                         </span>
                         <ul className='flex flex-col gap-3 pl-2'>
-                          {person.requirementApprovals.map((approval) => (
-                            <li key={approval.approvalId} className='text-sm'>
-                              <p className='font-semibold'>
-                                {approval.requirements.requirement}
-                              </p>
-                              <p className='text-xs text-gray-500'>
-                                Aprobado por:{' '}
-                                {approval.approvedByUser.persons.firstName}{' '}
-                                {approval.approvedByUser.persons.lastName}
-                              </p>
-                            </li>
-                          ))}
+                          {person.personRequirement
+                            .filter((req) => req.status === 'APPROVED')
+                            .map((req) => (
+                              <li
+                                key={req.personRequirementId}
+                                className='text-sm'
+                              >
+                                <p className='font-semibold'>
+                                  {req.requirement.requirement}
+                                </p>
+                                <p className='text-xs text-gray-500'>
+                                  Aprobado por:{' '}
+                                  {req.approvedByUser?.person.firstName}{' '}
+                                  {req.approvedByUser?.person.lastName}
+                                </p>
+                              </li>
+                            ))}
                         </ul>
                       </div>
                     )}
-                </>
+                  {person.personRequirement &&
+                    person.personRequirement.filter(
+                      (req) => req.status === 'PENDING'
+                    ).length > 0 && (
+                      <div className='mt-4 flex flex-col gap-2 rounded-lg border p-4'>
+                        <span className='w-full text-center text-sm font-bold'>
+                          Requisitos pendientes
+                        </span>
+                        <ul className='flex flex-col gap-3 pl-2'>
+                          {person.personRequirement
+                            .filter((req) => req.status === 'PENDING')
+                            .map((req) => (
+                              <li
+                                key={req.personRequirementId}
+                                className='text-sm'
+                              >
+                                <p className='font-semibold'>
+                                  {req.requirement.requirement}
+                                </p>
+                                <p className='text-xs text-gray-500'>
+                                  Observación:
+                                  {req.observation || ' Ninguna'}
+                                </p>
+                              </li>
+                            ))}
+                        </ul>
+                      </div>
+                    )}
+                </div>
               )}
             </ScrollArea>
             <DialogFooter>

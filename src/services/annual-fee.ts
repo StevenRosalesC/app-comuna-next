@@ -1,17 +1,26 @@
 // Service for annual fee operations (skeleton)
 
 import apiCommunity from '@/utils/communityApi';
-import { AnnualFee, CreateAnnualFee, UpdateAnnualFee } from '@/interfaces/annual-fee';
+import {
+  AnnualFee,
+  CreateAnnualFee,
+  GetAnnualFeesParams,
+  UpdateAnnualFee
+} from '@/interfaces/annual-fee';
 
-export const getAnnualFees = async (
-  limit: number,
-  offset: number
-): Promise<{ data: AnnualFee[]; count: number }> => {
-  const response = await apiCommunity.get<AnnualFee[]>('/annual-fees', {
-    params: { limit, offset }
+export const getAnnualFees = async ({
+  limit,
+  offset,
+  search,
+  year
+}: GetAnnualFeesParams): Promise<{ data: AnnualFee[]; count: number }> => {
+  const { data: response } = await apiCommunity.get<{
+    data: AnnualFee[];
+    count: number;
+  }>('/annual-fees', {
+    params: { limit, offset, search, year }
   });
-  const count = Number(response.headers['x-total-count']) || 0;
-  return { data: response.data, count };
+  return response;
 };
 
 export const createAnnualFee = async (fee: CreateAnnualFee): Promise<AnnualFee> => {

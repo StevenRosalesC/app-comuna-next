@@ -12,4 +12,20 @@ export interface PersonRequirement {
   status: RequirementStatus;
   observation?: string | null;
   requirement: Requirement;
+  approvedByUser?: ApprovedByUser;
+}
+export interface ApprovedByUser {
+  username: string;
+  role:     Role;
+  person:   Person;
+}
+
+export interface Person {
+  lastName:       string;
+  firstName:      string;
+  identification: string;
+}
+
+export interface Role {
+  name: string;
 }

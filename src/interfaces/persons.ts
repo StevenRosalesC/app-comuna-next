@@ -16,7 +16,7 @@ export interface Person {
   status:         boolean;
   email:          string;
   neighborhoodId: string;
-  personRequirements?: PersonRequirement[];
+  personRequirement?: PersonRequirement[];
 }
 
 export interface IPerson {

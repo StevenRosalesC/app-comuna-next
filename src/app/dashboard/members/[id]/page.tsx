@@ -20,6 +20,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
+import MemberPayment from '@/components/dashboard/members/member-payment';
 
 export default function MemberPage({ params }: { params: { id: string } }) {
   const {
@@ -121,6 +122,8 @@ export default function MemberPage({ params }: { params: { id: string } }) {
           </Table>
         </CardContent>
       </Card>
+
+      {member && <MemberPayment member={member} />}
     </div>
   );
 }

@@ -1,8 +1,5 @@
 'use client';
-import { CalendarDateRangePicker } from '@/components/date-range-picker';
 import PageContainer from '@/components/layout/page-container';
-import { Button } from '@/components/ui/button';
-
 import { useSessionContext } from '@/components/providers/session-Provider';
 
 export default function OverViewPage() {
@@ -17,10 +14,6 @@ export default function OverViewPage() {
               {session?.lastName + ' ' + session?.firstName}
             </span>
           </h2>
-          <div className='hidden items-center space-x-2 md:flex'>
-            <CalendarDateRangePicker />
-            <Button>Download</Button>
-          </div>
         </div>
         {/* <Tabs defaultValue='overview' className='space-y-4'>
           <TabsList>

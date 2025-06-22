@@ -41,6 +41,12 @@ export const modulesPermissions = [
     actions: ['read', 'write', 'edit', 'delete'],
     label: 'Roles'
   },
+  {
+    module: 'cash-management',
+    route: 'cash-management',
+    actions: ['read', 'write', 'edit', 'delete'],
+    label: 'Caja'
+  },
   // Add more modules here
 ]; 
 
@@ -52,7 +58,8 @@ export enum ValidModules {
   NOTICES = 'notices',
   USERS = 'users',
   ROLES = 'roles',
-  REQUIREMENTS = 'requirements'
+  REQUIREMENTS = 'requirements',
+  CASH_MANAGEMENT = 'cash-management'
 }
 
 export enum ValidActions {    

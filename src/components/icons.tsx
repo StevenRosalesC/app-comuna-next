@@ -40,7 +40,8 @@ import {
   Contact,
   ShieldCheck,
   UserSearchIcon,
-  ShieldQuestion
+  ShieldQuestion,
+  CircleDollarSign
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
@@ -102,5 +103,6 @@ export const Icons = {
   bookOpenText: BookOpenText,
   shieldCheck: ShieldCheck,
   userSearch: UserSearchIcon,
-  shieldQuestion: ShieldQuestion
+  shieldQuestion: ShieldQuestion,
+  dollar: CircleDollarSign
 };

@@ -1,12 +1,12 @@
 import { Person } from "./persons";
+import { MemberFee } from "./member-fee";
 
 export interface Member {
   memberId:            string;
-  personId:            string;
   houseNumber:         string;
-  createdAt:           Date;
   status:              'active' | 'inactive';
-  persons:             Person;
-  invoices:            any[];
+  person:             Person;
   memberDocumentTypes: any[];
+  memberFees?:         MemberFee[];
+  createdAt:           string;
 }

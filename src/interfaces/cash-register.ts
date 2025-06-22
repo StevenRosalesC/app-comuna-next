@@ -1,33 +1,38 @@
 export interface CashRegister {
   cashRegisterId: string;
-  cashRegisterName: string | null;
   openDate: string;
   closeDate: string | null;
   initialAmount: number;
-  finalAmount: number;
-  updatedAt: string;
-  closed: boolean;
+  finalAmount: number | null;
   notes: string | null;
-  openedByUserId: string;
-  closedByUserId: string | null;
-  openedByUser?: {
+  closed: boolean;
+  openedByUser: {
     person: {
       firstName: string;
       lastName: string;
     };
   };
-  closedByUser?: {
+  closedByUser: {
     person: {
       firstName: string;
       lastName: string;
     };
-  };
-  invoices?: any[];
+  } | null;
 }
 
 export interface CreateCashRegisterDto {
   initialAmount: number;
   notes?: string;
+}
+
+export interface CloseCashRegisterDto {
+  finalAmount: number;
+  notes?: string;
+}
+
+export interface PaginatedCashRegistersResponse {
+  total: number;
+  cashRegisters: CashRegister[];
 }
 
 export interface UpdateCashRegisterDto {

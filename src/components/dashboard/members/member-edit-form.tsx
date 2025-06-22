@@ -105,7 +105,7 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
 
       const memberPromise = updateMember(memberId, { houseNumber });
       const personPromise = personsService.updatePerson(
-        member.personId,
+        member.person.personId,
         updatablePersonData
       );
 

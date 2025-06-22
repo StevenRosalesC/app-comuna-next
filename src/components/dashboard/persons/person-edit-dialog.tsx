@@ -47,7 +47,8 @@ const personFormSchema = z.object({
   neighborhoodId: z.string().optional(),
   phoneNumber: z.string().optional(),
   gender: z.number().optional(),
-  status: z.boolean().optional()
+  status: z.boolean().optional(),
+  hasDisability: z.boolean().optional()
 });
 
 type PersonFormValues = z.infer<typeof personFormSchema>;
@@ -84,7 +85,8 @@ export function PersonEditDialog({
           ? new Date(person.birthDate).toISOString().split('T')[0]
           : '',
         neighborhoodId: person.neighborhoodId || '',
-        status: person.status ?? true
+        status: person.status ?? true,
+        hasDisability: person.hasDisability ?? false
       });
     }
   }, [person, form.reset, form]);
@@ -101,7 +103,8 @@ export function PersonEditDialog({
         email: data.email || '',
         birthDate: new Date(data.birthDate),
         neighborhoodId: data.neighborhoodId || '',
-        status: data.status ?? true
+        status: data.status ?? true,
+        hasDisability: data.hasDisability ?? false
       };
       onSave?.(personToSave);
       onOpenChange(false);
@@ -229,6 +232,27 @@ export function PersonEditDialog({
                   <FormItem className='mt-4 flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm'>
                     <div className='space-y-0.5'>
                       <FormLabel>Estado</FormLabel>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='hasDisability'
+                render={({ field }) => (
+                  <FormItem className='mt-4 flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm'>
+                    <div className='space-y-0.5'>
+                      <FormLabel>Tiene Discapacidad</FormLabel>
+                      <DialogDescription>
+                        Activa esta opción si el miembro tiene un carnet de
+                        discapacidad.
+                      </DialogDescription>
                     </div>
                     <FormControl>
                       <Switch

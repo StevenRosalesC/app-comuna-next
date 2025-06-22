@@ -13,8 +13,8 @@ export interface User {
   token:     string;
   roleId:    string;
   personId:  string;
-  persons:   Persons;
-  userRoles: UserRoles;
+  person:    Persons;
+  role: UserRoles;
 }
 
 export interface Persons {

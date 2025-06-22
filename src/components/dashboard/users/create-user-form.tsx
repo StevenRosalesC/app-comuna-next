@@ -63,12 +63,16 @@ export const CreateUserForm = () => {
     }
 
     // Only update the person if the email was edited and is different
-    if (
-      !selectedPerson.email ||
-      (selectedPerson.email && selectedPerson.email !== values.email)
-    ) {
+    if (selectedPerson.email !== values.email) {
       await personsService.updatePerson(selectedPerson.personId, {
-        ...selectedPerson,
+        identification: selectedPerson.identification,
+        lastName: selectedPerson.lastName,
+        firstName: selectedPerson.firstName,
+        gender: selectedPerson.gender,
+        birthDate: selectedPerson.birthDate,
+        neighborhoodId: selectedPerson.neighborhoodId,
+        phoneNumber: selectedPerson.phoneNumber,
+        status: selectedPerson.status,
         email: values.email
       });
     }

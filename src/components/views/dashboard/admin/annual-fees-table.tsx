@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -34,12 +34,19 @@ import {
 } from '@/interfaces/annual-fee';
 import { AnnualFeesTableRowSkeleton } from './annual-fees-table-row-skeleton';
 import { DataTablePagination } from '@/components/ui/table/data-table-pagination';
+import { useDebounce } from '@/hooks/use-debounce';
+import { AxiosError } from 'axios';
 
 export default function AnnualFeesTable() {
   const queryClient = useQueryClient();
 
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
+
+  const [search, setSearch] = useState('');
+  const [year, setYear] = useState<string>('');
+
+  const debouncedSearch = useDebounce(search, 500);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editFee, setEditFee] = useState<AnnualFee | null>(null);
@@ -52,15 +59,27 @@ export default function AnnualFeesTable() {
   const [addForm, setAddForm] = useState<CreateAnnualFee>({
     description: '',
     amount: 0,
-    status: true
+    status: true,
+    name: '',
+    year: new Date().getFullYear()
   });
+
+  React.useEffect(() => {
+    setPageIndex(0);
+  }, [debouncedSearch, year]);
 
   const { data, isLoading, isError } = useQuery<{
     data: AnnualFee[];
     count: number;
   }>({
-    queryKey: ['annualFees', { pageIndex, pageSize }],
-    queryFn: () => getAnnualFees(pageSize, pageIndex * pageSize)
+    queryKey: ['annualFees', { pageIndex, pageSize, debouncedSearch, year }],
+    queryFn: () =>
+      getAnnualFees({
+        limit: pageSize,
+        offset: pageIndex * pageSize,
+        search: debouncedSearch,
+        year: year ? Number(year) : undefined
+      })
   });
 
   const annualFees = useMemo(() => data?.data ?? [], [data]);
@@ -79,7 +98,9 @@ export default function AnnualFeesTable() {
       setAddForm({
         description: '',
         amount: 0,
-        status: true
+        status: true,
+        name: '',
+        year: new Date().getFullYear()
       });
     },
     onError: () => {
@@ -106,8 +127,10 @@ export default function AnnualFeesTable() {
       queryClient.invalidateQueries({ queryKey: ['annualFees'] });
       toast.success('Cuota eliminada');
     },
-    onError: () => {
-      toast.error('Error al eliminar la cuota');
+    onError: (error: AxiosError<{ message: string }>) => {
+      const errorMessage =
+        error.response?.data?.message || 'Error al eliminar la cuota';
+      toast.error(errorMessage);
     }
   });
 
@@ -119,12 +142,16 @@ export default function AnnualFeesTable() {
         ? {
             description: fee.description,
             amount: fee.amount,
-            status: fee.status
+            status: fee.status,
+            name: fee.name,
+            year: fee.year
           }
         : {
             description: '',
             amount: 0,
-            status: true
+            status: true,
+            name: '',
+            year: new Date().getFullYear()
           }
     );
     setModalOpen(true);
@@ -159,13 +186,30 @@ export default function AnnualFeesTable() {
         <h2 className='text-2xl font-bold'>Cuotas anuales</h2>
         <Button onClick={() => setAddModalOpen(true)}>+ Nueva cuota</Button>
       </div>
+      <div className='mb-4 flex items-center gap-2'>
+        <Input
+          placeholder='Buscar por nombre...'
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className='max-w-sm'
+        />
+        <Input
+          type='number'
+          placeholder='Filtrar por año...'
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+          className='max-w-xs'
+        />
+      </div>
       <div className='rounded-md border'>
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Nombre</TableHead>
               <TableHead>Descripción</TableHead>
               <TableHead>Monto ($)</TableHead>
               <TableHead>Estado</TableHead>
+              <TableHead>Año</TableHead>
               <TableHead className='text-right'>Acciones</TableHead>
             </TableRow>
           </TableHeader>
@@ -177,7 +221,8 @@ export default function AnnualFeesTable() {
             ) : annualFees.length > 0 ? (
               annualFees.map((fee) => (
                 <TableRow key={fee.feeId}>
-                  <TableCell>{fee.description}</TableCell>
+                  <TableCell>{fee.name}</TableCell>
+                  <TableCell>{fee.description || 'N/A'}</TableCell>
                   <TableCell>$ {fee.amount}</TableCell>
                   <TableCell>
                     {fee.status ? (
@@ -188,6 +233,7 @@ export default function AnnualFeesTable() {
                       <span className='text-gray-400'>Inactivo</span>
                     )}
                   </TableCell>
+                  <TableCell>{fee.year}</TableCell>
                   <TableCell className='text-right'>
                     <TooltipProvider>
                       <Tooltip>
@@ -285,6 +331,17 @@ export default function AnnualFeesTable() {
                 }
               />
             </div>
+            <div>
+              <label className='mb-1 block text-sm font-medium'>Año</label>
+              <Input
+                type='number'
+                value={form.year}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, year: Number(e.target.value) }))
+                }
+                required
+              />
+            </div>
             <div className='flex justify-end gap-2'>
               <Button
                 type='button'
@@ -306,6 +363,14 @@ export default function AnnualFeesTable() {
           <DialogTitle>Añadir nueva cuota</DialogTitle>
           <form onSubmit={handleAdd} className='mt-2 space-y-4'>
             <div>
+              <label className='mb-1 block text-sm font-medium'>Nombre</label>
+              <Input
+                value={addForm.name}
+                onChange={(e) =>
+                  setAddForm((f) => ({ ...f, name: e.target.value }))
+                }
+                required
+              />
               <label className='mb-1 block text-sm font-medium'>
                 Descripción
               </label>
@@ -337,6 +402,17 @@ export default function AnnualFeesTable() {
                 onCheckedChange={(checked) =>
                   setAddForm((f) => ({ ...f, status: checked }))
                 }
+              />
+            </div>
+            <div>
+              <label className='mb-1 block text-sm font-medium'>Año</label>
+              <Input
+                type='number'
+                value={addForm.year}
+                onChange={(e) =>
+                  setAddForm((f) => ({ ...f, year: Number(e.target.value) }))
+                }
+                required
               />
             </div>
             <div className='flex justify-end gap-2'>

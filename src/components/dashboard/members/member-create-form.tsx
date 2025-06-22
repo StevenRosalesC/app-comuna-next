@@ -21,7 +21,7 @@ export default function MemberCreateForm() {
     setLoading(true);
     try {
       await createMember({
-        personId: selectedPerson.personId,
+        person: selectedPerson,
         houseNumber
       });
       toast.success('Comunero creado exitosamente');

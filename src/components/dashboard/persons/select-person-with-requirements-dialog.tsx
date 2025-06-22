@@ -37,7 +37,8 @@ export function SelectPersonWithRequirementsDialog({
         const response = await personsService.getAllWithAllRequirementsApproved(
           {
             limit: PAGE_SIZE,
-            offset: pageParam * PAGE_SIZE
+            offset: pageParam * PAGE_SIZE,
+            search: debouncedSearch
           }
         );
         return {
@@ -69,16 +70,7 @@ export function SelectPersonWithRequirementsDialog({
     return () => list.removeEventListener('scroll', handleScroll);
   }, [hasNextPage, isFetchingNextPage, fetchNextPage, open]);
 
-  const persons = (data?.pages || [])
-    .flatMap((page) => page.data)
-    .filter((person) => {
-      const term = debouncedSearch.toLowerCase();
-      return (
-        person.firstName.toLowerCase().includes(term) ||
-        person.lastName.toLowerCase().includes(term) ||
-        person.identification.toLowerCase().includes(term)
-      );
-    });
+  const persons = (data?.pages || []).flatMap((page) => page.data);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

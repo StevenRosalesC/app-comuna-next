@@ -21,6 +21,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import MemberPayment from '@/components/dashboard/members/member-payment';
+import { PaymentHistoryTable } from '@/components/dashboard/members/payment-history-table';
 
 export default function MemberPage({ params }: { params: { id: string } }) {
   const {
@@ -124,6 +125,7 @@ export default function MemberPage({ params }: { params: { id: string } }) {
       </Card>
 
       {member && <MemberPayment member={member} />}
+      {member && <PaymentHistoryTable memberId={member.memberId} />}
     </div>
   );
 }

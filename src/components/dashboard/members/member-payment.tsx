@@ -15,7 +15,6 @@ import { invoicingService } from '@/services/invoicing';
 import { toast } from 'sonner';
 import { AxiosError } from 'axios';
 import { Member } from '@/interfaces/members';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Icons } from '@/components/icons';
@@ -28,14 +27,20 @@ import {
   DialogFooter,
   DialogClose
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 
 interface MemberPaymentProps {
   member: Member;
 }
 
+interface FeePayment {
+  memberFeeId: string;
+  amountToPay: number;
+}
+
 export default function MemberPayment({ member }: MemberPaymentProps) {
   const queryClient = useQueryClient();
-  const [selectedFees, setSelectedFees] = useState<string[]>([]);
+  const [payments, setPayments] = useState<FeePayment[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: activeCashRegister, isLoading: isLoadingCashRegister } =
@@ -49,7 +54,7 @@ export default function MemberPayment({ member }: MemberPaymentProps) {
     mutationFn: invoicingService.createInvoice,
     onSuccess: () => {
       toast.success('Pago registrado correctamente.');
-      setSelectedFees([]);
+      setPayments([]);
       queryClient.invalidateQueries({ queryKey: ['members', member.memberId] });
       queryClient.invalidateQueries({ queryKey: ['activeCashRegister'] });
       setIsModalOpen(false);
@@ -62,25 +67,54 @@ export default function MemberPayment({ member }: MemberPaymentProps) {
   });
 
   const pendingFees = useMemo(
-    () => member?.memberFees?.filter((fee) => fee.status === 'PENDING') || [],
+    () =>
+      member?.memberFees?.filter(
+        (fee) =>
+          (fee.status === 'PENDING' || fee.status === 'PARTIAL') &&
+          fee.amountDue > fee.amountPaid
+      ) || [],
     [member]
   );
 
-  const totalAmount = useMemo(() => {
-    return pendingFees
-      .filter((fee) => selectedFees.includes(fee.memberFeeId))
-      .reduce((acc, fee) => acc + fee.annualFee.amount, 0);
-  }, [pendingFees, selectedFees]);
+  const totalAmountToPay = useMemo(() => {
+    return payments.reduce((acc, payment) => acc + payment.amountToPay, 0);
+  }, [payments]);
+
+  const handlePaymentInputChange = (memberFeeId: string, amount: string) => {
+    const amountToPay = parseFloat(amount) || 0;
+    const fee = pendingFees.find((f) => f.memberFeeId === memberFeeId);
+    if (!fee) return;
+
+    const remainingBalance = fee.amountDue - fee.amountPaid;
+    if (amountToPay > remainingBalance) {
+      toast.warning(
+        `El monto no puede exceder el saldo de $${remainingBalance.toFixed(2)}`
+      );
+      return;
+    }
+
+    setPayments((prev) => {
+      const existingPayment = prev.find((p) => p.memberFeeId === memberFeeId);
+      if (existingPayment) {
+        return prev.map((p) =>
+          p.memberFeeId === memberFeeId ? { ...p, amountToPay } : p
+        );
+      } else {
+        return [...prev, { memberFeeId, amountToPay }];
+      }
+    });
+  };
 
   const handlePay = () => {
-    if (selectedFees.length === 0) {
-      toast.warning('Debes seleccionar al menos una cuota para pagar.');
+    const feesToPay = payments.filter((p) => p.amountToPay > 0);
+    if (feesToPay.length === 0) {
+      toast.warning('Debes ingresar un monto a pagar para al menos una cuota.');
       return;
     }
     createInvoiceMutation.mutate({
       memberId: member.memberId,
-      memberFeeIds: selectedFees,
-      cashRegisterId: activeCashRegister!.cashRegisterId
+      cashRegisterId: activeCashRegister!.cashRegisterId,
+      fees: feesToPay
     });
   };
 
@@ -104,7 +138,8 @@ export default function MemberPayment({ member }: MemberPaymentProps) {
       <CardHeader>
         <CardTitle>Pagos de Cuotas</CardTitle>
         <CardDescription>
-          Selecciona las cuotas pendientes que deseas pagar.
+          El miembro tiene cuotas pendientes. Haz clic en &quot;Realizar
+          Pago&quot; para abonar.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -115,38 +150,47 @@ export default function MemberPayment({ member }: MemberPaymentProps) {
             <DialogTrigger asChild>
               <Button>Realizar Pago</Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className='max-w-lg'>
               <DialogHeader>
-                <DialogTitle>Confirmar Pago</DialogTitle>
+                <DialogTitle>Realizar Pago Parcial o Completo</DialogTitle>
               </DialogHeader>
-              <div className='space-y-2'>
-                {pendingFees.map((fee) => (
-                  <div
-                    key={fee.memberFeeId}
-                    className='flex items-center space-x-2'
-                  >
-                    <Checkbox
-                      id={fee.memberFeeId}
-                      checked={selectedFees.includes(fee.memberFeeId)}
-                      onCheckedChange={(checked) => {
-                        setSelectedFees((prev) =>
-                          checked
-                            ? [...prev, fee.memberFeeId]
-                            : prev.filter((id) => id !== fee.memberFeeId)
-                        );
-                      }}
-                    />
-                    <label
-                      htmlFor={fee.memberFeeId}
-                      className='flex-1 cursor-pointer text-sm'
+              <div className='space-y-4'>
+                {pendingFees.map((fee) => {
+                  const remainingBalance = fee.amountDue - fee.amountPaid;
+                  return (
+                    <div
+                      key={fee.memberFeeId}
+                      className='grid grid-cols-3 items-center gap-4'
                     >
-                      {fee.annualFee.name} - ${fee.annualFee.amount.toFixed(2)}
-                    </label>
-                  </div>
-                ))}
+                      <label
+                        htmlFor={fee.memberFeeId}
+                        className='col-span-1 text-sm'
+                      >
+                        {fee.annualFee.name} <br />
+                        <span className='text-xs text-muted-foreground'>
+                          Saldo: ${remainingBalance.toFixed(2)}
+                        </span>
+                      </label>
+                      <Input
+                        id={fee.memberFeeId}
+                        type='number'
+                        placeholder='0.00'
+                        className='col-span-2'
+                        onChange={(e) =>
+                          handlePaymentInputChange(
+                            fee.memberFeeId,
+                            e.target.value
+                          )
+                        }
+                        max={remainingBalance.toFixed(2)}
+                        step='0.01'
+                      />
+                    </div>
+                  );
+                })}
               </div>
               <div className='mt-4 text-lg font-bold'>
-                Total a pagar: ${totalAmount.toFixed(2)}
+                Total a pagar: ${totalAmountToPay.toFixed(2)}
               </div>
               <DialogFooter>
                 <DialogClose asChild>
@@ -155,7 +199,7 @@ export default function MemberPayment({ member }: MemberPaymentProps) {
                 <Button
                   onClick={handlePay}
                   disabled={
-                    createInvoiceMutation.isPending || selectedFees.length === 0
+                    createInvoiceMutation.isPending || totalAmountToPay === 0
                   }
                 >
                   {createInvoiceMutation.isPending

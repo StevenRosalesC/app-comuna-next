@@ -21,15 +21,23 @@ interface GetInvoicesByCashRegisterIdParams {
 }
 
 class InvoicingService {
-  private readonly api = apiCommunity;
 
   async createInvoice(dto: CreateInvoiceDto): Promise<Invoice> {
-    const { data } = await this.api.post<Invoice>('/invoicing', dto);
+    const invoice = {
+      memberId: Number(dto.memberId),
+      cashRegisterId: Number(dto.cashRegisterId),
+      discount: dto.discount ?? 0,
+      fees: dto.fees.map((fee) => ({
+        memberFeeId: fee.memberFeeId,
+        amountToPay: fee.amountToPay
+      }))
+    }
+    const { data } = await apiCommunity.post<Invoice>('/invoicing', invoice);
     return data;
   }
 
   async getInvoiceById(id: string): Promise<Invoice> {
-    const { data } = await this.api.get<Invoice>(`/invoicing/${id}`);
+    const { data } = await apiCommunity.get<Invoice>(`/invoicing/${id}`);
     return data;
   }
 
@@ -46,7 +54,7 @@ class InvoicingService {
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
 
-    const { data } = await this.api.get<PaginatedInvoicesResponse>(
+    const { data } = await apiCommunity.get<PaginatedInvoicesResponse>(
       `/invoicing/member/${memberId}`,
       { params }
     );
@@ -65,7 +73,7 @@ class InvoicingService {
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
 
-    const { data } = await this.api.get<PaginatedInvoicesResponse>(
+    const { data } = await apiCommunity.get<PaginatedInvoicesResponse>(
       `/invoicing/cash-register/active`,
       { params }
     );

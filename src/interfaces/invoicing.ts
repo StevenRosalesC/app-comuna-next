@@ -15,6 +15,24 @@ export interface InvoiceSummary {
 }
 
 // Full details for dialog view
+export interface InvoiceFeePayment {
+  invoiceFeePaymentId: string;
+  memberFeeId: string;
+  amountPaid: number;
+  paymentDate: string;
+  memberFee: {
+    memberFeeId: string;
+    amountPaid: number;
+    amountDue: number;
+    status: string;
+    annualFee: {
+      name: string;
+      description: string;
+      year: number;
+    };
+  };
+}
+
 export interface Invoice {
   invoiceId: string;
   invoiceDate: string;
@@ -23,7 +41,7 @@ export interface Invoice {
   totalAmount: number;
   invoiceStatus: number;
   memberId: string;
-  memberFees: InvoiceMemberFee[];
+  invoiceFeePayments: InvoiceFeePayment[];
   cashRegister: {
     cashRegisterId: string;
   };
@@ -34,6 +52,7 @@ export interface Invoice {
     };
   };
   collectedByUser: CollectedByUser | null;
+  receiptUrl?: string;
 }
 
 export interface CreateInvoiceDto {
@@ -56,5 +75,5 @@ export interface CollectedByUser {
 
 export interface PaginatedInvoicesResponse {
   total: number;
-  invoices: InvoiceSummary[];
+  invoices: InvoiceSummary[] | Invoice[];
 }

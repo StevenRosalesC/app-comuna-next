@@ -127,8 +127,8 @@ export function InvoiceDetailsDialog({
     }
     const invoiceDate = new Date(invoice.invoiceDate);
     return (
-      <div className="space-y-6">
-        {/* Encabezado */}
+      <div className="space-y-6 min-w-full">
+        {/* Header */}
         <div className="bg-muted/30 rounded-lg p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
@@ -150,7 +150,7 @@ export function InvoiceDetailsDialog({
             </div>
           </div>
         </div>
-        {/* Información del miembro */}
+        {/* Member information */}
         <div className="bg-muted/30 rounded-lg p-4">
           <h4 className="font-semibold mb-3 flex items-center gap-2">
             <User className="h-4 w-4" />
@@ -163,7 +163,7 @@ export function InvoiceDetailsDialog({
             </div>
           </div>
         </div>
-        {/* Información de la transacción */}
+        {/* Transaction information */}
         <div className="bg-muted/30 rounded-lg p-4">
           <h4 className="font-semibold mb-3 flex items-center gap-2">
             <CreditCard className="h-4 w-4" />
@@ -182,7 +182,7 @@ export function InvoiceDetailsDialog({
             )}
           </div>
         </div>
-        {/* Detalles del pago - nueva estructura */}
+        {/* Payment details */}
         <div>
           <h4 className='font-semibold mb-3 flex items-center gap-2'>
             <FileText className="h-4 w-4" />
@@ -235,7 +235,7 @@ export function InvoiceDetailsDialog({
             </Table>
           </div>
         </div>
-        {/* Resumen financiero */}
+        {/* Financial summary */}
         <div className="bg-muted/30 rounded-lg p-4">
           <h4 className="font-semibold mb-3 flex items-center gap-2">
             <DollarSign className="h-4 w-4" />
@@ -258,7 +258,7 @@ export function InvoiceDetailsDialog({
             </div>
           </div>
         </div>
-        {/* Botones de acción */}
+        {/* Action buttons */}
         <div className="flex flex-col sm:flex-row gap-2">
           <Button
             variant="outline"
@@ -293,7 +293,7 @@ export function InvoiceDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-2xl max-h-[90vh] overflow-y-auto'>
+      <DialogContent className='w-full max-h-[90vh] overflow-y-auto'>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Receipt className="h-5 w-5" />

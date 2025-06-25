@@ -59,7 +59,8 @@ export enum ValidModules {
   USERS = 'users',
   ROLES = 'roles',
   REQUIREMENTS = 'requirements',
-  CASH_MANAGEMENT = 'cash-management'
+  CASH_MANAGEMENT = 'cash-management',
+  DOCUMENT_TYPES = 'document-types'
 }
 
 export enum ValidActions {    
@@ -74,5 +75,6 @@ export const validPermissions = [
   ValidModules.PERSONS,
   ValidModules.USERS,
   ValidModules.ROLES,
-  ValidModules.REQUIREMENTS
+  ValidModules.REQUIREMENTS,
+  ValidModules.DOCUMENT_TYPES
 ];

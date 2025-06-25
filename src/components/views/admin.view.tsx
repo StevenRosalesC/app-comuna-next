@@ -1,6 +1,7 @@
 import React from 'react';
 import RequirementsTable from './dashboard/admin/requirements-table';
 import AnnualFeesTable from './dashboard/admin/annual-fees-table';
+import DocumentTypesTable from './dashboard/admin/document-types-table';
 
 export default function AdminView() {
   return (
@@ -14,6 +15,11 @@ export default function AdminView() {
         {/* Section: Annual fees */}
         <section className='rounded-lg border p-6 shadow'>
           <AnnualFeesTable />
+        </section>
+
+        {/* Section: Document types */}
+        <section className='rounded-lg border p-6 shadow'>
+          <DocumentTypesTable />
         </section>
       </div>
     </div>

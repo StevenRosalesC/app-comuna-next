@@ -30,7 +30,7 @@ export const getNotice = async (id: string): Promise<Notice | null> => {
     if (error instanceof Error) {
       throw new Error(error.message);
     } else {
-      throw new Error('An unknown error occurred');
+      throw new Error('Error al obtener la noticia');
     }
   }
 };
@@ -49,7 +49,7 @@ export const createNotice = async (
     if (error instanceof Error) {
       throw new Error(error.message);
     } else {
-      throw new Error('An unknown error occurred');
+      throw new Error('Error al crear la noticia');
     }
   }
 };
@@ -82,7 +82,7 @@ export const updateNotice = async (
     if (error instanceof Error) {
       throw new Error(error.message);
     } else {
-      throw new Error('An unknown error occurred');
+      throw new Error('Error al actualizar la noticia');
     }
   }
 };

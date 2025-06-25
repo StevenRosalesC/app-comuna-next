@@ -21,11 +21,7 @@ export const usersService = {
         status: true,
       };
     } catch (error) {
-      return {
-        data: null,
-        message: "Error al obtener los usuarios",
-        status: false,
-      };
+      throw error;
     }
   },
 
@@ -41,11 +37,7 @@ export const usersService = {
         status: true,
       };
     } catch (error) {
-      return {
-        data: null,
-        message: "Error al crear el usuario",
-        status: false,
-      };
+      throw error;
     }
   },
 
@@ -58,11 +50,7 @@ export const usersService = {
         status: true,
       };
     } catch (error) {
-      return {
-        data: null,
-        message: "Error al actualizar el usuario",
-        status: false,
-      };
+      throw error;
     }
   },
 }; 

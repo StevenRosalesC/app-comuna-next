@@ -11,6 +11,7 @@ interface GetInvoicesByMemberIdParams {
   offset?: number;
   startDate?: string;
   endDate?: string;
+  includeDetails?: boolean;
 }
 
 interface GetInvoicesByCashRegisterIdParams {
@@ -46,13 +47,15 @@ class InvoicingService {
     limit,
     offset,
     startDate,
-    endDate
+    endDate,
+    includeDetails = false
   }: GetInvoicesByMemberIdParams): Promise<PaginatedInvoicesResponse> {
     const params = new URLSearchParams();
     if (limit) params.append('limit', String(limit));
     if (offset) params.append('offset', String(offset));
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
+    if (includeDetails) params.append('includeDetails', 'true');
 
     const { data } = await apiCommunity.get<PaginatedInvoicesResponse>(
       `/invoicing/member/${memberId}`,

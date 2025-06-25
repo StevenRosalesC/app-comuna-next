@@ -1,9 +1,46 @@
-// Service for member operations (skeleton)
+// Service for member operations
 
 import apiCommunity from '@/utils/communityApi';
 import { Member } from '@/interfaces/members';
 import { SortingState } from '@tanstack/react-table';
 
+// Interfaces for fee status and payments
+export interface MemberFeeStatus {
+  memberFeeId: string;
+  feeName: string;
+  amountDue: number;
+  amountPaid: number;
+  status: string;
+  year: number;
+  lastPaymentDate: string | null;
+}
+
+export interface MemberFeesStatusResponse {
+  memberId: string;
+  memberName: string;
+  fees: MemberFeeStatus[];
+}
+
+export interface MemberFeePayment {
+  invoiceFeePaymentId: string;
+  invoiceId: string;
+  amountPaid: number;
+  paymentDate: string;
+  collectedBy: string;
+  cashRegisterName: string;
+}
+
+export interface MemberFeePaymentsResponse {
+  memberFeeId: string;
+  feeName: string;
+  amountDue: number;
+  totalAmountPaid: number;
+  remainingBalance: number;
+  status: string;
+  payments: MemberFeePayment[];
+}
+
+// Main service functions
 export const getMembers = async (
   limit: number,
   offset: number,
@@ -36,5 +73,25 @@ export const updateMember = async (id: string, data: Partial<Member>) => {
 
 export const getMemberById = async (id: string): Promise<Member> => {
   const { data } = await apiCommunity.get<Member>(`/members/${id}`);
+  return data;
+};
+
+/**
+ * Gets the current status of all fees for a member
+ */
+export const getMemberFeesStatus = async (memberId: string): Promise<MemberFeesStatusResponse> => {
+  const { data } = await apiCommunity.get<MemberFeesStatusResponse>(
+    `/members/${memberId}/fees/status`
+  );
+  return data;
+};
+
+/**
+ * Gets the complete payment history for a specific fee of a member
+ */
+export const getMemberFeePayments = async (memberId: string, memberFeeId: string): Promise<MemberFeePaymentsResponse> => {
+  const { data } = await apiCommunity.get<MemberFeePaymentsResponse>(
+    `/members/${memberId}/fees/${memberFeeId}/payments`
+  );
   return data;
 }; 

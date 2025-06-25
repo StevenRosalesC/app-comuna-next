@@ -84,9 +84,8 @@ export default function MemberPage({ params }: { params: { id: string } }) {
               {person.identification}
             </CardDescription>
             <Badge
-              className={`mt-2 ${
-                member.status === 'active' ? 'bg-green-500' : 'bg-red-500'
-              }`}
+              className={`mt-2 ${member.status === 'active' ? 'bg-green-500' : 'bg-red-500'
+                }`}
             >
               {member.status}
             </Badge>

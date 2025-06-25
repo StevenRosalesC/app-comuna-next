@@ -29,7 +29,7 @@ export default async function DashboardLayout({
           <SidebarInset>
             <Header />
             {/* page main content */}
-            <section className=' mx-auto w-full px-2 sm:px-4 py-4 space-y-6'>{children}</section>
+            <div className='container mx-auto max-w-[1400px]  px-2 sm:px-4'>{children}</div>
             {/* page main content ends */}
           </SidebarInset>
         </SidebarProvider>

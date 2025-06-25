@@ -21,11 +21,7 @@ export const personsService = {
         status: true
       }
     } catch (error) {
-      return {
-        data: null,
-        message: 'Error al obtener las personas',
-        status: false
-      }
+      throw error;
     }
   },
 
@@ -56,11 +52,7 @@ export const personsService = {
         status: true
       };
     } catch (error) {
-      return {
-        data: null,
-        message: 'Error al crear la persona',
-        status: false
-      }
+      throw error;
     }
   },
 
@@ -73,11 +65,7 @@ export const personsService = {
         status: true
       }
     } catch (error) {
-      return {
-        data: null,
-        message: 'Error al actualizar la persona',
-        status: false
-      }
+      throw error;
     }
   },
 

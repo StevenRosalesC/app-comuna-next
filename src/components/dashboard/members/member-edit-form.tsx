@@ -117,8 +117,8 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
       queryClient.invalidateQueries({ queryKey: ['members'] });
       router.push(`/dashboard/members/${memberId}`);
     },
-    onError: () => {
-      toast.error('Error al actualizar el miembro');
+    onError: (error: any) => {
+      toast.error(error.response.data.message || 'Error al actualizar el miembro');
     }
   });
 

@@ -45,7 +45,7 @@ class CashRegisterService {
     dto: CloseCashRegisterDto
   ): Promise<CashRegister> {
     const { data } = await apiCommunity.patch<CashRegister>(
-      `/cash-registers/close/${id}`,
+      `/cash-registers/${id}/close`,
       dto
     );
     return data;

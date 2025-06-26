@@ -114,7 +114,7 @@ export default function CashRegisterDetailsPage({
           </div>
         </CardContent>
       </Card>
-      <CashRegisterInvoicesTable />
+      <CashRegisterInvoicesTable cashRegisterId={cashRegister.cashRegisterId} />
     </div>
   );
 }

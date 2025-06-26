@@ -30,9 +30,13 @@ import { InvoiceDetailsDialog } from '@/components/dashboard/members/invoice-det
 import { Icons } from '@/components/icons';
 import { RefreshCw } from 'lucide-react';
 
-interface CashRegisterInvoicesTableProps {}
+interface CashRegisterInvoicesTableProps {
+  cashRegisterId: string;
+}
 
-export function CashRegisterInvoicesTable({}: CashRegisterInvoicesTableProps) {
+export function CashRegisterInvoicesTable({
+  cashRegisterId
+}: CashRegisterInvoicesTableProps) {
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
@@ -51,10 +55,11 @@ export function CashRegisterInvoicesTable({}: CashRegisterInvoicesTableProps) {
     queryKey: ['cashRegisterInvoices', { pageIndex, pageSize, dateRange }],
     queryFn: () =>
       invoicingService.getInvoicesByCashRegisterId({
+        cashRegisterId,
         limit: pageSize,
         offset: pageIndex * pageSize,
         startDate: dateRange?.from?.toISOString().split('T')[0],
-        endDate: dateRange?.to?.toISOString().split('T')[0]
+        endDate: dateRange?.to?.toISOString().split('T')[0],
       })
   });
 
@@ -110,16 +115,17 @@ export function CashRegisterInvoicesTable({}: CashRegisterInvoicesTableProps) {
                   <TableHead># Factura</TableHead>
                   <TableHead>Fecha</TableHead>
                   <TableHead>Monto Pagado</TableHead>
+                  <TableHead>Comunero</TableHead>
                   <TableHead className='text-right'>Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading
                   ? Array.from({ length: pageSize }).map((_, i) => (
-                      <CashRegisterInvoicesTableRowSkeleton key={i} />
-                    ))
+                    <CashRegisterInvoicesTableRowSkeleton key={i} />
+                  ))
                   : invoices.length > 0
-                  ? invoices.map((invoice: InvoiceSummary) => (
+                    ? invoices.map((invoice) => (
                       <TableRow key={invoice.invoiceId}>
                         <TableCell className='font-medium'>
                           #{invoice.invoiceId}
@@ -128,6 +134,7 @@ export function CashRegisterInvoicesTable({}: CashRegisterInvoicesTableProps) {
                           {new Date(invoice.invoiceDate).toLocaleDateString()}
                         </TableCell>
                         <TableCell>${invoice.totalAmount.toFixed(2)}</TableCell>
+                        <TableCell>{invoice.member.person.firstName} {invoice.member.person.lastName}</TableCell>
                         <TableCell className='text-right'>
                           <Button
                             variant='outline'
@@ -141,7 +148,7 @@ export function CashRegisterInvoicesTable({}: CashRegisterInvoicesTableProps) {
                         </TableCell>
                       </TableRow>
                     ))
-                  : !isLoading && (
+                    : !isLoading && (
                       <TableRow>
                         <TableCell colSpan={4} className='h-24 text-center'>
                           No hay facturas en el rango de fechas seleccionado.

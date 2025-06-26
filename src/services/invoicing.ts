@@ -63,8 +63,7 @@ class InvoicingService {
     );
     return data;
   }
-
-  async getInvoicesByCashRegisterId({
+  async getInvoicesActiveCashRegister({
     limit,
     offset,
     startDate,
@@ -75,13 +74,35 @@ class InvoicingService {
     if (offset) params.append('offset', String(offset));
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
-
+    
     const { data } = await apiCommunity.get<PaginatedInvoicesResponse>(
       `/invoicing/cash-register/active`,
       { params }
     );
     return data;
   }
+  // cing/cash-register/1?limit=20&offset=0
+
+  async getInvoicesByCashRegisterId({
+    cashRegisterId,
+    limit,
+    offset,
+    startDate,
+    endDate
+  }: GetInvoicesByCashRegisterIdParams & { cashRegisterId: string }): Promise<PaginatedInvoicesResponse> {
+    const params = new URLSearchParams();
+    if (limit) params.append('limit', String(limit));
+    if (offset) params.append('offset', String(offset));
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+
+    const { data } = await apiCommunity.get<PaginatedInvoicesResponse>(
+      `/invoicing/cash-register/${cashRegisterId}`,
+      { params }
+    );
+    return data;  
+  }
+
 }
 
 export const invoicingService = new InvoicingService(); 

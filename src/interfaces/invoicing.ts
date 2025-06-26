@@ -9,9 +9,41 @@ export interface InvoiceMemberFee {
 
 // Summary for list view on member's page
 export interface InvoiceSummary {
-  invoiceId: string;
-  totalAmount: number;
-  invoiceDate: string;
+    invoiceId:         string;
+    memberId:          string;
+    invoiceNumber:     null;
+    invoiceDate:       Date;
+    invoiceTime:       null;
+    subtotal:          number;
+    discount:          number;
+    totalAmount:       number;
+    invoiceStatus:     number;
+    collectedByUserId: string;
+    cashRegisterId:    string;
+    member:            Member;
+}
+
+export interface Member {
+    memberId:    string;
+    personId:    string;
+    houseNumber: null | string;
+    createdAt:   Date;
+    status:      boolean;
+    person:      Person;
+}
+
+export interface Person {
+    personId:       string;
+    identification: string;
+    lastName:       string;
+    firstName:      string;
+    gender:         number;
+    phoneNumber:    null;
+    birthDate:      Date;
+    status:         boolean;
+    email:          null | string;
+    neighborhoodId: string;
+    hasDisability:  boolean;
 }
 
 // Full details for dialog view

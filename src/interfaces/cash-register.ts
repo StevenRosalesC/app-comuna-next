@@ -26,7 +26,6 @@ export interface CreateCashRegisterDto {
 }
 
 export interface CloseCashRegisterDto {
-  finalAmount: number;
   notes?: string;
 }
 

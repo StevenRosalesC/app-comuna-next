@@ -30,7 +30,6 @@ export default function ActiveCashRegister({
   const closeRegisterMutation = useMutation({
     mutationFn: (id: string) =>
       cashRegisterService.closeRegister(id, {
-        finalAmount: activeCashRegister.finalAmount ?? 0
       }),
     onSuccess: () => {
       toast.success('Caja cerrada correctamente.');
@@ -120,7 +119,8 @@ export default function ActiveCashRegister({
           </Alert>
         </CardContent>
       </Card>
-      <CashRegisterInvoicesTable />
+
+      <CashRegisterInvoicesTable cashRegisterId={activeCashRegister.cashRegisterId} />
     </>
   );
 }

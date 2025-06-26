@@ -250,7 +250,7 @@ export function PersonEditDialog({
                     <div className='space-y-0.5'>
                       <FormLabel>Tiene Discapacidad</FormLabel>
                       <DialogDescription>
-                        Activa esta opción si el miembro tiene un carnet de
+                        Activa esta opción si el comunero tiene un carnet de
                         discapacidad.
                       </DialogDescription>
                     </div>

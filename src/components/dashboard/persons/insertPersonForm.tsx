@@ -34,6 +34,7 @@ import {
 import { Events } from '@/interfaces/enums';
 import { Neighborhood } from '@/store/neighborhoodsStore';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const formSchema = z.object({
   identification: z.string().min(1, 'La cédula es requerida'),
@@ -47,7 +48,8 @@ const formSchema = z.object({
   birthDate: z.string().min(1, 'La fecha de nacimiento es requerida'),
   phone: z.string().optional(),
   address: z.string().optional(),
-  neighborhoodId: z.string().optional()
+  neighborhoodId: z.string().optional(),
+  hasDisability: z.boolean().optional()
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -70,7 +72,8 @@ export default function InsertPersonForm({
       phone: '',
       address: '',
       gender: 1,
-      neighborhoodId: ''
+      neighborhoodId: '',
+      hasDisability: false
     }
   });
 
@@ -167,7 +170,6 @@ export default function InsertPersonForm({
                   </FormItem>
                 )}
               />
-              {isLoading && <Skeleton className='h-10 w-full' />}
               <FormField
                 control={form.control}
                 name='neighborhoodId'
@@ -303,6 +305,23 @@ export default function InsertPersonForm({
                     <FormLabel>Dirección</FormLabel>
                     <FormControl>
                       <Input placeholder='Ingrese la dirección' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* has disability checkbox */}
+              <FormField
+                control={form.control}
+                name='hasDisability'
+                render={({ field }) => (
+                  <FormItem className='md:col-span-2 flex items-center gap-2'>
+                    <FormLabel>¿Tiene discapacidad?</FormLabel>
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -45,10 +45,10 @@ export default function MemberPage({ params }: { params: { id: string } }) {
   }
 
   if (error) {
-    toast.error('Error al obtener la información del miembro.');
+    toast.error('Error al obtener la información del comunero.');
     return (
       <div className='flex h-full items-center justify-center'>
-        <p>No se pudo cargar la información del miembro.</p>
+        <p>No se pudo cargar la información del comunero.</p>
       </div>
     );
   }
@@ -56,7 +56,7 @@ export default function MemberPage({ params }: { params: { id: string } }) {
   if (!member) {
     return (
       <div className='flex h-full items-center justify-center'>
-        <p>Miembro no encontrado.</p>
+        <p>Comunero no encontrado.</p>
       </div>
     );
   }

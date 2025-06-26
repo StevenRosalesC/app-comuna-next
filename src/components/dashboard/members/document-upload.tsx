@@ -192,7 +192,7 @@ export default function DocumentUpload({ memberId, onDocumentUploaded }: Documen
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Documentos del Miembro</CardTitle>
+          <CardTitle>Documentos del Comunero</CardTitle>
         </CardHeader>
         <CardContent>
           <Skeleton className="h-32 w-full" />
@@ -204,7 +204,7 @@ export default function DocumentUpload({ memberId, onDocumentUploaded }: Documen
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Documentos del Miembro</CardTitle>
+        <CardTitle>Documentos del Comunero</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Document Type Selection */}
@@ -328,7 +328,7 @@ export default function DocumentUpload({ memberId, onDocumentUploaded }: Documen
         {memberDocuments && memberDocuments.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
             <File className="mx-auto h-12 w-12 mb-4 opacity-50" />
-            <p>No hay documentos subidos para este miembro</p>
+            <p>No hay documentos subidos para este comunero</p>
           </div>
         )}
       </CardContent>

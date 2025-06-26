@@ -22,6 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import MemberPayment from '@/components/dashboard/members/member-payment';
 import { PaymentHistoryTable } from '@/components/dashboard/members/payment-history-table';
+import DocumentUpload from '@/components/dashboard/members/document-upload';
 
 export default function MemberPage({ params }: { params: { id: string } }) {
   const {
@@ -63,21 +64,12 @@ export default function MemberPage({ params }: { params: { id: string } }) {
   const { person } = member;
 
   return (
-    <div >
+    <div className='p-4 pt-6 md:p-8'>
       <div className='grid grid-cols-1 gap-6'>
 
         <Card>
           <CardHeader className='flex flex-col items-start gap-4 md:flex-row md:items-center'>
-            <Avatar className='h-24 w-24'>
-              <AvatarImage
-                src={'/avatar.jpg'}
-                alt={`${person.firstName} ${person.lastName}`}
-              />
-              <AvatarFallback>
-                {person.firstName.charAt(0)}
-                {person.lastName.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
+
             <div className='flex-1'>
               <CardTitle className='text-3xl'>
                 {person.firstName} {person.lastName}
@@ -86,10 +78,10 @@ export default function MemberPage({ params }: { params: { id: string } }) {
                 {person.identification}
               </CardDescription>
               <Badge
-                className={`mt-2 ${member.status === 'active' ? 'bg-green-500' : 'bg-red-500'
+                className={`mt-2 ${member.status ? 'bg-green-500' : 'bg-red-500'
                   }`}
               >
-                {member.status}
+                {member.status ? 'Activo' : 'Inactivo'}
               </Badge>
             </div>
           </CardHeader>
@@ -124,9 +116,10 @@ export default function MemberPage({ params }: { params: { id: string } }) {
             </Table>
           </CardContent>
         </Card>
-
         {member && <MemberPayment member={member} />}
         {member && <PaymentHistoryTable memberId={member.memberId} />}
+        {/* Documents Section */}
+        {member && <DocumentUpload memberId={member.memberId} />}
       </div>
     </div>
   );

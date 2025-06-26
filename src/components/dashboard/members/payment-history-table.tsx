@@ -261,7 +261,7 @@ export function PaymentHistoryTable({ memberId }: PaymentHistoryTableProps) {
                     <InvoiceHistoryTableRowSkeleton key={i} />
                   ))
                   : invoices.length > 0
-                    ? invoices.map((invoice: InvoiceSummary) => {
+                    ? invoices.map((invoice) => {
                       const detailedReceipt = getDetailedReceipt(invoice.invoiceId);
                       const isExpanded = expandedRows.has(invoice.invoiceId);
 

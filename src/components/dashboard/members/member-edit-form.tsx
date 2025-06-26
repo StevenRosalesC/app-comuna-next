@@ -83,7 +83,7 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
 
   const mutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
-      if (!member) throw new Error('No se encontró el miembro');
+      if (!member) throw new Error('No se encontró el comunero');
 
       const { houseNumber, ...personValues } = values;
 
@@ -112,13 +112,13 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
       return Promise.all([memberPromise, personPromise]);
     },
     onSuccess: () => {
-      toast.success('Miembro actualizado con éxito');
+      toast.success('Comunero actualizado con éxito');
       queryClient.invalidateQueries({ queryKey: ['members', memberId] });
       queryClient.invalidateQueries({ queryKey: ['members'] });
       router.push(`/dashboard/members/${memberId}`);
     },
     onError: (error: any) => {
-      toast.error(error.response.data.message || 'Error al actualizar el miembro');
+      toast.error(error.response.data.message || 'Error al actualizar el comunero');
     }
   });
 
@@ -145,7 +145,7 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
   }
 
   if (error) {
-    return <div>Error al cargar la información del miembro.</div>;
+    return <div>Error al cargar la información del comunero.</div>;
   }
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
@@ -155,7 +155,7 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Editar Miembro</CardTitle>
+        <CardTitle>Editar Comunero</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>

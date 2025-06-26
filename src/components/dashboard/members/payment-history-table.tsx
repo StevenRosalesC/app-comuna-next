@@ -220,7 +220,7 @@ export function PaymentHistoryTable({ memberId }: PaymentHistoryTableProps) {
         <CardHeader>
           <CardTitle>Historial de Pagos</CardTitle>
           <CardDescription>
-            Estos son los pagos registrados para el miembro. Puedes descargar recibos, reenviarlos por email y ver detalles expandidos.
+            Estos son los pagos registrados para el comunero. Puedes descargar recibos, reenviarlos por email y ver detalles expandidos.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -383,7 +383,7 @@ export function PaymentHistoryTable({ memberId }: PaymentHistoryTableProps) {
             <AlertDialogTitle>Reenviar Recibo</AlertDialogTitle>
             <AlertDialogDescription>
               ¿Estás seguro de que quieres reenviar el recibo por email?
-              Esto enviará el PDF del recibo al email registrado del miembro.
+              Esto enviará el PDF del recibo al email registrado del comunero.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

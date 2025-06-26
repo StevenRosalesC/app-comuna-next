@@ -166,7 +166,7 @@ export default function MemberPayment({ member }: MemberPaymentProps) {
         </CardHeader>
         <CardContent>
           <p className='text-sm text-muted-foreground'>
-            El miembro no tiene cuotas pendientes de pago.
+            El comunero no tiene cuotas pendientes de pago.
           </p>
         </CardContent>
       </Card>
@@ -179,7 +179,7 @@ export default function MemberPayment({ member }: MemberPaymentProps) {
         <CardHeader>
           <CardTitle>Pagos de Cuotas</CardTitle>
           <CardDescription>
-            El miembro tiene cuotas pendientes. Haz clic en &quot;Realizar
+            El comunero tiene cuotas pendientes. Haz clic en &quot;Realizar
             Pago&quot; para abonar.
           </CardDescription>
         </CardHeader>
@@ -271,7 +271,7 @@ export default function MemberPayment({ member }: MemberPaymentProps) {
               ✅ Pago Registrado Exitosamente
             </CardTitle>
             <CardDescription className='text-green-700 dark:text-green-300'>
-              El recibo ha sido generado y enviado por email al miembro.
+              El recibo ha sido generado y enviado por email al comunero.
             </CardDescription>
           </CardHeader>
           <CardContent>

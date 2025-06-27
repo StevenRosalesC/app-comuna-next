@@ -23,8 +23,12 @@ import { toast } from 'sonner';
 import MemberPayment from '@/components/dashboard/members/member-payment';
 import { PaymentHistoryTable } from '@/components/dashboard/members/payment-history-table';
 import DocumentUpload from '@/components/dashboard/members/document-upload';
+import { usePermission } from '@/hooks/usePermission';
+import { ValidActions, ValidModules } from '@/constants/permissions';
 
 export default function MemberPage({ params }: { params: { id: string } }) {
+  const canReadHistoryPayments = usePermission(ValidModules.MEMBERS, [ValidActions.READ_HISTORY_PAYMENTS]);
+  const canCreatePayment = usePermission(ValidModules.MEMBERS, [ValidActions.CREATE_PAYMENT]);
   const {
     data: member,
     isLoading,
@@ -116,8 +120,8 @@ export default function MemberPage({ params }: { params: { id: string } }) {
             </Table>
           </CardContent>
         </Card>
-        {member && <MemberPayment member={member} />}
-        {member && <PaymentHistoryTable memberId={member.memberId} />}
+        {member && canCreatePayment && <MemberPayment member={member} />}
+        {member && canReadHistoryPayments && <PaymentHistoryTable memberId={member.memberId} />}
         {/* Documents Section */}
         {member && <DocumentUpload memberId={member.memberId} />}
       </div>

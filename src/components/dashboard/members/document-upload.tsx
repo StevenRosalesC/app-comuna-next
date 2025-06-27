@@ -23,6 +23,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { documentTypesService } from '@/services/document-types';
 import { memberDocumentsService, MemberDocument } from '@/services/member-documents';
 import { DocumentType } from '@/interfaces/document-types';
+import { usePermission } from '@/hooks/usePermission';
+import { ValidActions, ValidModules } from '@/constants/permissions';
 
 interface DocumentUploadProps {
   memberId: string;
@@ -30,6 +32,9 @@ interface DocumentUploadProps {
 }
 
 export default function DocumentUpload({ memberId, onDocumentUploaded }: DocumentUploadProps) {
+  const canReadDocuments = usePermission(ValidModules.MEMBERS, [ValidActions.READ_DOCUMENTS]);
+  const canUploadDocuments = usePermission(ValidModules.MEMBERS, [ValidActions.UPLOAD_DOCUMENTS]);
+
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState<string | undefined>(undefined);
@@ -208,7 +213,7 @@ export default function DocumentUpload({ memberId, onDocumentUploaded }: Documen
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Document Type Selection */}
-        <div className="space-y-2">
+        {canUploadDocuments && <div className="space-y-2">
           <label className="text-sm font-medium">Tipo de Documento</label>
           <Select
             value={selectedDocumentType}
@@ -247,7 +252,7 @@ export default function DocumentUpload({ memberId, onDocumentUploaded }: Documen
               ⚠️ Este documento ya está subido. Al subir un nuevo archivo, reemplazará el existente.
             </p>
           )}
-        </div>
+        </div>}
 
         {/* Upload Area */}
         {selectedDocumentType && (
@@ -289,7 +294,7 @@ export default function DocumentUpload({ memberId, onDocumentUploaded }: Documen
         )}
 
         {/* Uploaded Documents */}
-        {memberDocuments && memberDocuments.length > 0 && (
+        {memberDocuments && memberDocuments.length > 0 && canReadDocuments && (
           <div className="space-y-2">
             <h4 className="text-sm font-medium">Documentos Subidos</h4>
             <div className="space-y-2">

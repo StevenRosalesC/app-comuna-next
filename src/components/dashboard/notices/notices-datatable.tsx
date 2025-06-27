@@ -21,6 +21,7 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { NoticesTableRowSkeleton } from './notices-table-row-skeleton';
+import { usePermission } from '@/hooks/usePermission';
 
 interface NoticesTableToolbarProps {
   search: string;
@@ -156,6 +157,8 @@ export default function NoticesDataTable() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const canReadNotice = usePermission(ValidModules.NOTICES, [ValidActions.READ]);
+  const canUpdateNotice = usePermission(ValidModules.NOTICES, [ValidActions.UPDATE]);
 
   const [search, setSearch] = useState(() => searchParams.get('search') || '');
   const debouncedSearch = useDebounce(search, 400);
@@ -273,7 +276,7 @@ export default function NoticesDataTable() {
                     </td>
                     <td className='px-4 py-2 text-center align-middle'>
                       <div className='flex justify-center gap-2'>
-                        <Button
+                        {canReadNotice && <Button
                           asChild
                           variant='ghost'
                           size='icon'
@@ -284,8 +287,8 @@ export default function NoticesDataTable() {
                           >
                             <Eye className='h-4 w-4' />
                           </Link>
-                        </Button>
-                        <Button
+                        </Button>}
+                        {canUpdateNotice && <Button
                           asChild
                           variant='ghost'
                           size='icon'
@@ -296,7 +299,7 @@ export default function NoticesDataTable() {
                           >
                             <Pencil className='h-4 w-4' />
                           </Link>
-                        </Button>
+                        </Button>}
                       </div>
                     </td>
                   </tr>

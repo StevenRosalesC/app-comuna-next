@@ -2,7 +2,7 @@ export const modulesPermissions = [
   {
     module: 'persons',
     route: 'persons',
-    actions: ['read', 'write', 'edit', 'delete', 'approve_requirements'],
+    actions: ['read', 'write', 'edit', 'delete', 'approve_requirements','list_all'],
     label: 'Personas'
   },
   {
@@ -44,8 +44,14 @@ export const modulesPermissions = [
   {
     module: 'cash-management',
     route: 'cash-management',
-    actions: ['read', 'write', 'edit', 'delete'],
+    actions: ['read', 'write', 'edit', 'delete','open_cash_register','close_cash_register','view_history'],
     label: 'Caja'
+  },
+  {
+    module: 'reports',
+    route: 'reports',
+    actions: ['read', 'generate', 'export', 'schedule'],
+    label: 'Reportes'
   },
   // Add more modules here
 ]; 
@@ -68,7 +74,14 @@ export enum ValidActions {
   CREATE = 'create',
   UPDATE = 'update',
   DELETE = 'delete',
-  APPROVE_REQUIREMENTS = 'approve_requirements'
+  APPROVE_REQUIREMENTS = 'approve_requirements',
+  GENERATE = 'generate',
+  EXPORT = 'export',
+  SCHEDULE = 'schedule',
+  OPEN_CASH_REGISTER = 'open_cash_register',
+  CLOSE_CASH_REGISTER = 'close_cash_register',
+  VIEW_HISTORY = 'view_history',
+  LIST_ALL = 'list_all'
 }
 
 export const validPermissions = [
@@ -78,3 +91,16 @@ export const validPermissions = [
   ValidModules.REQUIREMENTS,
   ValidModules.DOCUMENT_TYPES
 ];
+
+// Utility function to get available actions for a specific module
+export const getModuleActions = (module: string): string[] => {
+  const moduleConfig = modulesPermissions.find(m => m.module === module);
+  return moduleConfig?.actions || [];
+};
+
+// Utility function to get all available actions for all modules
+export const getAllModuleActions = (): Record<string, string[]> => {
+  return Object.fromEntries(
+    modulesPermissions.map(m => [m.module, m.actions])
+  );
+};

@@ -34,7 +34,7 @@ const formSchema = z.object({
   notes: z.string().optional()
 });
 
-export default function OpenCashRegister() {
+export default function OpenCashRegister({ canOpenCashRegister = false }: { canOpenCashRegister?: boolean }) {
   const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -59,6 +59,25 @@ export default function OpenCashRegister() {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     openRegisterMutation.mutate(values);
   };
+
+  // If user doesn't have permission to open cash register, show access denied
+  if (!canOpenCashRegister) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Acceso Denegado</CardTitle>
+          <CardDescription>
+            No tienes permisos para abrir una nueva caja.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className='text-muted-foreground'>
+            Contacta al administrador para obtener los permisos necesarios.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>

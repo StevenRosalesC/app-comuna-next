@@ -14,7 +14,7 @@ import { ArrowLeftIcon, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ValidModules, ValidActions } from '@/constants/permissions';
+import { ValidModules, ValidActions, getModuleActions, modulesPermissions } from '@/constants/permissions';
 import { toast } from 'sonner';
 import {
   MODULES_TRANSLATIONS,
@@ -106,14 +106,17 @@ export default function RolesView() {
   };
 
   // Default permissions for new role
-  const defaultNewPermissions: Record<string, string[]> = Object.fromEntries(
-    Object.values(ValidModules).map((module) => {
-      if (module === ValidModules.ADMIN || module === ValidModules.DASHBOARD) {
-        return [module, []];
-      }
-      return [module, [ValidActions.READ]];
-    })
-  );
+  const defaultNewPermissions: Record<string, string[]> = useMemo(() => {
+    return Object.fromEntries(
+      modulesPermissions.map((moduleConfig) => {
+        if (moduleConfig.module === ValidModules.ADMIN || moduleConfig.module === ValidModules.DASHBOARD) {
+          return [moduleConfig.module, []];
+        }
+        // For other modules, default to read permission if available
+        return [moduleConfig.module, moduleConfig.actions.includes(ValidActions.READ) ? [ValidActions.READ] : []];
+      })
+    );
+  }, []);
 
   const [newRoleName, setNewRoleName] = useState('');
   const [newRolePermissions, setNewRolePermissions] = useState<
@@ -227,37 +230,31 @@ export default function RolesView() {
                     placeholder='Nombre del rol'
                   />
                 </div>
-                {Object.values(ValidModules).map((module) => (
-                  <div key={module} className='rounded border p-4'>
+                {modulesPermissions.map((moduleConfig) => (
+                  <div key={moduleConfig.module} className='rounded border p-4'>
                     <div className='mb-2 font-semibold'>
-                      {MODULES_TRANSLATIONS[module] || module}
+                      {MODULES_TRANSLATIONS[moduleConfig.module] || moduleConfig.label}
                     </div>
                     <div className='flex flex-wrap gap-4'>
-                      {Object.values(ValidActions)
-                        .filter(
-                          (action) =>
-                            module === 'persons' ||
-                            action !== 'approve_requirements'
-                        )
-                        .map((action) => (
-                          <label
-                            key={action}
-                            className='flex items-center gap-2'
-                          >
-                            <Checkbox
-                              checked={
-                                newRolePermissions[module]?.includes(action) ||
-                                false
-                              }
-                              onCheckedChange={(checked) =>
-                                handleNewCheck(module, action, Boolean(checked))
-                              }
-                            />
-                            <span className='capitalize'>
-                              {ACTIONS_TRANSLATIONS[action] || action}
-                            </span>
-                          </label>
-                        ))}
+                      {getModuleActions(moduleConfig.module).map((action) => (
+                        <label
+                          key={action}
+                          className='flex items-center gap-2'
+                        >
+                          <Checkbox
+                            checked={
+                              newRolePermissions[moduleConfig.module]?.includes(action) ||
+                              false
+                            }
+                            onCheckedChange={(checked) =>
+                              handleNewCheck(moduleConfig.module, action, Boolean(checked))
+                            }
+                          />
+                          <span className='capitalize'>
+                            {ACTIONS_TRANSLATIONS[action] || action}
+                          </span>
+                        </label>
+                      ))}
                     </div>
                   </div>
                 ))}
@@ -302,36 +299,30 @@ export default function RolesView() {
                   </Button>
                 </div>
                 <form className='mt-2 space-y-4'>
-                  {Object.values(ValidModules).map((module) => (
-                    <div key={module} className='rounded border p-4'>
+                  {modulesPermissions.map((moduleConfig) => (
+                    <div key={moduleConfig.module} className='rounded border p-4'>
                       <div className='mb-2 font-semibold'>
-                        {MODULES_TRANSLATIONS[module] || module}
+                        {MODULES_TRANSLATIONS[moduleConfig.module] || moduleConfig.label}
                       </div>
                       <div className='flex flex-wrap gap-4'>
-                        {Object.values(ValidActions)
-                          .filter(
-                            (action) =>
-                              module === 'persons' ||
-                              action !== 'approve_requirements'
-                          )
-                          .map((action) => (
-                            <label
-                              key={action}
-                              className='flex items-center gap-2'
-                            >
-                              <Checkbox
-                                checked={
-                                  permissions[module]?.includes(action) || false
-                                }
-                                onCheckedChange={(checked) =>
-                                  handleCheck(module, action, Boolean(checked))
-                                }
-                              />
-                              <span className='capitalize'>
-                                {ACTIONS_TRANSLATIONS[action] || action}
-                              </span>
-                            </label>
-                          ))}
+                        {getModuleActions(moduleConfig.module).map((action) => (
+                          <label
+                            key={action}
+                            className='flex items-center gap-2'
+                          >
+                            <Checkbox
+                              checked={
+                                permissions[moduleConfig.module]?.includes(action) || false
+                              }
+                              onCheckedChange={(checked) =>
+                                handleCheck(moduleConfig.module, action, Boolean(checked))
+                              }
+                            />
+                            <span className='capitalize'>
+                              {ACTIONS_TRANSLATIONS[action] || action}
+                            </span>
+                          </label>
+                        ))}
                       </div>
                     </div>
                   ))}

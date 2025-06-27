@@ -41,6 +41,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { requirementsService } from '@/services/requirements';
 import { Requirement } from '@/interfaces/requirements';
 import { DataTablePagination } from '@/components/ui/table/data-table-pagination';
+import { usePermission } from '@/hooks/usePermission';
 
 const formSchema = z.object({
   requirement: z.string().min(1, { message: 'Requisito es requerido' }),
@@ -56,6 +57,12 @@ export default function RequirementsTable() {
   const canCreateRequirement = permissions?.[
     ValidModules.REQUIREMENTS
   ]?.includes(ValidActions.CREATE);
+  const canUpdateRequirement = permissions?.[
+    ValidModules.REQUIREMENTS
+  ]?.includes(ValidActions.UPDATE);
+  const canDeleteRequirement = permissions?.[
+    ValidModules.REQUIREMENTS
+  ]?.includes(ValidActions.DELETE);
 
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
@@ -115,10 +122,10 @@ export default function RequirementsTable() {
     form.reset(
       req
         ? {
-            requirement: req.requirement,
-            observation: req.observation,
-            status: req.status
-          }
+          requirement: req.requirement,
+          observation: req.observation,
+          status: req.status
+        }
         : { requirement: '', observation: 'Ninguna', status: true }
     );
     setModalOpen(true);
@@ -146,7 +153,7 @@ export default function RequirementsTable() {
       <div className='mb-4 flex items-center justify-between'>
         <h2 className='text-2xl font-bold'>Requisitos para ser comunero</h2>
         <div className='flex gap-2'>
-          {canCreateRequirement && (
+          {canCreateRequirement && canUpdateRequirement && (
             <Button onClick={() => openModal(null)}>
               <Plus className='mr-2 h-4 w-4' /> Nuevo requisito
             </Button>
@@ -198,13 +205,13 @@ export default function RequirementsTable() {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button
+                          {canUpdateRequirement && <Button
                             variant='ghost'
                             size='icon'
                             onClick={() => openModal(req)}
                           >
                             <Icons.userPen className='h-4 w-4' />
-                          </Button>
+                          </Button>}
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>Editar</p>
@@ -212,7 +219,7 @@ export default function RequirementsTable() {
                       </Tooltip>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button
+                          {canDeleteRequirement && <Button
                             variant='ghost'
                             size='icon'
                             onClick={() => {
@@ -221,7 +228,7 @@ export default function RequirementsTable() {
                             }}
                           >
                             <Icons.trash className='h-4 w-4 text-red-600' />
-                          </Button>
+                          </Button>}
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>Eliminar</p>

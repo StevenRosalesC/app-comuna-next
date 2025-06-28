@@ -14,6 +14,8 @@ import {
   TooltipTrigger,
   TooltipContent
 } from '@/components/ui/tooltip';
+import { usePermission } from '@/hooks/usePermission';
+import { ValidActions, ValidModules } from '@/constants/permissions';
 
 interface UseMembersTableProps {
   data: Member[];
@@ -32,6 +34,8 @@ export function useMembersTable({
   onView,
   onDelete
 }: UseMembersTableProps) {
+  const canEdit = usePermission(ValidModules.MEMBERS, [ValidActions.UPDATE]);
+  const canDelete = usePermission(ValidModules.MEMBERS, [ValidActions.DELETE]);
   const columns = useMembersTableColumns({
     actions: (member: Member) => (
       <div className='flex items-center justify-end gap-4'>
@@ -47,30 +51,34 @@ export function useMembersTable({
           </TooltipTrigger>
           <TooltipContent>Ver comunero</TooltipContent>
         </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              className='text-yellow-600 hover:underline'
-              title='Editar'
-              onClick={() => onEdit(member)}
-            >
-              <Pencil className='h-4 w-4' />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent>Editar comunero</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              className='text-red-600 hover:underline'
-              title='Eliminar'
-              onClick={() => onDelete(member)}
-            >
-              <Trash2 className='h-4 w-4' />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent>Eliminar comunero</TooltipContent>
-        </Tooltip>
+        {canEdit && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                className='text-yellow-600 hover:underline'
+                title='Editar'
+                onClick={() => onEdit(member)}
+              >
+                <Pencil className='h-4 w-4' />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Editar comunero</TooltipContent>
+          </Tooltip>
+        )}
+        {canDelete && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                className='text-red-600 hover:underline'
+                title='Eliminar'
+                onClick={() => onDelete(member)}
+              >
+                <Trash2 className='h-4 w-4' />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Eliminar comunero</TooltipContent>
+          </Tooltip>
+        )}
       </div>
     )
   });

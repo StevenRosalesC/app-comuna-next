@@ -41,7 +41,8 @@ import {
   ShieldCheck,
   UserSearchIcon,
   ShieldQuestion,
-  CircleDollarSign
+  CircleDollarSign,
+  Edit
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
@@ -58,6 +59,7 @@ export const Icons = {
   chevronLeft: ChevronLeft,
   chevronRight: ChevronRight,
   trash: Trash,
+  edit: Edit,
   employee: UserX2Icon,
   post: FileText,
   page: File,

@@ -20,17 +20,32 @@ import { CashRegisterInvoicesTable } from './cash-register-invoices-table';
 
 interface ActiveCashRegisterProps {
   activeCashRegister: CashRegister;
+  canCloseCashRegister?: boolean;
+  canCreateIncome?: boolean;
+  canCreateExpense?: boolean;
+  canReadIncome?: boolean;
+  canReadExpense?: boolean;
+  canDeletePayment?: boolean;
+  canDeleteIncome?: boolean;
+  canDeleteExpense?: boolean;
 }
 
 export default function ActiveCashRegister({
-  activeCashRegister
+  activeCashRegister,
+  canCloseCashRegister = false,
+  canCreateIncome = false,
+  canCreateExpense = false,
+  canReadIncome = false,
+  canReadExpense = false,
+  canDeletePayment = false,
+  canDeleteIncome = false,
+  canDeleteExpense = false
 }: ActiveCashRegisterProps) {
   const queryClient = useQueryClient();
 
   const closeRegisterMutation = useMutation({
     mutationFn: (id: string) =>
       cashRegisterService.closeRegister(id, {
-        finalAmount: activeCashRegister.finalAmount ?? 0
       }),
     onSuccess: () => {
       toast.success('Caja cerrada correctamente.');
@@ -106,21 +121,33 @@ export default function ActiveCashRegister({
                 Para finalizar la sesión de cobros, cierra la caja. Esta acción
                 no se puede deshacer.
               </span>
-              <Button
-                variant='destructive'
-                onClick={handleCloseRegister}
-                disabled={closeRegisterMutation.isPending}
-              >
-                <Icons.close className='mr-2 h-4 w-4' />
-                {closeRegisterMutation.isPending
-                  ? 'Cerrando...'
-                  : 'Cerrar Caja'}
-              </Button>
+              {canCloseCashRegister && (
+                <Button
+                  variant='destructive'
+                  onClick={handleCloseRegister}
+                  disabled={closeRegisterMutation.isPending}
+                >
+                  <Icons.close className='mr-2 h-4 w-4' />
+                  {closeRegisterMutation.isPending
+                    ? 'Cerrando...'
+                    : 'Cerrar Caja'}
+                </Button>
+              )}
             </AlertDescription>
           </Alert>
         </CardContent>
       </Card>
-      <CashRegisterInvoicesTable />
+
+      <CashRegisterInvoicesTable
+        cashRegisterId={activeCashRegister.cashRegisterId}
+        canCreateIncome={canCreateIncome}
+        canCreateExpense={canCreateExpense}
+        canReadIncome={canReadIncome}
+        canReadExpense={canReadExpense}
+        canDeletePayment={canDeletePayment}
+        canDeleteIncome={canDeleteIncome}
+        canDeleteExpense={canDeleteExpense}
+      />
     </>
   );
 }

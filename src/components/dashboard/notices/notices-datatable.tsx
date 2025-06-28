@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { RefreshCcw, Plus, Eye } from 'lucide-react';
+import { RefreshCcw, Plus, Eye, Pencil } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useDebounce } from '../persons/useDebounce';
 import { getAllNotices } from '@/services/notices';
@@ -21,6 +21,7 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { NoticesTableRowSkeleton } from './notices-table-row-skeleton';
+import { usePermission } from '@/hooks/usePermission';
 
 interface NoticesTableToolbarProps {
   search: string;
@@ -156,6 +157,8 @@ export default function NoticesDataTable() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const canReadNotice = usePermission(ValidModules.NOTICES, [ValidActions.READ]);
+  const canUpdateNotice = usePermission(ValidModules.NOTICES, [ValidActions.UPDATE]);
 
   const [search, setSearch] = useState(() => searchParams.get('search') || '');
   const debouncedSearch = useDebounce(search, 400);
@@ -272,18 +275,32 @@ export default function NoticesDataTable() {
                         : ''}
                     </td>
                     <td className='px-4 py-2 text-center align-middle'>
-                      <Button
-                        asChild
-                        variant='ghost'
-                        size='icon'
-                        title='Ver detalle'
-                      >
-                        <Link
-                          href={`/dashboard/notices/${notice.newsId}/preview`}
+                      <div className='flex justify-center gap-2'>
+                        {canReadNotice && <Button
+                          asChild
+                          variant='ghost'
+                          size='icon'
+                          title='Ver detalle'
                         >
-                          <Eye className='h-4 w-4' />
-                        </Link>
-                      </Button>
+                          <Link
+                            href={`/dashboard/notices/${notice.newsId}/preview`}
+                          >
+                            <Eye className='h-4 w-4' />
+                          </Link>
+                        </Button>}
+                        {canUpdateNotice && <Button
+                          asChild
+                          variant='ghost'
+                          size='icon'
+                          title='Editar'
+                        >
+                          <Link
+                            href={`/dashboard/notices/${notice.newsId}`}
+                          >
+                            <Pencil className='h-4 w-4' />
+                          </Link>
+                        </Button>}
+                      </div>
                     </td>
                   </tr>
                 ))

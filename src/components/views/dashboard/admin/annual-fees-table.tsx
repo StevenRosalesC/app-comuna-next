@@ -36,10 +36,22 @@ import { AnnualFeesTableRowSkeleton } from './annual-fees-table-row-skeleton';
 import { DataTablePagination } from '@/components/ui/table/data-table-pagination';
 import { useDebounce } from '@/hooks/use-debounce';
 import { AxiosError } from 'axios';
+import { RotateCw } from 'lucide-react';
+import { usePermissionsStore } from '@/store/permissionsStore';
+import { ValidActions, ValidModules } from '@/constants/permissions';
 
 export default function AnnualFeesTable() {
   const queryClient = useQueryClient();
-
+  const { permissions } = usePermissionsStore();
+  const canCreateAnnualFee = permissions?.[
+    ValidModules.ADMIN
+  ]?.includes(ValidActions.CREATE_ANNUAL_FEE);
+  const canUpdateAnnualFee = permissions?.[
+    ValidModules.ADMIN
+  ]?.includes(ValidActions.UPDATE_ANNUAL_FEE);
+  const canDeleteAnnualFee = permissions?.[
+    ValidModules.ADMIN
+  ]?.includes(ValidActions.DELETE_ANNUAL_FEE);
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
 
@@ -68,7 +80,7 @@ export default function AnnualFeesTable() {
     setPageIndex(0);
   }, [debouncedSearch, year]);
 
-  const { data, isLoading, isError } = useQuery<{
+  const { data, isLoading, isError, isFetching, refetch } = useQuery<{
     data: AnnualFee[];
     count: number;
   }>({
@@ -140,19 +152,19 @@ export default function AnnualFeesTable() {
     setForm(
       fee
         ? {
-            description: fee.description,
-            amount: fee.amount,
-            status: fee.status,
-            name: fee.name,
-            year: fee.year
-          }
+          description: fee.description,
+          amount: fee.amount,
+          status: fee.status,
+          name: fee.name,
+          year: fee.year
+        }
         : {
-            description: '',
-            amount: 0,
-            status: true,
-            name: '',
-            year: new Date().getFullYear()
-          }
+          description: '',
+          amount: 0,
+          status: true,
+          name: '',
+          year: new Date().getFullYear()
+        }
     );
     setModalOpen(true);
   };
@@ -184,7 +196,19 @@ export default function AnnualFeesTable() {
     <>
       <div className='mb-4 flex items-center justify-between'>
         <h2 className='text-2xl font-bold'>Cuotas anuales</h2>
-        <Button onClick={() => setAddModalOpen(true)}>+ Nueva cuota</Button>
+        <div className='flex items-center gap-2'>
+          {canCreateAnnualFee && canUpdateAnnualFee && <Button onClick={() => setAddModalOpen(true)}>+ Nueva cuota</Button>}
+          <Button
+            onClick={() => refetch()}
+            variant='outline'
+            title='Recargar cuotas'
+            size='icon'
+          >
+            <RotateCw
+              className={`h-4 w-4 ${isFetching ? 'animate-spin ' : ''}`}
+            />
+          </Button>
+        </div>
       </div>
       <div className='mb-4 flex items-center gap-2'>
         <Input
@@ -238,13 +262,13 @@ export default function AnnualFeesTable() {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button
+                          {canUpdateAnnualFee && <Button
                             variant='ghost'
                             size='icon'
                             onClick={() => openModal(fee)}
                           >
                             <Icons.userPen className='h-4 w-4' />
-                          </Button>
+                          </Button>}
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>Editar</p>
@@ -252,14 +276,14 @@ export default function AnnualFeesTable() {
                       </Tooltip>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button
+                          {canDeleteAnnualFee && <Button
                             variant='ghost'
                             size='icon'
                             onClick={() => handleDelete(fee.feeId)}
                             disabled={deleteMutation.isPending}
                           >
                             <Icons.trash className='h-4 w-4 text-red-600' />
-                          </Button>
+                          </Button>}
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>Eliminar</p>

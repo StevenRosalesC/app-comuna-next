@@ -87,7 +87,6 @@ export default function MemberPayment({ member }: MemberPaymentProps) {
       setIsModalOpen(false);
     },
     onError: (error: AxiosError<{ message: string }>) => {
-      console.log({ error });
       toast.error(
         error.response?.data?.message || 'Error al registrar el pago.'
       );

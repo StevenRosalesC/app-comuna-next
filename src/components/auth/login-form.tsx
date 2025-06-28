@@ -46,11 +46,13 @@ export default function LoginForm() {
       const formData = new FormData();
       formData.append('email', data.email);
       formData.append('password', data.password);
-      const { ok } = await login(formData);
-      if (!ok) {
-        toast.error('Login failed');
+      const result = await login(formData);
+
+      if (!result.ok) {
+        toast.error(result.error || 'Login failed');
         return;
       }
+
       toast.success('Login successful');
       router.push('/dashboard/overview');
     });

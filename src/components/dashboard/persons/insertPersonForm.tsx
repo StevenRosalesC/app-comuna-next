@@ -44,14 +44,23 @@ const formSchema = z.object({
   email: z.string().email('Email inválido').optional().or(z.literal('')),
   gender: z
     .number()
-    .min(0, 'El género es requerido')
-    .max(1, 'El género debe ser 0 o 1'),
+    .min(1, 'El género es requerido')
+    .max(2, 'El género debe ser 1 o 2'),
   birthDate: z.string().min(1, 'La fecha de nacimiento es requerida'),
   phone: z.string().optional(),
   address: z.string().optional(),
   neighborhoodId: z.string().optional(),
   hasDisability: z.boolean().optional(),
-  disabilityPercentage: z.number().min(0).max(100).optional()
+  disabilityPercentage: z.number().min(1, 'El porcentaje debe ser mayor a 0').max(100, 'El porcentaje no puede ser mayor a 100').optional()
+}).refine((data) => {
+  // If hasDisability is true, disabilityPercentage must be greater than 0
+  if (data.hasDisability && (!data.disabilityPercentage || data.disabilityPercentage <= 0)) {
+    return false;
+  }
+  return true;
+}, {
+  message: "El porcentaje de discapacidad es requerido cuando tiene discapacidad",
+  path: ["disabilityPercentage"]
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -100,7 +109,7 @@ export default function InsertPersonForm({
         firstName: data.firstName,
         phoneNumber: data.phone,
         identification: data.identification,
-        gender: data.gender ? 1 : 0,
+        gender: data.gender,
         birthDate: data.birthDate || '',
         email: data.email || '',
         neighborhoodId: data.neighborhoodId,
@@ -221,7 +230,7 @@ export default function InsertPersonForm({
                       </FormControl>
                       <SelectContent>
                         <SelectItem value='1'>Masculino</SelectItem>
-                        <SelectItem value='0'>Femenino</SelectItem>
+                        <SelectItem value='2'>Femenino</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -331,7 +340,7 @@ export default function InsertPersonForm({
                             onCheckedChange={(checked) => {
                               field.onChange(checked);
                               if (!checked) {
-                                form.setValue('disabilityPercentage', undefined);
+                                form.setValue('disabilityPercentage', 0);
                               }
                             }}
                           />
@@ -350,11 +359,15 @@ export default function InsertPersonForm({
                           <FormControl>
                             <Input
                               type='number'
-                              min='0'
+                              min='1'
                               max='100'
                               placeholder='Ingrese el porcentaje de discapacidad'
                               {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
+                              value={field.value === 0 ? '' : field.value}
+                              onChange={(e) => {
+                                const value = Number(e.target.value);
+                                field.onChange(value);
+                              }}
                             />
                           </FormControl>
                           <FormMessage />

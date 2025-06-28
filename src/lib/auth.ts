@@ -2,6 +2,7 @@ import apiCommunity from '@/utils/communityApi';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { AuthResponse } from 'types/response';
+import { AUTH_CONFIG } from './auth-config';
 
 export const signIn = async ({
   email,
@@ -15,18 +16,18 @@ export const signIn = async ({
     {},
     {
       headers: {
-        Authorization: `Bearer ${btoa(`${email}:${password}`)}`
+        Authorization: `Basic ${btoa(`${email}:${password}`)}`
       }
     }
   );
   const token = response.token;
-  cookies().set('token', token);
+  cookies().set(AUTH_CONFIG.COOKIE_NAME, token, AUTH_CONFIG.COOKIE_SETTINGS);
 };
 
 export const signOut = async () => {
   await apiCommunity.get('/auth/logout', {
     headers: {
-      Authorization: `Bearer ${cookies().get('token')?.value}`
+      Authorization: `Bearer ${cookies().get(AUTH_CONFIG.COOKIE_NAME)?.value}`
     }
   });
 };
@@ -36,9 +37,9 @@ export const auth = async (): Promise<{
   data: AuthResponse | null;
 }> => {
   // get token from cookies
-  const token = cookies().get('token')?.value;
+  const token = cookies().get(AUTH_CONFIG.COOKIE_NAME)?.value;
   if (!token) {
-    redirect('/auth/login');
+    redirect(AUTH_CONFIG.PATHS.LOGIN);
   }
   try {
     const { data: response } = await apiCommunity.get<AuthResponse>(

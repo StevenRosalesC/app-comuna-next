@@ -1,4 +1,4 @@
-import React, { CSSProperties, useEffect, useRef, useState } from 'react';
+import React, { CSSProperties, useRef } from 'react';
 import MenuButton from '../MenuButton';
 import useMount from '../../hooks/useMount';
 import { createPortal } from 'react-dom';
@@ -10,9 +10,6 @@ const TextHighlightButton: React.FC = () => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const mounted = useMount();
   const { editor } = useTiptapContext();
-  const [highlightColor, setHighlightColor] = useState<string | 'DEFAULT'>(
-    'DEFAULT'
-  );
   const state = useEditorState({
     editor,
     selector: (ctx) => ({
@@ -34,9 +31,9 @@ const TextHighlightButton: React.FC = () => {
   const renderBar =
     mounted && buttonRef.current
       ? createPortal(
-          <div style={highlightBarStyle as CSSProperties} />,
-          buttonRef.current
-        )
+        <div style={highlightBarStyle as CSSProperties} />,
+        buttonRef.current
+      )
       : null;
 
   return (

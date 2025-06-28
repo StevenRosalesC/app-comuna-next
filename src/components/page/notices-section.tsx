@@ -42,14 +42,14 @@ export default function NoticesSection({ notices }: Props) {
               {recentNotices.map((notice, index) => (
                 <CarouselItem
                   key={`notice-${index}`}
-                  className='md:basis-1/2 lg:basis-1/3 animate-fade-in-card'
+                  className='animate-fade-in-card md:basis-1/2 lg:basis-1/3'
                 >
                   <NoticeMiniCard {...notice} />
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious aria-label="Noticia anterior" />
-            <CarouselNext aria-label="Siguiente noticia" />
+            <CarouselPrevious aria-label='Noticia anterior' />
+            <CarouselNext aria-label='Siguiente noticia' />
           </Carousel>
         </div>
 
@@ -57,7 +57,7 @@ export default function NoticesSection({ notices }: Props) {
           <Link
             type='button'
             href='/notices'
-            className='rounded-md border border-primary bg-primary text-white px-6 py-3 text-sm font-semibold shadow hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+            className='rounded-md border border-primary bg-primary px-6 py-3 text-sm font-semibold text-white shadow transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
             aria-label='Ver todas las noticias'
           >
             Ver más noticias...

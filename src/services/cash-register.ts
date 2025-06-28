@@ -15,7 +15,6 @@ interface GetCashRegistersParams {
 }
 
 class CashRegisterService {
-
   async getActiveRegister(): Promise<CashRegister | null> {
     try {
       const { data } = await apiCommunity.get<CashRegister>(
@@ -30,9 +29,7 @@ class CashRegisterService {
     }
   }
 
-  async openRegister(
-    dto: CreateCashRegisterDto
-  ): Promise<CashRegister> {
+  async openRegister(dto: CreateCashRegisterDto): Promise<CashRegister> {
     const { data } = await apiCommunity.post<CashRegister>(
       '/cash-registers',
       dto
@@ -78,4 +75,4 @@ class CashRegisterService {
   }
 }
 
-export const cashRegisterService = new CashRegisterService(); 
+export const cashRegisterService = new CashRegisterService();

@@ -9,7 +9,7 @@ import {
   DialogFooter
 } from '@/components/ui/dialog';
 import { invoicingService } from '@/services/invoicing';
-import { receiptsService, DetailedReceiptHistoryItem } from '@/services/receipts';
+import { receiptsService } from '@/services/receipts';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
@@ -25,11 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { Icons } from '@/components/icons';
 import {
   Calendar,
-  Clock,
   User,
-  Home,
-  Mail,
-  Phone,
   DollarSign,
   CreditCard,
   Download,
@@ -98,18 +94,7 @@ export function InvoiceDetailsDialog({
     resendReceiptMutation.mutate(invoiceId);
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'PAID':
-        return <Badge className="bg-green-500">Pagado</Badge>;
-      case 'PARTIAL':
-        return <Badge className="bg-yellow-500">Parcial</Badge>;
-      case 'PENDING':
-        return <Badge className="bg-red-500">Pendiente</Badge>;
-      default:
-        return <Badge variant="secondary">Desconocido</Badge>;
-    }
-  };
+
 
   const renderContent = () => {
     if (isLoading) {
@@ -117,9 +102,9 @@ export function InvoiceDetailsDialog({
     }
     if (isError || !invoice) {
       return (
-        <div className="flex flex-col items-center justify-center py-8">
-          <Icons.warning className="h-12 w-12 text-destructive mb-4" />
-          <p className='text-destructive text-center'>
+        <div className='flex flex-col items-center justify-center py-8'>
+          <Icons.warning className='mb-4 h-12 w-12 text-destructive' />
+          <p className='text-center text-destructive'>
             No se encontró información de la factura.
           </p>
         </div>
@@ -127,68 +112,90 @@ export function InvoiceDetailsDialog({
     }
     const invoiceDate = new Date(invoice.invoiceDate);
     return (
-      <div className="space-y-6 min-w-full">
+      <div className='min-w-full space-y-6'>
         {/* Header */}
-        <div className="bg-muted/30 rounded-lg p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Receipt className="h-5 w-5 text-primary" />
-              <h3 className="text-lg font-semibold">Factura #{invoice.invoiceId}</h3>
+        <div className='rounded-lg bg-muted/30 p-4'>
+          <div className='mb-3 flex items-center justify-between'>
+            <div className='flex items-center gap-2'>
+              <Receipt className='h-5 w-5 text-primary' />
+              <h3 className='text-lg font-semibold'>
+                Factura #{invoice.invoiceId}
+              </h3>
             </div>
-            {invoice.invoiceStatus === 1 && <Badge className="bg-green-500">Pagado</Badge>}
-            {invoice.invoiceStatus === 2 && <Badge className="bg-yellow-500">Pendiente</Badge>}
-            {invoice.invoiceStatus === 3 && <Badge className="bg-red-500">Anulado</Badge>}
+            {invoice.invoiceStatus === 1 && (
+              <Badge className='bg-green-500'>Pagado</Badge>
+            )}
+            {invoice.invoiceStatus === 2 && (
+              <Badge className='bg-yellow-500'>Pendiente</Badge>
+            )}
+            {invoice.invoiceStatus === 3 && (
+              <Badge className='bg-red-500'>Anulado</Badge>
+            )}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+          <div className='grid grid-cols-1 gap-4 text-sm md:grid-cols-2'>
+            <div className='flex items-center gap-2'>
+              <Calendar className='h-4 w-4 text-muted-foreground' />
               <span>
-                <strong>Fecha:</strong> {invoiceDate.toLocaleDateString('es-ES', {
-                  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                <strong>Fecha:</strong>{' '}
+                {invoiceDate.toLocaleDateString('es-ES', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
                 })}
               </span>
             </div>
           </div>
         </div>
         {/* Member information */}
-        <div className="bg-muted/30 rounded-lg p-4">
-          <h4 className="font-semibold mb-3 flex items-center gap-2">
-            <User className="h-4 w-4" />
+        <div className='rounded-lg bg-muted/30 p-4'>
+          <h4 className='mb-3 flex items-center gap-2 font-semibold'>
+            <User className='h-4 w-4' />
             Información del Comunero
           </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-            <div className="flex items-center gap-2">
-              <User className="h-4 w-4 text-muted-foreground" />
-              <span><strong>Nombre:</strong> {invoice.member.person.firstName} {invoice.member.person.lastName}</span>
+          <div className='grid grid-cols-1 gap-3 text-sm md:grid-cols-2'>
+            <div className='flex items-center gap-2'>
+              <User className='h-4 w-4 text-muted-foreground' />
+              <span>
+                <strong>Nombre:</strong> {invoice.member.person.firstName}{' '}
+                {invoice.member.person.lastName}
+              </span>
             </div>
           </div>
         </div>
         {/* Transaction information */}
-        <div className="bg-muted/30 rounded-lg p-4">
-          <h4 className="font-semibold mb-3 flex items-center gap-2">
-            <CreditCard className="h-4 w-4" />
+        <div className='rounded-lg bg-muted/30 p-4'>
+          <h4 className='mb-3 flex items-center gap-2 font-semibold'>
+            <CreditCard className='h-4 w-4' />
             Información de la Transacción
           </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-            <div className="flex items-center gap-2">
-              <Building className="h-4 w-4 text-muted-foreground" />
-              <span><strong>Caja Registradora:</strong> #{invoice.cashRegister.cashRegisterId}</span>
+          <div className='grid grid-cols-1 gap-3 text-sm md:grid-cols-2'>
+            <div className='flex items-center gap-2'>
+              <Building className='h-4 w-4 text-muted-foreground' />
+              <span>
+                <strong>Caja Registradora:</strong> #
+                {invoice.cashRegister.cashRegisterId}
+              </span>
             </div>
             {invoice.collectedByUser && (
-              <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-muted-foreground" />
-                <span><strong>Cobrado por:</strong> {invoice.collectedByUser.person.firstName} {invoice.collectedByUser.person.lastName}</span>
+              <div className='flex items-center gap-2'>
+                <User className='h-4 w-4 text-muted-foreground' />
+                <span>
+                  <strong>Cobrado por:</strong>{' '}
+                  {invoice.collectedByUser.person.firstName}{' '}
+                  {invoice.collectedByUser.person.lastName}
+                </span>
               </div>
             )}
           </div>
         </div>
         {/* Payment details */}
         <div>
-          <h4 className='font-semibold mb-3 flex items-center gap-2'>
-            <FileText className="h-4 w-4" />
+          <h4 className='mb-3 flex items-center gap-2 font-semibold'>
+            <FileText className='h-4 w-4' />
             Detalles del Pago
           </h4>
-          <div className="rounded-md border overflow-x-auto">
+          <div className='overflow-x-auto rounded-md border'>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -204,31 +211,54 @@ export function InvoiceDetailsDialog({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {invoice.invoiceFeePayments && invoice.invoiceFeePayments.length > 0 ? invoice.invoiceFeePayments.map((payment, idx) => {
-                  const fee = payment.memberFee;
-                  const remaining = fee.amountDue - fee.amountPaid;
-                  return (
-                    <TableRow key={payment.invoiceFeePaymentId}>
-                      <TableCell>{fee.annualFee.name}</TableCell>
-                      <TableCell>{fee.annualFee.description}</TableCell>
-                      <TableCell>{fee.annualFee.year}</TableCell>
-                      <TableCell>${payment.amountPaid.toFixed(2)}</TableCell>
-                      <TableCell>${fee.amountPaid.toFixed(2)}</TableCell>
-                      <TableCell>${fee.amountDue.toFixed(2)}</TableCell>
-                      <TableCell>{remaining > 0 ? `$${remaining.toFixed(2)}` : '$0.00'}</TableCell>
-                      <TableCell>
-                        <Badge className={
-                          fee.status === 'PAID' ? 'bg-green-500' : fee.status === 'PARTIAL' ? 'bg-yellow-500' : 'bg-red-500'
-                        }>
-                          {fee.status === 'PAID' ? 'Pagado' : fee.status === 'PARTIAL' ? 'Parcial' : 'Pendiente'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>{payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString('es-ES') : '-'}</TableCell>
-                    </TableRow>
-                  );
-                }) : (
+                {invoice.invoiceFeePayments &&
+                  invoice.invoiceFeePayments.length > 0 ? (
+                  invoice.invoiceFeePayments.map((payment, idx) => {
+                    const fee = payment.memberFee;
+                    const remaining = fee.amountDue - fee.amountPaid;
+                    return (
+                      <TableRow key={payment.invoiceFeePaymentId}>
+                        <TableCell>{fee.annualFee.name}</TableCell>
+                        <TableCell>{fee.annualFee.description}</TableCell>
+                        <TableCell>{fee.annualFee.year}</TableCell>
+                        <TableCell>${payment.amountPaid.toFixed(2)}</TableCell>
+                        <TableCell>${fee.amountPaid.toFixed(2)}</TableCell>
+                        <TableCell>${fee.amountDue.toFixed(2)}</TableCell>
+                        <TableCell>
+                          {remaining > 0 ? `$${remaining.toFixed(2)}` : '$0.00'}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            className={
+                              fee.status === 'PAID'
+                                ? 'bg-green-500'
+                                : fee.status === 'PARTIAL'
+                                  ? 'bg-yellow-500'
+                                  : 'bg-red-500'
+                            }
+                          >
+                            {fee.status === 'PAID'
+                              ? 'Pagado'
+                              : fee.status === 'PARTIAL'
+                                ? 'Parcial'
+                                : 'Pendiente'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {payment.paymentDate
+                            ? new Date(payment.paymentDate).toLocaleDateString(
+                              'es-ES'
+                            )
+                            : '-'}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                ) : (
                   <TableRow>
-                    <TableCell colSpan={9} className="text-center">No hay pagos registrados en esta factura</TableCell>
+                    <TableCell colSpan={9} className='text-center'>
+                      No hay pagos registrados en esta factura
+                    </TableCell>
                   </TableRow>
                 )}
               </TableBody>
@@ -236,55 +266,63 @@ export function InvoiceDetailsDialog({
           </div>
         </div>
         {/* Financial summary */}
-        <div className="bg-muted/30 rounded-lg p-4">
-          <h4 className="font-semibold mb-3 flex items-center gap-2">
-            <DollarSign className="h-4 w-4" />
+        <div className='rounded-lg bg-muted/30 p-4'>
+          <h4 className='mb-3 flex items-center gap-2 font-semibold'>
+            <DollarSign className='h-4 w-4' />
             Resumen Financiero
           </h4>
           <div className='flex justify-end gap-4 text-right'>
             <div className='grid gap-2'>
-              <p className="text-sm">Subtotal:</p>
+              <p className='text-sm'>Subtotal:</p>
               {invoice.discount && invoice.discount > 0 && (
-                <p className="text-sm text-green-600">Descuento:</p>
+                <p className='text-sm text-green-600'>Descuento:</p>
               )}
-              <p className='font-bold text-lg'>Total:</p>
+              <p className='text-lg font-bold'>Total:</p>
             </div>
             <div className='grid gap-2'>
-              <p className="text-sm">${invoice.subtotal.toFixed(2)}</p>
+              <p className='text-sm'>${invoice.subtotal.toFixed(2)}</p>
               {invoice.discount && invoice.discount > 0 && (
-                <p className="text-sm text-green-600">-${invoice.discount.toFixed(2)}</p>
+                <p className='text-sm text-green-600'>
+                  -${invoice.discount.toFixed(2)}
+                </p>
               )}
-              <p className='font-bold text-lg'>${invoice.totalAmount.toFixed(2)}</p>
+              <p className='text-lg font-bold'>
+                ${invoice.totalAmount.toFixed(2)}
+              </p>
             </div>
           </div>
         </div>
         {/* Action buttons */}
-        <div className="flex flex-col sm:flex-row gap-2">
+        <div className='flex flex-col gap-2 sm:flex-row'>
           <Button
-            variant="outline"
+            variant='outline'
             onClick={() => handleDownloadReceipt(invoice.invoiceId)}
             disabled={downloadingId !== null}
-            className="flex-1"
+            className='flex-1'
           >
             {downloadingId === invoice.invoiceId ? (
-              <Icons.spinner className="h-4 w-4 mr-2 animate-spin" />
+              <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />
             ) : (
-              <Download className="h-4 w-4 mr-2" />
+              <Download className='mr-2 h-4 w-4' />
             )}
-            {downloadingId === invoice.invoiceId ? 'Descargando...' : 'Descargar Recibo'}
+            {downloadingId === invoice.invoiceId
+              ? 'Descargando...'
+              : 'Descargar Recibo'}
           </Button>
           <Button
-            variant="outline"
+            variant='outline'
             onClick={() => handleResendReceipt(invoice.invoiceId)}
             disabled={resendReceiptMutation.isPending}
-            className="flex-1"
+            className='flex-1'
           >
             {resendReceiptMutation.isPending ? (
-              <Icons.spinner className="h-4 w-4 mr-2 animate-spin" />
+              <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />
             ) : (
-              <Send className="h-4 w-4 mr-2" />
+              <Send className='mr-2 h-4 w-4' />
             )}
-            {resendReceiptMutation.isPending ? 'Enviando...' : 'Reenviar por Email'}
+            {resendReceiptMutation.isPending
+              ? 'Enviando...'
+              : 'Reenviar por Email'}
           </Button>
         </div>
       </div>
@@ -293,14 +331,15 @@ export function InvoiceDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='w-full max-h-[90vh] overflow-y-auto'>
+      <DialogContent className='max-h-[90vh] w-full overflow-y-auto'>
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Receipt className="h-5 w-5" />
+          <DialogTitle className='flex items-center gap-2'>
+            <Receipt className='h-5 w-5' />
             Detalles de la Factura
           </DialogTitle>
           <DialogDescription>
-            Aquí puedes ver los detalles completos del pago realizado y realizar acciones adicionales.
+            Aquí puedes ver los detalles completos del pago realizado y realizar
+            acciones adicionales.
           </DialogDescription>
         </DialogHeader>
         {renderContent()}

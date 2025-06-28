@@ -7,11 +7,7 @@ import { Input } from './ui/input';
 import { IoCloudUploadOutline } from 'react-icons/io5';
 import Image from 'next/image';
 import Link from 'next/link';
-import { AxiosProgressEvent } from 'axios';
 import { ImageData } from 'types/dashboard';
-
-const apiKey = process.env.NEXT_PUBLIC_API_KEY;
-const uploadPreset = process.env.NEXT_PUBLIC_UPLOAD_PRESET;
 
 interface ImageUploadProps {
   onUploadComplete?: (url: string) => void;
@@ -19,25 +15,13 @@ interface ImageUploadProps {
 
 const ImageUpload: React.FC<ImageUploadProps> = ({ onUploadComplete }) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [progress, setProgress] = useState<number>(0);
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [uploadedImagePath, setUploadedImagePath] = useState<string | null>(
     null
   );
 
-  const onUploadProgress = (progressEvent: AxiosProgressEvent) => {
-    if (progressEvent.total) {
-      const percentage = Math.round(
-        (progressEvent.loaded * 100) / progressEvent.total
-      );
-      setProgress(percentage);
-    }
-  };
-
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files?.length) {
       const image = event.target.files[0];
-      setSelectedImage(image);
       handleImageUpload(image);
     }
   };
@@ -45,7 +29,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onUploadComplete }) => {
   const removeSelectedImage = () => {
     setLoading(false);
     setUploadedImagePath(null);
-    setSelectedImage(null);
   };
 
   const handleImageUpload = async (image: File) => {
@@ -78,9 +61,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onUploadComplete }) => {
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       const image = acceptedFiles[0];
-      setSelectedImage(image);
       handleImageUpload(image);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({

@@ -8,4 +8,4 @@ export interface MemberFee {
   annualFee: AnnualFee;
   amountDue: number;
   amountPaid: number;
-} 
+}

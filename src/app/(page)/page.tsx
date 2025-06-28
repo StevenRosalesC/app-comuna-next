@@ -31,7 +31,12 @@ export const metadata: Metadata = {
     'Ecuador',
     'Bambil Collao'
   ],
-  authors: [{ name: 'Comuna Bambil Collao', url: `https://${NEXT_PUBLIC_APP_URL}/about` }],
+  authors: [
+    {
+      name: 'Comuna Bambil Collao',
+      url: `https://${NEXT_PUBLIC_APP_URL}/about`
+    }
+  ],
   alternates: {
     canonical: `https://${NEXT_PUBLIC_APP_URL}/`
   },
@@ -66,7 +71,7 @@ export default async function HomePage() {
   return (
     <>
       {/* Structured Data para SEO local */}
-      <script type="application/ld+json" suppressHydrationWarning>{`
+      <script type='application/ld+json' suppressHydrationWarning>{`
         {
           "@context": "https://schema.org",
           "@type": "LocalBusiness",

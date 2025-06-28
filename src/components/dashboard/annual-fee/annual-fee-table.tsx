@@ -10,4 +10,4 @@ const AnnualFeeTable: React.FC = () => {
   );
 };
 
-export default AnnualFeeTable; 
+export default AnnualFeeTable;

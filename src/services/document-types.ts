@@ -1,4 +1,8 @@
-import { DocumentType, CreateDocumentType, UpdateDocumentType } from '@/interfaces/document-types';
+import {
+  DocumentType,
+  CreateDocumentType,
+  UpdateDocumentType
+} from '@/interfaces/document-types';
 import apiCommunity from '@/utils/communityApi';
 
 export const documentTypesService = {
@@ -30,7 +34,10 @@ export const documentTypesService = {
 
   async create(data: CreateDocumentType): Promise<DocumentType> {
     try {
-      const { data: newDocType } = await apiCommunity.post('/document-types', data);
+      const { data: newDocType } = await apiCommunity.post(
+        '/document-types',
+        data
+      );
       return newDocType;
     } catch (error) {
       throw new Error('Error al crear el tipo de documento');
@@ -39,7 +46,10 @@ export const documentTypesService = {
 
   async update(id: string, data: UpdateDocumentType): Promise<DocumentType> {
     try {
-      const { data: updatedDocType } = await apiCommunity.patch(`/document-types/${id}`, data);
+      const { data: updatedDocType } = await apiCommunity.patch(
+        `/document-types/${id}`,
+        data
+      );
       return updatedDocType;
     } catch (error) {
       throw new Error('Error al actualizar el tipo de documento');
@@ -56,5 +66,5 @@ export const documentTypesService = {
       }
       throw new Error('Error al eliminar el tipo de documento');
     }
-  },
-}; 
+  }
+};

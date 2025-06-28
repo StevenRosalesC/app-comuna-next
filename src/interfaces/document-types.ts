@@ -13,4 +13,4 @@ export interface CreateDocumentType {
 export interface UpdateDocumentType {
   name?: string;
   status?: boolean;
-} 
+}

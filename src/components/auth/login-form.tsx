@@ -17,7 +17,7 @@ import { useTransition, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from 'lucide-react';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Enter a valid email address' }),
@@ -90,7 +90,7 @@ export default function LoginForm() {
               <FormItem>
                 <FormLabel>Contraseña</FormLabel>
                 <FormControl>
-                  <div className="relative">
+                  <div className='relative'>
                     <Input
                       type={showPassword ? 'text' : 'password'}
                       placeholder='******'
@@ -98,20 +98,22 @@ export default function LoginForm() {
                       {...field}
                     />
                     <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      type='button'
+                      variant='ghost'
+                      size='sm'
+                      className='absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent'
                       onClick={() => setShowPassword(!showPassword)}
                       disabled={loading}
                     >
                       {showPassword ? (
-                        <EyeOff className="h-4 w-4 text-muted-foreground" />
+                        <EyeOff className='h-4 w-4 text-muted-foreground' />
                       ) : (
-                        <Eye className="h-4 w-4 text-muted-foreground" />
+                        <Eye className='h-4 w-4 text-muted-foreground' />
                       )}
-                      <span className="sr-only">
-                        {showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                      <span className='sr-only'>
+                        {showPassword
+                          ? 'Ocultar contraseña'
+                          : 'Mostrar contraseña'}
                       </span>
                     </Button>
                   </div>

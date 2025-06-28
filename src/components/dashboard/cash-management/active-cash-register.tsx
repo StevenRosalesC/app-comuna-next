@@ -44,9 +44,7 @@ export default function ActiveCashRegister({
   const queryClient = useQueryClient();
 
   const closeRegisterMutation = useMutation({
-    mutationFn: (id: string) =>
-      cashRegisterService.closeRegister(id, {
-      }),
+    mutationFn: (id: string) => cashRegisterService.closeRegister(id, {}),
     onSuccess: () => {
       toast.success('Caja cerrada correctamente.');
       queryClient.invalidateQueries({ queryKey: ['activeCashRegister'] });

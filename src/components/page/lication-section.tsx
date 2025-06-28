@@ -5,7 +5,8 @@ import { useState } from 'react';
 
 export default function LocationSection() {
   const [copied, setCopied] = useState(false);
-  const address = 'Santa Elena, Parroquia Colonche, Bambil Collao - Barrio 3 de Noviembre - Frente a la cancha de uso múltiple, Ecuador.';
+  const address =
+    'Santa Elena, Parroquia Colonche, Bambil Collao - Barrio 3 de Noviembre - Frente a la cancha de uso múltiple, Ecuador.';
   const handleCopy = () => {
     navigator.clipboard.writeText(address);
     setCopied(true);
@@ -19,11 +20,11 @@ export default function LocationSection() {
           data-aos='fade-up'
         >
           <div className='p-4'>
-            <Mail size={32} aria-label="Icono correo" />
+            <Mail size={32} aria-label='Icono correo' />
             <h4 className='text-xl font-bold'>Correo</h4>
             <p>Escríbenos a:</p>
             <Link
-              className='hover:underline text-primary font-semibold'
+              className='font-semibold text-primary hover:underline'
               href='mailto:22defebrerobambil@gmail.com'
               aria-label='Enviar correo a la comuna'
             >
@@ -32,23 +33,28 @@ export default function LocationSection() {
           </div>
 
           <div className='p-4'>
-            <MapPin size={32} aria-label="Icono ubicación" />
+            <MapPin size={32} aria-label='Icono ubicación' />
             <h4 className='text-xl font-bold'>Oficina</h4>
             <p>{address}</p>
-            <div className="flex gap-2 mt-2">
+            <div className='mt-2 flex gap-2'>
               <button
-                className="px-3 py-1 rounded bg-primary text-white font-semibold shadow hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
-                onClick={() => window.open('https://goo.gl/maps/2Qn6Qn6Qn6Qn6Qn6A', '_blank')}
-                aria-label="Abrir ubicación en Google Maps"
+                className='rounded bg-primary px-3 py-1 font-semibold text-white shadow transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary'
+                onClick={() =>
+                  window.open('https://goo.gl/maps/2Qn6Qn6Qn6Qn6Qn6A', '_blank')
+                }
+                aria-label='Abrir ubicación en Google Maps'
               >
                 Ver en Google Maps
               </button>
               <button
-                className="px-3 py-1 rounded border border-gray-400 text-gray-700 font-semibold shadow hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+                className='rounded border border-gray-400 px-3 py-1 font-semibold text-gray-700 shadow transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-primary'
                 onClick={handleCopy}
-                aria-label="Copiar dirección de la comuna"
+                aria-label='Copiar dirección de la comuna'
               >
-                <Copy size={18} className="inline-block mr-1 align-text-bottom" />
+                <Copy
+                  size={18}
+                  className='mr-1 inline-block align-text-bottom'
+                />
                 {copied ? '¡Copiado!' : 'Copiar dirección'}
               </button>
             </div>
@@ -63,7 +69,7 @@ export default function LocationSection() {
             className='min-h-96 w-full rounded-lg border-0 shadow-md'
             loading='lazy'
             referrerPolicy='no-referrer-when-downgrade'
-            aria-label="Mapa de ubicación de la comuna"
+            aria-label='Mapa de ubicación de la comuna'
           ></iframe>
         </div>
       </div>

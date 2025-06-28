@@ -9,42 +9,42 @@ export interface InvoiceMemberFee {
 
 // Summary for list view on member's page
 export interface InvoiceSummary {
-    invoiceId:         string;
-    memberId:          string;
-    invoiceNumber:     null;
-    invoiceDate:       Date;
-    invoiceTime:       null;
-    subtotal:          number;
-    discount:          number;
-    totalAmount:       number;
-    invoiceStatus:     number;
-    collectedByUserId: string;
-    cashRegisterId:    string;
-    member:            Member;
+  invoiceId: string;
+  memberId: string;
+  invoiceNumber: null;
+  invoiceDate: Date;
+  invoiceTime: null;
+  subtotal: number;
+  discount: number;
+  totalAmount: number;
+  invoiceStatus: number;
+  collectedByUserId: string;
+  cashRegisterId: string;
+  member: Member;
 }
 
 export interface Member {
-    memberId:    string;
-    personId:    string;
-    houseNumber: null | string;
-    createdAt:   Date;
-    status:      boolean;
-    person:      Person;
+  memberId: string;
+  personId: string;
+  houseNumber: null | string;
+  createdAt: Date;
+  status: boolean;
+  person: Person;
 }
 
 export interface Person {
-    personId:       string;
-    identification: string;
-    lastName:       string;
-    firstName:      string;
-    gender:         number;
-    phoneNumber:    null;
-    birthDate:      Date;
-    status:         boolean;
-    email:          null | string;
-    neighborhoodId: string;
-    hasDisability:  boolean;
-    disabilityPercentage?: number;
+  personId: string;
+  identification: string;
+  lastName: string;
+  firstName: string;
+  gender: number;
+  phoneNumber: null;
+  birthDate: Date;
+  status: boolean;
+  email: null | string;
+  neighborhoodId: string;
+  hasDisability: boolean;
+  disabilityPercentage?: number;
 }
 
 // Full details for dialog view
@@ -96,7 +96,7 @@ export interface CreateInvoiceDto {
     memberFeeId: string;
     amountToPay: number;
   }[];
-} 
+}
 
 export interface CollectedByUser {
   person: {

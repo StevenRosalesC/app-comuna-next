@@ -9,19 +9,22 @@ if (!url) {
 
 const apiCommunity = axios.create({
   baseURL: url,
-  timeout: 10000, // 10 seconds timeout
+  timeout: 10000 // 10 seconds timeout
 });
 
 // Request interceptor
-apiCommunity.interceptors.request.use(async (config) => {
-  const token = await getToken();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+apiCommunity.interceptors.request.use(
+  async (config) => {
+    const token = await getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
+);
 
 // Response interceptor
 apiCommunity.interceptors.response.use(

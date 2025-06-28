@@ -1,6 +1,6 @@
-import { createStore } from "zustand/vanilla";
-import { personsService } from "@/services/persons";
-import { Person } from "@/interfaces/persons";
+import { createStore } from 'zustand/vanilla';
+import { personsService } from '@/services/persons';
+import { Person } from '@/interfaces/persons';
 
 export interface PersonsState {
   persons: Person[];
@@ -12,8 +12,22 @@ export interface PersonsState {
   orderBy: string;
   order: string;
   search: string;
-  fetchPersons: (pageSize: number, pageIndex: number, orderBy: string, order: string, search: string, status?: boolean) => Promise<void>;
-  getPersons: (pageSize: number, pageIndex: number, orderBy: string, order: string, search: string, status?: boolean) => Person[];
+  fetchPersons: (
+    pageSize: number,
+    pageIndex: number,
+    orderBy: string,
+    order: string,
+    search: string,
+    status?: boolean
+  ) => Promise<void>;
+  getPersons: (
+    pageSize: number,
+    pageIndex: number,
+    orderBy: string,
+    order: string,
+    search: string,
+    status?: boolean
+  ) => Person[];
   setCurrentPage: (page: number) => void;
   setPageSize: (size: number) => void;
   setOrder: (order: string) => void;
@@ -39,16 +53,23 @@ export const defaultPersonsState = (): PersonsState => ({
   setOrder: () => {},
   setOrderBy: () => {},
   setSearch: () => {},
-  updatePerson: () => {},
-})
+  updatePerson: () => {}
+});
 
 export const createPersonsStore = (initState?: Partial<PersonsState>) =>
   createStore<PersonsState>((set, get) => ({
     ...defaultPersonsState(),
-    fetchPersons: async (pageSize: number, pageIndex: number, orderBy: string, order: string, search: string, status?: boolean) => {
+    fetchPersons: async (
+      pageSize: number,
+      pageIndex: number,
+      orderBy: string,
+      order: string,
+      search: string,
+      status?: boolean
+    ) => {
       try {
         set({ isLoading: true, error: null });
-        
+
         const { data, status: ok } = await personsService.getPersons(
           pageSize,
           pageIndex * pageSize,
@@ -59,9 +80,9 @@ export const createPersonsStore = (initState?: Partial<PersonsState>) =>
         );
 
         if (ok) {
-          set({ 
-            persons: data?.data || [], 
-            isLoading: false, 
+          set({
+            persons: data?.data || [],
+            isLoading: false,
             count: data?.count || 0,
             currentPage: pageIndex,
             pageSize,
@@ -70,23 +91,30 @@ export const createPersonsStore = (initState?: Partial<PersonsState>) =>
             search
           });
         } else {
-          set({ 
-            error: 'Error al cargar los datos', 
-            isLoading: false 
+          set({
+            error: 'Error al cargar los datos',
+            isLoading: false
           });
         }
       } catch (error) {
-        set({ 
-          error: 'Error al cargar los datos', 
-          isLoading: false 
+        set({
+          error: 'Error al cargar los datos',
+          isLoading: false
         });
       } finally {
         set({ isLoading: false });
       }
     },
-    getPersons: (pageSize: number, pageIndex: number, orderBy: string, order: string, search: string, status?: boolean) => {
+    getPersons: (
+      pageSize: number,
+      pageIndex: number,
+      orderBy: string,
+      order: string,
+      search: string,
+      status?: boolean
+    ) => {
       const state = get();
-      
+
       // Only fetch if the parameters have changed or there are no persons
       if (
         state.persons.length === 0 ||
@@ -98,12 +126,18 @@ export const createPersonsStore = (initState?: Partial<PersonsState>) =>
       ) {
         state.fetchPersons(pageSize, pageIndex, orderBy, order, search, status);
       }
-      
+
       return state.persons;
     },
     setCurrentPage: (page: number) => {
       const state = get();
-      state.fetchPersons(state.pageSize, page, state.orderBy, state.order, state.search);
+      state.fetchPersons(
+        state.pageSize,
+        page,
+        state.orderBy,
+        state.order,
+        state.search
+      );
     },
     setPageSize: (size: number) => {
       const state = get();
@@ -111,20 +145,33 @@ export const createPersonsStore = (initState?: Partial<PersonsState>) =>
     },
     setOrder: (order: string) => {
       const state = get();
-      state.fetchPersons(state.pageSize, state.currentPage, state.orderBy, order, state.search);
+      state.fetchPersons(
+        state.pageSize,
+        state.currentPage,
+        state.orderBy,
+        order,
+        state.search
+      );
     },
     setOrderBy: (orderBy: string) => {
       const state = get();
-      state.fetchPersons(state.pageSize, state.currentPage, orderBy, state.order, state.search);
+      state.fetchPersons(
+        state.pageSize,
+        state.currentPage,
+        orderBy,
+        state.order,
+        state.search
+      );
     },
     setSearch: (search: string) => {
       const state = get();
       state.fetchPersons(state.pageSize, 0, state.orderBy, state.order, search);
     },
-    updatePerson: (person: Person) => set(state => ({
-      persons: state.persons.map(p => p.personId === person.personId ? person : p)
-    })),
-    ...initState,
-  }))
-
-
+    updatePerson: (person: Person) =>
+      set((state) => ({
+        persons: state.persons.map((p) =>
+          p.personId === person.personId ? person : p
+        )
+      })),
+    ...initState
+  }));

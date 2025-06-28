@@ -39,9 +39,6 @@ export const BubbleMenu = ({
     const menuEditor = editor;
 
     if (!menuEditor) {
-      console.warn(
-        'BubbleMenu component is not rendered inside of an editor component or does not have editor prop.'
-      );
       return;
     }
 

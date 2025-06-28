@@ -67,7 +67,7 @@ export const ImageMenu = () => {
     editor
       .chain()
       .focus()
-      [image?.hasCaption ? 'figureToImage' : 'imageToFigure']()
+    [image?.hasCaption ? 'figureToImage' : 'imageToFigure']()
       .run();
 
   // Toggle alt text edit form and update Tippy position
@@ -90,7 +90,7 @@ export const ImageMenu = () => {
   // Download image with proper filename
   const downloadImage = useCallback(async () => {
     if (!image?.src)
-      return console.error('No image source available for download.');
+      throw new Error('No image source available for download.');
 
     try {
       const res = await fetch(image.src);
@@ -107,7 +107,7 @@ export const ImageMenu = () => {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Error downloading image:', error);
+      throw error;
     }
   }, [image]);
 

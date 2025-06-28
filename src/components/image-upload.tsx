@@ -72,7 +72,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onUploadComplete }) => {
       }
     } catch (error) {
       setLoading(false);
-      console.error('Error uploading image:', error);
     }
   };
 

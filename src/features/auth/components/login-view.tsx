@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 
 import LoginForm from '@/components/auth/login-form';
+import ApiStatus from '@/components/auth/api-status';
 import Image from 'next/image';
 
 export const metadata: Metadata = {
@@ -62,6 +63,8 @@ export default function LoginViewPage() {
             </p>
           </div>
           <LoginForm />
+          {/* Temporary API status component for debugging */}
+          {process.env.NODE_ENV === 'development' && <ApiStatus />}
         </div>
       </div>
     </div>

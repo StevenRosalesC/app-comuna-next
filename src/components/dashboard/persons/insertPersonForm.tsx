@@ -35,6 +35,7 @@ import { Events } from '@/interfaces/enums';
 import { Neighborhood } from '@/store/neighborhoodsStore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 
 const formSchema = z.object({
   identification: z.string().min(1, 'La cédula es requerida'),
@@ -49,7 +50,8 @@ const formSchema = z.object({
   phone: z.string().optional(),
   address: z.string().optional(),
   neighborhoodId: z.string().optional(),
-  hasDisability: z.boolean().optional()
+  hasDisability: z.boolean().optional(),
+  disabilityPercentage: z.number().min(0).max(100).optional()
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -73,7 +75,8 @@ export default function InsertPersonForm({
       address: '',
       gender: 1,
       neighborhoodId: '',
-      hasDisability: false
+      hasDisability: false,
+      disabilityPercentage: 0
     }
   });
 
@@ -100,7 +103,9 @@ export default function InsertPersonForm({
         gender: data.gender ? 1 : 0,
         birthDate: data.birthDate || '',
         email: data.email || '',
-        neighborhoodId: data.neighborhoodId
+        neighborhoodId: data.neighborhoodId,
+        hasDisability: data.hasDisability,
+        disabilityPercentage: data.disabilityPercentage
       };
       const response = await personsService.createPerson(person);
       if (response.status) {
@@ -297,36 +302,68 @@ export default function InsertPersonForm({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name='address'
-                render={({ field }) => (
-                  <FormItem className='md:col-span-2'>
-                    <FormLabel>Dirección</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Ingrese la dirección' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {/* has disability checkbox */}
-              <FormField
-                control={form.control}
-                name='hasDisability'
-                render={({ field }) => (
-                  <FormItem className='md:col-span-2 flex items-center gap-2'>
-                    <FormLabel>¿Tiene discapacidad?</FormLabel>
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className='md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6'>
+                <FormField
+                  control={form.control}
+                  name='address'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Dirección</FormLabel>
+                      <FormControl>
+                        <Input placeholder='Ingrese la dirección' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* has disability switch y porcentaje juntos */}
+                <div className='flex flex-col gap-2'>
+                  <FormField
+                    control={form.control}
+                    name='hasDisability'
+                    render={({ field }) => (
+                      <FormItem className='flex items-center gap-2'>
+                        <FormLabel>¿Tiene discapacidad?</FormLabel>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={(checked) => {
+                              field.onChange(checked);
+                              if (!checked) {
+                                form.setValue('disabilityPercentage', undefined);
+                              }
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {form.watch('hasDisability') && (
+                    <FormField
+                      control={form.control}
+                      name='disabilityPercentage'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Porcentaje de Discapacidad (%)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type='number'
+                              min='0'
+                              max='100'
+                              placeholder='Ingrese el porcentaje de discapacidad'
+                              {...field}
+                              onChange={(e) => field.onChange(Number(e.target.value))}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className='flex justify-end space-x-4'>

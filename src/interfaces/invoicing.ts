@@ -44,6 +44,7 @@ export interface Person {
     email:          null | string;
     neighborhoodId: string;
     hasDisability:  boolean;
+    disabilityPercentage?: number;
 }
 
 // Full details for dialog view

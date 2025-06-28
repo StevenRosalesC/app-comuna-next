@@ -48,7 +48,8 @@ const personFormSchema = z.object({
   phoneNumber: z.string().optional(),
   gender: z.number().optional(),
   status: z.boolean().optional(),
-  hasDisability: z.boolean().optional()
+  hasDisability: z.boolean().optional(),
+  disabilityPercentage: z.number().min(0).max(100).optional()
 });
 
 type PersonFormValues = z.infer<typeof personFormSchema>;
@@ -86,7 +87,8 @@ export function PersonEditDialog({
           : '',
         neighborhoodId: person.neighborhoodId || '',
         status: person.status ?? true,
-        hasDisability: person.hasDisability ?? false
+        hasDisability: person.hasDisability ?? false,
+        disabilityPercentage: person.disabilityPercentage ?? 0
       });
     }
   }, [person, form.reset, form]);
@@ -104,7 +106,8 @@ export function PersonEditDialog({
         birthDate: new Date(data.birthDate),
         neighborhoodId: data.neighborhoodId || '',
         status: data.status ?? true,
-        hasDisability: data.hasDisability ?? false
+        hasDisability: data.hasDisability ?? false,
+        disabilityPercentage: data.disabilityPercentage ?? 0
       };
       onSave?.(personToSave);
       onOpenChange(false);
@@ -260,6 +263,26 @@ export function PersonEditDialog({
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='disabilityPercentage'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Porcentaje de Discapacidad (%)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type='number'
+                        min='0'
+                        max='100'
+                        placeholder='Ingrese el porcentaje de discapacidad'
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />

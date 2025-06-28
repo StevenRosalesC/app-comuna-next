@@ -36,6 +36,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import { useEffect } from 'react';
+import { Switch } from '@/components/ui/switch';
 
 const formSchema = z.object({
   firstName: z.string().min(1, 'El nombre es requerido'),
@@ -50,7 +52,18 @@ const formSchema = z.object({
   phoneNumber: z.string().or(z.literal('')).optional().nullable(),
   gender: z.string(),
   birthDate: z.date(),
-  houseNumber: z.string().min(1, 'El número de casa es requerido')
+  houseNumber: z.string().min(1, 'El número de casa es requerido'),
+  hasDisability: z.boolean().optional(),
+  disabilityPercentage: z.number().min(1, 'El porcentaje debe ser mayor a 0').max(100, 'El porcentaje no puede ser mayor a 100').optional()
+}).refine((data) => {
+  // If hasDisability is true, disabilityPercentage must be greater than 0
+  if (data.hasDisability && (!data.disabilityPercentage || data.disabilityPercentage <= 0)) {
+    return false;
+  }
+  return true;
+}, {
+  message: "El porcentaje de discapacidad es requerido cuando tiene discapacidad",
+  path: ["disabilityPercentage"]
 });
 
 export default function MemberEditForm({ memberId }: { memberId: string }) {
@@ -64,20 +77,19 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
     queryKey: ['members', memberId],
     queryFn: () => getMemberById(memberId)
   });
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    values: {
-      firstName: member?.person.firstName ?? '',
-      lastName: member?.person.lastName ?? '',
-      identification: member?.person.identification ?? '',
-      email: member?.person.email ?? null,
-      phoneNumber: member?.person.phoneNumber ?? null,
-      gender: member?.person.gender.toString() ?? '0',
-      birthDate: member?.person.birthDate
-        ? new Date(member.person.birthDate)
-        : new Date(),
-      houseNumber: member?.houseNumber ?? ''
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      identification: '',
+      email: null,
+      phoneNumber: null,
+      gender: '1',
+      birthDate: new Date(),
+      houseNumber: '',
+      hasDisability: false,
+      disabilityPercentage: 0
     }
   });
 
@@ -90,7 +102,9 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
       const personDataToUpdate = {
         ...member.person,
         ...personValues,
-        gender: parseInt(personValues.gender, 10)
+        gender: personValues.gender,
+        hasDisability: personValues.hasDisability,
+        disabilityPercentage: personValues.disabilityPercentage
       };
 
       // Remove non-updatable fields from person data and handle nulls
@@ -106,7 +120,10 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
       const memberPromise = updateMember(memberId, { houseNumber });
       const personPromise = personsService.updatePerson(
         member.person.personId,
-        updatablePersonData
+        {
+          ...updatablePersonData,
+          gender: Number(updatablePersonData.gender)
+        }
       );
 
       return Promise.all([memberPromise, personPromise]);
@@ -115,12 +132,29 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
       toast.success('Comunero actualizado con éxito');
       queryClient.invalidateQueries({ queryKey: ['members', memberId] });
       queryClient.invalidateQueries({ queryKey: ['members'] });
-      router.push(`/dashboard/members/${memberId}`);
+      // router.push(`/dashboard/members/${memberId}`);
     },
     onError: (error: any) => {
       toast.error(error.response.data.message || 'Error al actualizar el comunero');
     }
   });
+
+  useEffect(() => {
+    if (member) {
+      form.reset({
+        firstName: member.person.firstName,
+        lastName: member.person.lastName,
+        identification: member.person.identification,
+        email: member.person.email ?? null,
+        phoneNumber: member.person.phoneNumber ?? null,
+        gender: member.person.gender.toString(),
+        birthDate: new Date(member.person.birthDate),
+        houseNumber: member.houseNumber ?? '',
+        hasDisability: member.person.hasDisability ?? false,
+        disabilityPercentage: member.person.disabilityPercentage ?? 0
+      });
+    }
+  }, [member, form]);
 
   if (isLoading) {
     return (
@@ -237,7 +271,7 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
                   <FormLabel>Género</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value.toString()}
+                    value={field.value?.toString()}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -245,8 +279,8 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value='0'>Masculino</SelectItem>
-                      <SelectItem value='1'>Femenino</SelectItem>
+                      <SelectItem value='1'>Masculino</SelectItem>
+                      <SelectItem value='2'>Femenino</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -307,6 +341,58 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name='hasDisability'
+              render={({ field }) => (
+                <FormItem className='flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm'>
+                  <div className='space-y-0.5'>
+                    <FormLabel>Tiene Discapacidad</FormLabel>
+                    <div className='text-sm text-muted-foreground'>
+                      Activa esta opción si el comunero tiene un carnet de discapacidad.
+                    </div>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={(checked) => {
+                        field.onChange(checked);
+                        // Reset disability percentage when disabling
+                        if (!checked) {
+                          form.setValue('disabilityPercentage', 0);
+                        }
+                      }}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            {form.watch('hasDisability') && (
+              <FormField
+                control={form.control}
+                name='disabilityPercentage'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Porcentaje de Discapacidad (%)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type='number'
+                        min='1'
+                        max='100'
+                        placeholder='Ingrese el porcentaje de discapacidad'
+                        {...field}
+                        value={field.value === 0 ? '' : field.value}
+                        onChange={(e) => {
+                          const value = Number(e.target.value);
+                          field.onChange(value);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <Button
               type='submit'
               disabled={mutation.isPending}

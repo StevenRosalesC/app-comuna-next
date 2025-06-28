@@ -1,60 +1,45 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import apiCommunity from './utils/communityApi';
 import { AuthResponse } from 'types/response';
-import { cookies } from 'next/headers';
-
-// Constants for paths and cookie settings
-const PATHS = {
-  LOGIN: '/auth/login',
-  FORGOT_PASSWORD: '/auth/forgot-password',
-  DASHBOARD: '/dashboard/overview',
-  RESET_PASSWORD: '/auth/reset-password/:token'
-} as const;
-
-const COOKIE_SETTINGS = {
-  httpOnly: true,
-  secure: true,
-  sameSite: 'lax' as const,
-  path: '/'
-} as const;
+import { AUTH_CONFIG } from './lib/auth-config';
 
 export async function middleware(request: NextRequest) {
-  const token = request.cookies.get('token')?.value;
-  const cookieStore = cookies();
+  const token = request.cookies.get(AUTH_CONFIG.COOKIE_NAME)?.value;
   const { pathname } = request.nextUrl;
 
   // Handle public routes
   if (
-    pathname === PATHS.FORGOT_PASSWORD ||
+    pathname === AUTH_CONFIG.PATHS.FORGOT_PASSWORD ||
     pathname.startsWith('/auth/reset-password/')
   ) {
     return NextResponse.next();
   }
 
-  if (pathname === PATHS.LOGIN) {
+  if (pathname === AUTH_CONFIG.PATHS.LOGIN) {
     if (!token) return NextResponse.next();
     
     const isAuthenticated = await authenticateOrRefresh(token);
     if (isAuthenticated) {
-      return NextResponse.redirect(new URL(PATHS.DASHBOARD, request.url));
+      return NextResponse.redirect(new URL(AUTH_CONFIG.PATHS.DASHBOARD, request.url));
     }
     return NextResponse.next();
   }
 
   // Handle protected routes
   if (!token) {
-    return NextResponse.redirect(new URL(PATHS.LOGIN, request.url));
+    return NextResponse.redirect(new URL(AUTH_CONFIG.PATHS.LOGIN, request.url));
   }
 
   const refreshResponse = await authenticateOrRefresh(token);
   if (!refreshResponse) {
-    cookieStore.delete('token');
-    return NextResponse.redirect(new URL(PATHS.LOGIN, request.url));
+    const response = NextResponse.redirect(new URL(AUTH_CONFIG.PATHS.LOGIN, request.url));
+    response.cookies.delete(AUTH_CONFIG.COOKIE_NAME);
+    return response;
   }
 
   const response = NextResponse.next();
   if (refreshResponse.token) {
-    response.cookies.set('token', refreshResponse.token, COOKIE_SETTINGS);
+    response.cookies.set(AUTH_CONFIG.COOKIE_NAME, refreshResponse.token, AUTH_CONFIG.COOKIE_SETTINGS);
   }
 
   return response;

@@ -43,6 +43,128 @@ interface InvoiceDetailsDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+// Skeleton component for better loading experience
+function InvoiceDetailsSkeleton() {
+  return (
+    <div className='min-w-full space-y-6'>
+      {/* Header Skeleton */}
+      <div className='rounded-lg bg-muted/30 p-4'>
+        <div className='mb-3 flex items-center justify-between'>
+          <div className='flex items-center gap-2'>
+            <Skeleton className='h-5 w-5' />
+            <Skeleton className='h-6 w-32' />
+          </div>
+          <Skeleton className='h-6 w-16' />
+        </div>
+        <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
+          <div className='flex items-center gap-2'>
+            <Skeleton className='h-4 w-4' />
+            <Skeleton className='h-4 w-48' />
+          </div>
+        </div>
+      </div>
+
+      {/* Member Information Skeleton */}
+      <div className='rounded-lg bg-muted/30 p-4'>
+        <div className='mb-3 flex items-center gap-2'>
+          <Skeleton className='h-4 w-4' />
+          <Skeleton className='h-5 w-40' />
+        </div>
+        <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
+          <div className='flex items-center gap-2'>
+            <Skeleton className='h-4 w-4' />
+            <Skeleton className='h-4 w-56' />
+          </div>
+        </div>
+      </div>
+
+      {/* Transaction Information Skeleton */}
+      <div className='rounded-lg bg-muted/30 p-4'>
+        <div className='mb-3 flex items-center gap-2'>
+          <Skeleton className='h-4 w-4' />
+          <Skeleton className='h-5 w-44' />
+        </div>
+        <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
+          <div className='flex items-center gap-2'>
+            <Skeleton className='h-4 w-4' />
+            <Skeleton className='h-4 w-52' />
+          </div>
+          <div className='flex items-center gap-2'>
+            <Skeleton className='h-4 w-4' />
+            <Skeleton className='h-4 w-48' />
+          </div>
+        </div>
+      </div>
+
+      {/* Payment Details Skeleton */}
+      <div>
+        <div className='mb-3 flex items-center gap-2'>
+          <Skeleton className='h-4 w-4' />
+          <Skeleton className='h-5 w-36' />
+        </div>
+        <div className='overflow-x-auto rounded-md border'>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead><Skeleton className='h-4 w-16' /></TableHead>
+                <TableHead><Skeleton className='h-4 w-20' /></TableHead>
+                <TableHead><Skeleton className='h-4 w-12' /></TableHead>
+                <TableHead><Skeleton className='h-4 w-24' /></TableHead>
+                <TableHead><Skeleton className='h-4 w-20' /></TableHead>
+                <TableHead><Skeleton className='h-4 w-20' /></TableHead>
+                <TableHead><Skeleton className='h-4 w-20' /></TableHead>
+                <TableHead><Skeleton className='h-4 w-16' /></TableHead>
+                <TableHead><Skeleton className='h-4 w-20' /></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {[1, 2, 3].map((row) => (
+                <TableRow key={row}>
+                  <TableCell><Skeleton className='h-4 w-20' /></TableCell>
+                  <TableCell><Skeleton className='h-4 w-32' /></TableCell>
+                  <TableCell><Skeleton className='h-4 w-12' /></TableCell>
+                  <TableCell><Skeleton className='h-4 w-16' /></TableCell>
+                  <TableCell><Skeleton className='h-4 w-16' /></TableCell>
+                  <TableCell><Skeleton className='h-4 w-16' /></TableCell>
+                  <TableCell><Skeleton className='h-4 w-16' /></TableCell>
+                  <TableCell><Skeleton className='h-6 w-16 rounded-full' /></TableCell>
+                  <TableCell><Skeleton className='h-4 w-16' /></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      {/* Financial Summary Skeleton */}
+      <div className='rounded-lg bg-muted/30 p-4'>
+        <div className='mb-3 flex items-center gap-2'>
+          <Skeleton className='h-4 w-4' />
+          <Skeleton className='h-5 w-36' />
+        </div>
+        <div className='flex justify-end gap-4 text-right'>
+          <div className='grid gap-2'>
+            <Skeleton className='h-4 w-16' />
+            <Skeleton className='h-4 w-20' />
+            <Skeleton className='h-5 w-12' />
+          </div>
+          <div className='grid gap-2'>
+            <Skeleton className='h-4 w-20' />
+            <Skeleton className='h-4 w-16' />
+            <Skeleton className='h-5 w-24' />
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons Skeleton */}
+      <div className='flex flex-col gap-2 sm:flex-row'>
+        <Skeleton className='h-10 flex-1' />
+        <Skeleton className='h-10 flex-1' />
+      </div>
+    </div>
+  );
+}
+
 export function InvoiceDetailsDialog({
   invoiceId,
   open,
@@ -94,11 +216,9 @@ export function InvoiceDetailsDialog({
     resendReceiptMutation.mutate(invoiceId);
   };
 
-
-
   const renderContent = () => {
     if (isLoading) {
-      return <Skeleton className='h-64 w-full' />;
+      return <InvoiceDetailsSkeleton />;
     }
     if (isError || !invoice) {
       return (

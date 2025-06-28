@@ -28,7 +28,7 @@ export const FooterSection = () => {
           Desarrollado por{' '}
           <Link
             href='https://github.com/StevenRosalesC'
-            className='hover:underline font-bold text-green-700'
+            className='font-bold text-green-700 hover:underline'
             target='_blank'
           >
             Steven Rosales

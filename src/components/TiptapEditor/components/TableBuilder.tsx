@@ -36,6 +36,7 @@ const TableBuilder = ({ onCreate }: TableBuilderProps) => {
           ))}
         </div>
       )),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [gridSize]
   );
 

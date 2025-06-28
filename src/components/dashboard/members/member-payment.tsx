@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Card,
   CardContent,
@@ -31,7 +31,7 @@ import {
   DialogClose
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Download, ExternalLink } from 'lucide-react';
+import { Download } from 'lucide-react';
 
 interface MemberPaymentProps {
   member: Member;
@@ -47,7 +47,9 @@ export default function MemberPayment({ member }: MemberPaymentProps) {
   const { invalidateAllMemberQueries } = useMemberQueries(member.memberId);
   const [payments, setPayments] = useState<FeePayment[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [lastCreatedInvoice, setLastCreatedInvoice] = useState<{ invoiceId: string; } | null>(null);
+  const [lastCreatedInvoice, setLastCreatedInvoice] = useState<{
+    invoiceId: string;
+  } | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
   const { data: activeCashRegister, isLoading: isLoadingCashRegister } =
@@ -57,7 +59,7 @@ export default function MemberPayment({ member }: MemberPaymentProps) {
       retry: 1
     });
 
-  const { data: feesStatus, isLoading: isLoadingFees } = useQuery({
+  const { data: feesStatus } = useQuery({
     queryKey: ['memberFeesStatus', member.memberId],
     queryFn: () => getMemberFeesStatus(member.memberId),
     enabled: !!member.memberId
@@ -65,9 +67,10 @@ export default function MemberPayment({ member }: MemberPaymentProps) {
 
   const pendingFees = useMemo(() => {
     if (!feesStatus?.fees) return [];
-    return feesStatus.fees.filter((fee: MemberFeeStatus) =>
-      (fee.status === 'PENDING' || fee.status === 'PARTIAL') &&
-      fee.amountDue > fee.amountPaid
+    return feesStatus.fees.filter(
+      (fee: MemberFeeStatus) =>
+        (fee.status === 'PENDING' || fee.status === 'PARTIAL') &&
+        fee.amountDue > fee.amountPaid
     );
   }, [feesStatus]);
 
@@ -77,7 +80,7 @@ export default function MemberPayment({ member }: MemberPaymentProps) {
       toast.success('Pago registrado correctamente.');
       setPayments([]);
       setLastCreatedInvoice({
-        invoiceId: data.invoiceId,
+        invoiceId: data.invoiceId
       });
 
       // Invalidate all member-related queries to refresh the data
@@ -140,7 +143,9 @@ export default function MemberPayment({ member }: MemberPaymentProps) {
       setIsDownloading(true);
       toast.info('Preparando la descarga del recibo...');
       try {
-        const pdf = await receiptsService.downloadReceiptPdf(lastCreatedInvoice.invoiceId);
+        const pdf = await receiptsService.downloadReceiptPdf(
+          lastCreatedInvoice.invoiceId
+        );
         const blob = new Blob([pdf], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(blob);
         window.open(url, '_blank');
@@ -283,9 +288,9 @@ export default function MemberPayment({ member }: MemberPaymentProps) {
                 disabled={isDownloading}
               >
                 {isDownloading ? (
-                  <Icons.spinner className='h-4 w-4 mr-2 animate-spin' />
+                  <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />
                 ) : (
-                  <Download className='h-4 w-4 mr-2' />
+                  <Download className='mr-2 h-4 w-4' />
                 )}
                 Descargar Recibo
               </Button>
@@ -299,7 +304,8 @@ export default function MemberPayment({ member }: MemberPaymentProps) {
               </Button>
             </div>
             <p className='mt-2 text-xs text-green-600 dark:text-green-400'>
-              Factura #{lastCreatedInvoice.invoiceId} - El recibo también se puede descargar desde el historial de pagos.
+              Factura #{lastCreatedInvoice.invoiceId} - El recibo también se
+              puede descargar desde el historial de pagos.
             </p>
           </CardContent>
         </Card>

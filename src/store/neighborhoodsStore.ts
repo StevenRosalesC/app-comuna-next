@@ -1,6 +1,6 @@
 // stores/neighborhoods-store.ts
-import { createStore } from "zustand/vanilla";
-import apiCommunity from "@/utils/communityApi";
+import { createStore } from 'zustand/vanilla';
+import apiCommunity from '@/utils/communityApi';
 
 export interface Neighborhood {
   neighborhoodId: string;
@@ -13,29 +13,30 @@ export type NeighborhoodsState = {
   setNeighborhoods: (neighborhoods: Neighborhood[]) => void;
   fetchNeighborhoods: () => Promise<void>;
   getNeighborhoods: () => Neighborhood[];
-}
+};
 
-export const defaultNeighborhoodsState=(): NeighborhoodsState => ({
+export const defaultNeighborhoodsState = (): NeighborhoodsState => ({
   neighborhoods: [],
   isLoading: true,
   setNeighborhoods: () => {},
   fetchNeighborhoods: async () => {},
-  getNeighborhoods: () => [],
-})
+  getNeighborhoods: () => []
+});
 
-
-export const createNeighborhoodsStore = (initState?: Partial<NeighborhoodsState>) =>
-  createStore<NeighborhoodsState>((set,get) => ({
+export const createNeighborhoodsStore = (
+  initState?: Partial<NeighborhoodsState>
+) =>
+  createStore<NeighborhoodsState>((set, get) => ({
     neighborhoods: [],
     isLoading: true,
     setNeighborhoods: (neighborhoods: Neighborhood[]) => set({ neighborhoods }),
     fetchNeighborhoods: async () => {
       try {
-        set({ isLoading: true })
+        set({ isLoading: true });
         if (get().neighborhoods.length > 0) {
           return;
         }
-        const response = await apiCommunity.get("/neighborhoods");
+        const response = await apiCommunity.get('/neighborhoods');
         set({ neighborhoods: response.data.neighborhoods, isLoading: false });
       } catch (error) {
         set({ isLoading: false });
@@ -49,5 +50,5 @@ export const createNeighborhoodsStore = (initState?: Partial<NeighborhoodsState>
       }
       return get().neighborhoods;
     },
-    ...initState,
+    ...initState
   }));

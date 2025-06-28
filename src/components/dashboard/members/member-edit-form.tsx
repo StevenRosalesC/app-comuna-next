@@ -31,7 +31,6 @@ import { getMemberById, updateMember } from '@/services/members';
 import { personsService } from '@/services/persons';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useRouter } from 'next/navigation';
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -39,35 +38,47 @@ import { format } from 'date-fns';
 import { useEffect } from 'react';
 import { Switch } from '@/components/ui/switch';
 
-const formSchema = z.object({
-  firstName: z.string().min(1, 'El nombre es requerido'),
-  lastName: z.string().min(1, 'El apellido es requerido'),
-  identification: z.string().min(1, 'La identificación es requerida'),
-  email: z
-    .string()
-    .email('Email inválido')
-    .or(z.literal(''))
-    .optional()
-    .nullable(),
-  phoneNumber: z.string().or(z.literal('')).optional().nullable(),
-  gender: z.string(),
-  birthDate: z.date(),
-  houseNumber: z.string().min(1, 'El número de casa es requerido'),
-  hasDisability: z.boolean().optional(),
-  disabilityPercentage: z.number().min(1, 'El porcentaje debe ser mayor a 0').max(100, 'El porcentaje no puede ser mayor a 100').optional()
-}).refine((data) => {
-  // If hasDisability is true, disabilityPercentage must be greater than 0
-  if (data.hasDisability && (!data.disabilityPercentage || data.disabilityPercentage <= 0)) {
-    return false;
-  }
-  return true;
-}, {
-  message: "El porcentaje de discapacidad es requerido cuando tiene discapacidad",
-  path: ["disabilityPercentage"]
-});
+const formSchema = z
+  .object({
+    firstName: z.string().min(1, 'El nombre es requerido'),
+    lastName: z.string().min(1, 'El apellido es requerido'),
+    identification: z.string().min(1, 'La identificación es requerida'),
+    email: z
+      .string()
+      .email('Email inválido')
+      .or(z.literal(''))
+      .optional()
+      .nullable(),
+    phoneNumber: z.string().or(z.literal('')).optional().nullable(),
+    gender: z.string(),
+    birthDate: z.date(),
+    houseNumber: z.string().min(1, 'El número de casa es requerido'),
+    hasDisability: z.boolean().optional(),
+    disabilityPercentage: z
+      .number()
+      .min(1, 'El porcentaje debe ser mayor a 0')
+      .max(100, 'El porcentaje no puede ser mayor a 100')
+      .optional()
+  })
+  .refine(
+    (data) => {
+      // If hasDisability is true, disabilityPercentage must be greater than 0
+      if (
+        data.hasDisability &&
+        (!data.disabilityPercentage || data.disabilityPercentage <= 0)
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message:
+        'El porcentaje de discapacidad es requerido cuando tiene discapacidad',
+      path: ['disabilityPercentage']
+    }
+  );
 
 export default function MemberEditForm({ memberId }: { memberId: string }) {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const {
     data: member,
@@ -108,6 +119,7 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
       };
 
       // Remove non-updatable fields from person data and handle nulls
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { personId, personRequirement, email, phoneNumber, ...rest } =
         personDataToUpdate;
 
@@ -135,7 +147,9 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
       // router.push(`/dashboard/members/${memberId}`);
     },
     onError: (error: any) => {
-      toast.error(error.response.data.message || 'Error al actualizar el comunero');
+      toast.error(
+        error.response.data.message || 'Error al actualizar el comunero'
+      );
     }
   });
 
@@ -349,7 +363,8 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
                   <div className='space-y-0.5'>
                     <FormLabel>Tiene Discapacidad</FormLabel>
                     <div className='text-sm text-muted-foreground'>
-                      Activa esta opción si el comunero tiene un carnet de discapacidad.
+                      Activa esta opción si el comunero tiene un carnet de
+                      discapacidad.
                     </div>
                   </div>
                   <FormControl>

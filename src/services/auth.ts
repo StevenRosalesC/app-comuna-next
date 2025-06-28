@@ -1,12 +1,16 @@
-import apiCommunity from "@/utils/communityApi";
+import apiCommunity from '@/utils/communityApi';
 
 export const AuthService = {
   forgotPassword: async (email: string) => {
     try {
-      const response = await apiCommunity.post('/auth/forgot-password', { email });
+      const response = await apiCommunity.post('/auth/forgot-password', {
+        email
+      });
       return response.data;
     } catch (error) {
-      throw new Error('Error al enviar el correo de recuperación de contraseña');
+      throw new Error(
+        'Error al enviar el correo de recuperación de contraseña'
+      );
     }
   },
   validateToken: async (token: string) => {
@@ -17,11 +21,17 @@ export const AuthService = {
       throw new Error('Error al validar el token');
     }
   },
-  resetPassword: async (token: string, { newPassword }: { newPassword: string }) => {
+  resetPassword: async (
+    token: string,
+    { newPassword }: { newPassword: string }
+  ) => {
     try {
-      const response = await apiCommunity.post(`/auth/reset-password/${token}`, {
-        newPassword
-      });
+      const response = await apiCommunity.post(
+        `/auth/reset-password/${token}`,
+        {
+          newPassword
+        }
+      );
       return response;
     } catch (error) {
       throw new Error('Error al restablecer la contraseña');

@@ -22,7 +22,6 @@ interface GetInvoicesByCashRegisterIdParams {
 }
 
 class InvoicingService {
-
   async createInvoice(dto: CreateInvoiceDto): Promise<Invoice> {
     const invoice = {
       memberId: Number(dto.memberId),
@@ -32,7 +31,7 @@ class InvoicingService {
         memberFeeId: fee.memberFeeId,
         amountToPay: fee.amountToPay
       }))
-    }
+    };
     const { data } = await apiCommunity.post<Invoice>('/invoicing', invoice);
     return data;
   }
@@ -74,7 +73,7 @@ class InvoicingService {
     if (offset) params.append('offset', String(offset));
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
-    
+
     const { data } = await apiCommunity.get<PaginatedInvoicesResponse>(
       `/invoicing/cash-register/active`,
       { params }
@@ -89,7 +88,9 @@ class InvoicingService {
     offset,
     startDate,
     endDate
-  }: GetInvoicesByCashRegisterIdParams & { cashRegisterId: string }): Promise<PaginatedInvoicesResponse> {
+  }: GetInvoicesByCashRegisterIdParams & {
+    cashRegisterId: string;
+  }): Promise<PaginatedInvoicesResponse> {
     const params = new URLSearchParams();
     if (limit) params.append('limit', String(limit));
     if (offset) params.append('offset', String(offset));
@@ -100,9 +101,8 @@ class InvoicingService {
       `/invoicing/cash-register/${cashRegisterId}`,
       { params }
     );
-    return data;  
+    return data;
   }
-
 }
 
-export const invoicingService = new InvoicingService(); 
+export const invoicingService = new InvoicingService();

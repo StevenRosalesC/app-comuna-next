@@ -9,7 +9,6 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Table,
   TableBody,
@@ -27,8 +26,12 @@ import { usePermission } from '@/hooks/usePermission';
 import { ValidActions, ValidModules } from '@/constants/permissions';
 
 export default function MemberPage({ params }: { params: { id: string } }) {
-  const canReadHistoryPayments = usePermission(ValidModules.MEMBERS, [ValidActions.READ_HISTORY_PAYMENTS]);
-  const canCreatePayment = usePermission(ValidModules.MEMBERS, [ValidActions.CREATE_PAYMENT]);
+  const canReadHistoryPayments = usePermission(ValidModules.MEMBERS, [
+    ValidActions.READ_HISTORY_PAYMENTS
+  ]);
+  const canCreatePayment = usePermission(ValidModules.MEMBERS, [
+    ValidActions.CREATE_PAYMENT
+  ]);
   const {
     data: member,
     isLoading,
@@ -70,10 +73,8 @@ export default function MemberPage({ params }: { params: { id: string } }) {
   return (
     <div className='p-4 pt-6 md:p-8'>
       <div className='grid grid-cols-1 gap-6'>
-
         <Card>
           <CardHeader className='flex flex-col items-start gap-4 md:flex-row md:items-center'>
-
             <div className='flex-1'>
               <CardTitle className='text-3xl'>
                 {person.firstName} {person.lastName}
@@ -121,7 +122,9 @@ export default function MemberPage({ params }: { params: { id: string } }) {
           </CardContent>
         </Card>
         {member && canCreatePayment && <MemberPayment member={member} />}
-        {member && canReadHistoryPayments && <PaymentHistoryTable memberId={member.memberId} />}
+        {member && canReadHistoryPayments && (
+          <PaymentHistoryTable memberId={member.memberId} />
+        )}
         {/* Documents Section */}
         {member && <DocumentUpload memberId={member.memberId} />}
       </div>

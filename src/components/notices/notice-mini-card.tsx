@@ -70,7 +70,9 @@ export const NoticeMiniCard = ({
         <Link
           rel='noopener noreferrer'
           href={`/notices/${title}`}
-          className={`hover:underline focus:outline-none focus:ring-2 focus:ring-green-600 ${title.length > 30 ? 'text-md' : ''}`}
+          className={`hover:underline focus:outline-none focus:ring-2 focus:ring-green-600 ${
+            title.length > 30 ? 'text-md' : ''
+          }`}
           aria-label={`Leer noticia: ${title}`}
         >
           {title}
@@ -81,7 +83,12 @@ export const NoticeMiniCard = ({
       </Paragraph>
       <div className='mt-auto flex items-center justify-between'>
         <div className='flex items-center space-x-4'>
-          <span className='font-medium dark:text-white' aria-label={`Autor: ${createdBy}`}>{createdBy}</span>
+          <span
+            className='font-medium dark:text-white'
+            aria-label={`Autor: ${createdBy}`}
+          >
+            {createdBy}
+          </span>
         </div>
         <Link
           rel='noopener noreferrer'
@@ -105,22 +112,28 @@ export const NoticeMiniCard = ({
         </Link>
       </div>
       {/* Datos estructurados SEO tipo NewsArticle */}
-      <script type='application/ld+json' dangerouslySetInnerHTML={{
-        __html: JSON.stringify({
-          '@context': 'https://schema.org',
-          '@type': 'NewsArticle',
-          headline: title,
-          image: [coverImageUrl],
-          datePublished: createdAt,
-          author: [{ '@type': 'Person', name: createdBy }],
-          publisher: {
-            '@type': 'Organization',
-            name: 'Comuna Bambil Collao',
-            logo: { '@type': 'ImageObject', url: `https://${process.env.NEXT_PUBLIC_APP_URL}/icon.webp` }
-          },
-          description: description
-        })
-      }} />
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'NewsArticle',
+            headline: title,
+            image: [coverImageUrl],
+            datePublished: createdAt,
+            author: [{ '@type': 'Person', name: createdBy }],
+            publisher: {
+              '@type': 'Organization',
+              name: 'Comuna Bambil Collao',
+              logo: {
+                '@type': 'ImageObject',
+                url: `https://${process.env.NEXT_PUBLIC_APP_URL}/icon.webp`
+              }
+            },
+            description: description
+          })
+        }}
+      />
     </article>
   );
 };

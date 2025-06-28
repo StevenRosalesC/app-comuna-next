@@ -43,15 +43,15 @@ import { ValidActions, ValidModules } from '@/constants/permissions';
 export default function AnnualFeesTable() {
   const queryClient = useQueryClient();
   const { permissions } = usePermissionsStore();
-  const canCreateAnnualFee = permissions?.[
-    ValidModules.ADMIN
-  ]?.includes(ValidActions.CREATE_ANNUAL_FEE);
-  const canUpdateAnnualFee = permissions?.[
-    ValidModules.ADMIN
-  ]?.includes(ValidActions.UPDATE_ANNUAL_FEE);
-  const canDeleteAnnualFee = permissions?.[
-    ValidModules.ADMIN
-  ]?.includes(ValidActions.DELETE_ANNUAL_FEE);
+  const canCreateAnnualFee = permissions?.[ValidModules.ADMIN]?.includes(
+    ValidActions.CREATE_ANNUAL_FEE
+  );
+  const canUpdateAnnualFee = permissions?.[ValidModules.ADMIN]?.includes(
+    ValidActions.UPDATE_ANNUAL_FEE
+  );
+  const canDeleteAnnualFee = permissions?.[ValidModules.ADMIN]?.includes(
+    ValidActions.DELETE_ANNUAL_FEE
+  );
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
 
@@ -152,19 +152,19 @@ export default function AnnualFeesTable() {
     setForm(
       fee
         ? {
-          description: fee.description,
-          amount: fee.amount,
-          status: fee.status,
-          name: fee.name,
-          year: fee.year
-        }
+            description: fee.description,
+            amount: fee.amount,
+            status: fee.status,
+            name: fee.name,
+            year: fee.year
+          }
         : {
-          description: '',
-          amount: 0,
-          status: true,
-          name: '',
-          year: new Date().getFullYear()
-        }
+            description: '',
+            amount: 0,
+            status: true,
+            name: '',
+            year: new Date().getFullYear()
+          }
     );
     setModalOpen(true);
   };
@@ -197,7 +197,9 @@ export default function AnnualFeesTable() {
       <div className='mb-4 flex items-center justify-between'>
         <h2 className='text-2xl font-bold'>Cuotas anuales</h2>
         <div className='flex items-center gap-2'>
-          {canCreateAnnualFee && canUpdateAnnualFee && <Button onClick={() => setAddModalOpen(true)}>+ Nueva cuota</Button>}
+          {canCreateAnnualFee && canUpdateAnnualFee && (
+            <Button onClick={() => setAddModalOpen(true)}>+ Nueva cuota</Button>
+          )}
           <Button
             onClick={() => refetch()}
             variant='outline'
@@ -262,13 +264,15 @@ export default function AnnualFeesTable() {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          {canUpdateAnnualFee && <Button
-                            variant='ghost'
-                            size='icon'
-                            onClick={() => openModal(fee)}
-                          >
-                            <Icons.userPen className='h-4 w-4' />
-                          </Button>}
+                          {canUpdateAnnualFee && (
+                            <Button
+                              variant='ghost'
+                              size='icon'
+                              onClick={() => openModal(fee)}
+                            >
+                              <Icons.userPen className='h-4 w-4' />
+                            </Button>
+                          )}
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>Editar</p>
@@ -276,14 +280,16 @@ export default function AnnualFeesTable() {
                       </Tooltip>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          {canDeleteAnnualFee && <Button
-                            variant='ghost'
-                            size='icon'
-                            onClick={() => handleDelete(fee.feeId)}
-                            disabled={deleteMutation.isPending}
-                          >
-                            <Icons.trash className='h-4 w-4 text-red-600' />
-                          </Button>}
+                          {canDeleteAnnualFee && (
+                            <Button
+                              variant='ghost'
+                              size='icon'
+                              onClick={() => handleDelete(fee.feeId)}
+                              disabled={deleteMutation.isPending}
+                            >
+                              <Icons.trash className='h-4 w-4 text-red-600' />
+                            </Button>
+                          )}
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>Eliminar</p>

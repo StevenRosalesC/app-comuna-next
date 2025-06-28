@@ -37,29 +37,42 @@ import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { isAdult } from '@/utils/persons';
 
-const personFormSchema = z.object({
-  personId: z.string().optional(),
-  identification: z.string().min(1, 'La cédula es requerida'),
-  firstName: z.string().min(1, 'El nombre es requerido'),
-  lastName: z.string().min(1, 'El apellido es requerido'),
-  email: z.string().email('Email inválido').optional().or(z.literal('')),
-  birthDate: z.string(),
-  neighborhoodId: z.string().optional(),
-  phoneNumber: z.string().optional(),
-  gender: z.number().optional(),
-  status: z.boolean().optional(),
-  hasDisability: z.boolean().optional(),
-  disabilityPercentage: z.number().min(1, 'El porcentaje debe ser mayor a 0').max(100, 'El porcentaje no puede ser mayor a 100').optional()
-}).refine((data) => {
-  // If hasDisability is true, disabilityPercentage must be greater than 0
-  if (data.hasDisability && (!data.disabilityPercentage || data.disabilityPercentage <= 0)) {
-    return false;
-  }
-  return true;
-}, {
-  message: "El porcentaje de discapacidad es requerido cuando tiene discapacidad",
-  path: ["disabilityPercentage"]
-});
+const personFormSchema = z
+  .object({
+    personId: z.string().optional(),
+    identification: z.string().min(1, 'La cédula es requerida'),
+    firstName: z.string().min(1, 'El nombre es requerido'),
+    lastName: z.string().min(1, 'El apellido es requerido'),
+    email: z.string().email('Email inválido').optional().or(z.literal('')),
+    birthDate: z.string(),
+    neighborhoodId: z.string().optional(),
+    phoneNumber: z.string().optional(),
+    gender: z.number().optional(),
+    status: z.boolean().optional(),
+    hasDisability: z.boolean().optional(),
+    disabilityPercentage: z
+      .number()
+      .min(1, 'El porcentaje debe ser mayor a 0')
+      .max(100, 'El porcentaje no puede ser mayor a 100')
+      .optional()
+  })
+  .refine(
+    (data) => {
+      // If hasDisability is true, disabilityPercentage must be greater than 0
+      if (
+        data.hasDisability &&
+        (!data.disabilityPercentage || data.disabilityPercentage <= 0)
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message:
+        'El porcentaje de discapacidad es requerido cuando tiene discapacidad',
+      path: ['disabilityPercentage']
+    }
+  );
 
 type PersonFormValues = z.infer<typeof personFormSchema>;
 

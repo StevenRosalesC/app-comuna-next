@@ -1,10 +1,4 @@
-import React, {
-  ChangeEvent,
-  Fragment,
-  useCallback,
-  useRef,
-  useState
-} from 'react';
+import React from 'react';
 import MenuButton from '../MenuButton';
 import { useEditorState } from '@tiptap/react';
 import { useTiptapContext } from '../Provider';

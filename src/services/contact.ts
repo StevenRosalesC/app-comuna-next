@@ -34,4 +34,4 @@ export const sendContactMessage = async (data: ContactForm): Promise<void> => {
     // Something happened in setting up the request that triggered an Error
     throw new Error('Ocurrió un error inesperado.');
   }
-}; 
+};

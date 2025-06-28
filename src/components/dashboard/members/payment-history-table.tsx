@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import {
@@ -20,8 +20,10 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import { invoicingService } from '@/services/invoicing';
-import { receiptsService, DetailedReceiptHistoryItem } from '@/services/receipts';
-import { InvoiceSummary } from '@/interfaces/invoicing';
+import {
+  receiptsService,
+  DetailedReceiptHistoryItem
+} from '@/services/receipts';
 import { useMemberQueries } from '@/hooks/use-member-queries';
 import { InvoiceHistoryTableRowSkeleton } from './invoice-history-table-row-skeleton';
 import { DataTablePagination } from '@/components/ui/table/data-table-pagination';
@@ -30,12 +32,20 @@ import { DateRange } from 'react-day-picker';
 import { subDays } from 'date-fns';
 import { InvoiceDetailsDialog } from './invoice-details-dialog';
 import { Icons } from '@/components/icons';
-import { RefreshCw, Download, Mail, FileText, MoreHorizontal, Calendar, DollarSign, User, Home, ChevronDown, ChevronUp } from 'lucide-react';
+import {
+  RefreshCw,
+  Download,
+  Mail,
+  FileText,
+  MoreHorizontal,
+  ChevronDown,
+  ChevronUp
+} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import {
   AlertDialog,
@@ -45,17 +55,20 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialogTitle
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger
+} from '@/components/ui/collapsible';
 
 interface PaymentHistoryTableProps {
   memberId: string;
 }
 
 export function PaymentHistoryTable({ memberId }: PaymentHistoryTableProps) {
-  const queryClient = useQueryClient();
   const { invalidateMemberInvoicesQueries } = useMemberQueries(memberId);
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
@@ -90,11 +103,12 @@ export function PaymentHistoryTable({ memberId }: PaymentHistoryTableProps) {
 
   const { data: detailedReceipts } = useQuery({
     queryKey: ['detailedReceipts', memberId, pageIndex, pageSize],
-    queryFn: () => receiptsService.getDetailedReceiptHistory({
-      memberId,
-      limit: pageSize,
-      offset: pageIndex * pageSize
-    }),
+    queryFn: () =>
+      receiptsService.getDetailedReceiptHistory({
+        memberId,
+        limit: pageSize,
+        offset: pageIndex * pageSize
+      }),
     enabled: !!memberId
   });
 
@@ -169,31 +183,22 @@ export function PaymentHistoryTable({ memberId }: PaymentHistoryTableProps) {
   const getStatusBadge = (status: number) => {
     switch (status) {
       case 1:
-        return <Badge className="bg-green-500">Pagado</Badge>;
+        return <Badge className='bg-green-500'>Pagado</Badge>;
       case 2:
-        return <Badge className="bg-yellow-500">Pendiente</Badge>;
+        return <Badge className='bg-yellow-500'>Pendiente</Badge>;
       case 3:
-        return <Badge className="bg-red-500">Anulado</Badge>;
+        return <Badge className='bg-red-500'>Anulado</Badge>;
       default:
-        return <Badge variant="secondary">Desconocido</Badge>;
+        return <Badge variant='secondary'>Desconocido</Badge>;
     }
   };
 
-  const getFeeStatusBadge = (status: string) => {
-    switch (status) {
-      case 'PAID':
-        return <Badge className="bg-green-500">Pagado</Badge>;
-      case 'PARTIAL':
-        return <Badge className="bg-yellow-500">Parcial</Badge>;
-      case 'PENDING':
-        return <Badge className="bg-red-500">Pendiente</Badge>;
-      default:
-        return <Badge variant="secondary">{status}</Badge>;
-    }
-  };
 
-  const getDetailedReceipt = (invoiceId: string): DetailedReceiptHistoryItem | undefined => {
-    return detailedReceipts?.find(receipt => receipt.invoiceId === invoiceId);
+
+  const getDetailedReceipt = (
+    invoiceId: string
+  ): DetailedReceiptHistoryItem | undefined => {
+    return detailedReceipts?.find((receipt) => receipt.invoiceId === invoiceId);
   };
 
   const handleRowExpansion = (invoiceId: string) => {
@@ -220,7 +225,8 @@ export function PaymentHistoryTable({ memberId }: PaymentHistoryTableProps) {
         <CardHeader>
           <CardTitle>Historial de Pagos</CardTitle>
           <CardDescription>
-            Estos son los pagos registrados para el comunero. Puedes descargar recibos, reenviarlos por email y ver detalles expandidos.
+            Estos son los pagos registrados para el comunero. Puedes descargar
+            recibos, reenviarlos por email y ver detalles expandidos.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -262,7 +268,9 @@ export function PaymentHistoryTable({ memberId }: PaymentHistoryTableProps) {
                   ))
                   : invoices.length > 0
                     ? invoices.map((invoice) => {
-                      const detailedReceipt = getDetailedReceipt(invoice.invoiceId);
+                      const detailedReceipt = getDetailedReceipt(
+                        invoice.invoiceId
+                      );
                       const isExpanded = expandedRows.has(invoice.invoiceId);
 
                       return (
@@ -270,13 +278,18 @@ export function PaymentHistoryTable({ memberId }: PaymentHistoryTableProps) {
                           <TableRow>
                             <TableCell>
                               {detailedReceipt && (
-                                <Collapsible open={isExpanded} onOpenChange={() => handleRowExpansion(invoice.invoiceId)}>
+                                <Collapsible
+                                  open={isExpanded}
+                                  onOpenChange={() =>
+                                    handleRowExpansion(invoice.invoiceId)
+                                  }
+                                >
                                   <CollapsibleTrigger asChild>
-                                    <Button variant="ghost" size="sm">
+                                    <Button variant='ghost' size='sm'>
                                       {isExpanded ? (
-                                        <ChevronUp className="h-4 w-4" />
+                                        <ChevronUp className='h-4 w-4' />
                                       ) : (
-                                        <ChevronDown className="h-4 w-4" />
+                                        <ChevronDown className='h-4 w-4' />
                                       )}
                                     </Button>
                                   </CollapsibleTrigger>
@@ -287,11 +300,17 @@ export function PaymentHistoryTable({ memberId }: PaymentHistoryTableProps) {
                               #{invoice.invoiceId}
                             </TableCell>
                             <TableCell>
-                              {new Date(invoice.invoiceDate).toLocaleDateString()}
+                              {new Date(
+                                invoice.invoiceDate
+                              ).toLocaleDateString()}
                             </TableCell>
-                            <TableCell>${invoice.totalAmount.toFixed(2)}</TableCell>
                             <TableCell>
-                              {detailedReceipt ? getStatusBadge(detailedReceipt.invoiceStatus) : '-'}
+                              ${invoice.totalAmount.toFixed(2)}
+                            </TableCell>
+                            <TableCell>
+                              {detailedReceipt
+                                ? getStatusBadge(detailedReceipt.invoiceStatus)
+                                : '-'}
                             </TableCell>
                             <TableCell className='text-right'>
                               <div className='flex items-center justify-end gap-2'>
@@ -302,7 +321,7 @@ export function PaymentHistoryTable({ memberId }: PaymentHistoryTableProps) {
                                     setSelectedInvoiceId(invoice.invoiceId)
                                   }
                                 >
-                                  <FileText className='h-4 w-4 mr-1' />
+                                  <FileText className='mr-1 h-4 w-4' />
                                   Detalles
                                 </Button>
                                 <DropdownMenu>
@@ -313,20 +332,24 @@ export function PaymentHistoryTable({ memberId }: PaymentHistoryTableProps) {
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent align='end'>
                                     <DropdownMenuItem
-                                      onClick={() => handleDownloadReceipt(invoice.invoiceId)}
+                                      onClick={() =>
+                                        handleDownloadReceipt(invoice.invoiceId)
+                                      }
                                       disabled={downloadingId !== null}
                                     >
                                       {downloadingId === invoice.invoiceId ? (
-                                        <Icons.spinner className='h-4 w-4 mr-2 animate-spin' />
+                                        <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />
                                       ) : (
-                                        <Download className='h-4 w-4 mr-2' />
+                                        <Download className='mr-2 h-4 w-4' />
                                       )}
                                       Descargar Recibo
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
-                                      onClick={() => handleResendReceipt(invoice.invoiceId)}
+                                      onClick={() =>
+                                        handleResendReceipt(invoice.invoiceId)
+                                      }
                                     >
-                                      <Mail className='h-4 w-4 mr-2' />
+                                      <Mail className='mr-2 h-4 w-4' />
                                       Reenviar por Email
                                     </DropdownMenuItem>
                                   </DropdownMenuContent>
@@ -336,10 +359,13 @@ export function PaymentHistoryTable({ memberId }: PaymentHistoryTableProps) {
                           </TableRow>
                           {isExpanded && (
                             <TableRow>
-                              <TableCell colSpan={6} className="p-0">
+                              <TableCell colSpan={6} className='p-0'>
                                 <Collapsible open={isExpanded}>
                                   <CollapsibleContent>
-                                    <InvoiceExpandedDetails invoiceId={invoice.invoiceId} invoices={invoices} />
+                                    <InvoiceExpandedDetails
+                                      invoiceId={invoice.invoiceId}
+                                      invoices={invoices}
+                                    />
                                   </CollapsibleContent>
                                 </Collapsible>
                               </TableCell>
@@ -382,8 +408,8 @@ export function PaymentHistoryTable({ memberId }: PaymentHistoryTableProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Reenviar Recibo</AlertDialogTitle>
             <AlertDialogDescription>
-              ¿Estás seguro de que quieres reenviar el recibo por email?
-              Esto enviará el PDF del recibo al email registrado del comunero.
+              ¿Estás seguro de que quieres reenviar el recibo por email? Esto
+              enviará el PDF del recibo al email registrado del comunero.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -394,7 +420,7 @@ export function PaymentHistoryTable({ memberId }: PaymentHistoryTableProps) {
             >
               {resendReceiptMutation.isPending ? (
                 <>
-                  <Icons.spinner className='h-4 w-4 mr-2 animate-spin' />
+                  <Icons.spinner className='mr-2 h-4 w-4 animate-spin' />
                   Enviando...
                 </>
               ) : (
@@ -408,17 +434,27 @@ export function PaymentHistoryTable({ memberId }: PaymentHistoryTableProps) {
   );
 }
 
-function InvoiceExpandedDetails({ invoiceId, invoices }: { invoiceId: string; invoices: any[] }) {
-  const invoice = invoices.find(inv => inv.invoiceId === invoiceId);
+function InvoiceExpandedDetails({
+  invoiceId,
+  invoices
+}: {
+  invoiceId: string;
+  invoices: any[];
+}) {
+  const invoice = invoices.find((inv) => inv.invoiceId === invoiceId);
 
   if (!invoice || !invoice.invoiceFeePayments) {
-    return <div className="p-4 text-sm text-red-600">No se encontraron detalles de la factura.</div>;
+    return (
+      <div className='p-4 text-sm text-red-600'>
+        No se encontraron detalles de la factura.
+      </div>
+    );
   }
 
   return (
-    <div className="bg-muted/30 p-4 space-y-3">
-      <div className="font-semibold mb-2">Pagos de esta factura:</div>
-      <div className="overflow-x-auto">
+    <div className='space-y-3 bg-muted/30 p-4'>
+      <div className='mb-2 font-semibold'>Pagos de esta factura:</div>
+      <div className='overflow-x-auto'>
         <Table>
           <TableHeader>
             <TableRow>
@@ -434,31 +470,54 @@ function InvoiceExpandedDetails({ invoiceId, invoices }: { invoiceId: string; in
             </TableRow>
           </TableHeader>
           <TableBody>
-            {invoice.invoiceFeePayments && invoice.invoiceFeePayments.length > 0 ? invoice.invoiceFeePayments.map((payment: any) => {
-              const fee = payment.memberFee;
-              const remaining = fee.amountDue - fee.amountPaid;
-              return (
-                <TableRow key={payment.invoiceFeePaymentId}>
-                  <TableCell>{fee.annualFee.name}</TableCell>
-                  <TableCell>{fee.annualFee.description}</TableCell>
-                  <TableCell>{fee.annualFee.year}</TableCell>
-                  <TableCell>${payment.amountPaid.toFixed(2)}</TableCell>
-                  <TableCell>${fee.amountPaid.toFixed(2)}</TableCell>
-                  <TableCell>${fee.amountDue.toFixed(2)}</TableCell>
-                  <TableCell>{remaining > 0 ? `$${remaining.toFixed(2)}` : '$0.00'}</TableCell>
-                  <TableCell>
-                    <Badge className={
-                      fee.status === 'PAID' ? 'bg-green-500' : fee.status === 'PARTIAL' ? 'bg-yellow-500' : 'bg-red-500'
-                    }>
-                      {fee.status === 'PAID' ? 'Pagado' : fee.status === 'PARTIAL' ? 'Parcial' : 'Pendiente'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>{payment.paymentDate ? new Date(payment.paymentDate).toLocaleDateString('es-ES') : '-'}</TableCell>
-                </TableRow>
-              );
-            }) : (
+            {invoice.invoiceFeePayments &&
+              invoice.invoiceFeePayments.length > 0 ? (
+              invoice.invoiceFeePayments.map((payment: any) => {
+                const fee = payment.memberFee;
+                const remaining = fee.amountDue - fee.amountPaid;
+                return (
+                  <TableRow key={payment.invoiceFeePaymentId}>
+                    <TableCell>{fee.annualFee.name}</TableCell>
+                    <TableCell>{fee.annualFee.description}</TableCell>
+                    <TableCell>{fee.annualFee.year}</TableCell>
+                    <TableCell>${payment.amountPaid.toFixed(2)}</TableCell>
+                    <TableCell>${fee.amountPaid.toFixed(2)}</TableCell>
+                    <TableCell>${fee.amountDue.toFixed(2)}</TableCell>
+                    <TableCell>
+                      {remaining > 0 ? `$${remaining.toFixed(2)}` : '$0.00'}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        className={
+                          fee.status === 'PAID'
+                            ? 'bg-green-500'
+                            : fee.status === 'PARTIAL'
+                              ? 'bg-yellow-500'
+                              : 'bg-red-500'
+                        }
+                      >
+                        {fee.status === 'PAID'
+                          ? 'Pagado'
+                          : fee.status === 'PARTIAL'
+                            ? 'Parcial'
+                            : 'Pendiente'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {payment.paymentDate
+                        ? new Date(payment.paymentDate).toLocaleDateString(
+                          'es-ES'
+                        )
+                        : '-'}
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            ) : (
               <TableRow>
-                <TableCell colSpan={9} className="text-center">No hay pagos registrados en esta factura</TableCell>
+                <TableCell colSpan={9} className='text-center'>
+                  No hay pagos registrados en esta factura
+                </TableCell>
               </TableRow>
             )}
           </TableBody>

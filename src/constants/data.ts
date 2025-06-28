@@ -101,5 +101,5 @@ export const pageNavItems: NavItem[] = [
   {
     title: 'Iniciar Sesión',
     url: '/auth/login'
-  },
+  }
 ];

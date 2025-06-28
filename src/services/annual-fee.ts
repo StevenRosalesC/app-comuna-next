@@ -24,25 +24,33 @@ export const getAnnualFees = async ({
     return response;
   } catch (error) {
     throw error;
-  };
+  }
 };
 
-export const createAnnualFee = async (fee: CreateAnnualFee): Promise<AnnualFee> => {
+export const createAnnualFee = async (
+  fee: CreateAnnualFee
+): Promise<AnnualFee> => {
   try {
     const { data } = await apiCommunity.post<AnnualFee>('/annual-fees', fee);
     return data;
   } catch (error) {
     throw error;
-  };
+  }
 };
 
-export const updateAnnualFee = async (feeId: string, fee: UpdateAnnualFee): Promise<AnnualFee> => {
+export const updateAnnualFee = async (
+  feeId: string,
+  fee: UpdateAnnualFee
+): Promise<AnnualFee> => {
   try {
-    const { data } = await apiCommunity.put<AnnualFee>(`/annual-fees/${feeId}`, fee);
-    return data
+    const { data } = await apiCommunity.put<AnnualFee>(
+      `/annual-fees/${feeId}`,
+      fee
+    );
+    return data;
   } catch (error) {
     throw error;
-  };
+  }
 };
 
 export const deleteAnnualFee = async (feeId: string): Promise<void> => {
@@ -50,5 +58,5 @@ export const deleteAnnualFee = async (feeId: string): Promise<void> => {
     await apiCommunity.delete(`/annual-fees/${feeId}`);
   } catch (error) {
     throw error;
-  };
-}; 
+  }
+};

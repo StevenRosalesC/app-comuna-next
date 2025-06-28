@@ -20,7 +20,6 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import { invoicingService } from '@/services/invoicing';
-import { InvoiceSummary } from '@/interfaces/invoicing';
 import { CashRegisterInvoicesTableRowSkeleton } from './cash-register-invoices-table-row-skeleton';
 import { DataTablePagination } from '@/components/ui/table/data-table-pagination';
 import { DateRangePicker } from '@/components/date-range-picker';
@@ -73,7 +72,7 @@ export function CashRegisterInvoicesTable({
         limit: pageSize,
         offset: pageIndex * pageSize,
         startDate: dateRange?.from?.toISOString().split('T')[0],
-        endDate: dateRange?.to?.toISOString().split('T')[0],
+        endDate: dateRange?.to?.toISOString().split('T')[0]
       })
   });
 
@@ -148,7 +147,10 @@ export function CashRegisterInvoicesTable({
                           {new Date(invoice.invoiceDate).toLocaleDateString()}
                         </TableCell>
                         <TableCell>${invoice.totalAmount.toFixed(2)}</TableCell>
-                        <TableCell>{invoice.member.person.firstName} {invoice.member.person.lastName}</TableCell>
+                        <TableCell>
+                          {invoice.member.person.firstName}{' '}
+                          {invoice.member.person.lastName}
+                        </TableCell>
                         <TableCell className='text-right'>
                           <Button
                             variant='outline'

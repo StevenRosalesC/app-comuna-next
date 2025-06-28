@@ -1,5 +1,5 @@
 import { JSONContent } from '@tiptap/core';
-import { NodeSelection, Plugin, TextSelection } from '@tiptap/pm/state';
+import { NodeSelection, Plugin } from '@tiptap/pm/state';
 // @ts-ignore : This import is necessary due to missing type definitions in the package.
 import { __serializeForClipboard as serializeForClipboard } from '@tiptap/pm/view';
 

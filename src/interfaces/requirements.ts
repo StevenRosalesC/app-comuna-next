@@ -1,8 +1,8 @@
 export interface Requirement {
   requirementId: string;
-  requirement:   string;
-  observation:   string;
-  status:        boolean;
+  requirement: string;
+  observation: string;
+  status: boolean;
 }
 
 export type RequirementStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
@@ -16,13 +16,13 @@ export interface PersonRequirement {
 }
 export interface ApprovedByUser {
   username: string;
-  role:     Role;
-  person:   Person;
+  role: Role;
+  person: Person;
 }
 
 export interface Person {
-  lastName:       string;
-  firstName:      string;
+  lastName: string;
+  firstName: string;
   identification: string;
 }
 

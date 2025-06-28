@@ -15,6 +15,7 @@ export default function EditForm() {
 
   const getWordCount = useCallback(
     () => editorRef.current?.getInstance()?.storage.characterCount.words() ?? 0,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [editorRef.current]
   );
 
@@ -23,6 +24,7 @@ export default function EditForm() {
       reset({ ...post });
       setIsLoading(false);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -33,6 +35,7 @@ export default function EditForm() {
     });
 
     return () => subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch]);
 
   if (isLoading) return;

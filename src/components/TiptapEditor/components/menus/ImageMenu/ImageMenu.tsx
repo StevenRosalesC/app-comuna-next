@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useTiptapContext } from '../../Provider';
 import { BubbleMenu } from '../../BubbleMenu';
 import { Toolbar, ToolbarDivider } from '../../ui/Toolbar';
@@ -89,8 +89,7 @@ export const ImageMenu = () => {
 
   // Download image with proper filename
   const downloadImage = useCallback(async () => {
-    if (!image?.src)
-      throw new Error('No image source available for download.');
+    if (!image?.src) throw new Error('No image source available for download.');
 
     try {
       const res = await fetch(image.src);

@@ -12,7 +12,6 @@ export default function useCopyToClipboard() {
       setIsCopied(true);
       timeoutId.current = setTimeout(() => setIsCopied(false), 2500);
     } catch (error) {
-      console.log(error);
       setIsCopied(false);
       if (timeoutId.current) {
         clearTimeout(timeoutId.current);

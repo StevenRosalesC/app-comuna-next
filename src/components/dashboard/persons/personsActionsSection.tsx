@@ -1,9 +1,9 @@
-"use client"
-import { Button } from "@/components/ui/button";
-import { Printer } from "lucide-react";
-import { PersonsReport } from "../reports/persons";
-import { toast } from "sonner";
-// For generate list 
+'use client';
+import { Button } from '@/components/ui/button';
+import { Printer } from 'lucide-react';
+import { PersonsReport } from '../reports/persons';
+import { toast } from 'sonner';
+// For generate list
 export default function PersonsActionsSection() {
   const handleListPersons = async () => {
     try {
@@ -18,15 +18,15 @@ export default function PersonsActionsSection() {
     } catch (error) {
       toast.error('Error al generar el reporte');
     }
-  }
+  };
   return (
     <div>
-      <div className="flex flex-row items-center gap-2 w-full justify-end ">
+      <div className='flex w-full flex-row items-center justify-end gap-2 '>
         <Button onClick={handleListPersons}>
           <span>Listar</span>
-          <Printer className="w-4 h-4" />
+          <Printer className='h-4 w-4' />
         </Button>
       </div>
     </div>
-  )
+  );
 }

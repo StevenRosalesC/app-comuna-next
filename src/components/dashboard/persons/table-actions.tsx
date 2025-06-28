@@ -46,7 +46,11 @@ export function TableActions({
               variant='ghost'
               size='icon'
               onClick={() => onViewRequirements(person)}
-              disabled={!person.status || !isAdult(new Date(person.birthDate))}
+              disabled={
+                !person.status ||
+                !isAdult(new Date(person.birthDate)) ||
+                (person?.memberCount ?? 0) > 0
+              }
             >
               <LayoutList className='h-4 w-4' />
             </Button>

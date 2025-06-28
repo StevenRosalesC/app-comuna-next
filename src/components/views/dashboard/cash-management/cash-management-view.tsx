@@ -41,8 +41,6 @@ export default function CashManagementView() {
     enabled: canReadCashManagement // Only fetch if user has read permission
   });
 
-  console.log(error);
-
   // If user doesn't have read permission, show access denied
   if (!canReadCashManagement) {
     return (

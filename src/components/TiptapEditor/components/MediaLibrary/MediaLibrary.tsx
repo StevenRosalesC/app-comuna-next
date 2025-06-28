@@ -61,7 +61,7 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onInsert, onClose }) => {
       });
       return await response.json();
     } catch (error) {
-      console.error('Upload error:', error);
+      throw error;
     }
   };
 
@@ -92,7 +92,7 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onInsert, onClose }) => {
         const data = await response.json();
         setImages(data);
       } catch (error) {
-        console.error('Error fetching images:', error);
+        throw error;
       } finally {
         setLoading(false);
       }

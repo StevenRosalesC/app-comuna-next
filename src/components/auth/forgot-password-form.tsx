@@ -39,7 +39,6 @@ export const ForgotPasswordForm = () => {
   const onSubmit = async (data: UserFormValue) => {
     try {
       const response = await AuthService.forgotPassword(data.email);
-      console.log(response);
       toast.success('Correo de recuperación enviado');
     } catch (error) {
       toast.error('Error al enviar el correo de recuperación');

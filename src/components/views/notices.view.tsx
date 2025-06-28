@@ -40,7 +40,7 @@ export default function NoticesView() {
       setNotices((prevNotices) => [...prevNotices, ...data]);
       setTotal(count);
     } catch (error) {
-      console.error(error);
+      throw error;
     } finally {
       setLoading(false);
     }

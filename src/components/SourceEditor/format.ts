@@ -21,7 +21,6 @@ export const formatHtml = async (content: string) => {
       tabWidth: 2
     });
   } catch (error) {
-    console.error('Format failed:', error);
     return content;
   }
 };

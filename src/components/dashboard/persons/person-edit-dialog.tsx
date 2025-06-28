@@ -68,7 +68,21 @@ export function PersonEditDialog({
   onSave
 }: PersonEditDialogProps) {
   const form = useForm<PersonFormValues>({
-    resolver: zodResolver(personFormSchema)
+    resolver: zodResolver(personFormSchema),
+    defaultValues: {
+      personId: '',
+      identification: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      birthDate: '',
+      neighborhoodId: '',
+      phoneNumber: '',
+      gender: 1,
+      status: true,
+      hasDisability: false,
+      disabilityPercentage: 0
+    }
   });
 
   const { neighborhoods } = useNeighborhoodsStore((state) => ({
@@ -86,6 +100,7 @@ export function PersonEditDialog({
           ? new Date(person.birthDate).toISOString().split('T')[0]
           : '',
         neighborhoodId: person.neighborhoodId || '',
+        gender: person.gender || 0,
         status: person.status ?? true,
         hasDisability: person.hasDisability ?? false,
         disabilityPercentage: person.disabilityPercentage ?? 0
@@ -97,7 +112,7 @@ export function PersonEditDialog({
     try {
       const personToSave: Person = {
         personId: person?.personId || '',
-        gender: person?.gender || 0,
+        gender: data.gender || person?.gender || 0,
         phoneNumber: person?.phoneNumber || '',
         identification: data.identification,
         firstName: data.firstName,
@@ -224,6 +239,30 @@ export function PersonEditDialog({
                     <FormControl>
                       <Input {...field} type='date' />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='gender'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Género</FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      defaultValue={field.value?.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder='Seleccione el género' />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value='1'>Masculino</SelectItem>
+                        <SelectItem value='2'>Femenino</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

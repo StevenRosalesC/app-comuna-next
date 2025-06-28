@@ -15,6 +15,7 @@ export interface Person {
   birthDate: Date;
   status: boolean;
   email: string;
+  memberCount?: number;
   neighborhoodId: string;
   hasDisability?: boolean;
   disabilityPercentage?: number;

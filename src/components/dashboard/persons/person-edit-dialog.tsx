@@ -49,7 +49,16 @@ const personFormSchema = z.object({
   gender: z.number().optional(),
   status: z.boolean().optional(),
   hasDisability: z.boolean().optional(),
-  disabilityPercentage: z.number().min(0).max(100).optional()
+  disabilityPercentage: z.number().min(1, 'El porcentaje debe ser mayor a 0').max(100, 'El porcentaje no puede ser mayor a 100').optional()
+}).refine((data) => {
+  // If hasDisability is true, disabilityPercentage must be greater than 0
+  if (data.hasDisability && (!data.disabilityPercentage || data.disabilityPercentage <= 0)) {
+    return false;
+  }
+  return true;
+}, {
+  message: "El porcentaje de discapacidad es requerido cuando tiene discapacidad",
+  path: ["disabilityPercentage"]
 });
 
 type PersonFormValues = z.infer<typeof personFormSchema>;
@@ -299,32 +308,44 @@ export function PersonEditDialog({
                     <FormControl>
                       <Switch
                         checked={field.value}
-                        onCheckedChange={field.onChange}
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked);
+                          // Reset disability percentage when disabling
+                          if (!checked) {
+                            form.setValue('disabilityPercentage', 0);
+                          }
+                        }}
                       />
                     </FormControl>
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name='disabilityPercentage'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Porcentaje de Discapacidad (%)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type='number'
-                        min='0'
-                        max='100'
-                        placeholder='Ingrese el porcentaje de discapacidad'
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {form.watch('hasDisability') && (
+                <FormField
+                  control={form.control}
+                  name='disabilityPercentage'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Porcentaje de Discapacidad (%)</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='number'
+                          min='1'
+                          max='100'
+                          placeholder='Ingrese el porcentaje de discapacidad'
+                          {...field}
+                          value={field.value === 0 ? '' : field.value}
+                          onChange={(e) => {
+                            const value = Number(e.target.value);
+                            field.onChange(value);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               {person.status && isAdult(new Date(person.birthDate)) && (
                 <div className='flex flex-col gap-2'>
                   {person.personRequirement &&

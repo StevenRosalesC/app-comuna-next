@@ -1,5 +1,5 @@
 import React from 'react';
-import { Editor, useEditorState } from '@tiptap/react';
+import { useEditorState } from '@tiptap/react';
 import MenuButton from '../MenuButton';
 import { useTiptapContext } from '../Provider';
 

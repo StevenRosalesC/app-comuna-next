@@ -27,14 +27,14 @@ export default function KBar({ children }: { children: React.ReactNode }) {
         const baseAction =
           navItem.url !== '#'
             ? {
-                id: `${navItem.title.toLowerCase()}Action`,
-                name: navItem.title,
-                shortcut: navItem.shortcut,
-                keywords: navItem.title.toLowerCase(),
-                section: 'Navigation',
-                subtitle: `Go to ${navItem.title}`,
-                perform: () => navigateTo(navItem.url)
-              }
+              id: `${navItem.title.toLowerCase()}Action`,
+              name: navItem.title,
+              shortcut: navItem.shortcut,
+              keywords: navItem.title.toLowerCase(),
+              section: 'Navigation',
+              subtitle: `Go to ${navItem.title}`,
+              perform: () => navigateTo(navItem.url)
+            }
             : null;
 
         // Map child items into actions
@@ -52,6 +52,7 @@ export default function KBar({ children }: { children: React.ReactNode }) {
         // Return only valid actions (ignoring null base actions for containers)
         return baseAction ? [baseAction, ...childActions] : childActions;
       }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 

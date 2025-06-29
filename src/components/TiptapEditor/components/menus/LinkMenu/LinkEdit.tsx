@@ -35,6 +35,7 @@ const LinkEdit = ({
     if (!isCreate) {
       setCanSubmit((url && url !== initialUrl) || text !== initialText);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text, url]);
 
   return (

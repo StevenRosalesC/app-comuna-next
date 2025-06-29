@@ -5,12 +5,11 @@ import 'swiper/css/scrollbar';
 import './globals.css';
 import { ViewTransitions } from 'next-view-transitions';
 // import { auth } from '@/lib/auth';
-// import Providers from '@/components/layout/providers';
+import Providers from '@/components/layout/providers';
 import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
 import { Lato } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
-import { Providers } from '@/components/providers/providers';
 
 export const metadata: Metadata = {
   title: 'Comuna Bambil Collao | App',
@@ -28,7 +27,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // const session = await auth();
+  // Si necesitas pasar la sesión real, reemplaza null por la sesión obtenida
+  const session = null;
   return (
     <ViewTransitions>
       <html
@@ -38,11 +38,9 @@ export default function RootLayout({
       >
         <body>
           <NextTopLoader showSpinner={false} />
-          <Providers>
-            {/* <Providers session={session}> */}
+          <Providers session={session}>
             <Toaster />
             {children}
-            {/* </Providers> */}
           </Providers>
         </body>
       </html>

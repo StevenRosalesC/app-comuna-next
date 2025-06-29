@@ -1,20 +1,21 @@
 import { PersonRequirement } from './requirements';
 
 export interface IPersonsRequestResponse {
-  data:  Person[];
+  data: Person[];
   count: number;
 }
 
 export interface Person {
-  personId:       string;
+  personId: string;
   identification: string;
-  lastName:       string;
-  firstName:      string;
-  gender:         number;
-  phoneNumber:    string;
-  birthDate:      Date;
-  status:         boolean;
-  email:          string;
+  lastName: string;
+  firstName: string;
+  gender: number;
+  phoneNumber: string;
+  birthDate: Date;
+  status: boolean;
+  email: string;
+  memberCount?: number;
   neighborhoodId: string;
   hasDisability?: boolean;
   disabilityPercentage?: number;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import { Toolbar } from '../ui/Toolbar';
 import MenuButton from '../MenuButton';

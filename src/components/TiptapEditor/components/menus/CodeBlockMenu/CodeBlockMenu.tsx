@@ -36,6 +36,7 @@ export const CodeBlockMenu = () => {
     if (node?.textContent) {
       copy(node.textContent);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor]);
 
   const handleDelete = useCallback(() => {

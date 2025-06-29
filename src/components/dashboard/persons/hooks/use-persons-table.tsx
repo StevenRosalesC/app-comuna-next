@@ -1,15 +1,19 @@
-import { useReactTable, getCoreRowModel, SortingState } from "@tanstack/react-table"
-import { usePersonsTableColumns } from "../persons-table-columns"
-import { Person } from "@/interfaces/persons"
-import { TableActions } from "../table-actions"
-import React from "react"
+import {
+  useReactTable,
+  getCoreRowModel,
+  SortingState
+} from '@tanstack/react-table';
+import { usePersonsTableColumns } from '../persons-table-columns';
+import { Person } from '@/interfaces/persons';
+import { TableActions } from '../table-actions';
+import React from 'react';
 
 interface UsePersonsTableProps {
-  data: Person[]
-  sorting: SortingState
-  onSortingChange: (sorting: SortingState) => void
-  onEdit: (person: Person) => void
-  onViewRequirements: (person: Person) => void
+  data: Person[];
+  sorting: SortingState;
+  onSortingChange: (sorting: SortingState) => void;
+  onEdit: (person: Person) => void;
+  onViewRequirements: (person: Person) => void;
 }
 
 export function usePersonsTable({
@@ -27,7 +31,7 @@ export function usePersonsTable({
         onViewRequirements={onViewRequirements}
       />
     )
-  })
+  });
 
   const table = useReactTable({
     data,
@@ -36,14 +40,14 @@ export function usePersonsTable({
     state: { sorting },
     onSortingChange: (updater) => {
       if (typeof updater === 'function') {
-        const newSorting = updater(sorting)
-        onSortingChange(newSorting)
+        const newSorting = updater(sorting);
+        onSortingChange(newSorting);
       } else {
-        onSortingChange(updater)
+        onSortingChange(updater);
       }
     },
-    manualSorting: true,
-  })
+    manualSorting: true
+  });
 
-  return { table, columns }
-} 
+  return { table, columns };
+}

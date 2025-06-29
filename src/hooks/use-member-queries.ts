@@ -33,4 +33,4 @@ export function useMemberQueries(memberId: string) {
     invalidateMemberFeesQueries,
     invalidateMemberInvoicesQueries
   };
-} 
+}

@@ -34,7 +34,11 @@ const formSchema = z.object({
   notes: z.string().optional()
 });
 
-export default function OpenCashRegister({ canOpenCashRegister = false }: { canOpenCashRegister?: boolean }) {
+export default function OpenCashRegister({
+  canOpenCashRegister = false
+}: {
+  canOpenCashRegister?: boolean;
+}) {
   const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof formSchema>>({

@@ -12,7 +12,7 @@ const CopyButton = ({ code }: { code: string }) => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('Failed to copy:', error);
+      throw error;
     }
   };
 

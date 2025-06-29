@@ -16,4 +16,4 @@ export interface GetAnnualFeesParams {
   offset: number;
   year?: number;
   search?: string;
-} 
+}

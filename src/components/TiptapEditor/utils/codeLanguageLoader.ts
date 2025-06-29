@@ -40,7 +40,6 @@ export async function loadLanguage(
     lowlight.register(languageName, language);
     return true;
   } catch (error) {
-    console.error(error);
     return false;
   }
 }

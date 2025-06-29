@@ -91,7 +91,7 @@ export const CreateUserForm = () => {
   };
 
   return (
-    <Card>
+    <Card className='w-full max-h-[90dvh] overflow-y-auto '>
       <CardHeader>
         <CardTitle>Crear usuario</CardTitle>
         <CardDescription>
@@ -102,7 +102,7 @@ export const CreateUserForm = () => {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6'
+            className='grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 h-full'
           >
             <div className='md:col-span-2'>
               <SelectPersonDialog

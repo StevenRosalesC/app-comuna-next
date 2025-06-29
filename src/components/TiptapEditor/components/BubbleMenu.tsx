@@ -56,10 +56,12 @@ export const BubbleMenu = ({
       menuEditor.unregisterPlugin(pluginKey);
       window.requestAnimationFrame(() => {
         if (menuEl.current.parentNode) {
+          // eslint-disable-next-line react-hooks/exhaustive-deps
           menuEl.current.parentNode.removeChild(menuEl.current);
         }
       });
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor]);
 
   const portal = createPortal(

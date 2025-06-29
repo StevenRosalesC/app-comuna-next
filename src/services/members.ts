@@ -79,7 +79,9 @@ export const getMemberById = async (id: string): Promise<Member> => {
 /**
  * Gets the current status of all fees for a member
  */
-export const getMemberFeesStatus = async (memberId: string): Promise<MemberFeesStatusResponse> => {
+export const getMemberFeesStatus = async (
+  memberId: string
+): Promise<MemberFeesStatusResponse> => {
   const { data } = await apiCommunity.get<MemberFeesStatusResponse>(
     `/members/${memberId}/fees/status`
   );
@@ -89,9 +91,12 @@ export const getMemberFeesStatus = async (memberId: string): Promise<MemberFeesS
 /**
  * Gets the complete payment history for a specific fee of a member
  */
-export const getMemberFeePayments = async (memberId: string, memberFeeId: string): Promise<MemberFeePaymentsResponse> => {
+export const getMemberFeePayments = async (
+  memberId: string,
+  memberFeeId: string
+): Promise<MemberFeePaymentsResponse> => {
   const { data } = await apiCommunity.get<MemberFeePaymentsResponse>(
     `/members/${memberId}/fees/${memberFeeId}/payments`
   );
   return data;
-}; 
+};

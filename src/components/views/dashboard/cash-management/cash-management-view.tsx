@@ -9,31 +9,53 @@ import ActiveCashRegister from '@/components/dashboard/cash-management/active-ca
 import { PageTitle } from '@/components/ui/page-title';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { usePermissionsStore } from '@/store/permissionsStore';
 import { ValidActions, ValidModules } from '@/constants/permissions';
 import { usePermission } from '@/hooks/usePermission';
 
 export default function CashManagementView() {
-  const { permissions } = usePermissionsStore();
 
   // Permission checks for cash management
-  const canReadCashManagement = usePermission(ValidModules.CASH_MANAGEMENT, [ValidActions.READ]);
-  const canOpenCashRegister = usePermission(ValidModules.CASH_MANAGEMENT, [ValidActions.OPEN_CASH_REGISTER]);
-  const canCloseCashRegister = usePermission(ValidModules.CASH_MANAGEMENT, [ValidActions.CLOSE_CASH_REGISTER]);
-  const canViewHistory = usePermission(ValidModules.CASH_MANAGEMENT, [ValidActions.VIEW_HISTORY]);
-  const canCreateIncome = usePermission(ValidModules.CASH_MANAGEMENT, [ValidActions.CREATE_INCOME]);
-  const canCreateExpense = usePermission(ValidModules.CASH_MANAGEMENT, [ValidActions.CREATE_EXPENSE]);
-  const canReadIncome = usePermission(ValidModules.CASH_MANAGEMENT, [ValidActions.READ_INCOME]);
-  const canReadExpense = usePermission(ValidModules.CASH_MANAGEMENT, [ValidActions.READ_EXPENSE]);
-  const canDeletePayment = usePermission(ValidModules.CASH_MANAGEMENT, [ValidActions.DELETE_PAYMENT]);
-  const canDeleteIncome = usePermission(ValidModules.CASH_MANAGEMENT, [ValidActions.DELETE_INCOME]);
-  const canDeleteExpense = usePermission(ValidModules.CASH_MANAGEMENT, [ValidActions.DELETE_EXPENSE]);
+  const canReadCashManagement = usePermission(ValidModules.CASH_MANAGEMENT, [
+    ValidActions.READ
+  ]);
+  const canOpenCashRegister = usePermission(ValidModules.CASH_MANAGEMENT, [
+    ValidActions.OPEN_CASH_REGISTER
+  ]);
+  const canCloseCashRegister = usePermission(ValidModules.CASH_MANAGEMENT, [
+    ValidActions.CLOSE_CASH_REGISTER
+  ]);
+  const canViewHistory = usePermission(ValidModules.CASH_MANAGEMENT, [
+    ValidActions.VIEW_HISTORY
+  ]);
+  const canCreateIncome = usePermission(ValidModules.CASH_MANAGEMENT, [
+    ValidActions.CREATE_INCOME
+  ]);
+  const canCreateExpense = usePermission(ValidModules.CASH_MANAGEMENT, [
+    ValidActions.CREATE_EXPENSE
+  ]);
+  const canReadIncome = usePermission(ValidModules.CASH_MANAGEMENT, [
+    ValidActions.READ_INCOME
+  ]);
+  const canReadExpense = usePermission(ValidModules.CASH_MANAGEMENT, [
+    ValidActions.READ_EXPENSE
+  ]);
+  const canDeletePayment = usePermission(ValidModules.CASH_MANAGEMENT, [
+    ValidActions.DELETE_PAYMENT
+  ]);
+  const canDeleteIncome = usePermission(ValidModules.CASH_MANAGEMENT, [
+    ValidActions.DELETE_INCOME
+  ]);
+  const canDeleteExpense = usePermission(ValidModules.CASH_MANAGEMENT, [
+    ValidActions.DELETE_EXPENSE
+  ]);
+  const canCancelInvoice = usePermission(ValidModules.CASH_MANAGEMENT, [
+    ValidActions.CANCEL_INVOICE
+  ]);
 
   const {
     data: activeCashRegister,
     isLoading,
     isError,
-    error
   } = useQuery({
     queryKey: ['activeCashRegister'],
     queryFn: cashRegisterService.getActiveRegister,
@@ -87,15 +109,12 @@ export default function CashManagementView() {
           canDeletePayment={canDeletePayment}
           canDeleteIncome={canDeleteIncome}
           canDeleteExpense={canDeleteExpense}
+          canCancelInvoice={canCancelInvoice}
         />
       );
     }
 
-    return (
-      <OpenCashRegister
-        canOpenCashRegister={canOpenCashRegister}
-      />
-    );
+    return <OpenCashRegister canOpenCashRegister={canOpenCashRegister} />;
   };
 
   return (

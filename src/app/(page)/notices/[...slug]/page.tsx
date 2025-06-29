@@ -8,7 +8,6 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { NEXT_PUBLIC_APP_URL } from '@/lib/env.config';
 import { getNoticeByTitle } from '@/services/page';
-import { Notice } from 'types/dashboard';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = params;

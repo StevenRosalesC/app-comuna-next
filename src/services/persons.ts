@@ -1,49 +1,67 @@
-import { IPerson, IPersonsRequestResponse, Person } from "@/interfaces/persons"
-import apiCommunity from "@/utils/communityApi"
-import { ServiceResponse } from "../interfaces/common"
+import { IPerson, IPersonsRequestResponse, Person } from '@/interfaces/persons';
+import apiCommunity from '@/utils/communityApi';
+import { ServiceResponse } from '../interfaces/common';
 
 export const personsService = {
-  async getPersons(limit: number, offset: number, orderBy?: string, order?: string, search?: string, status?: boolean) : Promise<ServiceResponse<IPersonsRequestResponse | null>> {
+  async getPersons(
+    limit: number,
+    offset: number,
+    orderBy?: string,
+    order?: string,
+    search?: string,
+    status?: boolean
+  ): Promise<ServiceResponse<IPersonsRequestResponse | null>> {
     try {
-      const {data:persons} =await apiCommunity.get<IPersonsRequestResponse>("/persons", {
-        params: {
-          limit,
-          offset,
-          orderBy,
-          order,
-          search,
-          status,
+      const { data: persons } = await apiCommunity.get<IPersonsRequestResponse>(
+        '/persons',
+        {
+          params: {
+            limit,
+            offset,
+            orderBy,
+            order,
+            search,
+            status
+          }
         }
-      })
+      );
       return {
         data: persons,
         message: 'Personas obtenidas correctamente',
         status: true
-      }
+      };
     } catch (error) {
       throw error;
     }
   },
 
-
-  async getPersonsPaginated({ pageParam = 1, search = '', pageSize = 10 }): Promise<{ data: Person[]; nextPage?: number }> {
+  async getPersonsPaginated({
+    pageParam = 1,
+    search = '',
+    pageSize = 10
+  }): Promise<{ data: Person[]; nextPage?: number }> {
     const offset = (pageParam - 1) * pageSize;
-    const { data } = await apiCommunity.get<IPersonsRequestResponse>('/persons', {
-      params: {
-        limit: pageSize,
-        offset,
-        search,
-      },
-    });
+    const { data } = await apiCommunity.get<IPersonsRequestResponse>(
+      '/persons',
+      {
+        params: {
+          limit: pageSize,
+          offset,
+          search
+        }
+      }
+    );
     const total = data?.count || 0;
     const nextPage = offset + pageSize < total ? pageParam + 1 : undefined;
     return {
       data: data?.data || [],
-      nextPage,
+      nextPage
     };
   },
 
-  async createPerson(person: IPerson): Promise<ServiceResponse<IPerson | null>> {
+  async createPerson(
+    person: IPerson
+  ): Promise<ServiceResponse<IPerson | null>> {
     try {
       const { data } = await apiCommunity.post('/persons', person);
       return {
@@ -56,14 +74,17 @@ export const personsService = {
     }
   },
 
-  async updatePerson(personId: string, person: Omit<Person, 'personId'>): Promise<ServiceResponse<Person | null>> {
+  async updatePerson(
+    personId: string,
+    person: Omit<Person, 'personId'>
+  ): Promise<ServiceResponse<Person | null>> {
     try {
       const { data } = await apiCommunity.patch(`/persons/${personId}`, person);
       return {
         data: data,
         message: 'Persona actualizada correctamente',
         status: true
-      }
+      };
     } catch (error) {
       throw error;
     }
@@ -93,4 +114,4 @@ export const personsService = {
       count: data.count
     };
   }
-}
+};

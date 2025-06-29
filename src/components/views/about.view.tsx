@@ -28,7 +28,8 @@ export default function AboutView() {
     logo: `https://${process.env.NEXT_PUBLIC_APP_URL}/icon.webp`,
     address: {
       '@type': 'PostalAddress',
-      streetAddress: 'Barrio 3 de Noviembre - Frente a la cancha de uso múltiple',
+      streetAddress:
+        'Barrio 3 de Noviembre - Frente a la cancha de uso múltiple',
       addressLocality: 'Bambil Collao',
       addressRegion: 'Santa Elena',
       addressCountry: 'EC'
@@ -56,10 +57,26 @@ export default function AboutView() {
   };
 
   const valores = [
-    { icon: <HeartHandshake className="text-green-600" size={32} />, label: 'Solidaridad', desc: 'Apoyamos y cuidamos a todos los miembros de la comunidad.' },
-    { icon: <Star className="text-yellow-500" size={32} />, label: 'Excelencia', desc: 'Buscamos la mejora continua en todo lo que hacemos.' },
-    { icon: <Award className="text-blue-600" size={32} />, label: 'Respeto', desc: 'Valoramos la diversidad y fomentamos el trato digno.' },
-    { icon: <Users className="text-purple-600" size={32} />, label: 'Colaboración', desc: 'Trabajamos juntos para lograr objetivos comunes.' }
+    {
+      icon: <HeartHandshake className='text-green-600' size={32} />,
+      label: 'Solidaridad',
+      desc: 'Apoyamos y cuidamos a todos los miembros de la comunidad.'
+    },
+    {
+      icon: <Star className='text-yellow-500' size={32} />,
+      label: 'Excelencia',
+      desc: 'Buscamos la mejora continua en todo lo que hacemos.'
+    },
+    {
+      icon: <Award className='text-blue-600' size={32} />,
+      label: 'Respeto',
+      desc: 'Valoramos la diversidad y fomentamos el trato digno.'
+    },
+    {
+      icon: <Users className='text-purple-600' size={32} />,
+      label: 'Colaboración',
+      desc: 'Trabajamos juntos para lograr objetivos comunes.'
+    }
   ];
 
   // const equipo = [
@@ -154,13 +171,20 @@ export default function AboutView() {
 
         {/* Valores */}
         <section className='py-12'>
-          <h2 className='mb-8 text-3xl font-bold text-center text-green-600'>Valores</h2>
+          <h2 className='mb-8 text-center text-3xl font-bold text-green-600'>
+            Valores
+          </h2>
           <div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4'>
             {valores.map((valor, idx) => (
-              <div key={idx} className='flex flex-col items-center p-6 bg-white rounded-lg shadow-md animate-fade-in-card' tabIndex={0} aria-label={valor.label}>
+              <div
+                key={idx}
+                className='animate-fade-in-card flex flex-col items-center rounded-lg bg-white p-6 shadow-md'
+                tabIndex={0}
+                aria-label={valor.label}
+              >
                 {valor.icon}
                 <h3 className='mt-2 text-xl font-semibold'>{valor.label}</h3>
-                <p className='text-gray-600 text-center'>{valor.desc}</p>
+                <p className='text-center text-gray-600'>{valor.desc}</p>
               </div>
             ))}
           </div>

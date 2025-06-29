@@ -1,4 +1,4 @@
-import apiCommunity from "@/utils/communityApi";
+import apiCommunity from '@/utils/communityApi';
 
 export const PersonsReport = {
   /**
@@ -6,9 +6,9 @@ export const PersonsReport = {
    * @returns File type pdf
    */
   async listAllPersons() {
-    const response = await apiCommunity.get("/reports/persons", {
+    const response = await apiCommunity.get('/reports/persons', {
       responseType: 'blob'
     });
     return response.data;
   }
-}
+};

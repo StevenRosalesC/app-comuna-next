@@ -1,16 +1,7 @@
 import Image from 'next/image';
 import React from 'react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow
-} from '../ui/table';
 import { SubTitle } from '../ui/atoms/sub-title';
-
 import { GalleryCard } from '../gallery-card';
-import { Paragraph } from '../ui/atoms/paragraph';
 import {
   Carousel,
   CarouselContent,
@@ -38,26 +29,50 @@ export const OthersSection = () => {
           />
         </div>
         <div className='w-full basis-3/5 py-4 lg:py-12' data-aos='fade-up'>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2 grid grid-cols-2 border-b border-gray-200 px-6 py-3">
-              <div className="text-center text-sm font-bold text-green-700 lg:text-lg">Nombre</div>
-              <div className="text-center text-sm font-bold text-green-700 lg:text-lg">Cargo</div>
+          <div className='grid grid-cols-2 gap-4'>
+            <div className='col-span-2 grid grid-cols-2 border-b border-gray-200 px-6 py-3'>
+              <div className='text-center text-sm font-bold text-green-700 lg:text-lg'>
+                Nombre
+              </div>
+              <div className='text-center text-sm font-bold text-green-700 lg:text-lg'>
+                Cargo
+              </div>
             </div>
 
-            <div className="text-sm lg:text-lg px-6 py-2">Edison Catuto Tomalá</div>
-            <div className="text-sm font-bold lg:text-lg px-6 py-2">Presidente</div>
+            <div className='px-6 py-2 text-sm lg:text-lg'>
+              Edison Catuto Tomalá
+            </div>
+            <div className='px-6 py-2 text-sm font-bold lg:text-lg'>
+              Presidente
+            </div>
 
-            <div className="text-sm lg:text-lg px-6 py-2">Karina Catuto Tomalá</div>
-            <div className="text-sm font-bold lg:text-lg px-6 py-2">Vice Presidente</div>
+            <div className='px-6 py-2 text-sm lg:text-lg'>
+              Karina Catuto Tomalá
+            </div>
+            <div className='px-6 py-2 text-sm font-bold lg:text-lg'>
+              Vice Presidente
+            </div>
 
-            <div className="text-sm lg:text-lg px-6 py-2">Jessenia Quirumbay Ramírez</div>
-            <div className="text-sm font-bold lg:text-lg px-6 py-2">Secretario</div>
+            <div className='px-6 py-2 text-sm lg:text-lg'>
+              Jessenia Quirumbay Ramírez
+            </div>
+            <div className='px-6 py-2 text-sm font-bold lg:text-lg'>
+              Secretario
+            </div>
 
-            <div className="text-sm lg:text-lg px-6 py-2">Nathaly Tomalá Pozo</div>
-            <div className="text-sm font-bold lg:text-lg px-6 py-2">Tesorero</div>
+            <div className='px-6 py-2 text-sm lg:text-lg'>
+              Nathaly Tomalá Pozo
+            </div>
+            <div className='px-6 py-2 text-sm font-bold lg:text-lg'>
+              Tesorero
+            </div>
 
-            <div className="text-sm lg:text-lg px-6 py-2">Ernesto Tomalá Torres</div>
-            <div className="text-sm font-bold lg:text-lg px-6 py-2">Síndico</div>
+            <div className='px-6 py-2 text-sm lg:text-lg'>
+              Ernesto Tomalá Torres
+            </div>
+            <div className='px-6 py-2 text-sm font-bold lg:text-lg'>
+              Síndico
+            </div>
           </div>
         </div>
       </div>

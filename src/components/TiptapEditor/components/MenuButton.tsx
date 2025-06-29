@@ -1,4 +1,4 @@
-import React, { CSSProperties, memo, useEffect, useMemo } from 'react';
+import React, { CSSProperties, memo, useMemo } from 'react';
 import clsx from 'clsx';
 
 import Tooltip from './ui/Tooltip';

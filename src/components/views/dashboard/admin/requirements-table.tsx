@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -41,7 +41,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { requirementsService } from '@/services/requirements';
 import { Requirement } from '@/interfaces/requirements';
 import { DataTablePagination } from '@/components/ui/table/data-table-pagination';
-import { usePermission } from '@/hooks/usePermission';
 
 const formSchema = z.object({
   requirement: z.string().min(1, { message: 'Requisito es requerido' }),
@@ -205,13 +204,15 @@ export default function RequirementsTable() {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          {canUpdateRequirement && <Button
-                            variant='ghost'
-                            size='icon'
-                            onClick={() => openModal(req)}
-                          >
-                            <Icons.userPen className='h-4 w-4' />
-                          </Button>}
+                          {canUpdateRequirement && (
+                            <Button
+                              variant='ghost'
+                              size='icon'
+                              onClick={() => openModal(req)}
+                            >
+                              <Icons.userPen className='h-4 w-4' />
+                            </Button>
+                          )}
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>Editar</p>
@@ -219,16 +220,18 @@ export default function RequirementsTable() {
                       </Tooltip>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          {canDeleteRequirement && <Button
-                            variant='ghost'
-                            size='icon'
-                            onClick={() => {
-                              setDeleteReq(req);
-                              setDeleteModalOpen(true);
-                            }}
-                          >
-                            <Icons.trash className='h-4 w-4 text-red-600' />
-                          </Button>}
+                          {canDeleteRequirement && (
+                            <Button
+                              variant='ghost'
+                              size='icon'
+                              onClick={() => {
+                                setDeleteReq(req);
+                                setDeleteModalOpen(true);
+                              }}
+                            >
+                              <Icons.trash className='h-4 w-4 text-red-600' />
+                            </Button>
+                          )}
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>Eliminar</p>

@@ -9,12 +9,12 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Table,
   TableBody,
   TableCell,
   TableHead,
+  TableHeader,
   TableRow
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -26,9 +26,130 @@ import DocumentUpload from '@/components/dashboard/members/document-upload';
 import { usePermission } from '@/hooks/usePermission';
 import { ValidActions, ValidModules } from '@/constants/permissions';
 
+// Skeleton component for better loading experience
+function MemberPageSkeleton() {
+  return (
+    <div className='p-4 pt-6 md:p-8'>
+      <div className='grid grid-cols-1 gap-6'>
+        {/* Member Card Skeleton */}
+        <Card>
+          <CardHeader className='flex flex-col items-start gap-4 md:flex-row md:items-center'>
+            <div className='flex-1'>
+              <Skeleton className='h-8 w-64 mb-2' />
+              <Skeleton className='h-6 w-48 mb-3' />
+              <Skeleton className='h-6 w-20 rounded-full' />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableBody>
+                {[1, 2, 3, 4, 5].map((row) => (
+                  <TableRow key={row}>
+                    <TableHead>
+                      <Skeleton className='h-4 w-24' />
+                    </TableHead>
+                    <TableCell>
+                      <Skeleton className='h-4 w-48' />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+
+        {/* Payment Section Skeleton */}
+        <Card>
+          <CardHeader>
+            <Skeleton className='h-6 w-32 mb-2' />
+            <Skeleton className='h-4 w-80' />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className='h-10 w-36' />
+          </CardContent>
+        </Card>
+
+        {/* Payment History Table Skeleton */}
+        <Card>
+          <CardHeader>
+            <Skeleton className='h-6 w-40 mb-2' />
+            <Skeleton className='h-4 w-72' />
+          </CardHeader>
+          <CardContent>
+            <div className='space-y-4'>
+              {/* Table Header */}
+              <div className='flex items-center justify-between'>
+                <Skeleton className='h-4 w-32' />
+                <Skeleton className='h-8 w-24' />
+              </div>
+
+              {/* Table */}
+              <div className='overflow-x-auto rounded-md border'>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead><Skeleton className='h-4 w-20' /></TableHead>
+                      <TableHead><Skeleton className='h-4 w-24' /></TableHead>
+                      <TableHead><Skeleton className='h-4 w-20' /></TableHead>
+                      <TableHead><Skeleton className='h-4 w-16' /></TableHead>
+                      <TableHead><Skeleton className='h-4 w-20' /></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {[1, 2, 3].map((row) => (
+                      <TableRow key={row}>
+                        <TableCell><Skeleton className='h-4 w-16' /></TableCell>
+                        <TableCell><Skeleton className='h-4 w-32' /></TableCell>
+                        <TableCell><Skeleton className='h-4 w-20' /></TableCell>
+                        <TableCell><Skeleton className='h-6 w-16 rounded-full' /></TableCell>
+                        <TableCell><Skeleton className='h-8 w-20' /></TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Pagination */}
+              <div className='flex items-center justify-between'>
+                <Skeleton className='h-4 w-32' />
+                <div className='flex gap-2'>
+                  <Skeleton className='h-8 w-8' />
+                  <Skeleton className='h-8 w-8' />
+                  <Skeleton className='h-8 w-8' />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Document Upload Skeleton */}
+        <Card>
+          <CardHeader>
+            <Skeleton className='h-6 w-36 mb-2' />
+            <Skeleton className='h-4 w-64' />
+          </CardHeader>
+          <CardContent>
+            <div className='space-y-4'>
+              <Skeleton className='h-20 w-full rounded-lg border-2 border-dashed' />
+              <div className='flex gap-2'>
+                <Skeleton className='h-8 w-24' />
+                <Skeleton className='h-8 w-20' />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
 export default function MemberPage({ params }: { params: { id: string } }) {
-  const canReadHistoryPayments = usePermission(ValidModules.MEMBERS, [ValidActions.READ_HISTORY_PAYMENTS]);
-  const canCreatePayment = usePermission(ValidModules.MEMBERS, [ValidActions.CREATE_PAYMENT]);
+  const canReadHistoryPayments = usePermission(ValidModules.MEMBERS, [
+    ValidActions.READ_HISTORY_PAYMENTS
+  ]);
+  const canCreatePayment = usePermission(ValidModules.MEMBERS, [
+    ValidActions.CREATE_PAYMENT
+  ]);
   const {
     data: member,
     isLoading,
@@ -39,13 +160,7 @@ export default function MemberPage({ params }: { params: { id: string } }) {
   });
 
   if (isLoading) {
-    return (
-      <div className='p-4 pt-6 md:p-8'>
-        <Skeleton className='h-32 w-full' />
-        <Skeleton className='mt-4 h-8 w-1/2' />
-        <Skeleton className='mt-4 h-48 w-full' />
-      </div>
-    );
+    return <MemberPageSkeleton />;
   }
 
   if (error) {
@@ -70,10 +185,8 @@ export default function MemberPage({ params }: { params: { id: string } }) {
   return (
     <div className='p-4 pt-6 md:p-8'>
       <div className='grid grid-cols-1 gap-6'>
-
         <Card>
           <CardHeader className='flex flex-col items-start gap-4 md:flex-row md:items-center'>
-
             <div className='flex-1'>
               <CardTitle className='text-3xl'>
                 {person.firstName} {person.lastName}
@@ -121,7 +234,9 @@ export default function MemberPage({ params }: { params: { id: string } }) {
           </CardContent>
         </Card>
         {member && canCreatePayment && <MemberPayment member={member} />}
-        {member && canReadHistoryPayments && <PaymentHistoryTable memberId={member.memberId} />}
+        {member && canReadHistoryPayments && (
+          <PaymentHistoryTable memberId={member.memberId} />
+        )}
         {/* Documents Section */}
         {member && <DocumentUpload memberId={member.memberId} />}
       </div>

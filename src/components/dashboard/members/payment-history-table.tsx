@@ -182,12 +182,12 @@ export function PaymentHistoryTable({ memberId }: PaymentHistoryTableProps) {
 
   const getStatusBadge = (status: number) => {
     switch (status) {
+      case 0:
+        return <Badge className='bg-red-500'>Anulado</Badge>;
       case 1:
         return <Badge className='bg-green-500'>Pagado</Badge>;
       case 2:
         return <Badge className='bg-yellow-500'>Pendiente</Badge>;
-      case 3:
-        return <Badge className='bg-red-500'>Anulado</Badge>;
       default:
         return <Badge variant='secondary'>Desconocido</Badge>;
     }
@@ -514,11 +514,19 @@ function InvoiceExpandedDetails({
                 );
               })
             ) : (
-              <TableRow>
-                <TableCell colSpan={9} className='text-center'>
-                  No hay pagos registrados en esta factura
-                </TableCell>
-              </TableRow>
+              invoice.invoiceStatus === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9} className='text-center'>
+                    Esta factura ha sido anulada
+                  </TableCell>
+                </TableRow>
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={9} className='text-center'>
+                    No hay pagos registrados en esta factura
+                  </TableCell>
+                </TableRow>
+              )
             )}
           </TableBody>
         </Table>

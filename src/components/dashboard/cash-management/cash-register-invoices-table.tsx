@@ -27,7 +27,23 @@ import { DateRange } from 'react-day-picker';
 import { subDays } from 'date-fns';
 import { InvoiceDetailsDialog } from '@/components/dashboard/members/invoice-details-dialog';
 import { Icons } from '@/components/icons';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, X } from 'lucide-react';
+import { usePermission } from '@/hooks/usePermission';
+import { ValidActions, ValidModules } from '@/constants/permissions';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/alert-dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 
 interface CashRegisterInvoicesTableProps {
   cashRegisterId: string;
@@ -38,6 +54,7 @@ interface CashRegisterInvoicesTableProps {
   canDeletePayment?: boolean;
   canDeleteIncome?: boolean;
   canDeleteExpense?: boolean;
+  canCancelInvoice?: boolean;
 }
 
 export function CashRegisterInvoicesTable({
@@ -48,7 +65,8 @@ export function CashRegisterInvoicesTable({
   canReadExpense = false,
   canDeletePayment = false,
   canDeleteIncome = false,
-  canDeleteExpense = false
+  canDeleteExpense = false,
+  canCancelInvoice = false
 }: CashRegisterInvoicesTableProps) {
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
@@ -59,6 +77,13 @@ export function CashRegisterInvoicesTable({
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(
     null
   );
+  const [cancelReason, setCancelReason] = useState('');
+  const [invoiceToCancel, setInvoiceToCancel] = useState<string | null>(null);
+
+  const queryClient = useQueryClient();
+  const hasCancelInvoicePermission = usePermission(ValidModules.CASH_MANAGEMENT, [
+    ValidActions.CANCEL_INVOICE
+  ]);
 
   React.useEffect(() => {
     setPageIndex(0);
@@ -76,12 +101,49 @@ export function CashRegisterInvoicesTable({
       })
   });
 
+  const cancelInvoiceMutation = useMutation({
+    mutationFn: ({ invoiceId, reason }: { invoiceId: string; reason: string }) =>
+      invoicingService.cancelInvoice(invoiceId, { reason }),
+    onSuccess: () => {
+      toast.success('Factura cancelada correctamente');
+      queryClient.invalidateQueries({ queryKey: ['cashRegisterInvoices'] });
+      setCancelReason('');
+      setInvoiceToCancel(null);
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Error al cancelar la factura');
+    }
+  });
+
   const invoices = useMemo(() => data?.invoices ?? [], [data]);
   const totalCount = useMemo(() => data?.total ?? 0, [data]);
   const pageCount = useMemo(
     () => Math.ceil(totalCount / pageSize),
     [totalCount, pageSize]
   );
+
+  const canCancelInvoiceById = (invoice: any) => {
+    if (!hasCancelInvoicePermission || !canCancelInvoice) return false;
+
+    // Check if invoice is already cancelled
+    if (invoice.invoiceStatus === 0) return false;
+
+    // Check if invoice is within 48 hours
+    const invoiceDate = new Date(invoice.invoiceDate);
+    const now = new Date();
+    const hoursDiff = (now.getTime() - invoiceDate.getTime()) / (1000 * 60 * 60);
+
+    return hoursDiff <= 48;
+  };
+
+  const handleCancelInvoice = () => {
+    if (invoiceToCancel) {
+      cancelInvoiceMutation.mutate({
+        invoiceId: invoiceToCancel,
+        reason: cancelReason
+      });
+    }
+  };
 
   if (isError) {
     toast.error('Error al cargar las facturas de la caja.');
@@ -129,6 +191,7 @@ export function CashRegisterInvoicesTable({
                   <TableHead>Fecha</TableHead>
                   <TableHead>Monto Pagado</TableHead>
                   <TableHead>Comunero</TableHead>
+                  <TableHead>Estado</TableHead>
                   <TableHead className='text-right'>Acciones</TableHead>
                 </TableRow>
               </TableHeader>
@@ -151,22 +214,77 @@ export function CashRegisterInvoicesTable({
                           {invoice.member.person.firstName}{' '}
                           {invoice.member.person.lastName}
                         </TableCell>
-                        <TableCell className='text-right'>
-                          <Button
-                            variant='outline'
-                            size='sm'
-                            onClick={() =>
-                              setSelectedInvoiceId(invoice.invoiceId)
-                            }
+                        <TableCell>
+                          <Badge
+                            variant={invoice.invoiceStatus === 0 ? 'destructive' : 'default'}
                           >
-                            Ver Detalles
-                          </Button>
+                            {invoice.invoiceStatus === 0 ? 'Cancelada' : 'Activa'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className='text-right'>
+                          <div className='flex items-center justify-end gap-2'>
+                            <Button
+                              variant='outline'
+                              size='sm'
+                              onClick={() =>
+                                setSelectedInvoiceId(invoice.invoiceId)
+                              }
+                            >
+                              Ver Detalles
+                            </Button>
+                            {canCancelInvoiceById(invoice) && (
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant='destructive'
+                                    size='sm'
+                                    onClick={() => setInvoiceToCancel(invoice.invoiceId)}
+                                  >
+                                    <X className='h-4 w-4' />
+                                    Cancelar
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      ¿Cancelar factura #{invoice.invoiceId}?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Esta acción cancelará la factura y revertirá todos los pagos asociados.
+                                      Solo se pueden cancelar facturas dentro de las primeras 48 horas.
+                                      <div className='mt-4'>
+                                        <label className='text-sm font-medium'>
+                                          Motivo de cancelación (opcional):
+                                        </label>
+                                        <Textarea
+                                          value={cancelReason}
+                                          onChange={(e) => setCancelReason(e.target.value)}
+                                          placeholder='Especifica el motivo de la cancelación...'
+                                          className='mt-2'
+                                          maxLength={500}
+                                        />
+                                      </div>
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={handleCancelInvoice}
+                                      disabled={cancelInvoiceMutation.isPending}
+                                    >
+                                      {cancelInvoiceMutation.isPending ? 'Cancelando...' : 'Confirmar'}
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))
-                    : !isLoading && (
+                    : (
                       <TableRow>
-                        <TableCell colSpan={4} className='h-24 text-center'>
+                        <TableCell colSpan={6} className='h-24 text-center'>
                           No hay facturas en el rango de fechas seleccionado.
                         </TableCell>
                       </TableRow>

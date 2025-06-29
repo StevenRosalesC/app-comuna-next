@@ -21,6 +21,9 @@ export interface InvoiceSummary {
   collectedByUserId: string;
   cashRegisterId: string;
   member: Member;
+  cancelledAt?: string;
+  cancelledBy?: CollectedByUser;
+  cancellationReason?: string;
 }
 
 export interface Member {
@@ -86,6 +89,9 @@ export interface Invoice {
   };
   collectedByUser: CollectedByUser | null;
   receiptUrl?: string;
+  cancelledAt?: string;
+  cancelledBy?: CollectedByUser;
+  cancellationReason?: string;
 }
 
 export interface CreateInvoiceDto {

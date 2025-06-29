@@ -28,6 +28,7 @@ interface ActiveCashRegisterProps {
   canDeletePayment?: boolean;
   canDeleteIncome?: boolean;
   canDeleteExpense?: boolean;
+  canCancelInvoice?: boolean;
 }
 
 export default function ActiveCashRegister({
@@ -39,7 +40,8 @@ export default function ActiveCashRegister({
   canReadExpense = false,
   canDeletePayment = false,
   canDeleteIncome = false,
-  canDeleteExpense = false
+  canDeleteExpense = false,
+  canCancelInvoice = false
 }: ActiveCashRegisterProps) {
   const queryClient = useQueryClient();
 
@@ -145,6 +147,7 @@ export default function ActiveCashRegister({
         canDeletePayment={canDeletePayment}
         canDeleteIncome={canDeleteIncome}
         canDeleteExpense={canDeleteExpense}
+        canCancelInvoice={canCancelInvoice}
       />
     </>
   );

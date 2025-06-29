@@ -27,7 +27,7 @@ import { DateRange } from 'react-day-picker';
 import { subDays } from 'date-fns';
 import { InvoiceDetailsDialog } from '@/components/dashboard/members/invoice-details-dialog';
 import { Icons } from '@/components/icons';
-import { RefreshCw, X } from 'lucide-react';
+import { Eye, RefreshCw, Trash } from 'lucide-react';
 import { usePermission } from '@/hooks/usePermission';
 import { ValidActions, ValidModules } from '@/constants/permissions';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -223,15 +223,6 @@ export function CashRegisterInvoicesTable({
                         </TableCell>
                         <TableCell className='text-right'>
                           <div className='flex items-center justify-end gap-2'>
-                            <Button
-                              variant='outline'
-                              size='sm'
-                              onClick={() =>
-                                setSelectedInvoiceId(invoice.invoiceId)
-                              }
-                            >
-                              Ver Detalles
-                            </Button>
                             {canCancelInvoiceById(invoice) && (
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
@@ -240,8 +231,7 @@ export function CashRegisterInvoicesTable({
                                     size='sm'
                                     onClick={() => setInvoiceToCancel(invoice.invoiceId)}
                                   >
-                                    <X className='h-4 w-4' />
-                                    Cancelar
+                                    <Trash className='h-4 w-4' />
                                   </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
@@ -278,6 +268,16 @@ export function CashRegisterInvoicesTable({
                                 </AlertDialogContent>
                               </AlertDialog>
                             )}
+                            <Button
+                              variant='outline'
+                              size='sm'
+                              onClick={() =>
+                                setSelectedInvoiceId(invoice.invoiceId)
+                              }
+                            >
+                              <Eye className='h-4 w-4' />
+                            </Button>
+
                           </div>
                         </TableCell>
                       </TableRow>

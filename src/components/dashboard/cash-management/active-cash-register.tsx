@@ -140,14 +140,10 @@ export default function ActiveCashRegister({
 
       <CashRegisterInvoicesTable
         cashRegisterId={activeCashRegister.cashRegisterId}
-        canCreateIncome={canCreateIncome}
-        canCreateExpense={canCreateExpense}
-        canReadIncome={canReadIncome}
-        canReadExpense={canReadExpense}
-        canDeletePayment={canDeletePayment}
-        canDeleteIncome={canDeleteIncome}
-        canDeleteExpense={canDeleteExpense}
         canCancelInvoice={canCancelInvoice}
+        onDeleteInvoice={() => {
+          queryClient.invalidateQueries({ queryKey: ['activeCashRegister'] });
+        }}
       />
     </>
   );

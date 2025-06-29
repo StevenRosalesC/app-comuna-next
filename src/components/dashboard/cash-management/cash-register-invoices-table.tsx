@@ -47,26 +47,14 @@ import { Badge } from '@/components/ui/badge';
 
 interface CashRegisterInvoicesTableProps {
   cashRegisterId: string;
-  canCreateIncome?: boolean;
-  canCreateExpense?: boolean;
-  canReadIncome?: boolean;
-  canReadExpense?: boolean;
-  canDeletePayment?: boolean;
-  canDeleteIncome?: boolean;
-  canDeleteExpense?: boolean;
   canCancelInvoice?: boolean;
+  onDeleteInvoice?: () => void;
 }
 
 export function CashRegisterInvoicesTable({
   cashRegisterId,
-  canCreateIncome = false,
-  canCreateExpense = false,
-  canReadIncome = false,
-  canReadExpense = false,
-  canDeletePayment = false,
-  canDeleteIncome = false,
-  canDeleteExpense = false,
-  canCancelInvoice = false
+  canCancelInvoice = false,
+  onDeleteInvoice = () => { },
 }: CashRegisterInvoicesTableProps) {
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
@@ -109,6 +97,7 @@ export function CashRegisterInvoicesTable({
       queryClient.invalidateQueries({ queryKey: ['cashRegisterInvoices'] });
       setCancelReason('');
       setInvoiceToCancel(null);
+      onDeleteInvoice();
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || 'Error al cancelar la factura');

@@ -48,6 +48,9 @@ export default function CashManagementView() {
   const canDeleteExpense = usePermission(ValidModules.CASH_MANAGEMENT, [
     ValidActions.DELETE_EXPENSE
   ]);
+  const canCancelInvoice = usePermission(ValidModules.CASH_MANAGEMENT, [
+    ValidActions.CANCEL_INVOICE
+  ]);
 
   const {
     data: activeCashRegister,
@@ -106,6 +109,7 @@ export default function CashManagementView() {
           canDeletePayment={canDeletePayment}
           canDeleteIncome={canDeleteIncome}
           canDeleteExpense={canDeleteExpense}
+          canCancelInvoice={canCancelInvoice}
         />
       );
     }

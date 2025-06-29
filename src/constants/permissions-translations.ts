@@ -49,5 +49,7 @@ export const ACTIONS_TRANSLATIONS: Record<string, string> = {
   read_income: 'Ver ingresos',
   read_expense: 'Ver gastos',
   delete_income: 'Eliminar ingreso',
-  delete_expense: 'Eliminar gasto'
+  delete_expense: 'Eliminar gasto',
+  cancel_invoice: 'Cancelar factura',
+  update: 'Actualizar'
 };

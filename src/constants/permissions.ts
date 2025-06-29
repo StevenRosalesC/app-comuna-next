@@ -4,8 +4,7 @@ export const modulesPermissions = [
     route: 'persons',
     actions: [
       'read',
-      'write',
-      'edit',
+      'update',
       'delete',
       'approve_requirements',
       'list_all'
@@ -17,8 +16,7 @@ export const modulesPermissions = [
     route: 'admin',
     actions: [
       'read',
-      'write',
-      'edit',
+      'update',
       'create_requirements',
       'update_requirements',
       'delete_requirements',
@@ -45,8 +43,7 @@ export const modulesPermissions = [
     route: 'members',
     actions: [
       'read',
-      'write',
-      'edit',
+      'update', 
       'delete',
       'upload_documents',
       'read_documents',
@@ -58,19 +55,19 @@ export const modulesPermissions = [
   {
     module: 'notices',
     route: 'notices',
-    actions: ['read', 'write', 'edit', 'delete'],
+    actions: ['read', 'update', 'delete'],
     label: 'Noticias'
   },
   {
     module: 'users',
     route: 'users',
-    actions: ['read', 'write', 'edit', 'delete'],
+    actions: ['read', 'update', 'delete'],
     label: 'Usuarios'
   },
   {
     module: 'roles',
     route: 'roles',
-    actions: ['read', 'write', 'edit', 'delete'],
+    actions: ['read', 'update', 'delete'],
     label: 'Roles'
   },
   {
@@ -78,8 +75,7 @@ export const modulesPermissions = [
     route: 'cash-management',
     actions: [
       'read',
-      'write',
-      'edit',
+      'update',
       'delete',
       'open_cash_register',
       'close_cash_register',
@@ -90,7 +86,8 @@ export const modulesPermissions = [
       'read_income',
       'read_expense',
       'delete_income',
-      'delete_expense'
+      'delete_expense',
+      'cancel_invoice'
     ],
     label: 'Caja'
   },
@@ -148,7 +145,8 @@ export enum ValidActions {
   READ_INCOME = 'read_income',
   READ_EXPENSE = 'read_expense',
   DELETE_INCOME = 'delete_income',
-  DELETE_EXPENSE = 'delete_expense'
+  DELETE_EXPENSE = 'delete_expense',
+  CANCEL_INVOICE = 'cancel_invoice'
 }
 
 export const validPermissions = [

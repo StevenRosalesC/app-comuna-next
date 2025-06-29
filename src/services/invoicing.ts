@@ -21,6 +21,17 @@ interface GetInvoicesByCashRegisterIdParams {
   endDate?: string;
 }
 
+interface CancelInvoiceDto {
+  reason?: string;
+}
+
+interface GetCancelledInvoicesParams {
+  limit?: number;
+  offset?: number;
+  startDate?: string;
+  endDate?: string;
+}
+
 class InvoicingService {
   async createInvoice(dto: CreateInvoiceDto): Promise<Invoice> {
     const invoice = {
@@ -99,6 +110,33 @@ class InvoicingService {
 
     const { data } = await apiCommunity.get<PaginatedInvoicesResponse>(
       `/invoicing/cash-register/${cashRegisterId}`,
+      { params }
+    );
+    return data;
+  }
+
+  async cancelInvoice(id: string, dto: CancelInvoiceDto): Promise<Invoice> {
+    const { data } = await apiCommunity.patch<Invoice>(
+      `/invoicing/${id}/cancel`,
+      dto
+    );
+    return data;
+  }
+
+  async getCancelledInvoices({
+    limit,
+    offset,
+    startDate,
+    endDate
+  }: GetCancelledInvoicesParams): Promise<PaginatedInvoicesResponse> {
+    const params = new URLSearchParams();
+    if (limit) params.append('limit', String(limit));
+    if (offset) params.append('offset', String(offset));
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+
+    const { data } = await apiCommunity.get<PaginatedInvoicesResponse>(
+      '/invoicing/cancelled',
       { params }
     );
     return data;

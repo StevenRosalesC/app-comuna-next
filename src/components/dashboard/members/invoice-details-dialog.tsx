@@ -375,11 +375,19 @@ export function InvoiceDetailsDialog({
                     );
                   })
                 ) : (
-                  <TableRow>
-                    <TableCell colSpan={9} className='text-center'>
-                      No hay pagos registrados en esta factura
-                    </TableCell>
-                  </TableRow>
+                  invoice.invoiceStatus === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={9} className='text-center'>
+                        Esta factura ha sido anulada
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={9} className='text-center'>
+                        No hay pagos registrados en esta factura
+                      </TableCell>
+                    </TableRow>
+                  )
                 )}
               </TableBody>
             </Table>
@@ -394,18 +402,10 @@ export function InvoiceDetailsDialog({
           <div className='flex justify-end gap-4 text-right'>
             <div className='grid gap-2'>
               <p className='text-sm'>Subtotal:</p>
-              {invoice.discount && invoice.discount > 0 && (
-                <p className='text-sm text-green-600'>Descuento:</p>
-              )}
               <p className='text-lg font-bold'>Total:</p>
             </div>
             <div className='grid gap-2'>
               <p className='text-sm'>${invoice.subtotal.toFixed(2)}</p>
-              {invoice.discount && invoice.discount > 0 && (
-                <p className='text-sm text-green-600'>
-                  -${invoice.discount.toFixed(2)}
-                </p>
-              )}
               <p className='text-lg font-bold'>
                 ${invoice.totalAmount.toFixed(2)}
               </p>

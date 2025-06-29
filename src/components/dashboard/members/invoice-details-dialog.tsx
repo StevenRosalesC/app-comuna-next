@@ -239,7 +239,7 @@ export function InvoiceDetailsDialog({
             <div className='flex items-center gap-2'>
               <Receipt className='h-5 w-5 text-primary' />
               <h3 className='text-lg font-semibold'>
-                Factura #{invoice.invoiceId}
+                Recibo #{invoice.invoiceId}
               </h3>
             </div>
             {invoice.invoiceStatus === 1 && (
@@ -455,7 +455,7 @@ export function InvoiceDetailsDialog({
         <DialogHeader>
           <DialogTitle className='flex items-center gap-2'>
             <Receipt className='h-5 w-5' />
-            Detalles de la Factura
+            Detalles del Recibo
           </DialogTitle>
           <DialogDescription>
             Aquí puedes ver los detalles completos del pago realizado y realizar

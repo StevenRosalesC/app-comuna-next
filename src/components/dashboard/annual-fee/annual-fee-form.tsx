@@ -10,4 +10,4 @@ const AnnualFeeForm: React.FC = () => {
   );
 };
 
-export default AnnualFeeForm; 
+export default AnnualFeeForm;

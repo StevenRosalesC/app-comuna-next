@@ -14,9 +14,9 @@ export const Heading: React.FC<HeadingProps> = ({
   description,
   project
 }) => {
-  const [titleContent, setTitleContent] = useState<string>(title);
+  const [titleContent] = useState<string>(title);
   const { session } = useSessionContext();
-  useEffect(() => {}, [session, project, title]);
+  useEffect(() => { }, [session, project, title]);
 
   return (
     <div>

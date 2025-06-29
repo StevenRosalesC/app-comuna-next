@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
@@ -64,7 +64,8 @@ export default function DocumentTypesTable() {
 
   const { data, isLoading, refetch, isFetching } = useQuery({
     queryKey: ['documentTypes', { pageSize, pageIndex, debouncedSearch }],
-    queryFn: () => documentTypesService.list(pageSize, pageIndex * pageSize, debouncedSearch)
+    queryFn: () =>
+      documentTypesService.list(pageSize, pageIndex * pageSize, debouncedSearch)
   });
   const documentTypes = useMemo(() => data?.data ?? [], [data]);
   const totalCount = useMemo(() => data?.count ?? 0, [data]);
@@ -223,9 +224,7 @@ export default function DocumentTypesTable() {
             ) : documentTypes && documentTypes.length > 0 ? (
               documentTypes.map((docType: DocumentType) => (
                 <TableRow key={docType.documentTypeId}>
-                  <TableCell className='font-medium'>
-                    {docType.name}
-                  </TableCell>
+                  <TableCell className='font-medium'>{docType.name}</TableCell>
                   <TableCell className='text-muted-foreground'>
                     {docType.alias}
                   </TableCell>
@@ -279,7 +278,10 @@ export default function DocumentTypesTable() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={4} className='text-center text-muted-foreground'>
+                <TableCell
+                  colSpan={4}
+                  className='text-center text-muted-foreground'
+                >
                   No se encontraron tipos de documentos
                 </TableCell>
               </TableRow>
@@ -305,7 +307,10 @@ export default function DocumentTypesTable() {
         <DialogContent>
           <DialogTitle>Nuevo tipo de documento</DialogTitle>
           <Form {...addForm}>
-            <form onSubmit={addForm.handleSubmit(onAddSubmit)} className='space-y-4'>
+            <form
+              onSubmit={addForm.handleSubmit(onAddSubmit)}
+              className='space-y-4'
+            >
               <FormField
                 control={addForm.control}
                 name='name'
@@ -423,4 +428,4 @@ export default function DocumentTypesTable() {
       />
     </>
   );
-} 
+}

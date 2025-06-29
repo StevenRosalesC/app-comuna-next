@@ -36,4 +36,4 @@ export interface PaginatedCashRegistersResponse {
 
 export interface UpdateCashRegisterDto {
   closingNotes?: string;
-} 
+}

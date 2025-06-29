@@ -10,5 +10,5 @@ export function usePermission(module: string, actions: string[]): boolean {
   const permissions = usePermissionsStore((state) => state.permissions);
   if (!permissions) return false;
   if (!Array.isArray(permissions[module])) return false;
-  return actions.some(action => permissions[module].includes(action));
-} 
+  return actions.some((action) => permissions[module].includes(action));
+}

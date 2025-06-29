@@ -41,8 +41,8 @@ const Resizer = () => {
       const nodeType = ctx.editor.isActive('image')
         ? 'image'
         : ctx.editor.isActive('youtube')
-        ? 'youtube'
-        : null;
+          ? 'youtube'
+          : null;
 
       if (!nodeType) return null;
 
@@ -56,6 +56,7 @@ const Resizer = () => {
   const { maxWidth, minWidth } = useMemo(() => {
     const width = contentElement.current?.getBoundingClientRect().width || 0;
     return { maxWidth: width, minWidth: width * 0.25 };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contentElement.current]);
 
   const startResizing = (
@@ -141,6 +142,7 @@ const Resizer = () => {
     resizeInfo.ratio = width / height;
 
     updateControlPosition();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodeState]);
 
   if (!nodeState || !contentElement.current) return;

@@ -15,7 +15,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
-import { ValidModules, ValidActions, getModuleActions, modulesPermissions } from '@/constants/permissions';
+import {
+  ValidModules,
+  ValidActions,
+  getModuleActions,
+  modulesPermissions
+} from '@/constants/permissions';
 import { toast } from 'sonner';
 import {
   MODULES_TRANSLATIONS,
@@ -98,15 +103,13 @@ export default function RolesView() {
   const isAllModuleSelectedExisting = (module: string) => {
     const moduleActions = getModuleActions(module);
     const selectedActions = permissions[module] || [];
-    return moduleActions.length > 0 && moduleActions.every(action => selectedActions.includes(action));
+    return (
+      moduleActions.length > 0 &&
+      moduleActions.every((action) => selectedActions.includes(action))
+    );
   };
 
-  // Check if some permissions for a module are selected (existing role)
-  const isSomeModuleSelectedExisting = (module: string) => {
-    const moduleActions = getModuleActions(module);
-    const selectedActions = permissions[module] || [];
-    return selectedActions.length > 0 && selectedActions.length < moduleActions.length;
-  };
+
 
   // Save changes
   const handleSave = async () => {
@@ -137,11 +140,19 @@ export default function RolesView() {
   const defaultNewPermissions: Record<string, string[]> = useMemo(() => {
     return Object.fromEntries(
       modulesPermissions.map((moduleConfig) => {
-        if (moduleConfig.module === ValidModules.ADMIN || moduleConfig.module === ValidModules.DASHBOARD) {
+        if (
+          moduleConfig.module === ValidModules.ADMIN ||
+          moduleConfig.module === ValidModules.DASHBOARD
+        ) {
           return [moduleConfig.module, []];
         }
         // For other modules, default to read permission if available
-        return [moduleConfig.module, moduleConfig.actions.includes(ValidActions.READ) ? [ValidActions.READ] : []];
+        return [
+          moduleConfig.module,
+          moduleConfig.actions.includes(ValidActions.READ)
+            ? [ValidActions.READ]
+            : []
+        ];
       })
     );
   }, []);
@@ -182,14 +193,10 @@ export default function RolesView() {
   const isAllModuleSelected = (module: string) => {
     const moduleActions = getModuleActions(module);
     const selectedActions = newRolePermissions[module] || [];
-    return moduleActions.length > 0 && moduleActions.every(action => selectedActions.includes(action));
-  };
-
-  // Check if some permissions for a module are selected (for indeterminate state)
-  const isSomeModuleSelected = (module: string) => {
-    const moduleActions = getModuleActions(module);
-    const selectedActions = newRolePermissions[module] || [];
-    return selectedActions.length > 0 && selectedActions.length < moduleActions.length;
+    return (
+      moduleActions.length > 0 &&
+      moduleActions.every((action) => selectedActions.includes(action))
+    );
   };
 
   const handleCreateRole = async () => {
@@ -289,13 +296,17 @@ export default function RolesView() {
                   <div key={moduleConfig.module} className='rounded border p-4'>
                     <div className='mb-2 flex items-center justify-between'>
                       <div className='font-semibold'>
-                        {MODULES_TRANSLATIONS[moduleConfig.module] || moduleConfig.label}
+                        {MODULES_TRANSLATIONS[moduleConfig.module] ||
+                          moduleConfig.label}
                       </div>
                       <div className='flex items-center gap-2'>
                         <Checkbox
                           checked={isAllModuleSelected(moduleConfig.module)}
                           onCheckedChange={(checked) =>
-                            handleSelectAllModule(moduleConfig.module, Boolean(checked))
+                            handleSelectAllModule(
+                              moduleConfig.module,
+                              Boolean(checked)
+                            )
                           }
                         />
                         <span className='text-sm text-muted-foreground'>
@@ -303,22 +314,27 @@ export default function RolesView() {
                         </span>
                       </div>
                     </div>
-                    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                    <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
                       {getModuleActions(moduleConfig.module).map((action) => (
                         <label
                           key={action}
-                          className='flex items-center justify-between col-span-1'
+                          className='col-span-1 flex items-center justify-between'
                         >
                           <span className='capitalize'>
                             {ACTIONS_TRANSLATIONS[action] || action}
                           </span>
                           <Switch
                             checked={
-                              newRolePermissions[moduleConfig.module]?.includes(action) ||
-                              false
+                              newRolePermissions[moduleConfig.module]?.includes(
+                                action
+                              ) || false
                             }
                             onCheckedChange={(checked) =>
-                              handleNewCheck(moduleConfig.module, action, checked)
+                              handleNewCheck(
+                                moduleConfig.module,
+                                action,
+                                checked
+                              )
                             }
                           />
                         </label>
@@ -368,16 +384,25 @@ export default function RolesView() {
                 </div>
                 <form className='mt-2 space-y-4'>
                   {modulesPermissions.map((moduleConfig) => (
-                    <div key={moduleConfig.module} className='rounded border p-4'>
+                    <div
+                      key={moduleConfig.module}
+                      className='rounded border p-4'
+                    >
                       <div className='mb-2 flex items-center justify-between'>
                         <div className='font-semibold'>
-                          {MODULES_TRANSLATIONS[moduleConfig.module] || moduleConfig.label}
+                          {MODULES_TRANSLATIONS[moduleConfig.module] ||
+                            moduleConfig.label}
                         </div>
                         <div className='flex items-center gap-2'>
                           <Checkbox
-                            checked={isAllModuleSelectedExisting(moduleConfig.module)}
+                            checked={isAllModuleSelectedExisting(
+                              moduleConfig.module
+                            )}
                             onCheckedChange={(checked) =>
-                              handleSelectAllModuleExisting(moduleConfig.module, Boolean(checked))
+                              handleSelectAllModuleExisting(
+                                moduleConfig.module,
+                                Boolean(checked)
+                              )
                             }
                           />
                           <span className='text-sm text-muted-foreground'>
@@ -385,21 +410,27 @@ export default function RolesView() {
                           </span>
                         </div>
                       </div>
-                      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                      <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
                         {getModuleActions(moduleConfig.module).map((action) => (
                           <label
                             key={action}
-                            className='flex items-center justify-between col-span-1'
+                            className='col-span-1 flex items-center justify-between'
                           >
                             <span className='capitalize'>
                               {ACTIONS_TRANSLATIONS[action] || action}
                             </span>
                             <Switch
                               checked={
-                                permissions[moduleConfig.module]?.includes(action) || false
+                                permissions[moduleConfig.module]?.includes(
+                                  action
+                                ) || false
                               }
                               onCheckedChange={(checked) =>
-                                handleCheck(moduleConfig.module, action, checked)
+                                handleCheck(
+                                  moduleConfig.module,
+                                  action,
+                                  checked
+                                )
                               }
                             />
                           </label>
@@ -436,9 +467,10 @@ export default function RolesView() {
                                 toast.success('Rol eliminado correctamente');
                                 setSelectedRoleId(null);
                                 refetch();
-                              } catch (e: any) {
+                              } catch (e: unknown) {
+                                const errorMessage = e instanceof Error ? e.message : 'Unknown error occurred';
                                 toast.error(
-                                  `Error al eliminar el rol: ${e.message}`
+                                  `Error al eliminar el rol: ${errorMessage}`
                                 );
                               }
                             }}

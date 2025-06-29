@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React from 'react';
 import MenuButton from '../MenuButton';
 import { DropdownMenuItem } from '../ui/DropdownMenu';
 import { useTiptapContext } from '../Provider';

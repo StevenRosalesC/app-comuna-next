@@ -1,6 +1,5 @@
 import { mergeAttributes } from '@tiptap/core';
 import { Image as TiptapImage } from '@tiptap/extension-image';
-import { ImagePlugin } from './image-plugin';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {

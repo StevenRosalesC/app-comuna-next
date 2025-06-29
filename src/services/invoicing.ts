@@ -21,8 +21,18 @@ interface GetInvoicesByCashRegisterIdParams {
   endDate?: string;
 }
 
-class InvoicingService {
+interface CancelInvoiceDto {
+  reason?: string;
+}
 
+interface GetCancelledInvoicesParams {
+  limit?: number;
+  offset?: number;
+  startDate?: string;
+  endDate?: string;
+}
+
+class InvoicingService {
   async createInvoice(dto: CreateInvoiceDto): Promise<Invoice> {
     const invoice = {
       memberId: Number(dto.memberId),
@@ -32,7 +42,7 @@ class InvoicingService {
         memberFeeId: fee.memberFeeId,
         amountToPay: fee.amountToPay
       }))
-    }
+    };
     const { data } = await apiCommunity.post<Invoice>('/invoicing', invoice);
     return data;
   }
@@ -74,7 +84,7 @@ class InvoicingService {
     if (offset) params.append('offset', String(offset));
     if (startDate) params.append('startDate', startDate);
     if (endDate) params.append('endDate', endDate);
-    
+
     const { data } = await apiCommunity.get<PaginatedInvoicesResponse>(
       `/invoicing/cash-register/active`,
       { params }
@@ -89,7 +99,9 @@ class InvoicingService {
     offset,
     startDate,
     endDate
-  }: GetInvoicesByCashRegisterIdParams & { cashRegisterId: string }): Promise<PaginatedInvoicesResponse> {
+  }: GetInvoicesByCashRegisterIdParams & {
+    cashRegisterId: string;
+  }): Promise<PaginatedInvoicesResponse> {
     const params = new URLSearchParams();
     if (limit) params.append('limit', String(limit));
     if (offset) params.append('offset', String(offset));
@@ -100,9 +112,35 @@ class InvoicingService {
       `/invoicing/cash-register/${cashRegisterId}`,
       { params }
     );
-    return data;  
+    return data;
   }
 
+  async cancelInvoice(id: string, dto: CancelInvoiceDto): Promise<Invoice> {
+    const { data } = await apiCommunity.patch<Invoice>(
+      `/invoicing/${id}/cancel`,
+      dto
+    );
+    return data;
+  }
+
+  async getCancelledInvoices({
+    limit,
+    offset,
+    startDate,
+    endDate
+  }: GetCancelledInvoicesParams): Promise<PaginatedInvoicesResponse> {
+    const params = new URLSearchParams();
+    if (limit) params.append('limit', String(limit));
+    if (offset) params.append('offset', String(offset));
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+
+    const { data } = await apiCommunity.get<PaginatedInvoicesResponse>(
+      '/invoicing/cancelled',
+      { params }
+    );
+    return data;
+  }
 }
 
-export const invoicingService = new InvoicingService(); 
+export const invoicingService = new InvoicingService();

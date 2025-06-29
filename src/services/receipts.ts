@@ -46,10 +46,13 @@ class ReceiptsService {
   /**
    * Resends the receipt PDF via email to a member
    */
-  async resendReceipt(invoiceId: string): Promise<{ success: boolean; message: string }> {
-    const { data } = await apiCommunity.post<{ success: boolean; message: string }>(
-      `/receipts/resend/${invoiceId}`
-    );
+  async resendReceipt(
+    invoiceId: string
+  ): Promise<{ success: boolean; message: string }> {
+    const { data } = await apiCommunity.post<{
+      success: boolean;
+      message: string;
+    }>(`/receipts/resend/${invoiceId}`);
     return data;
   }
 
@@ -105,4 +108,4 @@ class ReceiptsService {
   }
 }
 
-export const receiptsService = new ReceiptsService(); 
+export const receiptsService = new ReceiptsService();

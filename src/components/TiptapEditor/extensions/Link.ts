@@ -98,7 +98,7 @@ export const Link = TiptapLink.extend<LinkOptions, LinkEditorStorage>({
       confirmEditLink:
         (updated) =>
         ({ chain, state }) => {
-          const { doc, schema } = state;
+          const { doc } = state;
 
           const shouldUpdate = Boolean(updated);
 

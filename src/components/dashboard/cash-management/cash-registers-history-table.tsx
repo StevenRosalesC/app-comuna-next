@@ -119,10 +119,10 @@ export function CashRegistersHistoryTable() {
             <TableBody>
               {isLoading
                 ? Array.from({ length: pageSize }).map((_, i) => (
-                  <CashRegistersHistoryTableRowSkeleton key={i} />
-                ))
+                    <CashRegistersHistoryTableRowSkeleton key={i} />
+                  ))
                 : cashRegisters.length > 0
-                  ? cashRegisters.map((register: CashRegister) => (
+                ? cashRegisters.map((register: CashRegister) => (
                     <TableRow key={register.cashRegisterId}>
                       <TableCell className='font-medium'>
                         #{register.cashRegisterId}
@@ -147,7 +147,9 @@ export function CashRegistersHistoryTable() {
                       </TableCell>
                       <TableCell>
                         <Badge
-                          variant={register.closed ? 'destructive' : 'secondary'}
+                          variant={
+                            register.closed ? 'destructive' : 'secondary'
+                          }
                         >
                           {register.closed ? 'Cerrada' : 'Abierta'}
                         </Badge>
@@ -164,7 +166,7 @@ export function CashRegistersHistoryTable() {
                       </TableCell>
                     </TableRow>
                   ))
-                  : !isLoading && (
+                : !isLoading && (
                     <TableRow>
                       <TableCell colSpan={7} className='h-24 text-center'>
                         No hay cajas en el rango de fechas seleccionado.

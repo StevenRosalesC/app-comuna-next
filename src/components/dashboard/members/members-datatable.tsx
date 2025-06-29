@@ -14,6 +14,92 @@ import { Input } from '@/components/ui/input';
 import { useMembersTable } from './useMembersTable';
 import { SortingState } from '@tanstack/react-table';
 import { toast } from 'sonner';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table';
+
+// Skeleton component for better loading experience
+function MembersDataTableSkeleton() {
+  return (
+    <Card>
+      <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+        <CardTitle>Comuneros</CardTitle>
+        <Skeleton className='h-8 w-20' />
+      </CardHeader>
+      <CardContent>
+        {/* Search Input Skeleton */}
+        <div className='mb-4 flex w-full flex-row items-center justify-between gap-2'>
+          <Skeleton className='h-10 w-80' />
+        </div>
+
+        {/* Table Skeleton */}
+        <div className='overflow-x-auto rounded-md border'>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead><Skeleton className='h-4 w-20' /></TableHead>
+                <TableHead><Skeleton className='h-4 w-24' /></TableHead>
+                <TableHead><Skeleton className='h-4 w-20' /></TableHead>
+                <TableHead><Skeleton className='h-4 w-24' /></TableHead>
+                <TableHead><Skeleton className='h-4 w-20' /></TableHead>
+                <TableHead><Skeleton className='h-4 w-16' /></TableHead>
+                <TableHead><Skeleton className='h-4 w-20' /></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((row) => (
+                <TableRow key={row}>
+                  <TableCell><Skeleton className='h-4 w-16' /></TableCell>
+                  <TableCell><Skeleton className='h-4 w-32' /></TableCell>
+                  <TableCell><Skeleton className='h-4 w-28' /></TableCell>
+                  <TableCell><Skeleton className='h-4 w-20' /></TableCell>
+                  <TableCell><Skeleton className='h-4 w-24' /></TableCell>
+                  <TableCell><Skeleton className='h-6 w-16 rounded-full' /></TableCell>
+                  <TableCell>
+                    <div className='flex gap-1'>
+                      <Skeleton className='h-8 w-8' />
+                      <Skeleton className='h-8 w-8' />
+                      <Skeleton className='h-8 w-8' />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Pagination Info Skeleton */}
+        <div className='mt-4'>
+          <div className='mb-2 text-center text-sm text-muted-foreground sm:text-left'>
+            <Skeleton className='h-4 w-32' />
+          </div>
+
+          {/* Pagination Controls Skeleton */}
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center gap-2'>
+              <Skeleton className='h-8 w-20' />
+              <Skeleton className='h-8 w-8' />
+              <Skeleton className='h-8 w-8' />
+              <Skeleton className='h-8 w-8' />
+              <Skeleton className='h-8 w-8' />
+              <Skeleton className='h-8 w-8' />
+            </div>
+            <div className='flex items-center gap-2'>
+              <Skeleton className='h-4 w-16' />
+              <Skeleton className='h-8 w-20' />
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function MembersDataTable() {
   const router = useRouter();
@@ -163,6 +249,10 @@ export default function MembersDataTable() {
     onView: handleView,
     onDelete: handleDelete
   });
+
+  if (isLoading) {
+    return <MembersDataTableSkeleton />;
+  }
 
   return (
     <Card>

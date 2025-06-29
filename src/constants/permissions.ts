@@ -2,13 +2,34 @@ export const modulesPermissions = [
   {
     module: 'persons',
     route: 'persons',
-    actions: ['read', 'write', 'edit', 'delete', 'approve_requirements','list_all'],
+    actions: [
+      'read',
+      'update',
+      'delete',
+      'approve_requirements',
+      'list_all'
+    ],
     label: 'Personas'
   },
   {
     module: 'admin',
     route: 'admin',
-    actions: ['read', 'write', 'edit', 'create_requirements','update_requirements','delete_requirements','create_annual_fee','update_annual_fee','delete_annual_fee', 'create_document_type','update_document_type','delete_document_type','read_requirements','read_annual_fee','read_document_type'],
+    actions: [
+      'read',
+      'update',
+      'create_requirements',
+      'update_requirements',
+      'delete_requirements',
+      'create_annual_fee',
+      'update_annual_fee',
+      'delete_annual_fee',
+      'create_document_type',
+      'update_document_type',
+      'delete_document_type',
+      'read_requirements',
+      'read_annual_fee',
+      'read_document_type'
+    ],
     label: 'Administrador'
   },
   {
@@ -20,31 +41,54 @@ export const modulesPermissions = [
   {
     module: 'members',
     route: 'members',
-    actions: ['read', 'write', 'edit', 'delete','upload_documents', 'read_documents','read_history_payments','create_payment'],
+    actions: [
+      'read',
+      'update', 
+      'delete',
+      'upload_documents',
+      'read_documents',
+      'read_history_payments',
+      'create_payment'
+    ],
     label: 'Comuneros'
   },
   {
     module: 'notices',
     route: 'notices',
-    actions: ['read', 'write', 'edit', 'delete'],
+    actions: ['read', 'update', 'delete'],
     label: 'Noticias'
   },
   {
     module: 'users',
     route: 'users',
-    actions: ['read', 'write', 'edit', 'delete'],
+    actions: ['read', 'update', 'delete'],
     label: 'Usuarios'
   },
   {
     module: 'roles',
     route: 'roles',
-    actions: ['read', 'write', 'edit', 'delete'],
+    actions: ['read', 'update', 'delete'],
     label: 'Roles'
   },
   {
     module: 'cash-management',
     route: 'cash-management',
-    actions: ['read', 'write', 'edit', 'delete','open_cash_register','close_cash_register','view_history','delete_payment','create_income','create_expense','read_income','read_expense','delete_income','delete_expense'],
+    actions: [
+      'read',
+      'update',
+      'delete',
+      'open_cash_register',
+      'close_cash_register',
+      'view_history',
+      'delete_payment',
+      'create_income',
+      'create_expense',
+      'read_income',
+      'read_expense',
+      'delete_income',
+      'delete_expense',
+      'cancel_invoice'
+    ],
     label: 'Caja'
   },
   {
@@ -52,9 +96,9 @@ export const modulesPermissions = [
     route: 'reports',
     actions: ['read', 'generate', 'export', 'schedule'],
     label: 'Reportes'
-  },
+  }
   // Add more modules here
-]; 
+];
 
 export enum ValidModules {
   PERSONS = 'persons',
@@ -69,7 +113,7 @@ export enum ValidModules {
   DOCUMENT_TYPES = 'document-types'
 }
 
-export enum ValidActions {    
+export enum ValidActions {
   READ = 'read',
   CREATE = 'create',
   UPDATE = 'update',
@@ -101,7 +145,8 @@ export enum ValidActions {
   READ_INCOME = 'read_income',
   READ_EXPENSE = 'read_expense',
   DELETE_INCOME = 'delete_income',
-  DELETE_EXPENSE = 'delete_expense'
+  DELETE_EXPENSE = 'delete_expense',
+  CANCEL_INVOICE = 'cancel_invoice'
 }
 
 export const validPermissions = [
@@ -116,13 +161,13 @@ export const validPermissions = [
 
 // Utility function to get available actions for a specific module
 export const getModuleActions = (module: string): string[] => {
-  const moduleConfig = modulesPermissions.find(m => m.module === module);
+  const moduleConfig = modulesPermissions.find((m) => m.module === module);
   return moduleConfig?.actions || [];
 };
 
 // Utility function to get all available actions for all modules
 export const getAllModuleActions = (): Record<string, string[]> => {
   return Object.fromEntries(
-    modulesPermissions.map(m => [m.module, m.actions])
+    modulesPermissions.map((m) => [m.module, m.actions])
   );
 };

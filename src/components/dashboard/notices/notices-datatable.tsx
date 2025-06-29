@@ -157,8 +157,12 @@ export default function NoticesDataTable() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const canReadNotice = usePermission(ValidModules.NOTICES, [ValidActions.READ]);
-  const canUpdateNotice = usePermission(ValidModules.NOTICES, [ValidActions.UPDATE]);
+  const canReadNotice = usePermission(ValidModules.NOTICES, [
+    ValidActions.READ
+  ]);
+  const canUpdateNotice = usePermission(ValidModules.NOTICES, [
+    ValidActions.UPDATE
+  ]);
 
   const [search, setSearch] = useState(() => searchParams.get('search') || '');
   const debouncedSearch = useDebounce(search, 400);
@@ -276,30 +280,32 @@ export default function NoticesDataTable() {
                     </td>
                     <td className='px-4 py-2 text-center align-middle'>
                       <div className='flex justify-center gap-2'>
-                        {canReadNotice && <Button
-                          asChild
-                          variant='ghost'
-                          size='icon'
-                          title='Ver detalle'
-                        >
-                          <Link
-                            href={`/dashboard/notices/${notice.newsId}/preview`}
+                        {canReadNotice && (
+                          <Button
+                            asChild
+                            variant='ghost'
+                            size='icon'
+                            title='Ver detalle'
                           >
-                            <Eye className='h-4 w-4' />
-                          </Link>
-                        </Button>}
-                        {canUpdateNotice && <Button
-                          asChild
-                          variant='ghost'
-                          size='icon'
-                          title='Editar'
-                        >
-                          <Link
-                            href={`/dashboard/notices/${notice.newsId}`}
+                            <Link
+                              href={`/dashboard/notices/${notice.newsId}/preview`}
+                            >
+                              <Eye className='h-4 w-4' />
+                            </Link>
+                          </Button>
+                        )}
+                        {canUpdateNotice && (
+                          <Button
+                            asChild
+                            variant='ghost'
+                            size='icon'
+                            title='Editar'
                           >
-                            <Pencil className='h-4 w-4' />
-                          </Link>
-                        </Button>}
+                            <Link href={`/dashboard/notices/${notice.newsId}`}>
+                              <Pencil className='h-4 w-4' />
+                            </Link>
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>

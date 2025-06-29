@@ -1,8 +1,5 @@
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  TableCell,
-  TableRow
-} from '@/components/ui/table';
+import { TableCell, TableRow } from '@/components/ui/table';
 
 export function DocumentTypesTableRowSkeleton() {
   return (
@@ -24,4 +21,4 @@ export function DocumentTypesTableRowSkeleton() {
       </TableCell>
     </TableRow>
   );
-} 
+}

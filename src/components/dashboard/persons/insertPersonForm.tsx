@@ -34,34 +34,46 @@ import {
 import { Events } from '@/interfaces/enums';
 import { Neighborhood } from '@/store/neighborhoodsStore';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
 
-const formSchema = z.object({
-  identification: z.string().min(1, 'La cédula es requerida'),
-  firstName: z.string().min(1, 'El nombre es requerido'),
-  lastName: z.string().min(1, 'El apellido es requerido'),
-  email: z.string().email('Email inválido').optional().or(z.literal('')),
-  gender: z
-    .number()
-    .min(1, 'El género es requerido')
-    .max(2, 'El género debe ser 1 o 2'),
-  birthDate: z.string().min(1, 'La fecha de nacimiento es requerida'),
-  phone: z.string().optional(),
-  address: z.string().optional(),
-  neighborhoodId: z.string().optional(),
-  hasDisability: z.boolean().optional(),
-  disabilityPercentage: z.number().min(1, 'El porcentaje debe ser mayor a 0').max(100, 'El porcentaje no puede ser mayor a 100').optional()
-}).refine((data) => {
-  // If hasDisability is true, disabilityPercentage must be greater than 0
-  if (data.hasDisability && (!data.disabilityPercentage || data.disabilityPercentage <= 0)) {
-    return false;
-  }
-  return true;
-}, {
-  message: "El porcentaje de discapacidad es requerido cuando tiene discapacidad",
-  path: ["disabilityPercentage"]
-});
+const formSchema = z
+  .object({
+    identification: z.string().min(1, 'La cédula es requerida'),
+    firstName: z.string().min(1, 'El nombre es requerido'),
+    lastName: z.string().min(1, 'El apellido es requerido'),
+    email: z.string().email('Email inválido').optional().or(z.literal('')),
+    gender: z
+      .number()
+      .min(1, 'El género es requerido')
+      .max(2, 'El género debe ser 1 o 2'),
+    birthDate: z.string().min(1, 'La fecha de nacimiento es requerida'),
+    phone: z.string().optional(),
+    address: z.string().optional(),
+    neighborhoodId: z.string().optional(),
+    hasDisability: z.boolean().optional(),
+    disabilityPercentage: z
+      .number()
+      .min(1, 'El porcentaje debe ser mayor a 0')
+      .max(100, 'El porcentaje no puede ser mayor a 100')
+      .optional()
+  })
+  .refine(
+    (data) => {
+      // If hasDisability is true, disabilityPercentage must be greater than 0
+      if (
+        data.hasDisability &&
+        (!data.disabilityPercentage || data.disabilityPercentage <= 0)
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message:
+        'El porcentaje de discapacidad es requerido cuando tiene discapacidad',
+      path: ['disabilityPercentage']
+    }
+  );
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -311,7 +323,7 @@ export default function InsertPersonForm({
                 )}
               />
 
-              <div className='md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6'>
+              <div className='grid grid-cols-1 gap-6 md:col-span-2 md:grid-cols-2'>
                 <FormField
                   control={form.control}
                   name='address'

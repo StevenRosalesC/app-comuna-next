@@ -26,7 +26,7 @@ export const SessionProvider = ({
   const [session, setSession] = useState<AuthResponse | null>(
     initialSession || null
   );
-  const [loading, setLoading] = useState(!initialSession);
+  const [loading] = useState(!initialSession);
 
   const { isLoading, permissions, fetchPermissions } = usePermissionsStore();
   const router = useRouter();

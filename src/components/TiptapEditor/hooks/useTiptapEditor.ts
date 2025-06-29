@@ -1,5 +1,5 @@
-import { Ref, useEffect, useImperativeHandle, useRef } from 'react';
-import { Editor, useEditor, type UseEditorOptions } from '@tiptap/react';
+import { Ref, useEffect, useImperativeHandle } from 'react';
+import { useEditor, type UseEditorOptions } from '@tiptap/react';
 import useForceUpdate from './useForceUpdate';
 import { TiptapEditorRef } from '../components/Editor';
 
@@ -32,6 +32,7 @@ export default function useTiptapEditor({
     if (!editor || editor.isEditable === isEditable) return;
     editor.setOptions({ editable: Boolean(isEditable) });
     forceUpdate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor, editorOptions.editable]);
 
   useEffect(() => {
@@ -39,12 +40,14 @@ export default function useTiptapEditor({
     // @ts-ignore
     editor.setOptions({ editorProps: { placeholder } });
     forceUpdate();
-  }, [editor, placeholder]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [editor, placeholder]);
 
   useEffect(() => {
     return () => {
       editor?.destroy();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return editor;

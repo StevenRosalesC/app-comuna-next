@@ -18,7 +18,6 @@ import { useDebounce } from './useDebounce';
 import { UsersTableToolbar } from './users-table-toolbar';
 
 export default function UsersDataTable() {
-
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

@@ -12,4 +12,4 @@ export const AUTH_CONFIG = {
     DASHBOARD: '/dashboard/overview',
     RESET_PASSWORD: '/auth/reset-password/:token'
   } as const
-} as const; 
+} as const;

@@ -28,6 +28,7 @@ interface ActiveCashRegisterProps {
   canDeletePayment?: boolean;
   canDeleteIncome?: boolean;
   canDeleteExpense?: boolean;
+  canCancelInvoice?: boolean;
 }
 
 export default function ActiveCashRegister({
@@ -39,14 +40,13 @@ export default function ActiveCashRegister({
   canReadExpense = false,
   canDeletePayment = false,
   canDeleteIncome = false,
-  canDeleteExpense = false
+  canDeleteExpense = false,
+  canCancelInvoice = false
 }: ActiveCashRegisterProps) {
   const queryClient = useQueryClient();
 
   const closeRegisterMutation = useMutation({
-    mutationFn: (id: string) =>
-      cashRegisterService.closeRegister(id, {
-      }),
+    mutationFn: (id: string) => cashRegisterService.closeRegister(id, {}),
     onSuccess: () => {
       toast.success('Caja cerrada correctamente.');
       queryClient.invalidateQueries({ queryKey: ['activeCashRegister'] });
@@ -140,13 +140,10 @@ export default function ActiveCashRegister({
 
       <CashRegisterInvoicesTable
         cashRegisterId={activeCashRegister.cashRegisterId}
-        canCreateIncome={canCreateIncome}
-        canCreateExpense={canCreateExpense}
-        canReadIncome={canReadIncome}
-        canReadExpense={canReadExpense}
-        canDeletePayment={canDeletePayment}
-        canDeleteIncome={canDeleteIncome}
-        canDeleteExpense={canDeleteExpense}
+        canCancelInvoice={canCancelInvoice}
+        onDeleteInvoice={() => {
+          queryClient.invalidateQueries({ queryKey: ['activeCashRegister'] });
+        }}
       />
     </>
   );

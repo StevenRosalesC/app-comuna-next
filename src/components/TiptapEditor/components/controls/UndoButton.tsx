@@ -1,4 +1,4 @@
-import React, { memo, useEffect } from 'react';
+import React from 'react';
 import { useEditorState } from '@tiptap/react';
 import MenuButton from '../MenuButton';
 import { useTiptapContext } from '../Provider';

@@ -1,10 +1,11 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import ThemeProvider from './ThemeToggle/theme-provider';
 import { SessionProvider } from '../providers/session-Provider';
 import { AuthResponse } from 'types/response';
 import { NeighborhoodsStoreProvider } from '@/hooks/store/useNeighborhoodsStore';
 import { PersonsStoreProvider } from '@/hooks/store/usePersonsStore';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // import { MembersStoreProvider } from '@/hooks/store/useMembersStore';
 export default function Providers({
   session,
@@ -13,9 +14,20 @@ export default function Providers({
   session: AuthResponse | null;
   children: React.ReactNode;
 }) {
+  // Create the QueryClient only once per client
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 1000 * 60 * 5 // Data is fresh for 5 minutes
+          }
+        }
+      })
+  );
   return (
-    <>
-      <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute='class' defaultTheme='light' enableSystem>
         <NeighborhoodsStoreProvider>
           <PersonsStoreProvider>
             {/* <MembersStoreProvider> */}
@@ -26,6 +38,6 @@ export default function Providers({
           </PersonsStoreProvider>
         </NeighborhoodsStoreProvider>
       </ThemeProvider>
-    </>
+    </QueryClientProvider>
   );
 }

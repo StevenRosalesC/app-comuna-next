@@ -3,5 +3,3 @@ export interface ServiceResponse<T> {
   message: string;
   status: boolean;
 }
-
-

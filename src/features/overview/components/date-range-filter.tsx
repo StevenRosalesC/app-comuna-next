@@ -5,10 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, Filter } from 'lucide-react';
+import { CalendarIcon, Filter, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { DateRange } from 'react-day-picker';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface DateRangeFilterProps {
   onDateRangeChange: (dateRange: string | undefined) => void;
@@ -21,6 +22,8 @@ export function DateRangeFilter({ onDateRangeChange, className }: DateRangeFilte
     to: undefined
   });
   const [isOpen, setIsOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const queryClient = useQueryClient();
 
   // Set default date range to current year
   useEffect(() => {
@@ -68,13 +71,37 @@ export function DateRangeFilter({ onDateRangeChange, className }: DateRangeFilte
     onDateRangeChange(undefined);
   };
 
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      // Invalidate all dashboard queries
+      await queryClient.invalidateQueries({
+        queryKey: ['dashboard-']
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   return (
     <Card className={cn("w-full", className)}>
       <CardHeader className="pb-3">
-        <CardTitle className="text-sm font-medium flex items-center space-x-2">
-          <Filter className="h-4 w-4" />
-          <span>Filtrar por rango de fechas</span>
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-medium flex items-center space-x-2">
+            <Filter className="h-4 w-4" />
+            <span>Filtrar por rango de fechas</span>
+          </CardTitle>
+          <Button
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            variant="outline"
+            size="sm"
+            className="flex items-center space-x-2"
+          >
+            <RefreshCw className={`h-3 w-3 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span className="text-xs">{isRefreshing ? 'Actualizando...' : 'Actualizar'}</span>
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center space-x-2">

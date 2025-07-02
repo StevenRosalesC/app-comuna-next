@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import {
@@ -20,7 +20,7 @@ import {
   CardTitle
 } from '@/components/ui/card';
 import { cashRegisterService } from '@/services/cash-register';
-import { CashRegister } from '@/interfaces/cash-register';
+import { CashRegister, PaginatedCashRegistersResponse } from '@/interfaces/cash-register';
 import { CashRegistersHistoryTableRowSkeleton } from './cash-registers-history-table-row-skeleton';
 import { DataTablePagination } from '@/components/ui/table/data-table-pagination';
 import { DateRangePicker } from '@/components/date-range-picker';
@@ -30,6 +30,7 @@ import { Icons } from '@/components/icons';
 import { RefreshCw, Eye } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function CashRegistersHistoryTable() {
   const [pageSize, setPageSize] = useState(10);
@@ -39,26 +40,26 @@ export function CashRegistersHistoryTable() {
     to: new Date()
   });
 
-  React.useEffect(() => {
-    setPageIndex(0);
-  }, [dateRange]);
-
-  const { data, isLoading, isError, refetch, isRefetching } = useQuery({
-    queryKey: ['cashRegisters', { pageIndex, pageSize, dateRange }],
-    queryFn: () =>
-      cashRegisterService.getCashRegisters({
-        limit: pageSize,
-        offset: pageIndex * pageSize,
-        startDate: dateRange?.from?.toISOString().split('T')[0],
-        endDate: dateRange?.to?.toISOString().split('T')[0]
-      })
+  const [filters, setFilters] = useState({
+    limit: 10,
+    offset: 0,
+    startDate: undefined,
+    endDate: undefined,
   });
 
-  const cashRegisters = useMemo(() => data?.cashRegisters ?? [], [data]);
-  const totalCount = useMemo(() => data?.total ?? 0, [data]);
+  const queryClient = useQueryClient();
+
+  // Obtener historial de cajas con React Query
+  const { data, isLoading, refetch, isError } = useQuery<PaginatedCashRegistersResponse, Error>({
+    queryKey: ['cashRegistersHistory', filters],
+    queryFn: () => cashRegisterService.getCashRegisters(filters),
+  });
+  const cashRegisters = data?.cashRegisters || [];
+  const total = data?.total || 0;
+
   const pageCount = useMemo(
-    () => Math.ceil(totalCount / pageSize),
-    [totalCount, pageSize]
+    () => Math.ceil(total / pageSize),
+    [total, pageSize]
   );
 
   if (isError) {
@@ -70,6 +71,21 @@ export function CashRegistersHistoryTable() {
         </CardHeader>
         <CardContent>
           <p>No se pudo cargar el historial.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            <Skeleton className="h-8 w-1/3" />
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-48 w-full" />
         </CardContent>
       </Card>
     );
@@ -94,9 +110,9 @@ export function CashRegistersHistoryTable() {
             variant='outline'
             size='icon'
             onClick={() => refetch()}
-            disabled={isRefetching || isLoading}
+            disabled={isLoading}
           >
-            {isRefetching || isLoading ? (
+            {isLoading ? (
               <Icons.spinner className='h-4 w-4 animate-spin' />
             ) : (
               <RefreshCw className='h-4 w-4' />
@@ -119,10 +135,10 @@ export function CashRegistersHistoryTable() {
             <TableBody>
               {isLoading
                 ? Array.from({ length: pageSize }).map((_, i) => (
-                    <CashRegistersHistoryTableRowSkeleton key={i} />
-                  ))
+                  <CashRegistersHistoryTableRowSkeleton key={i} />
+                ))
                 : cashRegisters.length > 0
-                ? cashRegisters.map((register: CashRegister) => (
+                  ? cashRegisters.map((register: CashRegister) => (
                     <TableRow key={register.cashRegisterId}>
                       <TableCell className='font-medium'>
                         #{register.cashRegisterId}
@@ -166,7 +182,7 @@ export function CashRegistersHistoryTable() {
                       </TableCell>
                     </TableRow>
                   ))
-                : !isLoading && (
+                  : !isLoading && (
                     <TableRow>
                       <TableCell colSpan={7} className='h-24 text-center'>
                         No hay cajas en el rango de fechas seleccionado.

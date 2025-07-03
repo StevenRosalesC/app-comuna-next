@@ -24,7 +24,7 @@ export function CreateExpenseForm({ onSuccess, onCancel }: CreateExpenseFormProp
     cashRegisterId: 0
   });
 
-  // Obtener caja activa con React Query
+  // Get active cash register with React Query
   const { data: activeRegister, isLoading: isLoadingRegister } = useQuery<CashRegister | null, Error>({
     queryKey: ['activeCashRegister'],
     queryFn: cashRegisterService.getActiveRegister,
@@ -32,7 +32,7 @@ export function CreateExpenseForm({ onSuccess, onCancel }: CreateExpenseFormProp
 
   const queryClient = useQueryClient();
 
-  // Mutación para crear gasto
+  // Mutation to create expense
   const createExpenseMutation = useMutation({
     mutationFn: (formData: CreateExpenseDto) => cashRegisterService.createExpense(formData),
     onSuccess: () => {
@@ -46,7 +46,7 @@ export function CreateExpenseForm({ onSuccess, onCancel }: CreateExpenseFormProp
     },
   });
 
-  // Actualizar cashRegisterId cuando se obtiene la caja activa
+  // Update cashRegisterId when active cash register is obtained
   useEffect(() => {
     if (activeRegister) {
       setFormData(prev => ({

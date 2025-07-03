@@ -16,7 +16,8 @@ import {
   DollarSign,
   TrendingUp,
   TrendingDown,
-  Receipt
+  Receipt,
+  FileText
 } from 'lucide-react';
 import { ActiveCashRegisterWrapper } from './active-cash-register-wrapper';
 import { CashRegistersHistoryTable } from './cash-registers-history-table';
@@ -24,6 +25,7 @@ import { CreateIncomeForm } from './create-income-form';
 import { CreateExpenseForm } from './create-expense-form';
 import { ExpensesTable } from './expenses-table';
 import { IncomesTable } from './incomes-table';
+import { GenerateReportDialog } from './generate-report-dialog';
 
 export function CashManagementDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -37,6 +39,7 @@ export function CashManagementDashboard() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Gestión de Caja</h1>
+        <GenerateReportDialog />
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">

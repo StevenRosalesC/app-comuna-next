@@ -26,7 +26,7 @@ export function CreateIncomeForm({ onSuccess, onCancel }: CreateIncomeFormProps)
     cashRegisterId: 0
   });
 
-  // Obtener caja activa con React Query
+  // Get active cash register with React Query
   const { data: activeRegister, isLoading: isLoadingRegister } = useQuery({
     queryKey: ['activeCashRegister'],
     queryFn: cashRegisterService.getActiveRegister,
@@ -34,7 +34,7 @@ export function CreateIncomeForm({ onSuccess, onCancel }: CreateIncomeFormProps)
 
   const queryClient = useQueryClient();
 
-  // Mutación para crear ingreso
+  // Mutation to create income
   const createIncomeMutation = useMutation({
     mutationFn: (formData: CreateIncomeDto) => cashRegisterService.createIncome(formData),
     onSuccess: () => {
@@ -48,6 +48,7 @@ export function CreateIncomeForm({ onSuccess, onCancel }: CreateIncomeFormProps)
     },
   });
 
+  // Update cashRegisterId when active cash register is obtained
   const handleInputChange = (field: keyof CreateIncomeDto, value: string | number | undefined) => {
     setFormData(prev => ({
       ...prev,

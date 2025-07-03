@@ -180,6 +180,20 @@ class CashRegisterService {
     );
     return data;
   }
+
+  // Report Generation
+  async generateReport(startDate: string, endDate: string): Promise<Blob> {
+    const { data } = await apiCommunity.get<Blob>(
+      `/reports/cash-register?startDate=${startDate}&endDate=${endDate}`,
+      {
+        responseType: 'blob',
+        headers: {
+          'Accept': 'application/pdf',
+        },
+      }
+    );
+    return data;
+  }
 }
 
 export const cashRegisterService = new CashRegisterService();

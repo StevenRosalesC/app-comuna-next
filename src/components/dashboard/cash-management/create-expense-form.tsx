@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,7 +17,6 @@ interface CreateExpenseFormProps {
 }
 
 export function CreateExpenseForm({ onSuccess, onCancel }: CreateExpenseFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<CreateExpenseDto>({
     description: '',
     amount: 0,
@@ -47,6 +46,16 @@ export function CreateExpenseForm({ onSuccess, onCancel }: CreateExpenseFormProp
     },
   });
 
+  // Actualizar cashRegisterId cuando se obtiene la caja activa
+  useEffect(() => {
+    if (activeRegister) {
+      setFormData(prev => ({
+        ...prev,
+        cashRegisterId: parseInt(activeRegister.cashRegisterId)
+      }));
+    }
+  }, [activeRegister]);
+
   const handleInputChange = (field: keyof CreateExpenseDto, value: string | number | undefined) => {
     setFormData(prev => ({
       ...prev,
@@ -66,6 +75,21 @@ export function CreateExpenseForm({ onSuccess, onCancel }: CreateExpenseFormProp
     }
     createExpenseMutation.mutate(formData);
   };
+
+  if (isLoadingRegister) {
+    return (
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Registrar Gasto</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-center text-muted-foreground py-8">
+            Cargando información de caja...
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (!activeRegister) {
     return (
@@ -99,7 +123,7 @@ export function CreateExpenseForm({ onSuccess, onCancel }: CreateExpenseFormProp
               placeholder="Descripción del gasto"
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
-              disabled={isLoading}
+              disabled={createExpenseMutation.isPending}
             />
           </div>
 
@@ -113,7 +137,7 @@ export function CreateExpenseForm({ onSuccess, onCancel }: CreateExpenseFormProp
               placeholder="0.00"
               value={formData.amount}
               onChange={(e) => handleInputChange('amount', parseFloat(e.target.value) || 0)}
-              disabled={isLoading}
+              disabled={createExpenseMutation.isPending}
               required
             />
           </div>
@@ -125,24 +149,24 @@ export function CreateExpenseForm({ onSuccess, onCancel }: CreateExpenseFormProp
               type="date"
               value={formData.expenseDate}
               onChange={(e) => handleInputChange('expenseDate', e.target.value)}
-              disabled={isLoading}
+              disabled={createExpenseMutation.isPending}
             />
           </div>
 
           <div className="flex gap-2 pt-4">
             <Button
               type="submit"
-              disabled={isLoading}
+              disabled={createExpenseMutation.isPending}
               className="flex-1"
             >
-              {isLoading ? 'Registrando...' : 'Registrar Gasto'}
+              {createExpenseMutation.isPending ? 'Registrando...' : 'Registrar Gasto'}
             </Button>
             {onCancel && (
               <Button
                 type="button"
                 variant="outline"
                 onClick={onCancel}
-                disabled={isLoading}
+                disabled={createExpenseMutation.isPending}
               >
                 Cancelar
               </Button>

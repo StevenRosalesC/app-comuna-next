@@ -1,6 +1,7 @@
 import {
   AlertTriangle,
   ArrowRight,
+  BarChart3,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -106,5 +107,6 @@ export const Icons = {
   shieldCheck: ShieldCheck,
   userSearch: UserSearchIcon,
   shieldQuestion: ShieldQuestion,
-  dollar: CircleDollarSign
+  dollar: CircleDollarSign,
+  barChart3: BarChart3
 };

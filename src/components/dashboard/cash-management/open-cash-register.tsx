@@ -35,9 +35,11 @@ const formSchema = z.object({
 });
 
 export default function OpenCashRegister({
-  canOpenCashRegister = false
+  canOpenCashRegister = false,
+  onSuccess
 }: {
   canOpenCashRegister?: boolean;
+  onSuccess?: () => void;
 }) {
   const queryClient = useQueryClient();
 
@@ -54,6 +56,7 @@ export default function OpenCashRegister({
     onSuccess: () => {
       toast.success('Caja abierta correctamente.');
       queryClient.invalidateQueries({ queryKey: ['activeCashRegister'] });
+      onSuccess?.();
     },
     onError: (error: AxiosError<{ message: string }>) => {
       toast.error(error.response?.data?.message || 'Error al abrir la caja.');

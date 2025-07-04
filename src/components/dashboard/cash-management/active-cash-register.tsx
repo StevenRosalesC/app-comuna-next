@@ -17,6 +17,10 @@ import { AxiosError } from 'axios';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Icons } from '@/components/icons';
 import { CashRegisterInvoicesTable } from './cash-register-invoices-table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { CreateIncomeForm } from './create-income-form';
+import { CreateExpenseForm } from './create-expense-form';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 
 interface ActiveCashRegisterProps {
   activeCashRegister: CashRegister;
@@ -46,7 +50,7 @@ export default function ActiveCashRegister({
   const queryClient = useQueryClient();
 
   const closeRegisterMutation = useMutation({
-    mutationFn: (id: string) => cashRegisterService.closeRegister(id, {}),
+    mutationFn: (id: string) => cashRegisterService.closeRegister(id, { closingNotes: 'Caja cerrada desde el dashboard' }),
     onSuccess: () => {
       toast.success('Caja cerrada correctamente.');
       queryClient.invalidateQueries({ queryKey: ['activeCashRegister'] });
@@ -63,6 +67,49 @@ export default function ActiveCashRegister({
 
   return (
     <>
+      {/* Acciones Rápidas */}
+      <div className="mb-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <span>Acciones Rápidas</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="w-full justify-start" variant="outline">
+                    <TrendingUp className="h-4 w-4 mr-2" />
+                    Registrar Ingreso
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Registrar Nuevo Ingreso</DialogTitle>
+                  </DialogHeader>
+                  <CreateIncomeForm />
+                </DialogContent>
+              </Dialog>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="w-full justify-start" variant="outline">
+                    <TrendingDown className="h-4 w-4 mr-2" />
+                    Registrar Gasto
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Registrar Nuevo Gasto</DialogTitle>
+                  </DialogHeader>
+                  <CreateExpenseForm />
+                </DialogContent>
+              </Dialog>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      {/* Estado de Caja */}
       <Card>
         <CardHeader>
           <CardTitle>Hay una Caja Activa</CardTitle>
@@ -137,7 +184,7 @@ export default function ActiveCashRegister({
           </Alert>
         </CardContent>
       </Card>
-
+      {/* Facturas de la Caja */}
       <CashRegisterInvoicesTable
         cashRegisterId={activeCashRegister.cashRegisterId}
         canCancelInvoice={canCancelInvoice}

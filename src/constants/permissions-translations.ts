@@ -51,5 +51,9 @@ export const ACTIONS_TRANSLATIONS: Record<string, string> = {
   delete_income: 'Eliminar ingreso',
   delete_expense: 'Eliminar gasto',
   cancel_invoice: 'Cancelar factura',
-  update: 'Actualizar'
+  update: 'Actualizar',
+  create_neighborhood: 'Crear barrio',
+  update_neighborhood: 'Actualizar barrio',
+  delete_neighborhood: 'Eliminar barrio',
+  read_neighborhood: 'Ver barrio'
 };

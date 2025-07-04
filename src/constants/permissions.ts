@@ -26,9 +26,13 @@ export const modulesPermissions = [
       'create_document_type',
       'update_document_type',
       'delete_document_type',
+      'create_neighborhood',
+      'update_neighborhood',
+      'delete_neighborhood',
       'read_requirements',
       'read_annual_fee',
-      'read_document_type'
+      'read_document_type',
+      'read_neighborhood'
     ],
     label: 'Administrador'
   },
@@ -135,6 +139,9 @@ export enum ValidActions {
   CREATE_DOCUMENT_TYPE = 'create_document_type',
   UPDATE_DOCUMENT_TYPE = 'update_document_type',
   DELETE_DOCUMENT_TYPE = 'delete_document_type',
+  CREATE_NEIGHBORHOOD = 'create_neighborhood',
+  UPDATE_NEIGHBORHOOD = 'update_neighborhood',
+  DELETE_NEIGHBORHOOD = 'delete_neighborhood',
   UPLOAD_DOCUMENTS = 'upload_documents',
   READ_DOCUMENTS = 'read_documents',
   READ_HISTORY_PAYMENTS = 'read_history_payments',

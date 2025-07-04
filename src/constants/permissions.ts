@@ -100,6 +100,19 @@ export const modulesPermissions = [
     route: 'reports',
     actions: ['read', 'generate', 'export', 'schedule'],
     label: 'Reportes'
+  },
+  {
+    module: 'analytics',
+    route: 'analytics',
+    actions: [
+      'read',
+      'export',
+      'filter',
+      'view_summary',
+      'view_details',
+      'generate_reports'
+    ],
+    label: 'Analytics'
   }
   // Add more modules here
 ];
@@ -114,7 +127,8 @@ export enum ValidModules {
   ROLES = 'roles',
   REQUIREMENTS = 'requirements',
   CASH_MANAGEMENT = 'cash-management',
-  DOCUMENT_TYPES = 'document-types'
+  DOCUMENT_TYPES = 'document-types',
+  ANALYTICS = 'analytics'
 }
 
 export enum ValidActions {
@@ -153,7 +167,11 @@ export enum ValidActions {
   READ_EXPENSE = 'read_expense',
   DELETE_INCOME = 'delete_income',
   DELETE_EXPENSE = 'delete_expense',
-  CANCEL_INVOICE = 'cancel_invoice'
+  CANCEL_INVOICE = 'cancel_invoice',
+  FILTER = 'filter',
+  VIEW_SUMMARY = 'view_summary',
+  VIEW_DETAILS = 'view_details',
+  GENERATE_REPORTS = 'generate_reports'
 }
 
 export const validPermissions = [
@@ -163,7 +181,8 @@ export const validPermissions = [
   ValidModules.ROLES,
   ValidModules.REQUIREMENTS,
   ValidModules.DOCUMENT_TYPES,
-  ValidModules.CASH_MANAGEMENT
+  ValidModules.CASH_MANAGEMENT,
+  ValidModules.ANALYTICS
 ];
 
 // Utility function to get available actions for a specific module

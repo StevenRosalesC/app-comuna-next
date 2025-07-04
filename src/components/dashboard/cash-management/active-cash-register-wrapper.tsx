@@ -1,11 +1,10 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { cashRegisterService } from '@/services/cash-register';
 import { CashRegister } from '@/interfaces/cash-register';
 import ActiveCashRegister from './active-cash-register';
-import { Plus } from 'lucide-react';
+import OpenCashRegister from './open-cash-register';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -39,25 +38,7 @@ export function ActiveCashRegisterWrapper({ onRefresh }: ActiveCashRegisterWrapp
   }
 
   if (!activeRegisterData) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Estado de Caja</CardTitle>
-        </CardHeader>
-        <CardContent className="text-center py-8">
-          <p className="text-muted-foreground mb-4">
-            No hay una caja registradora abierta
-          </p>
-          <p className="text-sm text-muted-foreground mb-4">
-            Abre una caja para poder registrar ingresos y gastos
-          </p>
-          <Button onClick={handleRefresh}>
-            <Plus className="h-4 w-4 mr-2" />
-            Abrir Caja
-          </Button>
-        </CardContent>
-      </Card>
-    );
+    return <OpenCashRegister canOpenCashRegister={true} onSuccess={handleRefresh} />;
   }
 
   return (

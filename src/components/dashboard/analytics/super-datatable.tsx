@@ -287,7 +287,8 @@ export const SuperDataTable = () => {
         onExport={handleExport}
         currentSort={currentSort}
         searchTerm={paginationParams.search || ''}
-        filters={filterParams as any[]}
+        analyticsFilters={viewMode === 'filtered' ? filterParams : {}}
+        viewMode={viewMode}
       />
 
       {/* Pagination */}

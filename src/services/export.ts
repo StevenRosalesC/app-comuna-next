@@ -17,33 +17,35 @@ export interface ExportSorting {
 export interface ExportParams {
   tableType: string;
   title?: string;
-  filters?: ExportFilters[];
+  queryParams?: Record<string, any>;
   sorting?: ExportSorting;
   columns?: string[];
   limit?: number;
-  dateFrom?: string;
-  dateTo?: string;
+  orderBy?: string;
+  order?: 'asc' | 'desc';
 }
 
 export const exportService = {
-  // Export table data to PDF
+  // Export table data to PDF using flat query params
   async exportTableToPDF(params: ExportParams): Promise<Blob> {
     try {
-      const queryParams = new URLSearchParams({
-        tableType: params.tableType,
+      const query: Record<string, any> = {
         ...(params.title && { title: params.title }),
-        ...(params.filters && { filters: JSON.stringify(params.filters) }),
-        ...(params.sorting && { sorting: JSON.stringify(params.sorting) }),
-        ...(params.columns && { columns: JSON.stringify(params.columns) }),
-        ...(params.limit && { limit: params.limit.toString() }),
-        ...(params.dateFrom && { dateFrom: params.dateFrom }),
-        ...(params.dateTo && { dateTo: params.dateTo }),
+        ...(params.limit && { limit: params.limit }),
+        ...(params.orderBy && { orderBy: params.orderBy }),
+        ...(params.order && { order: params.order }),
+        ...(params.columns && params.columns.length > 0 && { columns: JSON.stringify(params.columns) }),
+        ...params.queryParams,
+      };
+      const queryParams = new URLSearchParams();
+      Object.entries(query).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          queryParams.append(key, String(value));
+        }
       });
-
-      const response = await apiCommunity.get(`/reports/table-export?${queryParams}`, {
+      const response = await apiCommunity.get(`/reports/table-export?${queryParams.toString()}`, {
         responseType: 'blob',
       });
-
       return response.data;
     } catch (error) {
       throw error;

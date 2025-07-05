@@ -16,6 +16,50 @@ import { ExportButton } from './export-button';
 import { AnalyticsExportDialog } from './analytics-export-dialog';
 import { useExport } from '@/hooks/useExport';
 
+// QuickActions component for analytics
+const QuickActions = ({ onSelect }: { onSelect: (filters: AnalyticsQuery) => void }) => (
+  <Card className="mb-6">
+    <CardHeader>
+      <CardTitle className="flex items-center gap-2">
+        <BarChart3 className="h-5 w-5" />
+        Acciones rápidas
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+      <div className="flex flex-wrap gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onSelect({ membershipFilter: { status: 'active' } })}
+        >
+          Comuneros activos
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onSelect({ disabilityFilter: { hasDisability: true } })}
+        >
+          Con discapacidad
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onSelect({ financialFilter: { feeStatus: 'PENDING' } })}
+        >
+          Cuotas pendientes
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onSelect({ requirementsFilter: { allApproved: true } })}
+        >
+          Todos los requisitos aprobados
+        </Button>
+      </div>
+    </CardContent>
+  </Card>
+);
+
 export const SuperDataTable = () => {
   // State for view mode (initial vs filtered)
   const [viewMode, setViewMode] = useState<'initial' | 'filtered'>('initial');
@@ -224,8 +268,20 @@ export const SuperDataTable = () => {
     });
   }, [paginationParams.orderBy, paginationParams.order]);
 
+  // Synchronize quick actions with filters
+  const handleQuickAction = (filters: AnalyticsQuery) => {
+    setFilterParams(filters);
+    setViewMode('filtered');
+    setPaginationParams(prev => ({
+      ...prev,
+      offset: 0
+    }));
+  };
+
   return (
     <div className="space-y-6">
+      {/* Quick Actions at the top */}
+      <QuickActions onSelect={handleQuickAction} />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -240,6 +296,32 @@ export const SuperDataTable = () => {
             {currentCount.toLocaleString()} Registros totales
           </Badge>
         </div>
+      </div>
+
+      {/* Export buttons for accessibility, above the table */}
+      <div className="flex flex-wrap gap-2 items-center justify-end mb-2">
+        <ExportButton
+          tableType="persons"
+          title={`Reporte de Análisis - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'}`}
+          sorting={{ field: currentSort.field, direction: currentSort.order }}
+          columns={['identification', 'firstName', 'lastName', 'birthDate', 'email', 'phone']}
+          limit={1000}
+          searchTerm={paginationParams.search}
+          viewMode={viewMode}
+          analyticsFilters={filterParams}
+        >
+          Exportar PDF
+        </ExportButton>
+        <AnalyticsExportDialog
+          tableType="persons"
+          title={`Reporte de Análisis - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'}`}
+          sorting={{ field: currentSort.field, direction: currentSort.order }}
+          searchTerm={paginationParams.search}
+          viewMode={viewMode}
+          analyticsFilters={filterParams}
+          currentData={currentData}
+          totalCount={currentCount}
+        />
       </div>
 
       {/* View Mode Toggle */}
@@ -303,106 +385,6 @@ export const SuperDataTable = () => {
           disabled={currentLoading}
         />
       )}
-
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
-            Acciones rápidas
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                handleApplyFilters({
-                  membershipFilter: { status: 'active' },
-                  limit: 20
-                });
-              }}
-            >
-              Comuneros activos
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                handleApplyFilters({
-                  disabilityFilter: { hasDisability: true },
-                  limit: 20
-                });
-              }}
-            >
-              Con discapacidad
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                handleApplyFilters({
-                  financialFilter: { feeStatus: 'PENDING' },
-                  limit: 20
-                });
-              }}
-            >
-              Cuotas pendientes
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                handleApplyFilters({
-                  requirementsFilter: { allApproved: true },
-                  limit: 20
-                });
-              }}
-            >
-              Todos los requisitos aprobados
-            </Button>
-            <ExportButton
-              tableType="persons"
-              title={`Reporte de Análisis - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'}`}
-              sorting={{
-                field: currentSort.field,
-                direction: currentSort.order
-              }}
-              columns={[
-                'identification',
-                'firstName',
-                'lastName',
-                'birthDate',
-                'email',
-                'phone'
-              ]}
-              limit={1000}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-              searchTerm={paginationParams.search}
-              viewMode={viewMode}
-              analyticsFilters={filterParams}
-            >
-              Exportar datos
-            </ExportButton>
-            <AnalyticsExportDialog
-              tableType="persons"
-              title={`Reporte de Análisis - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'}`}
-              sorting={{
-                field: currentSort.field,
-                direction: currentSort.order
-              }}
-              searchTerm={paginationParams.search}
-              viewMode={viewMode}
-              analyticsFilters={filterParams}
-              currentData={currentData}
-              totalCount={currentCount}
-            />
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }; 

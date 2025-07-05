@@ -12,6 +12,8 @@ interface ExportButtonProps {
   title?: string;
   sorting?: { field: string; direction: 'asc' | 'desc' };
   columns?: string[];
+  customColumns?: string[]; // Blank columns for signatures, observations, etc.
+  orientation?: 'portrait' | 'landscape'; // Page orientation
   limit?: number;
   variant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'destructive';
   size?: 'default' | 'sm' | 'lg' | 'icon';
@@ -30,6 +32,8 @@ export const ExportButton = ({
   title,
   sorting,
   columns = [],
+  customColumns = [],
+  orientation = 'portrait',
   limit = 1000,
   variant = 'outline',
   size = 'sm',
@@ -59,11 +63,23 @@ export const ExportButton = ({
       order = sorting.direction;
     }
 
+    // Always add columns, customColumns, and orientation to queryParams
+    if (columns && columns.length > 0) {
+      queryParams.columns = JSON.stringify(columns);
+    }
+    // Debug log for customColumns
+    console.log('[ExportButton] customColumns:', customColumns);
+    if (customColumns && customColumns.length > 0) {
+      queryParams.customColumns = JSON.stringify(customColumns);
+    }
+    if (orientation) {
+      queryParams.orientation = orientation;
+    }
+
     const params: ExportParams = {
       tableType,
       title,
       queryParams,
-      columns,
       limit,
       orderBy,
       order,

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Download, Settings } from 'lucide-react';
+import { Download, Settings, X } from 'lucide-react';
 import { ExportButton } from './export-button';
 
 interface AnalyticsExportDialogProps {
@@ -42,6 +42,9 @@ export const AnalyticsExportDialog = ({
     'phone'
   ]);
   const [exportLimit, setExportLimit] = useState(1000);
+  const [customColumns, setCustomColumns] = useState<string[]>([]);
+  const [customColumnInput, setCustomColumnInput] = useState('');
+  const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
 
   const availableColumns = [
     { key: 'identification', label: 'Cédula' },
@@ -71,6 +74,18 @@ export const AnalyticsExportDialog = ({
 
   const handleDeselectAllColumns = () => {
     setSelectedColumns([]);
+  };
+
+  const handleAddCustomColumn = () => {
+    const trimmed = customColumnInput.trim();
+    if (trimmed && !customColumns.includes(trimmed)) {
+      setCustomColumns([...customColumns, trimmed]);
+      setCustomColumnInput('');
+    }
+  };
+
+  const handleRemoveCustomColumn = (col: string) => {
+    setCustomColumns(customColumns.filter(c => c !== col));
   };
 
   return (
@@ -115,6 +130,20 @@ export const AnalyticsExportDialog = ({
             </Select>
           </div>
 
+          {/* Orientation Selection */}
+          <div className="space-y-2">
+            <Label htmlFor="export-orientation">Orientación de página</Label>
+            <Select value={orientation} onValueChange={v => setOrientation(v as 'portrait' | 'landscape')}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="portrait">Vertical (portrait)</SelectItem>
+                <SelectItem value="landscape">Horizontal (landscape)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Column Selection */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -155,12 +184,46 @@ export const AnalyticsExportDialog = ({
             </div>
           </div>
 
+          {/* Custom Columns (Blank columns for signatures, observations, etc.) */}
+          <div className="space-y-2">
+            <Label>Columnas personalizadas en blanco</Label>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Ej: Firma, Observaciones"
+                value={customColumnInput}
+                onChange={e => setCustomColumnInput(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') handleAddCustomColumn();
+                }}
+              />
+              <Button type="button" onClick={handleAddCustomColumn} variant="secondary">
+                Añadir
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {customColumns.map(col => (
+                <span key={col} className="inline-flex items-center bg-muted px-2 py-1 rounded text-xs">
+                  {col}
+                  <button
+                    type="button"
+                    className="ml-1 text-muted-foreground hover:text-destructive"
+                    onClick={() => handleRemoveCustomColumn(col)}
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+
           {/* Export Info */}
           <div className="text-sm text-muted-foreground space-y-1">
             <p>• Tipo de tabla: {tableType}</p>
             <p>• Vista actual: {viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'}</p>
             <p>• Registros disponibles: {totalCount?.toLocaleString() || 'N/A'}</p>
             <p>• Columnas seleccionadas: {selectedColumns.length}</p>
+            <p>• Columnas personalizadas: {customColumns.length}</p>
+            <p>• Orientación: {orientation === 'portrait' ? 'Vertical' : 'Horizontal'}</p>
           </div>
 
           {/* Export Actions */}
@@ -177,6 +240,8 @@ export const AnalyticsExportDialog = ({
               title={exportTitle}
               sorting={sorting}
               columns={selectedColumns}
+              customColumns={customColumns}
+              orientation={orientation}
               limit={exportLimit}
               searchTerm={searchTerm}
               viewMode={viewMode}

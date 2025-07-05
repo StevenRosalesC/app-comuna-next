@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ChevronUp, ChevronDown, Eye, Download } from 'lucide-react';
+import { ChevronUp, ChevronDown, Eye } from 'lucide-react';
+import { ExportButton } from './export-button';
 
 interface DataTableProps {
   data: any[];
@@ -20,6 +21,7 @@ interface DataTableProps {
     order: 'asc' | 'desc';
   };
   searchTerm: string;
+  filters: any[];
 }
 
 export const DataTable = ({
@@ -31,7 +33,8 @@ export const DataTable = ({
   onViewDetails,
   onExport,
   currentSort,
-  searchTerm
+  searchTerm,
+  filters
 }: DataTableProps) => {
   const calculateAge = (birthDate: string) => {
     const today = new Date();
@@ -133,10 +136,17 @@ export const DataTable = ({
               onChange={(e) => onSearch(e.target.value)}
               className="w-64"
             />
-            <Button onClick={onExport} variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
+            <ExportButton
+              tableType="persons"
+              title="Reporte de Datos"
+              variant="outline"
+              size="sm"
+              searchTerm={searchTerm}
+              filters={filters}
+
+            >
               Exportar
-            </Button>
+            </ExportButton>
           </div>
         </div>
       </CardHeader>

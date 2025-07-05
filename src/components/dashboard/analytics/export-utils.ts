@@ -1,118 +1,70 @@
-// Utility to map analytics filters to export filters for PDF export
+// Utility to map analytics filters to flat query params for PDF export
 
-import { ExportFilters } from '@/services/export';
+export function mapAnalyticsFiltersToQueryParams(analyticsFilters: any, searchTerm?: string): Record<string, any> {
+  const params: Record<string, any> = {};
 
-export function mapAnalyticsFiltersToExportFilters(analyticsFilters: any): ExportFilters[] {
-  const exportFilters: ExportFilters[] = [];
+  if (!analyticsFilters) return params;
 
-  if (!analyticsFilters) return exportFilters;
-
-  // Edad mínima y máxima
+  // Age filters
   if (analyticsFilters.ageFilter?.minAge) {
-    exportFilters.push({
-      field: 'age',
-      operator: 'gte', // No soportado por backend, pero ejemplo
-      value: analyticsFilters.ageFilter.minAge
-    });
+    params.minAge = analyticsFilters.ageFilter.minAge;
   }
   if (analyticsFilters.ageFilter?.maxAge) {
-    exportFilters.push({
-      field: 'age',
-      operator: 'lte', // No soportado por backend, pero ejemplo
-      value: analyticsFilters.ageFilter.maxAge
-    });
+    params.maxAge = analyticsFilters.ageFilter.maxAge;
   }
 
-  // Género
+  // Gender
   if (analyticsFilters.gender) {
-    exportFilters.push({
-      field: 'gender',
-      operator: 'equals',
-      value: analyticsFilters.gender
-    });
+    params.gender = analyticsFilters.gender;
   }
 
-  // Barrio
+  // Neighborhood
   if (analyticsFilters.membershipFilter?.neighborhoodId) {
-    exportFilters.push({
-      field: 'neighborhoodId',
-      operator: 'equals',
-      value: analyticsFilters.membershipFilter.neighborhoodId
-    });
+    params.neighborhoodId = analyticsFilters.membershipFilter.neighborhoodId;
+  }
+  if (analyticsFilters.membershipFilter?.neighborhoodName) {
+    params.neighborhoodName = analyticsFilters.membershipFilter.neighborhoodName;
   }
 
-  // Estado de membresía
+  // Membership status
   if (analyticsFilters.membershipFilter?.status && analyticsFilters.membershipFilter.status !== 'all') {
-    exportFilters.push({
-      field: 'memberStatus',
-      operator: 'equals',
-      value: analyticsFilters.membershipFilter.status === 'active' ? 'ACTIVE' : 'INACTIVE'
-    });
+    params.membershipStatus = analyticsFilters.membershipFilter.status;
   }
 
-  // Discapacidad
+  // Disability
   if (analyticsFilters.disabilityFilter?.hasDisability) {
-    exportFilters.push({
-      field: 'hasDisability',
-      operator: 'equals',
-      value: true
-    });
+    params.hasDisability = analyticsFilters.disabilityFilter.hasDisability;
   }
   if (analyticsFilters.disabilityFilter?.minPercentage) {
-    exportFilters.push({
-      field: 'disabilityPercentage',
-      operator: 'gte',
-      value: analyticsFilters.disabilityFilter.minPercentage
-    });
+    params.minDisabilityPercentage = analyticsFilters.disabilityFilter.minPercentage;
   }
   if (analyticsFilters.disabilityFilter?.maxPercentage) {
-    exportFilters.push({
-      field: 'disabilityPercentage',
-      operator: 'lte',
-      value: analyticsFilters.disabilityFilter.maxPercentage
-    });
+    params.maxDisabilityPercentage = analyticsFilters.disabilityFilter.maxPercentage;
   }
 
-  // Estado de cuota
+  // Financial filters
   if (analyticsFilters.financialFilter?.feeStatus && analyticsFilters.financialFilter.feeStatus !== 'ALL') {
-    exportFilters.push({
-      field: 'feeStatus',
-      operator: 'equals',
-      value: analyticsFilters.financialFilter.feeStatus
-    });
+    params.feeStatus = analyticsFilters.financialFilter.feeStatus;
   }
-  // Monto mínimo/máximo
   if (analyticsFilters.financialFilter?.minAmountDue) {
-    exportFilters.push({
-      field: 'amountDue',
-      operator: 'gte',
-      value: analyticsFilters.financialFilter.minAmountDue
-    });
+    params.minAmountDue = analyticsFilters.financialFilter.minAmountDue;
   }
   if (analyticsFilters.financialFilter?.maxAmountDue) {
-    exportFilters.push({
-      field: 'amountDue',
-      operator: 'lte',
-      value: analyticsFilters.financialFilter.maxAmountDue
-    });
+    params.maxAmountDue = analyticsFilters.financialFilter.maxAmountDue;
   }
-  // Año
   if (analyticsFilters.financialFilter?.year) {
-    exportFilters.push({
-      field: 'year',
-      operator: 'equals',
-      value: analyticsFilters.financialFilter.year
-    });
+    params.feeYear = analyticsFilters.financialFilter.year;
   }
 
-  // Requisitos aprobados
+  // Requirements
   if (analyticsFilters.requirementsFilter?.allApproved) {
-    exportFilters.push({
-      field: 'allRequirementsApproved',
-      operator: 'equals',
-      value: true
-    });
+    params.allRequirementsApproved = analyticsFilters.requirementsFilter.allApproved;
   }
 
-  return exportFilters;
+  // Search term
+  if (searchTerm) {
+    params.search = searchTerm;
+  }
+
+  return params;
 } 

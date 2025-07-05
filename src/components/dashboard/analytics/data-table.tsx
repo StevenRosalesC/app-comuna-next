@@ -21,7 +21,8 @@ interface DataTableProps {
     order: 'asc' | 'desc';
   };
   searchTerm: string;
-  filters: any[];
+  analyticsFilters?: any; // Advanced filters object
+  viewMode?: 'initial' | 'filtered'; // View mode
 }
 
 export const DataTable = ({
@@ -34,7 +35,8 @@ export const DataTable = ({
   onExport,
   currentSort,
   searchTerm,
-  filters
+  analyticsFilters,
+  viewMode
 }: DataTableProps) => {
   const calculateAge = (birthDate: string) => {
     const today = new Date();
@@ -142,8 +144,8 @@ export const DataTable = ({
               variant="outline"
               size="sm"
               searchTerm={searchTerm}
-              filters={filters}
-
+              analyticsFilters={analyticsFilters}
+              viewMode={viewMode}
             >
               Exportar
             </ExportButton>

@@ -5,17 +5,14 @@ import { Download, Loader2 } from 'lucide-react';
 import { useExport } from '@/hooks/useExport';
 import { ExportParams } from '@/services/export';
 import { toast } from 'sonner';
-import { mapAnalyticsFiltersToExportFilters } from './export-utils';
+import { mapAnalyticsFiltersToQueryParams } from './export-utils';
 
 interface ExportButtonProps {
   tableType: string;
   title?: string;
-  filters?: any[];
   sorting?: { field: string; direction: 'asc' | 'desc' };
   columns?: string[];
   limit?: number;
-  dateFrom?: string;
-  dateTo?: string;
   variant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'destructive';
   size?: 'default' | 'sm' | 'lg' | 'icon';
   className?: string;
@@ -31,12 +28,9 @@ interface ExportButtonProps {
 export const ExportButton = ({
   tableType,
   title,
-  filters = [],
   sorting,
   columns = [],
   limit = 1000,
-  dateFrom,
-  dateTo,
   variant = 'outline',
   size = 'sm',
   className = '',
@@ -49,44 +43,39 @@ export const ExportButton = ({
   const { exportToPDF, loading, error } = useExport();
 
   const handleExport = async () => {
-    // Convert analytics filters to export format if provided
-    let exportFilters = [...filters];
+    // Build flat query params from analytics filters
+    const queryParams =
+      viewMode === 'filtered' && analyticsFilters
+        ? mapAnalyticsFiltersToQueryParams(analyticsFilters, searchTerm)
+        : searchTerm
+          ? { search: searchTerm }
+          : {};
 
-    if (viewMode === 'filtered' && analyticsFilters) {
-      exportFilters = exportFilters.concat(mapAnalyticsFiltersToExportFilters(analyticsFilters));
+    // Sorting
+    let orderBy: string | undefined = undefined;
+    let order: 'asc' | 'desc' | undefined = undefined;
+    if (sorting) {
+      orderBy = sorting.field;
+      order = sorting.direction;
     }
-
-    if (searchTerm) {
-      exportFilters.push({
-        field: 'firstName',
-        operator: 'contains' as const,
-        value: searchTerm
-      });
-    }
-
-    // Log para depuración
-    console.log('[ExportButton] exportFilters:', exportFilters);
-    console.log('[ExportButton] analyticsFilters:', analyticsFilters);
-    console.log('[ExportButton] viewMode:', viewMode);
 
     const params: ExportParams = {
       tableType,
       title,
-      filters: exportFilters,
-      sorting,
+      queryParams,
       columns,
       limit,
-      dateFrom,
-      dateTo,
+      orderBy,
+      order,
     };
 
     const result = await exportToPDF(params);
 
     if (result.success) {
-      toast.success('Archivo exportado correctamente');
+      toast.success('File exported successfully');
       onExportSuccess?.();
     } else {
-      toast.error(result.error || 'Error al exportar el archivo');
+      toast.error(result.error || 'Error exporting file');
     }
   };
 
@@ -103,7 +92,7 @@ export const ExportButton = ({
       ) : (
         <Download className="h-4 w-4 mr-2" />
       )}
-      {children || 'Exportar PDF'}
+      {children || 'Export PDF'}
     </Button>
   );
 }; 

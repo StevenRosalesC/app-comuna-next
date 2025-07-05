@@ -82,6 +82,9 @@ export const SuperDataTable = () => {
     order: 'asc' as 'asc' | 'desc'
   });
 
+  // Add controlled filter state for FilterPanel
+  const [filterPanelState, setFilterPanelState] = useState<AnalyticsQuery>({});
+
   // Get filter options
   const { neighborhoods, requirements, loading: optionsLoading } = useFilterOptions();
 
@@ -155,21 +158,23 @@ export const SuperDataTable = () => {
 
   // Handle filter application
   const handleApplyFilters = (filters: AnalyticsQuery) => {
-    const filtersWithPagination = {
-      ...filters,
-      limit: paginationParams.limit || 20,
-      offset: 0,
-      orderBy: paginationParams.orderBy || 'lastName',
-      order: paginationParams.order || 'asc',
-      search: paginationParams.search || ''
-    };
-    setFilterParams(filtersWithPagination);
+    setFilterParams(filters);
     setViewMode('filtered');
+    setPaginationParams(prev => ({
+      ...prev,
+      offset: 0
+    }));
+  };
+
+  // When filters are changed in the panel (but not yet applied)
+  const handlePanelChange = (filters: AnalyticsQuery) => {
+    setFilterPanelState(filters);
   };
 
   // Handle filter clearing
   const handleClearFilters = () => {
     setFilterParams({});
+    setFilterPanelState({});
     setViewMode('initial');
     setPaginationParams({
       limit: 20,
@@ -268,9 +273,10 @@ export const SuperDataTable = () => {
     });
   }, [paginationParams.orderBy, paginationParams.order]);
 
-  // Synchronize quick actions with filters
+  // Synchronize quick actions with filters and panel
   const handleQuickAction = (filters: AnalyticsQuery) => {
     setFilterParams(filters);
+    setFilterPanelState(filters);
     setViewMode('filtered');
     setPaginationParams(prev => ({
       ...prev,
@@ -345,6 +351,8 @@ export const SuperDataTable = () => {
       {/* Filter Panel (only show in filtered mode) */}
       {viewMode === 'filtered' && (
         <FilterPanel
+          value={filterPanelState}
+          onChange={handlePanelChange}
           onApplyFilters={handleApplyFilters}
           onClearFilters={handleClearFilters}
           neighborhoods={neighborhoods}

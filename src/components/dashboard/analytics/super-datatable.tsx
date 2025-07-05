@@ -12,6 +12,9 @@ import { SummaryStats } from './summary-stats';
 import { FilterPanel } from './filter-panel';
 import { DataTable } from './data-table';
 import { Pagination } from './pagination';
+import { ExportButton } from './export-button';
+import { AnalyticsExportDialog } from './analytics-export-dialog';
+import { useExport } from '@/hooks/useExport';
 
 export const SuperDataTable = () => {
   // State for view mode (initial vs filtered)
@@ -37,6 +40,9 @@ export const SuperDataTable = () => {
 
   // Get filter options
   const { neighborhoods, requirements, loading: optionsLoading } = useFilterOptions();
+
+  // Export hook
+  const { exportToPDF } = useExport();
 
   // Hook for initial data
   const {
@@ -138,9 +144,76 @@ export const SuperDataTable = () => {
 
   // Handle export
   const handleExport = () => {
-    // TODO: Implement export functionality
-    // console.log('Export data:', currentData);
-    alert('Export functionality will be implemented soon!');
+    // Convert current filters to export format
+    const exportFilters: any[] = [];
+
+    // Add search filter if exists
+    if (paginationParams.search) {
+      exportFilters.push({
+        field: 'firstName',
+        operator: 'contains' as const,
+        value: paginationParams.search
+      });
+    }
+
+    // Add current filters based on view mode
+    if (viewMode === 'filtered' && filterParams) {
+      // Convert analytics filters to export filters
+      if (filterParams.membershipFilter?.status) {
+        exportFilters.push({
+          field: 'memberStatus',
+          operator: 'equals' as const,
+          value: filterParams.membershipFilter.status === 'active' ? 'ACTIVE' : 'INACTIVE'
+        });
+      }
+
+      if (filterParams.gender) {
+        exportFilters.push({
+          field: 'gender',
+          operator: 'equals' as const,
+          value: filterParams.gender
+        });
+      }
+
+      if (filterParams.disabilityFilter?.hasDisability) {
+        exportFilters.push({
+          field: 'hasDisability',
+          operator: 'equals' as const,
+          value: true
+        });
+      }
+
+      if (filterParams.financialFilter?.feeStatus) {
+        exportFilters.push({
+          field: 'feeStatus',
+          operator: 'equals' as const,
+          value: filterParams.financialFilter.feeStatus
+        });
+      }
+    }
+
+    // Prepare export parameters
+    const exportParams = {
+      tableType: 'persons',
+      title: `Reporte de Análisis - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'}`,
+      filters: exportFilters,
+      sorting: {
+        field: currentSort.field,
+        direction: currentSort.order
+      },
+      columns: [
+        'identification',
+        'firstName',
+        'lastName',
+        'birthDate',
+        'email',
+        'phone'
+      ],
+      limit: 1000
+    };
+
+    // Use the export service
+    exportToPDF(exportParams);
   };
 
   // Update current sort when pagination params change
@@ -214,6 +287,7 @@ export const SuperDataTable = () => {
         onExport={handleExport}
         currentSort={currentSort}
         searchTerm={paginationParams.search || ''}
+        filters={filterParams as any[]}
       />
 
       {/* Pagination */}
@@ -287,15 +361,44 @@ export const SuperDataTable = () => {
             >
               Todos los requisitos aprobados
             </Button>
-            <Button
+            <ExportButton
+              tableType="persons"
+              title={`Reporte de Análisis - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'}`}
+              sorting={{
+                field: currentSort.field,
+                direction: currentSort.order
+              }}
+              columns={[
+                'identification',
+                'firstName',
+                'lastName',
+                'birthDate',
+                'email',
+                'phone'
+              ]}
+              limit={1000}
               variant="outline"
               size="sm"
-              onClick={handleExport}
               className="flex items-center gap-2"
+              searchTerm={paginationParams.search}
+              viewMode={viewMode}
+              analyticsFilters={filterParams}
             >
-              <Download className="h-4 w-4" />
               Exportar datos
-            </Button>
+            </ExportButton>
+            <AnalyticsExportDialog
+              tableType="persons"
+              title={`Reporte de Análisis - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'}`}
+              sorting={{
+                field: currentSort.field,
+                direction: currentSort.order
+              }}
+              searchTerm={paginationParams.search}
+              viewMode={viewMode}
+              analyticsFilters={filterParams}
+              currentData={currentData}
+              totalCount={currentCount}
+            />
           </div>
         </CardContent>
       </Card>

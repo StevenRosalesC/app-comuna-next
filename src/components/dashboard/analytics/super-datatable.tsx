@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart3, Database, Filter, Download } from 'lucide-react';
+import { BarChart3, Database, Filter, RotateCcw } from 'lucide-react';
 import { useInitialAnalytics, useAnalytics, useFilterOptions } from '@/hooks/useAnalytics';
 import { AnalyticsQuery, PaginationParams } from '@/services/analytics';
 import { SummaryStats } from './summary-stats';
@@ -15,6 +15,7 @@ import { Pagination } from './pagination';
 import { ExportButton } from './export-button';
 import { AnalyticsExportDialog } from './analytics-export-dialog';
 import { useExport } from '@/hooks/useExport';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 // QuickActions component for analytics
 const QuickActions = ({ onSelect }: { onSelect: (filters: AnalyticsQuery) => void }) => (
@@ -91,30 +92,16 @@ export const SuperDataTable = () => {
   // Export hook
   const { exportToPDF } = useExport();
 
-  // Hook for initial data
-  const {
-    data: initialData,
-    summary: initialSummary,
-    loading: initialLoading,
-    error: initialError,
-    totalCount: initialCount
-  } = useInitialAnalytics(paginationParams);
-
-  // Hook for filtered data
-  const {
-    data: filteredData,
-    summary: filteredSummary,
-    loading: filteredLoading,
-    error: filteredError,
-    totalCount: filteredCount
-  } = useAnalytics(filterParams);
-
-  // Current data based on view mode
-  const currentData = viewMode === 'initial' ? initialData : filteredData;
-  const currentSummary = viewMode === 'initial' ? initialSummary : filteredSummary;
-  const currentLoading = viewMode === 'initial' ? initialLoading : filteredLoading;
-  const currentError = viewMode === 'initial' ? initialError : filteredError;
-  const currentCount = viewMode === 'initial' ? initialCount : filteredCount;
+  // Always call both hooks, select the correct result
+  const initialQuery = useInitialAnalytics(paginationParams);
+  const filteredQuery = useAnalytics(filterParams);
+  const currentQuery = viewMode === 'filtered' ? filteredQuery : initialQuery;
+  const currentData = currentQuery.data;
+  const currentSummary = currentQuery.summary;
+  const currentLoading = currentQuery.loading;
+  const currentError = currentQuery.error;
+  const currentCount = currentQuery.totalCount;
+  const refetchAnalytics = currentQuery.refetch;
 
   // Calculate current page and total pages
   const currentPage = Math.floor((paginationParams.offset || 0) / (paginationParams.limit || 20)) + 1;
@@ -284,6 +271,81 @@ export const SuperDataTable = () => {
     }));
   };
 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Helper to update URL with filters and pagination
+  const updateUrlParams = (filters: AnalyticsQuery, pagination: PaginationParams) => {
+    const params = new URLSearchParams();
+    // Add filters
+    if (filters.ageFilter?.minAge) params.set('minAge', String(filters.ageFilter.minAge));
+    if (filters.ageFilter?.maxAge) params.set('maxAge', String(filters.ageFilter.maxAge));
+    if (filters.gender) params.set('gender', String(filters.gender));
+    if (filters.membershipFilter?.status) params.set('membershipStatus', filters.membershipFilter.status);
+    if (filters.membershipFilter?.neighborhoodId) params.set('neighborhoodId', filters.membershipFilter.neighborhoodId);
+    if (filters.disabilityFilter?.hasDisability) params.set('hasDisability', 'true');
+    if (filters.disabilityFilter?.minPercentage) params.set('minDisabilityPercentage', String(filters.disabilityFilter.minPercentage));
+    if (filters.financialFilter?.feeStatus) params.set('feeStatus', filters.financialFilter.feeStatus);
+    if (filters.financialFilter?.minAmountDue) params.set('minAmountDue', String(filters.financialFilter.minAmountDue));
+    if (filters.financialFilter?.year) params.set('feeYear', String(filters.financialFilter.year));
+    if (filters.requirementsFilter?.allApproved) params.set('allRequirementsApproved', 'true');
+    // Add pagination
+    if (pagination.limit) params.set('limit', String(pagination.limit));
+    if (pagination.offset) params.set('offset', String(pagination.offset));
+    if (pagination.search) params.set('search', pagination.search);
+    if (pagination.orderBy) params.set('orderBy', pagination.orderBy);
+    if (pagination.order) params.set('order', pagination.order);
+    router.replace(`?${params.toString()}`);
+  };
+
+  // On mount, restore filters and pagination from URL
+  useEffect(() => {
+    const params = searchParams;
+    const restoredFilters: AnalyticsQuery = {};
+    const restoredPagination: PaginationParams = {
+      limit: params.get('limit') ? Number(params.get('limit')) : 20,
+      offset: params.get('offset') ? Number(params.get('offset')) : 0,
+      search: params.get('search') || '',
+      orderBy: params.get('orderBy') || 'lastName',
+      order: (params.get('order') as 'asc' | 'desc') || 'asc',
+    };
+    if (params.get('minAge')) restoredFilters.ageFilter = { minAge: Number(params.get('minAge')) };
+    if (params.get('maxAge')) restoredFilters.ageFilter = { ...(restoredFilters.ageFilter || {}), maxAge: Number(params.get('maxAge')) };
+    if (params.get('gender')) {
+      const g = Number(params.get('gender'));
+      if (g === 1 || g === 2) restoredFilters.gender = g;
+    }
+    if (params.get('membershipStatus')) {
+      const status = params.get('membershipStatus');
+      if (status === 'active' || status === 'inactive' || status === 'all') {
+        restoredFilters.membershipFilter = { ...(restoredFilters.membershipFilter || {}), status };
+      }
+    }
+    if (params.get('neighborhoodId')) restoredFilters.membershipFilter = { ...(restoredFilters.membershipFilter || {}), neighborhoodId: params.get('neighborhoodId')! };
+    if (params.get('hasDisability')) restoredFilters.disabilityFilter = { hasDisability: true };
+    if (params.get('minDisabilityPercentage')) restoredFilters.disabilityFilter = { ...(restoredFilters.disabilityFilter || {}), minPercentage: Number(params.get('minDisabilityPercentage')) };
+    if (params.get('feeStatus')) {
+      const feeStatus = params.get('feeStatus');
+      if (feeStatus === 'PENDING' || feeStatus === 'PAID' || feeStatus === 'PARTIAL') {
+        restoredFilters.financialFilter = { ...(restoredFilters.financialFilter || {}), feeStatus };
+      }
+    }
+    if (params.get('minAmountDue')) restoredFilters.financialFilter = { ...(restoredFilters.financialFilter || {}), minAmountDue: Number(params.get('minAmountDue')) };
+    if (params.get('feeYear')) restoredFilters.financialFilter = { ...(restoredFilters.financialFilter || {}), year: Number(params.get('feeYear')) };
+    if (params.get('allRequirementsApproved')) restoredFilters.requirementsFilter = { allApproved: true };
+    setFilterParams(restoredFilters);
+    setFilterPanelState(restoredFilters);
+    setPaginationParams(restoredPagination);
+    if (Object.keys(restoredFilters).length > 0) setViewMode('filtered');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Update URL when filters or pagination change
+  useEffect(() => {
+    updateUrlParams(filterParams, paginationParams);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterParams, paginationParams]);
+
   return (
     <div className="space-y-6">
       {/* Quick Actions at the top */}
@@ -304,7 +366,7 @@ export const SuperDataTable = () => {
         </div>
       </div>
 
-      {/* Export buttons for accessibility, above the table */}
+      {/* Export buttons and reload button for accessibility, above the table */}
       <div className="flex flex-wrap gap-2 items-center justify-end mb-2">
         <ExportButton
           tableType="persons"
@@ -328,6 +390,15 @@ export const SuperDataTable = () => {
           currentData={currentData}
           totalCount={currentCount}
         />
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => refetchAnalytics()}
+          title="Recargar datos"
+        >
+          <RotateCcw className="h-4 w-4 mr-2" />
+          Recargar
+        </Button>
       </div>
 
       {/* View Mode Toggle */}

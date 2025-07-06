@@ -45,7 +45,9 @@ export const ExportButton = ({
   onExportSuccess
 }: ExportButtonProps) => {
   const { exportToPDF, loading, error } = useExport();
-
+  if (error) {
+    toast.error(error);
+  }
   const handleExport = async () => {
     // Build flat query params from analytics filters
     const queryParams =
@@ -67,8 +69,6 @@ export const ExportButton = ({
     if (columns && columns.length > 0) {
       queryParams.columns = JSON.stringify(columns);
     }
-    // Debug log for customColumns
-    console.log('[ExportButton] customColumns:', customColumns);
     if (customColumns && customColumns.length > 0) {
       queryParams.customColumns = JSON.stringify(customColumns);
     }

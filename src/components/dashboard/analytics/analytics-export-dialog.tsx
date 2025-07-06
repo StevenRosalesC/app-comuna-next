@@ -32,7 +32,7 @@ export const AnalyticsExportDialog = ({
   totalCount
 }: AnalyticsExportDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [exportTitle, setExportTitle] = useState(title || 'Reporte de Análisis');
+  const [exportTitle, setExportTitle] = useState(title || 'Lista de personas');
   const [selectedColumns, setSelectedColumns] = useState<string[]>([
     'identification',
     'firstName',

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ChevronUp, ChevronDown, Eye } from 'lucide-react';
-import { ExportButton } from './export-button';
+import { DataTableSkeleton } from './data-table-skeleton';
 
 interface DataTableProps {
   data: any[];
@@ -15,7 +15,7 @@ interface DataTableProps {
   onSort: (field: string) => void;
   onSearch: (search: string) => void;
   onViewDetails: (personId: string) => void;
-  onExport: () => void;
+  onExport?: () => void;
   currentSort: {
     field: string;
     order: 'asc' | 'desc';
@@ -97,18 +97,7 @@ export const DataTable = ({
   };
 
   if (loading) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-center h-32">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-              <p className="text-muted-foreground">Cargando datos...</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return <DataTableSkeleton />;
   }
 
   if (error) {
@@ -138,22 +127,11 @@ export const DataTable = ({
               onChange={(e) => onSearch(e.target.value)}
               className="w-64"
             />
-            <ExportButton
-              tableType="persons"
-              title="Reporte de Datos"
-              variant="outline"
-              size="sm"
-              searchTerm={searchTerm}
-              analyticsFilters={analyticsFilters}
-              viewMode={viewMode}
-            >
-              Exportar
-            </ExportButton>
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        {data.length === 0 ? (
+        {data.length === 0 && !loading ? (
           <div className="text-center py-8">
             <p className="text-muted-foreground">No se encontraron datos</p>
           </div>

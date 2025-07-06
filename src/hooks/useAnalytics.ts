@@ -17,6 +17,7 @@ export const useInitialAnalytics = (params: PaginationParams) => {
     data = { data: [], summary: null, count: 0 },
     isLoading: loading,
     error,
+    isFetching,
     refetch,
   } = useQuery<AnalyticsResponse, Error>({
     queryKey,
@@ -33,6 +34,7 @@ export const useInitialAnalytics = (params: PaginationParams) => {
     loading,
     error: error ? error.message : null,
     totalCount: data.count,
+    isFetching,
     refetch,
   };
 };
@@ -44,6 +46,7 @@ export const useAnalytics = (query: AnalyticsQuery) => {
     data = { data: [], summary: null, count: 0 },
     isLoading: loading,
     error,
+    isFetching,
     refetch,
   } = useQuery<AnalyticsResponse, Error>({
     queryKey,
@@ -60,6 +63,7 @@ export const useAnalytics = (query: AnalyticsQuery) => {
     loading,
     error: error ? error.message : null,
     totalCount: data.count,
+    isFetching,
     refetch,
   };
 };

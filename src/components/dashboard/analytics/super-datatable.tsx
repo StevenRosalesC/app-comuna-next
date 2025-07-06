@@ -12,10 +12,11 @@ import { SummaryStats } from './summary-stats';
 import { FilterPanel } from './filter-panel';
 import { DataTable } from './data-table';
 import { Pagination } from './pagination';
-import { ExportButton } from './export-button';
 import { AnalyticsExportDialog } from './analytics-export-dialog';
+import { ExportNameDialog } from './export-name-dialog';
 import { useExport } from '@/hooks/useExport';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useDebounce } from '@/hooks/use-debounce';
 
 // QuickActions component for analytics
 const QuickActions = ({ onSelect }: { onSelect: (filters: AnalyticsQuery) => void }) => (
@@ -86,6 +87,12 @@ export const SuperDataTable = () => {
   // Add controlled filter state for FilterPanel
   const [filterPanelState, setFilterPanelState] = useState<AnalyticsQuery>({});
 
+  // State for immediate search input (for UI responsiveness)
+  const [searchInput, setSearchInput] = useState('');
+
+  // Debounced search value for API calls (500ms delay)
+  const debouncedSearch = useDebounce(searchInput, 500);
+
   // Get filter options
   const { neighborhoods, requirements, loading: optionsLoading } = useFilterOptions();
 
@@ -98,7 +105,7 @@ export const SuperDataTable = () => {
   const currentQuery = viewMode === 'filtered' ? filteredQuery : initialQuery;
   const currentData = currentQuery.data;
   const currentSummary = currentQuery.summary;
-  const currentLoading = currentQuery.loading;
+  const currentLoading = currentQuery.isFetching;
   const currentError = currentQuery.error;
   const currentCount = currentQuery.totalCount;
   const refetchAnalytics = currentQuery.refetch;
@@ -107,7 +114,12 @@ export const SuperDataTable = () => {
   const currentPage = Math.floor((paginationParams.offset || 0) / (paginationParams.limit || 20)) + 1;
   const totalPages = Math.ceil(currentCount / (paginationParams.limit || 20));
 
-  // Handle search
+  // Handle search input change (immediate UI update)
+  const handleSearchInput = (searchTerm: string) => {
+    setSearchInput(searchTerm);
+  };
+
+  // Handle debounced search (for API calls)
   const handleSearch = (searchTerm: string) => {
     setPaginationParams(prev => ({
       ...prev,
@@ -163,6 +175,7 @@ export const SuperDataTable = () => {
     setFilterParams({});
     setFilterPanelState({});
     setViewMode('initial');
+    setSearchInput('');
     setPaginationParams({
       limit: 20,
       offset: 0,
@@ -179,7 +192,7 @@ export const SuperDataTable = () => {
   };
 
   // Handle export
-  const handleExport = () => {
+  const handleExport = (reportName: string) => {
     // Convert current filters to export format
     const exportFilters: any[] = [];
 
@@ -231,7 +244,7 @@ export const SuperDataTable = () => {
     // Prepare export parameters
     const exportParams = {
       tableType: 'persons',
-      title: `Reporte de Análisis - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'}`,
+      title: reportName,
       filters: exportFilters,
       sorting: {
         field: currentSort.field,
@@ -259,6 +272,11 @@ export const SuperDataTable = () => {
       order: (paginationParams.order as 'asc' | 'desc') || 'asc'
     });
   }, [paginationParams.orderBy, paginationParams.order]);
+
+  // Sync debounced search with pagination params
+  useEffect(() => {
+    handleSearch(debouncedSearch);
+  }, [debouncedSearch]);
 
   // Synchronize quick actions with filters and panel
   const handleQuickAction = (filters: AnalyticsQuery) => {
@@ -336,6 +354,7 @@ export const SuperDataTable = () => {
     setFilterParams(restoredFilters);
     setFilterPanelState(restoredFilters);
     setPaginationParams(restoredPagination);
+    setSearchInput(restoredPagination.search || '');
     if (Object.keys(restoredFilters).length > 0) setViewMode('filtered');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -348,15 +367,12 @@ export const SuperDataTable = () => {
 
   return (
     <div className="space-y-6">
-      {/* Quick Actions at the top */}
-      <QuickActions onSelect={handleQuickAction} />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Super DataTable Analytics</h1>
-          <p className="text-muted-foreground">
-            Análisis avanzado de datos y filtrado para obtener insights completos
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight">Lista de personas</h1>
+          <p className="text-muted-foreground">Comuna Bambil Collao</p>
+          <span className="text-muted-foreground">En esta seccion podras ver la lista de personas de la comuna, filtrarlos y exportarlos a PDF  </span>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="flex items-center gap-1">
@@ -366,23 +382,24 @@ export const SuperDataTable = () => {
         </div>
       </div>
 
+      {/* Summary Statistics */}
+      {currentSummary && (
+        <SummaryStats summary={currentSummary} />
+      )}
+
       {/* Export buttons and reload button for accessibility, above the table */}
       <div className="flex flex-wrap gap-2 items-center justify-end mb-2">
-        <ExportButton
-          tableType="persons"
-          title={`Reporte de Análisis - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'}`}
-          sorting={{ field: currentSort.field, direction: currentSort.order }}
-          columns={['identification', 'firstName', 'lastName', 'birthDate', 'email', 'phone']}
-          limit={1000}
-          searchTerm={paginationParams.search}
-          viewMode={viewMode}
-          analyticsFilters={filterParams}
+        <ExportNameDialog
+          onExport={handleExport}
+          defaultTitle={`Lista de personas - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'} - Comuna Bambil Collao`}
         >
-          Exportar PDF
-        </ExportButton>
+          <Button variant="default" size="sm">
+            Exportar PDF
+          </Button>
+        </ExportNameDialog>
         <AnalyticsExportDialog
           tableType="persons"
-          title={`Reporte de Análisis - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'}`}
+          title={`Lista de personas - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'}`}
           sorting={{ field: currentSort.field, direction: currentSort.order }}
           searchTerm={paginationParams.search}
           viewMode={viewMode}
@@ -400,6 +417,7 @@ export const SuperDataTable = () => {
           Recargar
         </Button>
       </div>
+      <QuickActions onSelect={handleQuickAction} />
 
       {/* View Mode Toggle */}
       <Card>
@@ -432,22 +450,16 @@ export const SuperDataTable = () => {
         />
       )}
 
-      {/* Summary Statistics */}
-      {currentSummary && (
-        <SummaryStats summary={currentSummary} />
-      )}
-
       {/* Data Table */}
       <DataTable
         data={currentData}
         loading={currentLoading}
         error={currentError}
         onSort={handleSort}
-        onSearch={handleSearch}
+        onSearch={handleSearchInput}
         onViewDetails={handleViewDetails}
-        onExport={handleExport}
         currentSort={currentSort}
-        searchTerm={paginationParams.search || ''}
+        searchTerm={searchInput}
         analyticsFilters={viewMode === 'filtered' ? filterParams : {}}
         viewMode={viewMode}
       />

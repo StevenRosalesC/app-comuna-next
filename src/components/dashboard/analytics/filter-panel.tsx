@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,8 @@ import { X, Filter, Search } from 'lucide-react';
 import { AnalyticsQuery } from '@/services/analytics';
 
 interface FilterPanelProps {
+  value: AnalyticsQuery;
+  onChange: (filters: AnalyticsQuery) => void;
   onApplyFilters: (filters: AnalyticsQuery) => void;
   onClearFilters: () => void;
   neighborhoods: any[];
@@ -20,19 +22,26 @@ interface FilterPanelProps {
 }
 
 export const FilterPanel = ({
+  value,
+  onChange,
   onApplyFilters,
   onClearFilters,
   neighborhoods,
   requirements,
   loading = false
 }: FilterPanelProps) => {
-  const [filters, setFilters] = useState<AnalyticsQuery>({});
+  // Sync local state with value prop
+  const [filters, setFilters] = useState<AnalyticsQuery>(value || {});
 
-  const handleFilterChange = (key: string, value: any) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: value
-    }));
+  useEffect(() => {
+    setFilters(value || {});
+  }, [value]);
+
+  // Update both local and parent state
+  const handleFilterChange = (key: string, val: any) => {
+    const updated = { ...filters, [key]: val };
+    setFilters(updated);
+    onChange(updated);
   };
 
   const handleApplyFilters = () => {
@@ -41,6 +50,7 @@ export const FilterPanel = ({
 
   const handleClearFilters = () => {
     setFilters({});
+    onChange({});
     onClearFilters();
   };
 

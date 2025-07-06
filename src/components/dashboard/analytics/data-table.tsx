@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ChevronUp, ChevronDown, Eye, Download } from 'lucide-react';
+import { ChevronUp, ChevronDown, Eye } from 'lucide-react';
+import { DataTableSkeleton } from './data-table-skeleton';
 
 interface DataTableProps {
   data: any[];
@@ -14,12 +15,14 @@ interface DataTableProps {
   onSort: (field: string) => void;
   onSearch: (search: string) => void;
   onViewDetails: (personId: string) => void;
-  onExport: () => void;
+  onExport?: () => void;
   currentSort: {
     field: string;
     order: 'asc' | 'desc';
   };
   searchTerm: string;
+  analyticsFilters?: any; // Advanced filters object
+  viewMode?: 'initial' | 'filtered'; // View mode
 }
 
 export const DataTable = ({
@@ -31,7 +34,9 @@ export const DataTable = ({
   onViewDetails,
   onExport,
   currentSort,
-  searchTerm
+  searchTerm,
+  analyticsFilters,
+  viewMode
 }: DataTableProps) => {
   const calculateAge = (birthDate: string) => {
     const today = new Date();
@@ -92,18 +97,7 @@ export const DataTable = ({
   };
 
   if (loading) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-center h-32">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
-              <p className="text-muted-foreground">Cargando datos...</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return <DataTableSkeleton />;
   }
 
   if (error) {
@@ -133,15 +127,11 @@ export const DataTable = ({
               onChange={(e) => onSearch(e.target.value)}
               className="w-64"
             />
-            <Button onClick={onExport} variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Exportar
-            </Button>
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        {data.length === 0 ? (
+        {data.length === 0 && !loading ? (
           <div className="text-center py-8">
             <p className="text-muted-foreground">No se encontraron datos</p>
           </div>

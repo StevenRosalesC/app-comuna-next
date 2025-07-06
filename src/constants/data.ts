@@ -80,7 +80,7 @@ export const navItems: NavItem[] = [
     shortcut: ['c', 'c']
   },
   {
-    title: 'Analytics',
+    title: 'Lista de personas',
     url: '/dashboard/analytics',
     icon: 'barChart3',
     isActive: false,

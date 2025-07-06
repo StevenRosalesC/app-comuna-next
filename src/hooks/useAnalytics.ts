@@ -1,73 +1,71 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { analyticsService, AnalyticsQuery, PaginationParams } from '@/services/analytics';
 import { neighborhoodsService } from '@/services/neighborhoods';
 
-// Hook for initial analytics data
+// Analytics response type
+interface AnalyticsResponse {
+  data: any[];
+  summary: any;
+  count: number;
+}
+
+// Hook for initial analytics data using TanStack Query
 export const useInitialAnalytics = (params: PaginationParams) => {
-  const [data, setData] = useState<any[]>([]);
-  const [summary, setSummary] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [totalCount, setTotalCount] = useState(0);
+  const queryKey = ['analytics-initial', params];
+  const {
+    data = { data: [], summary: null, count: 0 },
+    isLoading: loading,
+    error,
+    isFetching,
+    refetch,
+  } = useQuery<AnalyticsResponse, Error>({
+    queryKey,
+    queryFn: async () => {
+      const response = await analyticsService.getInitialData(params);
+      return response.data;
+    },
+    placeholderData: { data: [], summary: null, count: 0 },
+  });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const response = await analyticsService.getInitialData(params);
-        
-        if (response.data) {
-          setData(response.data.data);
-          setSummary(response.data.summary);
-          setTotalCount(response.data.count);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [params]);
-
-  return { data, summary, loading, error, totalCount };
+  return {
+    data: data.data,
+    summary: data.summary,
+    loading,
+    error: error ? error.message : null,
+    totalCount: data.count,
+    isFetching,
+    refetch,
+  };
 };
 
-// Hook for advanced analytics queries
+// Hook for advanced analytics queries using TanStack Query
 export const useAnalytics = (query: AnalyticsQuery) => {
-  const [data, setData] = useState<any[]>([]);
-  const [summary, setSummary] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [totalCount, setTotalCount] = useState(0);
+  const queryKey = ['analytics', query];
+  const {
+    data = { data: [], summary: null, count: 0 },
+    isLoading: loading,
+    error,
+    isFetching,
+    refetch,
+  } = useQuery<AnalyticsResponse, Error>({
+    queryKey,
+    queryFn: async () => {
+      const response = await analyticsService.executeQuery(query);
+      return response.data;
+    },
+    placeholderData: { data: [], summary: null, count: 0 },
+  });
 
-  useEffect(() => {
-    const executeQuery = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const response = await analyticsService.executeQuery(query);
-        
-        if (response.data) {
-          setData(response.data.data);
-          setSummary(response.data.summary);
-          setTotalCount(response.data.count);
-        }
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    executeQuery();
-  }, [query]);
-
-  return { data, summary, loading, error, totalCount };
+  return {
+    data: data.data,
+    summary: data.summary,
+    loading,
+    error: error ? error.message : null,
+    totalCount: data.count,
+    isFetching,
+    refetch,
+  };
 };
 
 // Hook for filter options (neighborhoods, requirements)

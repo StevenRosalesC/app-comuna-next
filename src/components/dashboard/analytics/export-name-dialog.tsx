@@ -9,17 +9,18 @@ import { Download } from 'lucide-react';
 
 interface ExportNameDialogProps {
   children: React.ReactNode;
-  onExport: (reportName: string) => void;
+  onExport: (reportName: string, type: 'pdf' | 'excel') => void;
   defaultTitle?: string;
+  type: 'pdf' | 'excel';
 }
 
-export const ExportNameDialog = ({ children, onExport, defaultTitle = 'Lista de personas' }: ExportNameDialogProps) => {
+export const ExportNameDialog = ({ children, onExport, defaultTitle = 'Reporte de Análisis', type }: ExportNameDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [reportName, setReportName] = useState(defaultTitle);
 
   const handleExport = () => {
     if (reportName.trim()) {
-      onExport(reportName.trim());
+      onExport(reportName.trim(), type);
       setIsOpen(false);
       setReportName(defaultTitle); // Reset to default
     }
@@ -68,7 +69,7 @@ export const ExportNameDialog = ({ children, onExport, defaultTitle = 'Lista de 
               className="flex-1"
             >
               <Download className="h-4 w-4 mr-2" />
-              Exportar
+              Exportar {type === 'excel' ? 'Excel' : 'PDF'}
             </Button>
           </div>
         </div>

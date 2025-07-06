@@ -17,6 +17,8 @@ import { ExportNameDialog } from './export-name-dialog';
 import { useExport } from '@/hooks/useExport';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDebounce } from '@/hooks/use-debounce';
+import { exportToExcel } from '@/utils/exportUtils';
+import { toast } from 'sonner';
 
 // QuickActions component for analytics
 const QuickActions = ({ onSelect }: { onSelect: (filters: AnalyticsQuery) => void }) => (
@@ -61,6 +63,70 @@ const QuickActions = ({ onSelect }: { onSelect: (filters: AnalyticsQuery) => voi
     </CardContent>
   </Card>
 );
+
+// Utility to build flat filters ONLY for Excel export
+// This function maps the current table state to the allowed backend query params
+// according to the export documentation. No nested objects or extra fields.
+type ExcelExportFiltersArgs = {
+  reportName: string;
+  paginationParams: any;
+  filterParams: any;
+  currentSort: { field: string; order: 'asc' | 'desc' };
+  columns?: string[];
+  customColumns?: string[];
+  limit?: number;
+};
+
+function buildExcelExportFilters({
+  reportName,
+  paginationParams,
+  filterParams,
+  currentSort,
+  columns = [
+    'identification',
+    'firstName',
+    'lastName',
+    'birthDate',
+    'email',
+    'phone',
+  ],
+  customColumns = [],
+  limit = 1000,
+}: ExcelExportFiltersArgs) {
+  // Build the flat filters object for Excel export
+  const filters: Record<string, any> = {
+    search: paginationParams.search,
+    orderBy: currentSort.field,
+    order: currentSort.order,
+    limit,
+    columns,
+    customColumns,
+  };
+
+  // Demographic filters
+  if (filterParams.ageFilter?.minAge) filters.minAge = filterParams.ageFilter.minAge;
+  if (filterParams.ageFilter?.maxAge) filters.maxAge = filterParams.ageFilter.maxAge;
+  if (filterParams.gender) filters.gender = filterParams.gender;
+  if (filterParams.membershipFilter?.neighborhoodId) filters.neighborhoodId = filterParams.membershipFilter.neighborhoodId;
+  if (filterParams.membershipFilter?.neighborhoodName) filters.neighborhoodName = filterParams.membershipFilter.neighborhoodName;
+
+  // Membership filters
+  if (filterParams.membershipFilter?.status) filters.membershipStatus = filterParams.membershipFilter.status;
+  if (filterParams.requirementsFilter?.allApproved) filters.allRequirementsApproved = filterParams.requirementsFilter.allApproved;
+
+  // Disability filters
+  if (filterParams.disabilityFilter?.hasDisability) filters.hasDisability = filterParams.disabilityFilter.hasDisability;
+  if (filterParams.disabilityFilter?.minPercentage) filters.minDisabilityPercentage = filterParams.disabilityFilter.minPercentage;
+  if (filterParams.disabilityFilter?.maxPercentage) filters.maxDisabilityPercentage = filterParams.disabilityFilter.maxPercentage;
+
+  // Financial filters
+  if (filterParams.financialFilter?.feeStatus) filters.feeStatus = filterParams.financialFilter.feeStatus;
+  if (filterParams.financialFilter?.minAmountDue) filters.minAmountDue = filterParams.financialFilter.minAmountDue;
+  if (filterParams.financialFilter?.maxAmountDue) filters.maxAmountDue = filterParams.financialFilter.maxAmountDue;
+  if (filterParams.financialFilter?.year) filters.feeYear = filterParams.financialFilter.year;
+
+  return filters;
+}
 
 export const SuperDataTable = () => {
   // State for view mode (initial vs filtered)
@@ -191,78 +257,45 @@ export const SuperDataTable = () => {
     window.open(`/dashboard/persons/${personId}`, '_blank');
   };
 
-  // Handle export
-  const handleExport = (reportName: string) => {
-    // Convert current filters to export format
-    const exportFilters: any[] = [];
-
-    // Add search filter if exists
-    if (paginationParams.search) {
-      exportFilters.push({
-        field: 'firstName',
-        operator: 'contains' as const,
-        value: paginationParams.search
+  // Handles export for both PDF and Excel. PDF logic is legacy and should not be changed.
+  const handleExport = async (reportName: string, type: 'pdf' | 'excel') => {
+    if (type === 'pdf') {
+      // PDF export: do not change this logic
+      (exportToPDF as any)({
+        tableType: 'persons',
+        title: reportName,
+        filters: [], // or your PDF filter logic
+        sorting: {
+          field: currentSort.field,
+          direction: currentSort.order,
+        },
+        columns: [
+          'identification',
+          'firstName',
+          'lastName',
+          'birthDate',
+          'email',
+          'phone',
+        ],
+        limit: 1000,
       });
-    }
-
-    // Add current filters based on view mode
-    if (viewMode === 'filtered' && filterParams) {
-      // Convert analytics filters to export filters
-      if (filterParams.membershipFilter?.status) {
-        exportFilters.push({
-          field: 'memberStatus',
-          operator: 'equals' as const,
-          value: filterParams.membershipFilter.status === 'active' ? 'ACTIVE' : 'INACTIVE'
-        });
-      }
-
-      if (filterParams.gender) {
-        exportFilters.push({
-          field: 'gender',
-          operator: 'equals' as const,
-          value: filterParams.gender
-        });
-      }
-
-      if (filterParams.disabilityFilter?.hasDisability) {
-        exportFilters.push({
-          field: 'hasDisability',
-          operator: 'equals' as const,
-          value: true
-        });
-      }
-
-      if (filterParams.financialFilter?.feeStatus) {
-        exportFilters.push({
-          field: 'feeStatus',
-          operator: 'equals' as const,
-          value: filterParams.financialFilter.feeStatus
-        });
+    } else {
+      // Excel export: use only flat filters as per documentation
+      const exportFilters = buildExcelExportFilters({
+        reportName,
+        paginationParams,
+        filterParams,
+        currentSort,
+      });
+      let toastId: string | number | undefined;
+      try {
+        toastId = toast.loading('Generating Excel file...');
+        await exportToExcel(exportFilters);
+        toast.success('Excel file downloaded successfully', { id: toastId });
+      } catch (error: any) {
+        toast.error(`Export error: ${error.message || error}`, { id: toastId });
       }
     }
-
-    // Prepare export parameters
-    const exportParams = {
-      tableType: 'persons',
-      title: reportName,
-      filters: exportFilters,
-      sorting: {
-        field: currentSort.field,
-        direction: currentSort.order
-      },
-      columns: [
-        'identification',
-        'firstName',
-        'lastName',
-        'birthDate',
-        'email',
-        'phone'
-      ],
-      limit: 1000
-    };
-
-    // Use the export service
-    exportToPDF(exportParams);
   };
 
   // Update current sort when pagination params change
@@ -391,15 +424,25 @@ export const SuperDataTable = () => {
       <div className="flex flex-wrap gap-2 items-center justify-end mb-2">
         <ExportNameDialog
           onExport={handleExport}
-          defaultTitle={`Lista de personas - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'} - Comuna Bambil Collao`}
+          defaultTitle={`Reporte de Análisis - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'}`}
+          type="pdf"
         >
           <Button variant="default" size="sm">
             Exportar PDF
           </Button>
         </ExportNameDialog>
+        <ExportNameDialog
+          onExport={handleExport}
+          defaultTitle={`Reporte de Análisis - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'}`}
+          type="excel"
+        >
+          <Button variant="secondary" size="sm">
+            Exportar Excel
+          </Button>
+        </ExportNameDialog>
         <AnalyticsExportDialog
           tableType="persons"
-          title={`Lista de personas - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'}`}
+          title={`Reporte de Análisis - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'}`}
           sorting={{ field: currentSort.field, direction: currentSort.order }}
           searchTerm={paginationParams.search}
           viewMode={viewMode}
@@ -478,4 +521,4 @@ export const SuperDataTable = () => {
       )}
     </div>
   );
-}; 
+};

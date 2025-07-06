@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Download, Settings, X } from 'lucide-react';
-import { ExportButton } from './export-button';
+import { toast } from 'sonner';
+import { exportTable } from '@/utils/exportTable';
 
 interface AnalyticsExportDialogProps {
   tableType: string;
@@ -45,6 +46,8 @@ export const AnalyticsExportDialog = ({
   const [customColumns, setCustomColumns] = useState<string[]>([]);
   const [customColumnInput, setCustomColumnInput] = useState('');
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
+  const [exportType, setExportType] = useState<'pdf' | 'excel'>('pdf');
+  const [loading, setLoading] = useState(false);
 
   const availableColumns = [
     { key: 'identification', label: 'Cédula' },
@@ -88,6 +91,41 @@ export const AnalyticsExportDialog = ({
     setCustomColumns(customColumns.filter(c => c !== col));
   };
 
+  const handleExport = async () => {
+    setLoading(true);
+    const params: any = {
+      tableType,
+      title: exportTitle,
+      sorting,
+      columns: selectedColumns,
+      customColumns,
+      orientation,
+      limit: exportLimit,
+      search: searchTerm,
+      viewMode,
+      analyticsFilters,
+    };
+    try {
+      toast.dismiss();
+      toast.loading(exportType === 'pdf' ? 'Generando PDF...' : 'Generando Excel...');
+      await exportTable({
+        type: exportType,
+        params,
+        onSuccess: () => {
+          toast.dismiss();
+          toast.success(exportType === 'pdf' ? 'PDF exportado exitosamente' : 'Excel exportado exitosamente');
+          setIsOpen(false);
+        },
+        onError: (err) => {
+          toast.dismiss();
+          toast.error(`Error al exportar: ${err?.message || err}`);
+        }
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -102,6 +140,20 @@ export const AnalyticsExportDialog = ({
         </DialogHeader>
 
         <div className="space-y-4">
+          {/* Export Type Selection (at the top) */}
+          <div className="space-y-2">
+            <Label htmlFor="export-type">Tipo de archivo</Label>
+            <Select value={exportType} onValueChange={v => setExportType(v as 'pdf' | 'excel')}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="pdf">PDF</SelectItem>
+                <SelectItem value="excel">Excel</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Export Title */}
           <div className="space-y-2">
             <Label htmlFor="export-title">Título del Reporte</Label>
@@ -130,19 +182,21 @@ export const AnalyticsExportDialog = ({
             </Select>
           </div>
 
-          {/* Orientation Selection */}
-          <div className="space-y-2">
-            <Label htmlFor="export-orientation">Orientación de página</Label>
-            <Select value={orientation} onValueChange={v => setOrientation(v as 'portrait' | 'landscape')}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="portrait">Vertical (portrait)</SelectItem>
-                <SelectItem value="landscape">Horizontal (landscape)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Orientation Selection (only for PDF) */}
+          {exportType === 'pdf' && (
+            <div className="space-y-2">
+              <Label htmlFor="export-orientation">Orientación de página</Label>
+              <Select value={orientation} onValueChange={v => setOrientation(v as 'portrait' | 'landscape')}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="portrait">Vertical (portrait)</SelectItem>
+                  <SelectItem value="landscape">Horizontal (landscape)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           {/* Column Selection */}
           <div className="space-y-2">
@@ -232,27 +286,23 @@ export const AnalyticsExportDialog = ({
               variant="outline"
               onClick={() => setIsOpen(false)}
               className="flex-1"
+              disabled={loading}
             >
               Cancelar
             </Button>
-            <ExportButton
-              tableType={tableType}
-              title={exportTitle}
-              sorting={sorting}
-              columns={selectedColumns}
-              customColumns={customColumns}
-              orientation={orientation}
-              limit={exportLimit}
-              searchTerm={searchTerm}
-              viewMode={viewMode}
-              analyticsFilters={analyticsFilters}
+            <Button
+              onClick={handleExport}
               variant="default"
               className="flex-1"
-              onExportSuccess={() => setIsOpen(false)}
+              disabled={loading}
             >
               <Download className="h-4 w-4 mr-2" />
-              Exportar
-            </ExportButton>
+              {loading
+                ? 'Exportando...'
+                : exportType === 'excel'
+                  ? 'Exportar Excel'
+                  : 'Exportar PDF'}
+            </Button>
           </div>
         </div>
       </DialogContent>

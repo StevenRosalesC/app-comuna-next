@@ -25,6 +25,7 @@ interface ExportButtonProps {
   analyticsFilters?: any;
   // Callback after successful export
   onExportSuccess?: () => void;
+  exportType?: 'pdf' | 'excel';
 }
 
 export const ExportButton = ({
@@ -42,9 +43,13 @@ export const ExportButton = ({
   searchTerm,
   viewMode,
   analyticsFilters,
-  onExportSuccess
+  onExportSuccess,
+  exportType = 'pdf',
 }: ExportButtonProps) => {
   const { exportToPDF, loading, error } = useExport();
+  // Import the Excel export utility
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { exportToExcel } = require('@/utils/exportUtils');
   if (error) {
     toast.error(error);
   }
@@ -85,8 +90,22 @@ export const ExportButton = ({
       order,
     };
 
-    const result = await exportToPDF(params);
+    if (exportType === 'excel') {
+      try {
+        toast.loading('Generando archivo Excel...');
+        await exportToExcel(queryParams);
+        toast.dismiss();
+        toast.success('Archivo Excel descargado exitosamente');
+        onExportSuccess?.();
+      } catch (err: any) {
+        toast.dismiss();
+        toast.error(`Error al exportar: ${err.message || err}`);
+      }
+      return;
+    }
 
+    // Default: PDF
+    const result = await exportToPDF(params);
     if (result.success) {
       toast.success('File exported successfully');
       onExportSuccess?.();
@@ -108,7 +127,7 @@ export const ExportButton = ({
       ) : (
         <Download className="h-4 w-4 mr-2" />
       )}
-      {children || 'Export PDF'}
+      {children || (exportType === 'excel' ? 'Exportar Excel' : 'Exportar PDF')}
     </Button>
   );
 }; 

@@ -1,15 +1,14 @@
 # Use a smaller base image
-FROM node:18-alpine AS base
+FROM node:18 AS base
 
 # Install dependencies only when needed
 FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
+RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
-RUN ls -l /app && cat /app/package.json && npm -v
 RUN npm install --production
 
 # Rebuild the source code only when needed
@@ -20,7 +19,7 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 # Set Node.js memory limit to prevent OOM during build
-ENV NODE_OPTIONS="--max-old-space-size=512"
+ENV NODE_OPTIONS="--max-old-space-size=1024"
 
 RUN npm run build
 

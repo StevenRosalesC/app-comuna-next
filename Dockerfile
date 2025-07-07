@@ -9,6 +9,7 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
+ENV NPM_CONFIG_IGNORE_SCRIPTS=true
 RUN npm install --production
 
 # Rebuild the source code only when needed

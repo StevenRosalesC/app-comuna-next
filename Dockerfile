@@ -9,7 +9,7 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
-RUN node -v && npm -v
+RUN ls -l /app && cat /app/package.json && npm -v
 RUN npm install --production
 
 # Rebuild the source code only when needed

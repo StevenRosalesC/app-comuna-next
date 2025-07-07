@@ -50,6 +50,10 @@ export const SessionProvider = ({
     return 'dashboard'; // Por defecto para /dashboard
   };
 
+  // Rutas que no requieren validación de permisos
+  const publicDashboardRoutes = ['/dashboard/profile', '/dashboard/unauthorized'];
+  const isPublicRoute = publicDashboardRoutes.includes(pathname);
+
   const mod = getModuleFromPath(pathname);
   const hasPermission = usePermission(mod, ['read']);
 
@@ -57,6 +61,7 @@ export const SessionProvider = ({
   useEffect(() => {
     if (
       pathname.startsWith('/dashboard') &&
+      !isPublicRoute &&
       !isLoading &&
       permissions &&
       !hasPermission &&
@@ -64,11 +69,12 @@ export const SessionProvider = ({
     ) {
       router.replace('/unauthorized');
     }
-  }, [pathname, isLoading, permissions, hasPermission, router]);
+  }, [pathname, isLoading, permissions, hasPermission, router, isPublicRoute]);
 
   // While loading permissions, do not render anything
   if (
     pathname.startsWith('/dashboard') &&
+    !isPublicRoute &&
     (isLoading || permissions === null)
   ) {
     return null;
@@ -77,6 +83,7 @@ export const SessionProvider = ({
   // If the user does not have permission, do not render anything
   if (
     pathname.startsWith('/dashboard') &&
+    !isPublicRoute &&
     !isLoading &&
     permissions &&
     !hasPermission

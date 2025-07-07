@@ -38,7 +38,8 @@ import {
   ChevronsUpDown,
   CreditCard,
   GalleryVerticalEnd,
-  LogOut
+  LogOut,
+  User
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { Icons } from '../icons';
@@ -113,11 +114,10 @@ function SidebarMenuItemWithPermission({
   ) : (
     <SidebarMenuItem
       key={item.title}
-      className={`${
-        pathname === item.url
-          ? 'rounded-lg bg-green-100 font-bold text-green-900 dark:bg-green-900 dark:text-green-100'
-          : ''
-      } transition-all duration-300 ease-in-out hover:rounded-lg hover:bg-green-100 hover:text-green-900 dark:hover:bg-green-900 dark:hover:text-green-100`}
+      className={`${pathname === item.url
+        ? 'rounded-lg bg-green-100 font-bold text-green-900 dark:bg-green-900 dark:text-green-100'
+        : ''
+        } transition-all duration-300 ease-in-out hover:rounded-lg hover:bg-green-100 hover:text-green-900 dark:hover:bg-green-900 dark:hover:text-green-100`}
     >
       <SidebarMenuButton
         asChild
@@ -127,9 +127,8 @@ function SidebarMenuItemWithPermission({
         <Link href={item.url}>
           <Icon />
           <span
-            className={`${
-              pathname === item.url ? 'font-bold text-green-900' : ''
-            }`}
+            className={`${pathname === item.url ? 'font-bold text-green-900' : ''
+              }`}
           >
             {item.title}
           </span>
@@ -240,17 +239,23 @@ export default function AppSidebar() {
                 <DropdownMenuSeparator />
 
                 <DropdownMenuGroup>
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard/profile">
+                      <User className="mr-2 h-4 w-4" />
+                      Perfil
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem>
                     <BadgeCheck />
-                    Account
+                    Cuenta
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <CreditCard />
-                    Billing
+                    Facturación
                   </DropdownMenuItem>
                   <DropdownMenuItem>
                     <Bell />
-                    Notifications
+                    Notificaciones
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />

@@ -1,3 +1,4 @@
+# Use a smaller base image
 FROM node:18-alpine AS base
 
 # Install dependencies only when needed
@@ -8,8 +9,8 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
-RUN npm ci
-
+# Use npm ci with reduced memory usage
+RUN npm ci --omit=dev
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -18,8 +19,10 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
+# Set Node.js memory limit to prevent OOM during build
+ENV NODE_OPTIONS="--max-old-space-size=512"
 
-RUN NODE_OPTIONS="--max-old-space-size=1024" npm run build
+RUN npm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner

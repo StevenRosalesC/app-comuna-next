@@ -2,9 +2,10 @@ export const AUTH_CONFIG = {
   COOKIE_NAME: 'token',
   COOKIE_SETTINGS: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_APP_URL?.startsWith('https'),
     sameSite: 'lax' as const,
-    path: '/'
+    path: '/',
+    maxAge: 60 * 60 * 24 * 7 // 7 days
   },
   PATHS: {
     LOGIN: '/auth/login',

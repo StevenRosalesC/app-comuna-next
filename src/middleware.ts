@@ -18,11 +18,18 @@ export async function middleware(request: NextRequest) {
   if (pathname === AUTH_CONFIG.PATHS.LOGIN) {
     if (!token) return NextResponse.next();
 
-    const isAuthenticated = await authenticateOrRefresh(token);
-    if (isAuthenticated) {
-      return NextResponse.redirect(
-        new URL(AUTH_CONFIG.PATHS.DASHBOARD, request.url)
-      );
+    try {
+      const isAuthenticated = await authenticateOrRefresh(token);
+      if (isAuthenticated) {
+        return NextResponse.redirect(
+          new URL(AUTH_CONFIG.PATHS.DASHBOARD, request.url)
+        );
+      }
+    } catch (error) {
+      // If authentication fails, clear the token and continue to login
+      const response = NextResponse.next();
+      response.cookies.delete(AUTH_CONFIG.COOKIE_NAME);
+      return response;
     }
     return NextResponse.next();
   }
@@ -32,25 +39,34 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(AUTH_CONFIG.PATHS.LOGIN, request.url));
   }
 
-  const refreshResponse = await authenticateOrRefresh(token);
-  if (!refreshResponse) {
+  try {
+    const refreshResponse = await authenticateOrRefresh(token);
+    if (!refreshResponse) {
+      const response = NextResponse.redirect(
+        new URL(AUTH_CONFIG.PATHS.LOGIN, request.url)
+      );
+      response.cookies.delete(AUTH_CONFIG.COOKIE_NAME);
+      return response;
+    }
+
+    const response = NextResponse.next();
+    if (refreshResponse.token) {
+      response.cookies.set(
+        AUTH_CONFIG.COOKIE_NAME,
+        refreshResponse.token,
+        AUTH_CONFIG.COOKIE_SETTINGS
+      );
+    }
+
+    return response;
+  } catch (error) {
+    // If there's an error, redirect to login and clear the token
     const response = NextResponse.redirect(
       new URL(AUTH_CONFIG.PATHS.LOGIN, request.url)
     );
     response.cookies.delete(AUTH_CONFIG.COOKIE_NAME);
     return response;
   }
-
-  const response = NextResponse.next();
-  if (refreshResponse.token) {
-    response.cookies.set(
-      AUTH_CONFIG.COOKIE_NAME,
-      refreshResponse.token,
-      AUTH_CONFIG.COOKIE_SETTINGS
-    );
-  }
-
-  return response;
 }
 
 export const config = {

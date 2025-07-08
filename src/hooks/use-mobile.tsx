@@ -17,5 +17,10 @@ export function useIsMobile() {
     return () => mql.removeEventListener('change', onChange);
   }, []);
 
+  // Return false during SSR to avoid hydration mismatch
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
   return !!isMobile;
 }

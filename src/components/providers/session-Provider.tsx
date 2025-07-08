@@ -71,16 +71,35 @@ export const SessionProvider = ({
     }
   }, [pathname, isLoading, permissions, hasPermission, router, isPublicRoute]);
 
-  // While loading permissions, do not render anything
+  // While loading permissions, show loading state
   if (
     pathname.startsWith('/dashboard') &&
     !isPublicRoute &&
-    (isLoading || permissions === null)
+    isLoading
   ) {
-    return null;
+    return (
+      <SessionContext.Provider value={{ session, loading: true, setSession }}>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Cargando permisos...</p>
+          </div>
+        </div>
+      </SessionContext.Provider>
+    );
   }
 
-  // If the user does not have permission, do not render anything
+  // If permissions failed to load, allow access to dashboard (fallback)
+  if (
+    pathname.startsWith('/dashboard') &&
+    !isPublicRoute &&
+    !isLoading &&
+    permissions === null
+  ) {
+    console.warn('Permissions failed to load, allowing access as fallback');
+  }
+
+  // If the user does not have permission, redirect instead of returning null
   if (
     pathname.startsWith('/dashboard') &&
     !isPublicRoute &&
@@ -88,7 +107,16 @@ export const SessionProvider = ({
     permissions &&
     !hasPermission
   ) {
-    return null;
+    // The redirect will be handled by the useEffect above
+    return (
+      <SessionContext.Provider value={{ session, loading: false, setSession }}>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <p className="text-muted-foreground">Redirigiendo...</p>
+          </div>
+        </div>
+      </SessionContext.Provider>
+    );
   }
 
   return (

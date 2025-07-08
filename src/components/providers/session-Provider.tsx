@@ -28,7 +28,7 @@ export const SessionProvider = ({
   );
   const [loading] = useState(!initialSession);
 
-  const { isLoading, permissions, fetchPermissions } = usePermissionsStore();
+  const { isLoading, permissions, error, fetchPermissions } = usePermissionsStore();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -71,6 +71,22 @@ export const SessionProvider = ({
     }
   }, [pathname, isLoading, permissions, hasPermission, router, isPublicRoute]);
 
+  // If there's an error loading permissions, allow access (fallback for mobile)
+  if (
+    pathname.startsWith('/dashboard') &&
+    !isPublicRoute &&
+    !isLoading &&
+    error &&
+    error !== 'unauthorized'
+  ) {
+    console.warn('Permissions failed to load due to network error, allowing access as fallback');
+    return (
+      <SessionContext.Provider value={{ session, loading: false, setSession }}>
+        {children}
+      </SessionContext.Provider>
+    );
+  }
+
   // While loading permissions, show loading state
   if (
     pathname.startsWith('/dashboard') &&
@@ -83,6 +99,9 @@ export const SessionProvider = ({
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="text-muted-foreground">Cargando permisos...</p>
+            {error && (
+              <p className="text-xs text-red-500 mt-2">Error: {error}</p>
+            )}
           </div>
         </div>
       </SessionContext.Provider>
@@ -94,7 +113,8 @@ export const SessionProvider = ({
     pathname.startsWith('/dashboard') &&
     !isPublicRoute &&
     !isLoading &&
-    permissions === null
+    permissions === null &&
+    !error
   ) {
     console.warn('Permissions failed to load, allowing access as fallback');
   }

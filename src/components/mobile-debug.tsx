@@ -9,6 +9,9 @@ export function MobileDebug() {
   const { session, loading } = useSessionContext();
   const { permissions, isLoading: permissionsLoading } = usePermissionsStore();
 
+  // Only show in development
+  if (process.env.NODE_ENV !== 'development') return null;
+
   if (!isMobile) return null;
 
   return (

@@ -6,6 +6,9 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { auth } from '@/lib/auth';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
+import { MobileDebug } from '@/components/mobile-debug';
+import { MobileErrorFallback } from '@/components/mobile-error-fallback';
+import { ErrorBoundary } from '@/components/error-boundary';
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -28,9 +31,14 @@ export default async function DashboardLayout({
           <AppSidebar />
           <SidebarInset>
             <Header />
+            <MobileDebug />
             {/* page main content */}
             <div className='container mx-auto max-w-[1400px]  px-2 sm:px-4'>
-              {children}
+              <ErrorBoundary>
+                <MobileErrorFallback>
+                  {children}
+                </MobileErrorFallback>
+              </ErrorBoundary>
             </div>
             {/* page main content ends */}
           </SidebarInset>

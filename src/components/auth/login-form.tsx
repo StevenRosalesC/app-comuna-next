@@ -32,6 +32,8 @@ export default function LoginForm() {
   const router = useRouter();
   const [loading, startTransition] = useTransition();
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const defaultValues = {
     email: '',
     password: ''
@@ -42,19 +44,28 @@ export default function LoginForm() {
   });
 
   const onSubmit = async (data: UserFormValue) => {
+    setError(null);
     startTransition(async () => {
-      const formData = new FormData();
-      formData.append('email', data.email);
-      formData.append('password', data.password);
-      const result = await login(formData);
+      try {
+        const formData = new FormData();
+        formData.append('email', data.email);
+        formData.append('password', data.password);
+        const result = await login(formData);
 
-      if (!result.ok) {
-        toast.error(result.error || 'Login failed');
-        return;
+        if (!result.ok) {
+          const errorMessage = result.error || 'Login failed. Please try again.';
+          setError(errorMessage);
+          toast.error(errorMessage);
+          return;
+        }
+
+        toast.success('Login successful');
+        router.push('/dashboard/overview');
+      } catch (err) {
+        const errorMessage = 'An unexpected error occurred. Please try again.';
+        setError(errorMessage);
+        toast.error(errorMessage);
       }
-
-      toast.success('Login successful');
-      router.push('/dashboard/overview');
     });
   };
 
@@ -65,6 +76,11 @@ export default function LoginForm() {
           onSubmit={form.handleSubmit(onSubmit)}
           className='w-full space-y-2'
         >
+          {error && (
+            <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+              {error}
+            </div>
+          )}
           <FormField
             control={form.control}
             name='email'
@@ -129,7 +145,7 @@ export default function LoginForm() {
             ¿Olvidaste tu contraseña?
           </Link>
           <Button disabled={loading} className='ml-auto w-full' type='submit'>
-            Iniciar sesión
+            {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
           </Button>
         </form>
       </Form>

@@ -16,12 +16,6 @@ const apiCommunity = axios.create({
 apiCommunity.interceptors.request.use(
   async (config) => {
     const token = await getToken();
-    console.log('API Request:', {
-      url: config.url,
-      method: config.method,
-      hasToken: !!token,
-      tokenLength: token?.length
-    });
     
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -39,21 +33,10 @@ apiCommunity.interceptors.request.use(
 // Response interceptor
 apiCommunity.interceptors.response.use(
   (response) => {
-    console.log('API Response:', {
-      url: response.config.url,
-      status: response.status,
-      data: response.data
-    });
     return response;
   },
   (error) => {
-    console.error('API Response Error:', {
-      url: error.config?.url,
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      data: error.response?.data,
-      message: error.message
-    });
+    console.error('API Response Error:', error);
     return Promise.reject(error);
   }
 );

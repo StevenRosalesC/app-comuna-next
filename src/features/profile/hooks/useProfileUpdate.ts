@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSessionContext } from '@/components/providers/session-Provider';
+import apiCommunity from '@/utils/communityApi';
 
 interface UpdateProfileRequest {
   username?: string;
@@ -20,20 +21,13 @@ interface UpdateProfileResponse {
 const updateUserProfile = async (
   profileData: UpdateProfileRequest,
 ): Promise<UpdateProfileResponse> => {
-  const response = await fetch('/api/users/me', {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(profileData),
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(Array.isArray(error.message) ? error.message.join(', ') : error.message);
+  try {
+    const response = await apiCommunity.patch('/users/me', profileData);  
+  
+    return response.data;
+  } catch (error) {
+    throw error;
   }
-
-  return response.json();
 };
 
 export const useProfileUpdate = () => {

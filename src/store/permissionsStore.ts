@@ -17,7 +17,6 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
     const { isLoading, permissions } = get();
     if (isLoading || permissions) return; // Prevent infinite loop
     
-    console.log('Starting permissions fetch...');
     set({ isLoading: true, error: null });
     
     // Add timeout to prevent infinite loading (shorter for mobile)
@@ -27,17 +26,14 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
     }, 5000); // 5 seconds timeout for mobile
     
     try {
-      console.log('Making API call to /users/me...');
       const { data } = await apiCommunity.get<{
         permissions: Record<string, string[]>;
       }>('/users/me');
       
       clearTimeout(timeoutId);
-      console.log('API response received:', data);
       
       // Validate that permissions exist and have the expected structure
       if (data && data.permissions && typeof data.permissions === 'object') {
-        console.log('Permissions loaded successfully:', data.permissions);
         set({ permissions: data.permissions, isLoading: false, error: null });
       } else {
         console.warn('Invalid permissions structure received:', data);
@@ -45,13 +41,7 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
       }
     } catch (error: any) {
       clearTimeout(timeoutId);
-      console.error('Error fetching permissions:', error);
-      console.error('Error details:', {
-        message: error.message,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data
-      });
+        console.error('Error fetching permissions:', error);
       set({ 
         permissions: null, 
         isLoading: false, 

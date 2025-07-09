@@ -8,4 +8,5 @@ export interface AuthResponse {
   role: string;
   roleId: string;
   token: string;
+  permissions: Record<string, string[]>;
 }

@@ -16,13 +16,11 @@ export function usePermission(module: string, actions: string[]): boolean {
   
   // Check if module exists in permissions
   if (!permissions || !permissions[module]) {
-    console.warn(`Module ${module} not found in permissions, allowing access as fallback`);
     return true;
   }
   
   // Check if permissions array is valid
   if (!Array.isArray(permissions[module]) || !permissions[module].length) {
-    console.warn(`Invalid permissions structure for module: ${module}, allowing access as fallback`);
     return true;
   }
   

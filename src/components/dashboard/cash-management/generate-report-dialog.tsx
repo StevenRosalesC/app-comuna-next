@@ -48,7 +48,6 @@ export function GenerateReportDialog() {
       toast.success('Reporte generado y descargado exitosamente');
       setIsOpen(false);
     } catch (error) {
-      console.error('Error generating report:', error);
       toast.error('Error al generar el reporte');
     } finally {
       setIsLoading(false);

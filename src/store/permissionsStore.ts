@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from 'zustand';
 import apiCommunity from '@/utils/communityApi';
 
 interface PermissionsState {
@@ -21,7 +21,6 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
     
     // Add timeout to prevent infinite loading (shorter for mobile)
     const timeoutId = setTimeout(() => {
-      console.warn('Permissions fetch timeout, allowing access as fallback');
       set({ permissions: null, isLoading: false, error: 'timeout' });
     }, 5000); // 5 seconds timeout for mobile
     
@@ -36,12 +35,9 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
       if (data && data.permissions && typeof data.permissions === 'object') {
         set({ permissions: data.permissions, isLoading: false, error: null });
       } else {
-        console.warn('Invalid permissions structure received:', data);
         set({ permissions: null, isLoading: false, error: 'invalid_structure' });
       }
     } catch (error: any) {
-      clearTimeout(timeoutId);
-        console.error('Error fetching permissions:', error);
       set({ 
         permissions: null, 
         isLoading: false, 

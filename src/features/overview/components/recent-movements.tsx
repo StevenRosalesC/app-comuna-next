@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { dashboardService, type RecentMovement } from '@/services/dashboard';
-import { Calendar, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { Calendar, TrendingUp, TrendingDown } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
 interface RecentMovementsProps {

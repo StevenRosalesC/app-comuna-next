@@ -1,5 +1,4 @@
 import apiCommunity from '@/utils/communityApi';
-import { ServiceResponse } from '../interfaces/common';
 
 export type ExportOperator = 'contains' | 'equals' | 'startsWith' | 'endsWith' | 'gte' | 'lte';
 
@@ -26,7 +25,7 @@ export interface ExportParams {
 }
 
 export const exportService = {
-  // Export table data to PDF using flat query params
+  // Export table data to PDF using flat query params 
   async exportTableToPDF(params: ExportParams): Promise<Blob> {
     try {
       const query: Record<string, any> = {

@@ -79,7 +79,6 @@ export const SessionProvider = ({
     error &&
     error !== 'unauthorized'
   ) {
-    console.warn('Permissions failed to load due to network error, allowing access as fallback');
     return (
       <SessionContext.Provider value={{ session, loading: false, setSession }}>
         {children}
@@ -116,7 +115,6 @@ export const SessionProvider = ({
     permissions === null &&
     !error
   ) {
-    console.warn('Permissions failed to load, allowing access as fallback');
   }
 
   // If the user does not have permission, redirect instead of returning null

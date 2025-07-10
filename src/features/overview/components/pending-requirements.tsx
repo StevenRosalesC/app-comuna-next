@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { dashboardService, type PendingRequirement } from '@/services/dashboard';
-import { Calendar, User, FileText, Clock } from 'lucide-react';
+import { Calendar, User, FileText } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
 

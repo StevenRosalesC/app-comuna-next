@@ -17,7 +17,6 @@ import {
   TrendingUp,
   TrendingDown,
   Receipt,
-  FileText
 } from 'lucide-react';
 import { ActiveCashRegisterWrapper } from './active-cash-register-wrapper';
 import { CashRegistersHistoryTable } from './cash-registers-history-table';

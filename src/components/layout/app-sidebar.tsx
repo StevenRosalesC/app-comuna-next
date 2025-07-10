@@ -49,7 +49,6 @@ import { useSessionContext } from '../providers/session-Provider';
 import { logout } from '@/app/actions/auth-actions';
 import Image from 'next/image';
 import { Link } from 'next-view-transitions';
-import { usePermission } from '@/hooks/usePermission';
 import { modulesPermissions } from '@/constants/permissions';
 import { usePermissionsStore } from '@/store/permissionsStore';
 
@@ -150,7 +149,6 @@ function SidebarMenuItemWithPermission({
 export default function AppSidebar() {
   const { session, setSession } = useSessionContext();
   const userPermissions = session?.permissions || {};
-  console.log({ session });
   const { clearPermissions } = usePermissionsStore();
   const pathname = usePathname();
   const [currentPath, setCurrentPath] = useState<string>(pathname);

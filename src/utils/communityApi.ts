@@ -19,13 +19,10 @@ apiCommunity.interceptors.request.use(
     
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-    } else {
-      console.warn('No token found for API request:', config.url);
     }
     return config;
   },
   (error) => {
-    console.error('Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
@@ -36,7 +33,6 @@ apiCommunity.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error('API Response Error:', error);
     return Promise.reject(error);
   }
 );

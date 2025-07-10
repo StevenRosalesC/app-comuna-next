@@ -57,7 +57,6 @@ export function ExpensesTable({ onRefresh }: ExpensesTableProps) {
   const {
     data: expensesData,
     isLoading,
-    refetch,
   } = useQuery<PaginatedExpensesResponse, Error>({
     queryKey: ['expenses', filters],
     queryFn: () => cashRegisterService.getExpenses(filters),
@@ -77,7 +76,6 @@ export function ExpensesTable({ onRefresh }: ExpensesTableProps) {
       onRefresh?.();
     },
     onError: (error: any) => {
-      console.error('Error canceling expense:', error);
       toast.error(error.response?.data?.message || 'Error al cancelar el gasto');
     },
   });

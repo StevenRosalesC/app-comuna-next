@@ -20,6 +20,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useSessionContext } from '@/components/providers/session-Provider';
 import { useProfileUpdate } from '../hooks/useProfileUpdate';
 import { CheckCircle, AlertTriangle, Eye, EyeOff } from 'lucide-react';
+import { toast } from 'sonner';
 
 // Validation schema for profile update
 const profileUpdateSchema = z.object({
@@ -43,16 +44,6 @@ interface UpdateProfileRequest {
   username?: string;
   password?: string;
   email?: string;
-}
-
-interface UpdateProfileResponse {
-  id: string;
-  username: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  permissions: Record<string, string[]>;
 }
 
 export default function UserProfileForm() {
@@ -102,7 +93,7 @@ export default function UserProfileForm() {
 
     } catch (err: any) {
       // Error is handled by the hook
-      console.error('Profile update error:', err);
+      toast.error('Error al actualizar el perfil');
     }
   };
 

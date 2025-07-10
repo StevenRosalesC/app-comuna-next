@@ -26,7 +26,6 @@ import { DateRange } from 'react-day-picker';
 import { subDays } from 'date-fns';
 import { Icons } from '@/components/icons';
 import { RefreshCw, Eye } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { InvoiceDetailsDialog } from '@/components/dashboard/members/invoice-details-dialog';
 
 interface CancelledInvoicesTableProps {

@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useSessionContext } from '@/components/providers/session-Provider';
 import { logout } from '@/app/actions/auth-actions';
 import { usePermissionsStore } from '@/store/permissionsStore';
-import { User, Settings, CreditCard, LogOut } from 'lucide-react';
+import { User, LogOut } from 'lucide-react';
 import { Link } from 'next-view-transitions';
 
 export function UserNav() {

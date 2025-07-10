@@ -46,7 +46,7 @@ interface IncomesTableProps {
 export function IncomesTable({ onRefresh }: IncomesTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [pageIndex, setPageIndex] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize] = useState(10);
   const [activeRegister, setActiveRegister] = useState<any>(null);
 
   const queryClient = useQueryClient();
@@ -58,7 +58,7 @@ export function IncomesTable({ onRefresh }: IncomesTableProps) {
         const register = await cashRegisterService.getActiveRegister();
         setActiveRegister(register);
       } catch (error) {
-        console.error('Error fetching active register:', error);
+        toast.error('Error al obtener la caja activa');
       }
     };
 
@@ -94,7 +94,6 @@ export function IncomesTable({ onRefresh }: IncomesTableProps) {
       onRefresh?.();
     },
     onError: (error: any) => {
-      console.error('Error cancelling income:', error);
       toast.error(error.response?.data?.message || 'Error al anular el ingreso');
     },
   });
@@ -105,7 +104,7 @@ export function IncomesTable({ onRefresh }: IncomesTableProps) {
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    setPageIndex(0); // Reset to first page when searching
+    setPageIndex(0);
   };
 
   const handleRefresh = () => {

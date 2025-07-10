@@ -1,7 +1,7 @@
 export const modulesPermissions = [
   {
     module: 'persons',
-    route: 'persons',
+    route: '/dashboard/persons',
     actions: [
       'read',
       'update',
@@ -13,7 +13,7 @@ export const modulesPermissions = [
   },
   {
     module: 'admin',
-    route: 'admin',
+    route: '/dashboard/admin',
     actions: [
       'read',
       'update',
@@ -38,13 +38,13 @@ export const modulesPermissions = [
   },
   {
     module: 'dashboard',
-    route: 'overview',
+    route: '/dashboard/overview',
     actions: ['read'],
     label: 'Dashboard'
   },
   {
     module: 'members',
-    route: 'members',
+    route: '/dashboard/members',
     actions: [
       'read',
       'update', 
@@ -58,25 +58,25 @@ export const modulesPermissions = [
   },
   {
     module: 'notices',
-    route: 'notices',
+    route: '/dashboard/notices',
     actions: ['read', 'update', 'delete'],
     label: 'Noticias'
   },
   {
     module: 'users',
-    route: 'users',
+    route: '/dashboard/users',
     actions: ['read', 'update', 'delete'],
     label: 'Usuarios'
   },
   {
     module: 'roles',
-    route: 'roles',
+    route: '/dashboard/roles',
     actions: ['read', 'update', 'delete'],
     label: 'Roles'
   },
   {
     module: 'cash-management',
-    route: 'cash-management',
+    route: '/dashboard/cash-management',
     actions: [
       'read',
       'update',
@@ -97,13 +97,13 @@ export const modulesPermissions = [
   },
   {
     module: 'reports',
-    route: 'reports',
+    route: '/dashboard/reports',
     actions: ['read', 'generate', 'export', 'schedule'],
     label: 'Reportes'
   },
   {
     module: 'analytics',
-    route: 'analytics',
+    route: '/dashboard/analytics',
     actions: [
       'read',
       'export',

@@ -13,21 +13,14 @@ export function usePermission(module: string, actions: string[]): boolean {
   // If still loading, return false to prevent premature access
   if (isLoading) return false;
   
-  // If permissions failed to load, allow access as fallback (for mobile)
-  if (!permissions) {
-    console.warn(`Permissions not loaded for module: ${module}, allowing access as fallback`);
-    return true;
-  }
   
   // Check if module exists in permissions
-  if (!permissions[module]) {
-    console.warn(`Module ${module} not found in permissions, allowing access as fallback`);
+  if (!permissions || !permissions[module]) {
     return true;
   }
   
   // Check if permissions array is valid
-  if (!Array.isArray(permissions[module])) {
-    console.warn(`Invalid permissions structure for module: ${module}, allowing access as fallback`);
+  if (!Array.isArray(permissions[module]) || !permissions[module].length) {
     return true;
   }
   

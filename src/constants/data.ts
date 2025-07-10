@@ -44,14 +44,6 @@ export const navItems: NavItem[] = [
     shortcut: ['u', 'u']
   },
   {
-    title: 'Kanban',
-    url: '/dashboard/kanban',
-    icon: 'kanban',
-    shortcut: ['k', 'k'],
-    isActive: false,
-    items: [] // No child items
-  },
-  {
     title: 'Administrador',
     url: '/dashboard/admin',
     icon: 'shieldCheck',

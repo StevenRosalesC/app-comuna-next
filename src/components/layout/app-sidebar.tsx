@@ -49,7 +49,6 @@ import { useSessionContext } from '../providers/session-Provider';
 import { logout } from '@/app/actions/auth-actions';
 import Image from 'next/image';
 import { Link } from 'next-view-transitions';
-import { usePermission } from '@/hooks/usePermission';
 import { modulesPermissions } from '@/constants/permissions';
 import { usePermissionsStore } from '@/store/permissionsStore';
 
@@ -60,10 +59,12 @@ export const company = {
 
 function SidebarMenuItemWithPermission({
   item,
-  pathname
+  pathname,
+  userPermissions
 }: {
   item: NavItem;
   pathname: string;
+  userPermissions: Record<string, string[]>;
 }) {
   const getModuleFromUrl = (url: string) => {
     const parts = url.split('/');
@@ -72,7 +73,14 @@ function SidebarMenuItemWithPermission({
   const rawMod = getModuleFromUrl(item.url);
   const moduleConfig = modulesPermissions.find((m) => m.route === rawMod);
   const mod = moduleConfig?.module || rawMod;
-  const canAccess = usePermission(mod, ['read']);
+
+  // Local permission check
+  function hasPermission(module: string, actions: string[]) {
+    if (!userPermissions[module]) return false;
+    return actions.some(action => userPermissions[module].includes(action));
+  }
+
+  const canAccess = hasPermission(mod, ['read']);
   if (!canAccess) return null;
   const Icon = item.icon ? Icons[item.icon] : Icons.logo;
   return item?.items && item?.items?.length > 0 ? (
@@ -140,12 +148,11 @@ function SidebarMenuItemWithPermission({
 
 export default function AppSidebar() {
   const { session, setSession } = useSessionContext();
+  const userPermissions = session?.permissions || {};
   const { clearPermissions } = usePermissionsStore();
   const pathname = usePathname();
   const [currentPath, setCurrentPath] = useState<string>(pathname);
-  // const { data: session } = useSession();
   const [userAccess] = useState<NavItem[]>(navItems);
-  // const { state, isMobile } = useSidebar();
 
   useEffect(() => {
     setCurrentPath(pathname);
@@ -178,6 +185,7 @@ export default function AppSidebar() {
                 key={item.title}
                 item={item}
                 pathname={currentPath}
+                userPermissions={userPermissions}
               />
             ))}
           </SidebarMenu>

@@ -68,7 +68,6 @@ export default function NeighborhoodsTable() {
   const [editNeighborhood, setEditNeighborhood] = useState<Neighborhood | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteNeighborhood, setDeleteNeighborhood] = useState<Neighborhood | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
 
   // Edit form

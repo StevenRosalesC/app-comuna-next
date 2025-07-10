@@ -8,8 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { cashRegisterService } from '@/services/cash-register';
-import { CreateIncomeDto, CashRegister } from '@/interfaces/cash-register';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { CreateIncomeDto } from '@/interfaces/cash-register';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface CreateIncomeFormProps {
   onSuccess?: () => void;
@@ -17,7 +17,6 @@ interface CreateIncomeFormProps {
 }
 
 export function CreateIncomeForm({ onSuccess, onCancel }: CreateIncomeFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<CreateIncomeDto>({
     description: '',
     amount: 0,
@@ -27,7 +26,7 @@ export function CreateIncomeForm({ onSuccess, onCancel }: CreateIncomeFormProps)
   });
 
   // Get active cash register with React Query
-  const { data: activeRegister, isLoading: isLoadingRegister } = useQuery({
+  const { data: activeRegister } = useQuery({
     queryKey: ['activeCashRegister'],
     queryFn: cashRegisterService.getActiveRegister,
   });
@@ -101,7 +100,6 @@ export function CreateIncomeForm({ onSuccess, onCancel }: CreateIncomeFormProps)
               placeholder="Descripción del ingreso"
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
-              disabled={isLoading}
             />
           </div>
 
@@ -115,7 +113,6 @@ export function CreateIncomeForm({ onSuccess, onCancel }: CreateIncomeFormProps)
               placeholder="0.00"
               value={formData.amount}
               onChange={(e) => handleInputChange('amount', parseFloat(e.target.value) || 0)}
-              disabled={isLoading}
               required
             />
           </div>
@@ -127,7 +124,6 @@ export function CreateIncomeForm({ onSuccess, onCancel }: CreateIncomeFormProps)
               type="date"
               value={formData.incomeDate}
               onChange={(e) => handleInputChange('incomeDate', e.target.value)}
-              disabled={isLoading}
             />
           </div>
 
@@ -139,24 +135,21 @@ export function CreateIncomeForm({ onSuccess, onCancel }: CreateIncomeFormProps)
               placeholder="Código opcional"
               value={formData.expense_code || ''}
               onChange={(e) => handleInputChange('expense_code', parseInt(e.target.value) || undefined)}
-              disabled={isLoading}
             />
           </div>
 
           <div className="flex gap-2 pt-4">
             <Button
               type="submit"
-              disabled={isLoading}
               className="flex-1"
             >
-              {isLoading ? 'Registrando...' : 'Registrar Ingreso'}
+              {createIncomeMutation.isPending ? 'Registrando...' : 'Registrar Ingreso'}
             </Button>
             {onCancel && (
               <Button
                 type="button"
                 variant="outline"
                 onClick={onCancel}
-                disabled={isLoading}
               >
                 Cancelar
               </Button>

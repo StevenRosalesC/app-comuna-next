@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { dashboardService, type DashboardSummary } from '@/services/dashboard';
-import { Users, UserCheck, DollarSign, FileText, AlertCircle, TrendingUp, TrendingDown } from 'lucide-react';
+import { Users, UserCheck, FileText, AlertCircle, TrendingUp, TrendingDown } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
 export function DashboardSummary() {

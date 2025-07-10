@@ -7,7 +7,7 @@ import { usePermissionsStore } from '@/store/permissionsStore';
 export function MobileDebug() {
   const isMobile = useIsMobile();
   const { session, loading } = useSessionContext();
-  const { permissions, isLoading: permissionsLoading } = usePermissionsStore();
+  const { permissions, isLoading: permissionsLoading, error } = usePermissionsStore();
 
   // Only show in development
   if (process.env.NODE_ENV !== 'development') return null;
@@ -22,6 +22,7 @@ export function MobileDebug() {
         <span>Loading: {loading ? 'Yes' : 'No'}</span>
         <span>Perms: {permissions ? 'Yes' : 'No'}</span>
         <span>PermsLoading: {permissionsLoading ? 'Yes' : 'No'}</span>
+        <span>Error: {error || 'None'}</span>
         <span>Width: {typeof window !== 'undefined' ? window.innerWidth : 'SSR'}</span>
       </div>
     </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import {
@@ -40,16 +40,13 @@ export function CashRegistersHistoryTable() {
     to: new Date()
   });
 
-  const [filters, setFilters] = useState({
+  const [filters] = useState({
     limit: 10,
     offset: 0,
     startDate: undefined,
     endDate: undefined,
   });
 
-  const queryClient = useQueryClient();
-
-  // Obtener historial de cajas con React Query
   const { data, isLoading, refetch, isError } = useQuery<PaginatedCashRegistersResponse, Error>({
     queryKey: ['cashRegistersHistory', filters],
     queryFn: () => cashRegisterService.getCashRegisters(filters),

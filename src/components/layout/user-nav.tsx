@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useSessionContext } from '@/components/providers/session-Provider';
 import { logout } from '@/app/actions/auth-actions';
 import { usePermissionsStore } from '@/store/permissionsStore';
-import { User, Settings, CreditCard, LogOut } from 'lucide-react';
+import { User, LogOut } from 'lucide-react';
 import { Link } from 'next-view-transitions';
 
 export function UserNav() {
@@ -58,16 +58,7 @@ export function UserNav() {
               <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Settings className="mr-2 h-4 w-4" />
-            Configuración
-            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <CreditCard className="mr-2 h-4 w-4" />
-            Facturación
-            <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
-          </DropdownMenuItem>
+
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>

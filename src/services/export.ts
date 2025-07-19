@@ -22,28 +22,56 @@ export interface ExportParams {
   limit?: number;
   orderBy?: string;
   order?: 'asc' | 'desc';
+  filters?: Record<string, any>;
+  customColumns?: string[];
+  orientation?: 'portrait' | 'landscape';
 }
 
 export const exportService = {
   // Export table data to PDF using flat query params 
   async exportTableToPDF(params: ExportParams): Promise<Blob> {
     try {
-      const query: Record<string, any> = {
+      const requestBody: Record<string, any> = {
         ...(params.title && { title: params.title }),
         ...(params.limit && { limit: params.limit }),
         ...(params.orderBy && { orderBy: params.orderBy }),
         ...(params.order && { order: params.order }),
-        ...(params.columns && params.columns.length > 0 && { columns: JSON.stringify(params.columns) }),
+        ...(params.columns && params.columns.length > 0 && { columns: params.columns }),
+        ...(params.customColumns && params.customColumns.length > 0 && { customColumns: params.customColumns }),
+        ...(params.orientation && { orientation: params.orientation }),
         ...params.queryParams,
+        ...params.filters,
       };
-      const queryParams = new URLSearchParams();
-      Object.entries(query).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          queryParams.append(key, String(value));
-        }
-      });
-      const response = await apiCommunity.get(`/reports/table-export?${queryParams.toString()}`, {
+      
+      console.log({ requestBody });
+      const response = await apiCommunity.post('/reports/table-export', requestBody, {
         responseType: 'blob',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Export table data to Excel using POST with JSON body (same as PDF)
+  async exportTableToExcel(params: ExportParams): Promise<Blob> {
+    try {
+      const requestBody: Record<string, any> = {
+        ...(params.title && { title: params.title }),
+        ...(params.limit && { limit: params.limit }),
+        ...(params.orderBy && { orderBy: params.orderBy }),
+        ...(params.order && { order: params.order }),
+        ...(params.columns && params.columns.length > 0 && { columns: params.columns }),
+        ...(params.customColumns && params.customColumns.length > 0 && { customColumns: params.customColumns }),
+        ...(params.orientation && { orientation: params.orientation }),
+        ...params.queryParams,
+        ...params.filters,
+      };
+      
+      const response = await apiCommunity.post('/reports/table-export-excel', requestBody, {
+        responseType: 'blob',
+        headers: { 'Content-Type': 'application/json' }
       });
       return response.data;
     } catch (error) {

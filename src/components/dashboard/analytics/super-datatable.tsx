@@ -19,6 +19,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useDebounce } from '@/hooks/use-debounce';
 import { exportToExcel } from '@/utils/exportUtils';
 import { toast } from 'sonner';
+import { transformParamsForExport } from '@/utils/paramsExport';
 
 // QuickActions component for analytics
 const QuickActions = ({ onSelect }: { onSelect: (filters: AnalyticsQuery) => void }) => (
@@ -163,7 +164,7 @@ export const SuperDataTable = () => {
   const { neighborhoods, requirements, loading: optionsLoading } = useFilterOptions();
 
   // Export hook
-  const { exportToPDF } = useExport();
+  const { exportToPDF, exportToExcel } = useExport();
 
   // Always call both hooks, select the correct result
   const initialQuery = useInitialAnalytics(paginationParams);
@@ -259,12 +260,14 @@ export const SuperDataTable = () => {
 
   // Handles export for both PDF and Excel. PDF logic is legacy and should not be changed.
   const handleExport = async (reportName: string, type: 'pdf' | 'excel') => {
+    const filters = transformParamsForExport(filterParams);
+    console.log({ filters });
     if (type === 'pdf') {
       // PDF export: do not change this logic
       (exportToPDF as any)({
         tableType: 'persons',
         title: reportName,
-        filters: [], // or your PDF filter logic
+        filters, // or your PDF filter logic
         sorting: {
           field: currentSort.field,
           direction: currentSort.order,
@@ -280,21 +283,25 @@ export const SuperDataTable = () => {
         limit: 1000,
       });
     } else {
-      // Excel export: use only flat filters as per documentation
-      const exportFilters = buildExcelExportFilters({
-        reportName,
-        paginationParams,
-        filterParams,
-        currentSort,
+      // Excel export: use specific Excel endpoint
+      (exportToExcel as any)({
+        tableType: 'persons',
+        title: reportName,
+        filters: filterParams, // Use same filter pattern as PDF
+        sorting: {
+          field: currentSort.field,
+          direction: currentSort.order,
+        },
+        columns: [
+          'identification',
+          'firstName',
+          'lastName',
+          'birthDate',
+          'email',
+          'phone',
+        ],
+        limit: 1000,
       });
-      let toastId: string | number | undefined;
-      try {
-        toastId = toast.loading('Generating Excel file...');
-        await exportToExcel(exportFilters);
-        toast.success('Excel file downloaded successfully', { id: toastId });
-      } catch (error: any) {
-        toast.error(`Export error: ${error.message || error}`, { id: toastId });
-      }
     }
   };
 
@@ -431,6 +438,7 @@ export const SuperDataTable = () => {
             Exportar PDF
           </Button>
         </ExportNameDialog>
+        {/* Temporarily disabled Excel export
         <ExportNameDialog
           onExport={handleExport}
           defaultTitle={`Reporte de Análisis - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'}`}
@@ -440,13 +448,14 @@ export const SuperDataTable = () => {
             Exportar Excel
           </Button>
         </ExportNameDialog>
+        */}
         <AnalyticsExportDialog
           tableType="persons"
           title={`Reporte de Análisis - ${viewMode === 'filtered' ? 'Datos Filtrados' : 'Todos los Datos'}`}
           sorting={{ field: currentSort.field, direction: currentSort.order }}
           searchTerm={paginationParams.search}
           viewMode={viewMode}
-          analyticsFilters={filterParams}
+          analyticsFilters={filterPanelState}
           currentData={currentData}
           totalCount={currentCount}
         />

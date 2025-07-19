@@ -3,34 +3,19 @@ import apiCommunity from './communityApi';
 
 // Utilidad para exportar a Excel
 export async function exportToExcel(params: any) {
-  // Only allow parameters accepted by the Excel export endpoint
-  const allowedKeys = ['title', 'columns', 'limit'];
-  const queryParams = new URLSearchParams();
-  Object.entries(params).forEach(([key, value]) => {
-    if (allowedKeys.includes(key) && value !== undefined && value !== null && value !== '') {
-      if (Array.isArray(value)) {
-        queryParams.append(key, JSON.stringify(value));
-      } else {
-        queryParams.append(key, String(value));
-      }
-    }
-  });
-
-  const url = `reports/table-export-excel?${queryParams.toString()}`;
-
-  const response = await apiCommunity.get(url, {
-    responseType: 'blob',
-  });
-
-  const blob = response.data;
-  const downloadUrl = window.URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = downloadUrl;
-  link.download = `${params.title || 'reporte'}.xlsx`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  window.URL.revokeObjectURL(downloadUrl);
+  try {
+    const blob = await exportService.exportTableToExcel(params);
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = `${params.title || 'reporte'}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(downloadUrl);
+  } catch (error) {
+    throw error;
+  }
 }
 
 // Plain utility for PDF export (for centralization)

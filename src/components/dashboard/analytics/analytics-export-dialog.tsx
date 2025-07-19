@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Download, Settings, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { exportTable } from '@/utils/exportTable';
+import { ExportParams } from '@/services/export';
 
 interface AnalyticsExportDialogProps {
   tableType: string;
@@ -91,20 +92,58 @@ export const AnalyticsExportDialog = ({
     setCustomColumns(customColumns.filter(c => c !== col));
   };
 
+  // Utility to flatten analytics filters for export
+  function flattenFilters(filters: any) {
+    const flat: Record<string, any> = {};
+    if (!filters) return flat;
+    if (filters.ageFilter) {
+      if (filters.ageFilter.minAge !== undefined) flat.minAge = filters.ageFilter.minAge;
+      if (filters.ageFilter.maxAge !== undefined) flat.maxAge = filters.ageFilter.maxAge;
+    }
+    if (filters.gender !== undefined) flat.gender = filters.gender;
+    if (filters.membershipFilter) {
+      if (filters.membershipFilter.status !== undefined) flat.membershipStatus = filters.membershipFilter.status;
+      if (filters.membershipFilter.neighborhoodId !== undefined) flat.neighborhoodId = filters.membershipFilter.neighborhoodId;
+      if (filters.membershipFilter.neighborhoodName !== undefined) flat.neighborhoodName = filters.membershipFilter.neighborhoodName;
+    }
+    if (filters.requirementsFilter) {
+      if (filters.requirementsFilter.allApproved !== undefined) flat.allRequirementsApproved = filters.requirementsFilter.allApproved;
+    }
+    if (filters.disabilityFilter) {
+      if (filters.disabilityFilter.hasDisability !== undefined) flat.hasDisability = filters.disabilityFilter.hasDisability;
+      if (filters.disabilityFilter.minPercentage !== undefined) flat.minDisabilityPercentage = filters.disabilityFilter.minPercentage;
+      if (filters.disabilityFilter.maxPercentage !== undefined) flat.maxDisabilityPercentage = filters.disabilityFilter.maxPercentage;
+    }
+    if (filters.financialFilter) {
+      if (filters.financialFilter.feeStatus !== undefined) flat.feeStatus = filters.financialFilter.feeStatus;
+      if (filters.financialFilter.minAmountDue !== undefined) flat.minAmountDue = filters.financialFilter.minAmountDue;
+      if (filters.financialFilter.maxAmountDue !== undefined) flat.maxAmountDue = filters.financialFilter.maxAmountDue;
+      if (filters.financialFilter.year !== undefined) flat.feeYear = filters.financialFilter.year;
+    }
+    return flat;
+  }
+
   const handleExport = async () => {
     setLoading(true);
-    const params: any = {
+
+    // Aplanar los filtros para enviarlos como propiedades del JSON
+    const flattenedFilters = flattenFilters(analyticsFilters);
+
+    const params: ExportParams = {
       tableType,
       title: exportTitle,
-      sorting,
+      orderBy: sorting?.field,
+      order: sorting?.direction,
       columns: selectedColumns,
-      customColumns,
-      orientation,
+      customColumns: customColumns.length > 0 ? customColumns : undefined,
       limit: exportLimit,
-      search: searchTerm,
-      viewMode,
-      analyticsFilters,
+      orientation,
+      queryParams: {
+        ...flattenedFilters,
+        ...(searchTerm && { search: searchTerm }),
+      },
     };
+
     try {
       toast.dismiss();
       toast.loading(exportType === 'pdf' ? 'Generando PDF...' : 'Generando Excel...');
@@ -149,7 +188,9 @@ export const AnalyticsExportDialog = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="pdf">PDF</SelectItem>
+                {/* Temporarily disabled Excel export
                 <SelectItem value="excel">Excel</SelectItem>
+                */}
               </SelectContent>
             </Select>
           </div>

@@ -48,7 +48,7 @@ import { useEffect, useState } from 'react';
 import { useSessionContext } from '../providers/session-Provider';
 import { logout } from '@/app/actions/auth-actions';
 import Image from 'next/image';
-import { Link } from 'next-view-transitions';
+import Link from 'next/link';
 import { modulesPermissions } from '@/constants/permissions';
 import { usePermissionsStore } from '@/store/permissionsStore';
 
@@ -77,7 +77,7 @@ function SidebarMenuItemWithPermission({
   // Local permission check
   function hasPermission(module: string, actions: string[]) {
     if (!userPermissions[module]) return false;
-    return actions.some(action => userPermissions[module].includes(action));
+    return actions.some((action) => userPermissions[module].includes(action));
   }
 
   const canAccess = hasPermission(mod, ['read']);
@@ -120,13 +120,7 @@ function SidebarMenuItemWithPermission({
       </SidebarMenuItem>
     </Collapsible>
   ) : (
-    <SidebarMenuItem
-      key={item.title}
-      className={`${pathname === item.url
-        ? 'rounded-lg bg-green-100 font-bold text-green-900 dark:bg-green-900 dark:text-green-100'
-        : ''
-        } transition-all duration-300 ease-in-out hover:rounded-lg hover:bg-green-100 hover:text-green-900 dark:hover:bg-green-900 dark:hover:text-green-100`}
-    >
+    <SidebarMenuItem key={item.title}>
       <SidebarMenuButton
         asChild
         tooltip={item.title}
@@ -134,12 +128,7 @@ function SidebarMenuItemWithPermission({
       >
         <Link href={item.url}>
           <Icon />
-          <span
-            className={`${pathname === item.url ? 'font-bold text-green-900' : ''
-              }`}
-          >
-            {item.title}
-          </span>
+          <span>{item.title}</span>
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>
@@ -149,7 +138,7 @@ function SidebarMenuItemWithPermission({
 export default function AppSidebar() {
   const { session, setSession } = useSessionContext();
   const userPermissions = session?.permissions || {};
-  const { clearPermissions } = usePermissionsStore();
+  const clearPermissions = usePermissionsStore((state) => state.clearPermissions);
   const pathname = usePathname();
   const [currentPath, setCurrentPath] = useState<string>(pathname);
   const [userAccess] = useState<NavItem[]>(navItems);
@@ -221,7 +210,7 @@ export default function AppSidebar() {
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className='w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg'
+                className='w-[var(--radix-dropdown-menu-trigger-width)] min-w-56 rounded-lg'
                 side='bottom'
                 align='end'
                 sideOffset={4}
@@ -248,21 +237,21 @@ export default function AppSidebar() {
 
                 <DropdownMenuGroup>
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard/profile">
-                      <User className="mr-2 h-4 w-4" />
+                    <Link href='/dashboard/profile'>
+                      <User className='mr-2 h-4 w-4' />
                       Perfil
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <BadgeCheck />
+                    <BadgeCheck className='mr-2 h-4 w-4' />
                     Cuenta
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <CreditCard />
+                    <CreditCard className='mr-2 h-4 w-4' />
                     Facturación
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Bell />
+                    <Bell className='mr-2 h-4 w-4' />
                     Notificaciones
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
@@ -274,7 +263,7 @@ export default function AppSidebar() {
                     logout();
                   }}
                 >
-                  <LogOut />
+                  <LogOut className='mr-2 h-4 w-4' />
                   Cerrar sesión
                 </DropdownMenuItem>
               </DropdownMenuContent>

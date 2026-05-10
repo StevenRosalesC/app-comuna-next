@@ -71,7 +71,7 @@ function SidebarMenuItemWithPermission({
     return parts.length > 2 ? parts[2] : '';
   };
   const rawMod = getModuleFromUrl(item.url);
-  const moduleConfig = modulesPermissions.find((m) => m.route === rawMod);
+  const moduleConfig = modulesPermissions.find((m) => m.route === item.url);
   const mod = moduleConfig?.module || rawMod;
 
   // Local permission check

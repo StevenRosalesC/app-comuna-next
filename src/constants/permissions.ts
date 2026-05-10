@@ -7,7 +7,8 @@ export const modulesPermissions = [
       'update',
       'delete',
       'approve_requirements',
-      'list_all'
+      'list_all',
+      'create',
     ],
     label: 'Personas'
   },
@@ -49,6 +50,9 @@ export const modulesPermissions = [
       'read',
       'update', 
       'delete',
+      'create',
+      'approve_requirements',
+      'list_all',
       'upload_documents',
       'read_documents',
       'read_history_payments',

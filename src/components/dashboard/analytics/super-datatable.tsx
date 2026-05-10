@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -131,6 +131,7 @@ function buildExcelExportFilters({
 export const SuperDataTable = () => {
   // State for view mode (initial vs filtered)
   const [viewMode, setViewMode] = useState<'initial' | 'filtered'>('initial');
+  const didRestoreFromUrl = useRef(false);
 
   // State for pagination
   const [paginationParams, setPaginationParams] = useState<PaginationParams>({
@@ -346,7 +347,16 @@ export const SuperDataTable = () => {
     if (pagination.search) params.set('search', pagination.search);
     if (pagination.orderBy) params.set('orderBy', pagination.orderBy);
     if (pagination.order) params.set('order', pagination.order);
-    router.replace(`?${params.toString()}`);
+    const nextSearch = params.toString();
+    const currentSearch = searchParams.toString();
+    if (
+      currentSearch === '' &&
+      nextSearch === 'limit=20&orderBy=lastName&order=asc'
+    ) {
+      return;
+    }
+    if (nextSearch === currentSearch) return;
+    router.replace(`?${nextSearch}`);
   };
 
   // On mount, restore filters and pagination from URL
@@ -389,11 +399,13 @@ export const SuperDataTable = () => {
     setPaginationParams(restoredPagination);
     setSearchInput(restoredPagination.search || '');
     if (Object.keys(restoredFilters).length > 0) setViewMode('filtered');
+    didRestoreFromUrl.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Update URL when filters or pagination change
   useEffect(() => {
+    if (!didRestoreFromUrl.current) return;
     updateUrlParams(filterParams, paginationParams);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterParams, paginationParams]);

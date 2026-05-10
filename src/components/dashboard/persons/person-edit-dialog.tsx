@@ -107,9 +107,7 @@ export function PersonEditDialog({
     }
   });
 
-  const { neighborhoods } = useNeighborhoodsStore((state) => ({
-    neighborhoods: state.neighborhoods
-  }));
+  const neighborhoods = useNeighborhoodsStore((state) => state.neighborhoods);
 
   useEffect(() => {
     if (person) {
@@ -168,7 +166,7 @@ export function PersonEditDialog({
   if (!person) return null;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-[425px] '>
+      <DialogContent className='sm:max-w-106.25'>
         <DialogHeader>
           <DialogTitle>Editar Persona</DialogTitle>
           <DialogDescription>

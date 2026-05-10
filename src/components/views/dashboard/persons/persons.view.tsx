@@ -12,12 +12,9 @@ export default function PersonsDashboardView() {
   const canCreatePerson = permissions?.[ValidModules.PERSONS]?.includes(
     ValidActions.CREATE
   );
-  const { neighborhoods, isLoading, fetchNeighborhoods } =
-    useNeighborhoodsStore((state) => ({
-      neighborhoods: state.neighborhoods,
-      isLoading: state.isLoading,
-      fetchNeighborhoods: state.fetchNeighborhoods
-    }));
+  const neighborhoods = useNeighborhoodsStore((state) => state.neighborhoods);
+  const isLoading = useNeighborhoodsStore((state) => state.isLoading);
+  const fetchNeighborhoods = useNeighborhoodsStore((state) => state.fetchNeighborhoods);
 
   useEffect(() => {
     fetchNeighborhoods();
@@ -25,7 +22,7 @@ export default function PersonsDashboardView() {
   }, []);
 
   return (
-    <div className='container mx-auto max-w-[1400px] space-y-6 px-2 py-4 sm:px-4'>
+    <div className='container mx-auto max-w-350 space-y-6 px-2 py-4 sm:px-4'>
       <div className='grid grid-cols-1 gap-6'>
         <div className='w-full'>
           {canCreatePerson && (

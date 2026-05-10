@@ -6,14 +6,14 @@ import LinkEdit from './LinkEdit';
 import LinkView from './LinkView';
 
 export const LinkMenu = () => {
-  const { editor, contentElement } = useTiptapContext();
+  const { editor } = useTiptapContext();
   const [isEditing, setIsEditing] = useState(false);
   const mode = useRef<number>(0);
 
   const link = useEditorState({
     editor,
     selector: (context) => {
-      mode.current = context.editor.storage.link.mode;
+      mode.current = (context.editor.storage as any).link?.mode ?? 0;
 
       if (!context.editor.isActive('link')) return null;
       const {
@@ -65,12 +65,6 @@ export const LinkMenu = () => {
       pluginKey='link-menu'
       updateDelay={100}
       shouldShow={shouldShow}
-      tippyOptions={{
-        placement: 'bottom-start',
-        duration: 100,
-        appendTo: () => contentElement.current!,
-        onHidden: () => setIsEditing(false)
-      }}
     >
       {isEditing ? (
         <LinkEdit

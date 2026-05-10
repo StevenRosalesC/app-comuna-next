@@ -26,7 +26,6 @@ import {
   Settings,
   SunMedium,
   Trash,
-  Twitter,
   StickyNote,
   User,
   UserCircle2Icon,
@@ -100,7 +99,7 @@ export const Icons = {
       ></path>
     </svg>
   ),
-  twitter: Twitter,
+  twitter: X,
   check: Check,
   contact: Contact,
   bookOpenText: BookOpenText,

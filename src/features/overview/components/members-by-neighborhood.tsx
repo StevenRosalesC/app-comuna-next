@@ -77,7 +77,7 @@ export function MembersByNeighborhood({ dateRange }: MembersByNeighborhoodProps)
               />
               <YAxis tick={{ fontSize: 12 }} />
               <Tooltip
-                formatter={(value: number) => [`${value} miembros`, 'Miembros']}
+                formatter={(value) => [`${value ?? 0} miembros`, 'Miembros']}
                 labelFormatter={(label) => `Barrio: ${label}`}
               />
               <Bar

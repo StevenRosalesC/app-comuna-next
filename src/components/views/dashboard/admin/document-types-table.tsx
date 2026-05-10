@@ -45,7 +45,7 @@ import { useDebounce } from '@/hooks/use-debounce';
 
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Nombre es requerido' }),
-  status: z.boolean().default(true)
+  status: z.boolean()
 });
 
 type FormValue = z.infer<typeof formSchema>;

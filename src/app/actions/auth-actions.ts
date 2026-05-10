@@ -33,12 +33,14 @@ export async function login(formData: FormData) {
 
     const token = response.token;
     // Guardar el token en una cookie
-    cookies().set(AUTH_CONFIG.COOKIE_NAME, token, AUTH_CONFIG.COOKIE_SETTINGS);
+    const cookieStore = await cookies();
+    cookieStore.set(AUTH_CONFIG.COOKIE_NAME, token, AUTH_CONFIG.COOKIE_SETTINGS);
 
     return { ok: true };
   } catch (error: any) {
     // Delete the cookie on error
-    cookies().delete(AUTH_CONFIG.COOKIE_NAME);
+    const cookieStore = await cookies();
+    cookieStore.delete(AUTH_CONFIG.COOKIE_NAME);
 
     // Return specific error message based on the error
     if (error.response?.status === 401) {
@@ -54,7 +56,8 @@ export async function login(formData: FormData) {
 }
 
 export async function getToken() {
-  return cookies().get(AUTH_CONFIG.COOKIE_NAME)?.value;
+  const cookieStore = await cookies();
+  return cookieStore.get(AUTH_CONFIG.COOKIE_NAME)?.value;
 }
 
 // export async function signup(formData: FormData) {
@@ -79,9 +82,6 @@ export async function getToken() {
 
 export async function logout() {
   try {
-    // Clear the token cookie
-    cookies().delete(AUTH_CONFIG.COOKIE_NAME);
-
     // Optionally call logout endpoint if available
     try {
       const token = await getToken();
@@ -99,6 +99,10 @@ export async function logout() {
     } catch (error) {
       // Continue with logout even if API call fails
     }
+
+    // Clear the token cookie
+    const cookieStore = await cookies();
+    cookieStore.delete(AUTH_CONFIG.COOKIE_NAME);
 
     revalidatePath('/', 'layout');
     redirect(AUTH_CONFIG.PATHS.LOGIN);

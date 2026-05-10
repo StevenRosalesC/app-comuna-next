@@ -58,7 +58,7 @@ export default function LoginForm() {
           toast.error(errorMessage);
           return;
         }
-
+        console.log(result);
         toast.success('Login successful');
         router.push('/dashboard/overview');
       } catch (err) {

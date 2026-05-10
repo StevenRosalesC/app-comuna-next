@@ -1,7 +1,4 @@
 import { JSONContent } from '@tiptap/core';
-import { NodeSelection, Plugin } from '@tiptap/pm/state';
-// @ts-ignore : This import is necessary due to missing type definitions in the package.
-import { __serializeForClipboard as serializeForClipboard } from '@tiptap/pm/view';
 
 import Figure from '../Figure';
 import ImageCaption from './ImageCaption';
@@ -156,68 +153,6 @@ export const ImageFigure = Figure.extend({
         }
     };
   },
-
-  /**
-   * Handle drag-and-drop behavior for imageFigure nodes.
-   */
-  addProseMirrorPlugins() {
-    let draggedNode: NodeSelection | null;
-
-    return [
-      new Plugin({
-        props: {
-          handleDOMEvents: {
-            dragstart: (view, event) => {
-              if (
-                !event.dataTransfer ||
-                !event.target ||
-                !(event.target instanceof HTMLImageElement)
-              ) {
-                return false;
-              }
-
-              // Get the position of the dragged image
-              const pos = view.posAtDOM(event.target, 0);
-              const $pos = view.state.doc.resolve(pos);
-
-              // Check if the image is part of a `figure` node
-              if ($pos.parent.type !== this.type) {
-                return false;
-              }
-
-              // Set up drag data
-              draggedNode = NodeSelection.create(
-                view.state.doc,
-                $pos.before($pos.depth)
-              );
-              const draggedSlice = draggedNode.content();
-              const { dom, text, slice } = serializeForClipboard(
-                view,
-                draggedSlice
-              );
-
-              event.dataTransfer.clearData();
-              event.dataTransfer.setData('text/html', dom.innerHTML);
-              event.dataTransfer.setData('text/plain', text);
-              event.dataTransfer.effectAllowed = 'copyMove';
-              view.dragging = { slice: slice, move: event.ctrlKey };
-
-              return true;
-            },
-            drop: (view) => {
-              if (draggedNode) {
-                view.dispatch(view.state.tr.setSelection(draggedNode));
-                draggedNode = null;
-              }
-            },
-            dragend: () => {
-              draggedNode = null;
-            }
-          }
-        }
-      })
-    ];
-  }
 });
 
 export default ImageFigure;

@@ -28,9 +28,7 @@ import { sendContactMessage } from '@/services/contact';
 
 const contactSchema = z.object({
   name: z
-    .string({
-      required_error: 'El nombre es requerido'
-    })
+    .string()
     .min(3, {
       message: 'El nombre es requerido'
     }),

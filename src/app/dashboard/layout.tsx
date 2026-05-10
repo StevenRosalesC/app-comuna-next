@@ -21,7 +21,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   // Persisting the sidebar state in the cookie.
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
   const { data: session } = await auth();
   return (

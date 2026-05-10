@@ -2,21 +2,11 @@ import * as z from 'zod';
 
 // Esquema de validación para las variables de entorno
 const envSchema = z.object({
-  API_URL: z.string({
-    required_error: 'API_URL is required'
-  }),
-  NEXT_PUBLIC_APP_URL: z.string({
-    required_error: 'NEXT_PUBLIC_APP_URL is required'
-  }),
-  IMAGEKIT_URL_ENDPOINT: z.string({
-    required_error: 'IMAGEKIT_URL_ENDPOINT is required'
-  }),
-  IMAGEKIT_PRIVATE_KEY: z.string({
-    required_error: 'IMAGEKIT_PRIVATE_KEY is required'
-  }),
-  IMAGEKIT_PUBLIC_KEY: z.string({
-    required_error: 'IMAGEKIT_PUBLIC_KEY is required'
-  })
+  API_URL: z.string().min(1, { message: 'API_URL is required' }),
+  NEXT_PUBLIC_APP_URL: z.string().min(1, { message: 'NEXT_PUBLIC_APP_URL is required' }),
+  IMAGEKIT_URL_ENDPOINT: z.string().min(1, { message: 'IMAGEKIT_URL_ENDPOINT is required' }),
+  IMAGEKIT_PRIVATE_KEY: z.string().min(1, { message: 'IMAGEKIT_PRIVATE_KEY is required' }),
+  IMAGEKIT_PUBLIC_KEY: z.string().min(1, { message: 'IMAGEKIT_PUBLIC_KEY is required' })
 });
 
 // Validar las variables de entorno

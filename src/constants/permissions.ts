@@ -128,7 +128,8 @@ export const modulesPermissions: ModulePermissionConfig[] = [
     actions: [
       ValidActions.READ,
       ValidActions.UPDATE,
-      ValidActions.DELETE
+      ValidActions.DELETE,
+      ValidActions.CREATE,
     ],
     label: 'Noticias'
   },

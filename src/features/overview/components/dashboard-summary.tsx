@@ -13,7 +13,7 @@ export function DashboardSummary() {
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-7">
         {[...Array(7)].map((_, i) => (
           <Card key={i}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -34,7 +34,7 @@ export function DashboardSummary() {
 
   if (isError || !summary) {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-7">
         <Card>
           <CardContent className="flex items-center justify-center h-32">
             <p className="text-muted-foreground">Error al cargar los datos</p>
@@ -97,7 +97,7 @@ export function DashboardSummary() {
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-7">
       {cards.map((card, index) => {
         const IconComponent = card.icon;
         return (

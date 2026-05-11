@@ -1,10 +1,12 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { dashboardService, type PendingRequirement } from '@/services/dashboard';
-import { Calendar, User, FileText } from 'lucide-react';
+import { Calendar, User, FileText, ClipboardCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 
 interface PendingRequirementsProps {
   limit?: number;
@@ -20,8 +22,11 @@ export function PendingRequirements({ limit = 5, dateRange }: PendingRequirement
   if (isLoading) {
     return (
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
           <CardTitle>Requisitos pendientes</CardTitle>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/dashboard/members">Ver comuneros</Link>
+          </Button>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -43,11 +48,22 @@ export function PendingRequirements({ limit = 5, dateRange }: PendingRequirement
   if (isError || !Array.isArray(requirements) || requirements.length === 0) {
     return (
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
           <CardTitle>Requisitos pendientes</CardTitle>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/dashboard/members">Ver comuneros</Link>
+          </Button>
         </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">No hay requisitos pendientes</p>
+        <CardContent className="py-10">
+          <div className="flex flex-col items-center gap-2 text-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+              <ClipboardCheck className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-medium">No hay requisitos pendientes</p>
+            <p className="text-xs text-muted-foreground">
+              Cuando existan solicitudes pendientes, aparecerán aquí.
+            </p>
+          </div>
         </CardContent>
       </Card>
     );
@@ -76,14 +92,20 @@ export function PendingRequirements({ limit = 5, dateRange }: PendingRequirement
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
         <CardTitle>Requisitos pendientes</CardTitle>
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/dashboard/members">Ver comuneros</Link>
+        </Button>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {requirements.map((item, index) => (
-            <div key={index} className="flex items-start space-x-4 p-3 rounded-lg border">
-              <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <div
+              key={index}
+              className="flex items-start space-x-4 rounded-lg border p-3 transition-colors hover:bg-muted/40"
+            >
+              <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center shrink-0">
                 <User className="h-5 w-5 text-blue-600" />
               </div>
               <div className="flex-1 min-w-0">

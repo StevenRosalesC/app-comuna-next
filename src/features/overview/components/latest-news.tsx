@@ -1,10 +1,12 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { dashboardService, type LatestNews } from '@/services/dashboard';
-import { Calendar, ExternalLink } from 'lucide-react';
+import { Calendar, ExternalLink, FileText, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 
 interface LatestNewsProps {
   limit?: number;
@@ -20,8 +22,11 @@ export function LatestNews({ limit = 5, dateRange }: LatestNewsProps) {
   if (isLoading) {
     return (
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
           <CardTitle>Últimas noticias</CardTitle>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/dashboard/notices">Ver todas</Link>
+          </Button>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -43,11 +48,33 @@ export function LatestNews({ limit = 5, dateRange }: LatestNewsProps) {
   if (isError || !Array.isArray(news) || news.length === 0) {
     return (
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
           <CardTitle>Últimas noticias</CardTitle>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/dashboard/notices">Ver todas</Link>
+          </Button>
         </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">No hay noticias disponibles</p>
+        <CardContent className="py-10">
+          <div className="flex flex-col items-center gap-2 text-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+              <FileText className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-medium">No hay noticias aún</p>
+            <p className="text-xs text-muted-foreground">
+              Publica una noticia para mantener informada a la comunidad.
+            </p>
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+              <Button asChild size="sm" className="gap-2">
+                <Link href="/dashboard/notices/create">
+                  <Plus className="h-4 w-4" />
+                  Crear noticia
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/dashboard/notices">Ver todas</Link>
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
     );
@@ -63,13 +90,21 @@ export function LatestNews({ limit = 5, dateRange }: LatestNewsProps) {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
         <CardTitle>Últimas noticias</CardTitle>
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/dashboard/notices">Ver todas</Link>
+        </Button>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {news.map((item) => (
-            <div key={item.newsId} className="flex items-start space-x-4">
+            <Link
+              key={item.newsId}
+              href={`/dashboard/notices/${item.newsId}/preview`}
+              className="group flex items-start gap-4 rounded-lg p-2 -m-2 transition-colors hover:bg-muted/50"
+              aria-label={`Ver noticia: ${item.title}`}
+            >
               <div className="relative h-16 w-16 flex-shrink-0">
                 {item.coverImageUrl ? (
                   <Image
@@ -88,11 +123,13 @@ export function LatestNews({ limit = 5, dateRange }: LatestNewsProps) {
                 <h4 className="text-sm font-medium leading-tight line-clamp-2">
                   {item.title}
                 </h4>
-                <div className="flex items-center space-x-2 mt-1">
-                  <Calendar className="h-3 w-3 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">
-                    {formatDate(item.createdAt)}
-                  </span>
+                <div className="flex flex-wrap items-center gap-2 mt-1">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">
+                      {formatDate(item.createdAt)}
+                    </span>
+                  </div>
                   {item.published && (
                     <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
                       Publicada
@@ -100,8 +137,8 @@ export function LatestNews({ limit = 5, dateRange }: LatestNewsProps) {
                   )}
                 </div>
               </div>
-              <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-            </div>
+              <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0 transition-colors group-hover:text-foreground" />
+            </Link>
           ))}
         </div>
       </CardContent>

@@ -1,9 +1,11 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { dashboardService, type RecentMovement } from '@/services/dashboard';
-import { Calendar, TrendingUp, TrendingDown } from 'lucide-react';
+import { Calendar, TrendingUp, TrendingDown, WalletMinimal } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 
 interface RecentMovementsProps {
   limit?: number;
@@ -19,8 +21,11 @@ export function RecentMovements({ limit = 10, dateRange }: RecentMovementsProps)
   if (isLoading) {
     return (
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
           <CardTitle>Movimientos recientes</CardTitle>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/dashboard/cash-management">Ver caja</Link>
+          </Button>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -45,11 +50,27 @@ export function RecentMovements({ limit = 10, dateRange }: RecentMovementsProps)
   if (isError || !Array.isArray(movements) || movements.length === 0) {
     return (
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
           <CardTitle>Movimientos recientes</CardTitle>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/dashboard/cash-management">Ver caja</Link>
+          </Button>
         </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">No hay movimientos recientes</p>
+        <CardContent className="py-10">
+          <div className="flex flex-col items-center gap-2 text-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+              <WalletMinimal className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-medium">No hay movimientos recientes</p>
+            <p className="text-xs text-muted-foreground">
+              Los ingresos y gastos del periodo se mostrarán aquí.
+            </p>
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+              <Button asChild size="sm">
+                <Link href="/dashboard/cash-management">Ir a caja</Link>
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
     );
@@ -73,13 +94,19 @@ export function RecentMovements({ limit = 10, dateRange }: RecentMovementsProps)
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
         <CardTitle>Movimientos recientes</CardTitle>
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/dashboard/cash-management">Ver caja</Link>
+        </Button>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {movements.map((movement, index) => (
-            <div key={index} className="flex items-center justify-between p-3 rounded-lg border">
+            <div
+              key={index}
+              className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-muted/40"
+            >
               <div className="flex items-center space-x-4">
                 <div className={`h-8 w-8 rounded-full flex items-center justify-center ${movement.type === 'income'
                   ? 'bg-green-100'
@@ -108,9 +135,7 @@ export function RecentMovements({ limit = 10, dateRange }: RecentMovementsProps)
                 : 'text-red-600'
                 }`}>
                 {movement.type === 'income' ? '+' : '-'}
-                <span className="text-sm font-semibold text-red-600">
-                  {formatAmount(movement.amount)}
-                </span>
+                {formatAmount(movement.amount)}
               </div>
             </div>
           ))}

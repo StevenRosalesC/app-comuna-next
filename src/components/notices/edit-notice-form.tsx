@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-import { notFound, usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Input } from '../ui/input';
@@ -27,6 +27,7 @@ import { Switch } from '@/components/ui/switch';
 import { Link } from 'next-view-transitions';
 import { usePermissionsStore } from '@/store/permissionsStore';
 import { ValidActions, ValidModules } from '@/constants/permissions';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface PostForm {
   title: string;
@@ -42,10 +43,10 @@ interface Props {
 }
 
 export default function EditNoticeForm({ id }: Props) {
-  const { permissions } = usePermissionsStore();
-  const canCreateNotice = permissions?.[ValidModules.NOTICES]?.includes(
-    ValidActions.CREATE
-  );
+  const { permissions, isLoading: permissionsLoading, error } = usePermissionsStore();
+  const canCreateNotice = permissions
+    ? permissions?.[ValidModules.NOTICES]?.includes(ValidActions.CREATE)
+    : !!error && error !== 'unauthorized';
   const editorRef = useRef<TiptapEditorRef>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -68,6 +69,14 @@ export default function EditNoticeForm({ id }: Props) {
   const handleClose = useCallback(() => {
     setOpenDialog(false);
   }, []);
+
+  useEffect(() => {
+    if (permissionsLoading) return;
+    if (canCreateNotice) return;
+    if (error === 'unauthorized') {
+      router.replace('/unauthorized');
+    }
+  }, [permissionsLoading, canCreateNotice, error, router]);
 
   const create = async (notice: PostForm) => {
     try {
@@ -125,7 +134,7 @@ export default function EditNoticeForm({ id }: Props) {
               published: values.published ?? false
             });
             if (notice) {
-              router.push(`/dashboard/notices/${notice.title}`);
+              router.push(`/dashboard/notices/${notice.newsId}`);
             }
           } else if (id) {
             if (!values.title || !values.description || !values.content) return;
@@ -157,7 +166,38 @@ export default function EditNoticeForm({ id }: Props) {
       </div>
     );
 
-  if (!canCreateNotice) return notFound();
+  if (permissionsLoading) {
+    return (
+      <div className='flex min-h-[400px] items-center justify-center'>
+        <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-primary'></div>
+      </div>
+    );
+  }
+
+  if (!canCreateNotice) {
+    return (
+      <div className='container mx-auto px-4 py-6'>
+        <Card>
+          <CardHeader>
+            <CardTitle>Acceso no autorizado</CardTitle>
+          </CardHeader>
+          <CardContent className='space-y-4'>
+            <p className='text-sm text-muted-foreground'>
+              No tienes permisos para crear o editar noticias.
+            </p>
+            <div className='flex flex-wrap gap-2'>
+              <Button variant='outline' asChild>
+                <Link href='/dashboard/notices'>Volver a noticias</Link>
+              </Button>
+              <Button asChild>
+                <Link href='/dashboard/overview'>Ir al dashboard</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className='container mx-auto px-4 py-6 '>

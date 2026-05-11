@@ -324,7 +324,7 @@ export default function NeighborhoodsTable() {
         <DialogContent>
           <DialogTitle>Editar barrio</DialogTitle>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onEditSubmit)} className='space-y-4'>
+            <form onSubmit={form.handleSubmit(onEditSubmit)} className='space-y-4 w-full h-full'>
               <FormField
                 control={form.control}
                 name='neighborhoodName'
@@ -338,7 +338,7 @@ export default function NeighborhoodsTable() {
                   </FormItem>
                 )}
               />
-              <div className='flex justify-end gap-2'>
+              <div className='flex justify-end gap-2 mt-4'>
                 <Button
                   type='button'
                   variant='outline'
@@ -357,7 +357,7 @@ export default function NeighborhoodsTable() {
 
       {/* Add Modal */}
       <Dialog open={addModalOpen} onOpenChange={setAddModalOpen}>
-        <DialogContent>
+        <DialogContent className='w-full'>
           <DialogTitle>Nuevo barrio</DialogTitle>
           <Form {...addForm}>
             <form onSubmit={addForm.handleSubmit(onAddSubmit)} className='space-y-4'>
@@ -374,7 +374,7 @@ export default function NeighborhoodsTable() {
                   </FormItem>
                 )}
               />
-              <div className='flex justify-end gap-2'>
+              <div className='flex justify-end gap-2 mt-4'>
                 <Button
                   type='button'
                   variant='outline'

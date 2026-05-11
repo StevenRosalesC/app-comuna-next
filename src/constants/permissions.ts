@@ -1,125 +1,3 @@
-export const modulesPermissions = [
-  {
-    module: 'persons',
-    route: '/dashboard/persons',
-    actions: [
-      'read',
-      'update',
-      'delete',
-      'approve_requirements',
-      'list_all',
-      'create',
-    ],
-    label: 'Personas'
-  },
-  {
-    module: 'admin',
-    route: '/dashboard/admin',
-    actions: [
-      'read',
-      'update',
-      'create_requirements',
-      'update_requirements',
-      'delete_requirements',
-      'create_annual_fee',
-      'update_annual_fee',
-      'delete_annual_fee',
-      'create_document_type',
-      'update_document_type',
-      'delete_document_type',
-      'create_neighborhood',
-      'update_neighborhood',
-      'delete_neighborhood',
-      'read_requirements',
-      'read_annual_fee',
-      'read_document_type',
-      'read_neighborhood'
-    ],
-    label: 'Administrador'
-  },
-  {
-    module: 'dashboard',
-    route: '/dashboard/overview',
-    actions: ['read'],
-    label: 'Dashboard'
-  },
-  {
-    module: 'members',
-    route: '/dashboard/members',
-    actions: [
-      'read',
-      'update', 
-      'delete',
-      'create',
-      'approve_requirements',
-      'list_all',
-      'upload_documents',
-      'read_documents',
-      'read_history_payments',
-      'create_payment'
-    ],
-    label: 'Comuneros'
-  },
-  {
-    module: 'notices',
-    route: '/dashboard/notices',
-    actions: ['read', 'update', 'delete'],
-    label: 'Noticias'
-  },
-  {
-    module: 'users',
-    route: '/dashboard/users',
-    actions: ['read', 'update', 'delete'],
-    label: 'Usuarios'
-  },
-  {
-    module: 'roles',
-    route: '/dashboard/roles',
-    actions: ['read', 'update', 'delete'],
-    label: 'Roles'
-  },
-  {
-    module: 'cash-management',
-    route: '/dashboard/cash-management',
-    actions: [
-      'read',
-      'update',
-      'delete',
-      'open_cash_register',
-      'close_cash_register',
-      'view_history',
-      'delete_payment',
-      'create_income',
-      'create_expense',
-      'read_income',
-      'read_expense',
-      'delete_income',
-      'delete_expense',
-      'cancel_invoice'
-    ],
-    label: 'Caja'
-  },
-  {
-    module: 'reports',
-    route: '/dashboard/reports',
-    actions: ['read', 'generate', 'export', 'schedule'],
-    label: 'Reportes'
-  },
-  {
-    module: 'analytics',
-    route: '/dashboard/analytics',
-    actions: [
-      'read',
-      'export',
-      'filter',
-      'view_summary',
-      'view_details',
-      'generate_reports'
-    ],
-    label: 'Analytics'
-  }
-  // Add more modules here
-];
 
 export enum ValidModules {
   PERSONS = 'persons',
@@ -132,7 +10,8 @@ export enum ValidModules {
   REQUIREMENTS = 'requirements',
   CASH_MANAGEMENT = 'cash-management',
   DOCUMENT_TYPES = 'document-types',
-  ANALYTICS = 'analytics'
+  ANALYTICS = 'analytics',
+  REPORTS = 'reports',
 }
 
 export enum ValidActions {
@@ -175,8 +54,162 @@ export enum ValidActions {
   FILTER = 'filter',
   VIEW_SUMMARY = 'view_summary',
   VIEW_DETAILS = 'view_details',
-  GENERATE_REPORTS = 'generate_reports'
+  GENERATE_REPORTS = 'generate_reports',
+  EXPORT_REPORTS = 'export_reports',
+  READ_REQUIREMENTS = 'read_requirements',
+  READ_ANNUAL_FEE = 'read_annual_fee',
+  READ_DOCUMENT_TYPE = 'read_document_type',
+  READ_NEIGHBORHOOD = 'read_neighborhood',
+  
 }
+
+export const modulesPermissions: ModulePermissionConfig[] = [
+  {
+    module: ValidModules.PERSONS,
+    route: '/dashboard/persons',
+    actions: [
+      ValidActions.READ,
+      ValidActions.UPDATE,
+      ValidActions.DELETE,
+      ValidActions.APPROVE_REQUIREMENTS,
+      ValidActions.CREATE,
+    ],
+    label: 'Personas'
+  },
+  {
+    module: ValidModules.ADMIN,
+    route: '/dashboard/admin',
+    actions: [
+      ValidActions.READ,
+      ValidActions.UPDATE,
+      ValidActions.CREATE_REQUIREMENTS,
+      ValidActions.UPDATE_REQUIREMENTS,
+      ValidActions.DELETE_REQUIREMENTS,
+      ValidActions.CREATE_ANNUAL_FEE,
+      ValidActions.CREATE_DOCUMENT_TYPE,
+      ValidActions.UPDATE_DOCUMENT_TYPE,
+      ValidActions.DELETE_DOCUMENT_TYPE,
+      ValidActions.CREATE_NEIGHBORHOOD,
+      ValidActions.UPDATE_NEIGHBORHOOD,
+      ValidActions.DELETE_NEIGHBORHOOD,
+      ValidActions.READ_REQUIREMENTS,
+      ValidActions.READ_ANNUAL_FEE,
+      ValidActions.READ_DOCUMENT_TYPE,
+      ValidActions.READ_NEIGHBORHOOD
+    ],
+    label: 'Administrador'
+  },
+  {
+    module: ValidModules.DASHBOARD,
+    route: '/dashboard/overview',
+    actions: [ValidActions.READ],
+    label: 'Dashboard'
+  },
+  {
+    module: ValidModules.MEMBERS,
+    route: '/dashboard/members',
+    actions: [
+      ValidActions.READ,
+      ValidActions.UPDATE,
+      ValidActions.DELETE,
+      ValidActions.CREATE,
+      ValidActions.APPROVE_REQUIREMENTS,
+      ValidActions.LIST_ALL,
+      ValidActions.UPLOAD_DOCUMENTS,
+      ValidActions.READ_DOCUMENTS,
+      ValidActions.READ_HISTORY_PAYMENTS,
+      ValidActions.CREATE_PAYMENT,
+    ],
+    label: 'Comuneros'
+  },
+  {
+    module: ValidModules.NOTICES,
+    route: '/dashboard/notices',
+    actions: [
+      ValidActions.READ,
+      ValidActions.UPDATE,
+      ValidActions.DELETE
+    ],
+    label: 'Noticias'
+  },
+  {
+    module: ValidModules.USERS,
+    route: '/dashboard/users',
+    actions: [
+      ValidActions.READ,
+      ValidActions.UPDATE,
+      ValidActions.DELETE,
+    ],
+    label: 'Usuarios'
+  },
+  {
+    module: ValidModules.ROLES,
+    route: '/dashboard/roles',
+    actions: [
+      ValidActions.READ,
+      ValidActions.UPDATE,
+      ValidActions.DELETE,
+    ],
+    label: 'Roles'
+  },
+  {
+    module: ValidModules.CASH_MANAGEMENT,
+    route: '/dashboard/cash-management',
+    actions: [
+      ValidActions.READ,
+      ValidActions.UPDATE,
+      ValidActions.CLOSE_CASH_REGISTER,
+      ValidActions.VIEW_HISTORY,
+      ValidActions.DELETE_PAYMENT,
+      ValidActions.CREATE_INCOME,
+      ValidActions.CREATE_EXPENSE,
+      ValidActions.READ_INCOME,
+      ValidActions.READ_EXPENSE,
+      ValidActions.DELETE_INCOME,
+      ValidActions.DELETE_EXPENSE,
+      ValidActions.CANCEL_INVOICE,
+    ],
+    label: 'Caja'
+  },
+  {
+    module: ValidModules.REPORTS,
+    route: '/dashboard/reports',
+    actions: [
+      ValidActions.READ,
+      ValidActions.GENERATE_REPORTS,
+      ValidActions.EXPORT_REPORTS,
+    ],
+    label: 'Reportes'
+  },
+  {
+    module: ValidModules.ANALYTICS,
+    route: '/dashboard/analytics',
+    actions: [
+      ValidActions.READ,
+      ValidActions.EXPORT,
+      ValidActions.FILTER,
+      ValidActions.VIEW_SUMMARY,
+      ValidActions.VIEW_DETAILS,
+      ValidActions.GENERATE_REPORTS,
+    ],
+    label: 'Analytics'
+  }
+  // Add more modules here
+];
+
+
+export interface ModulePermission {
+  module: ValidModules;
+  actions: ValidActions[];
+}
+
+export interface ModulePermissionConfig {
+  module: ValidModules;
+  route: string;
+  actions: ValidActions[];
+  label: string;
+}
+
 
 export const validPermissions = [
   ValidModules.PERSONS,

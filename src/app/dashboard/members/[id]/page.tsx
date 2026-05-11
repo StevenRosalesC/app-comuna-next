@@ -25,6 +25,7 @@ import { PaymentHistoryTable } from '@/components/dashboard/members/payment-hist
 import DocumentUpload from '@/components/dashboard/members/document-upload';
 import { usePermission } from '@/hooks/usePermission';
 import { ValidActions, ValidModules } from '@/constants/permissions';
+import { useParams } from 'next/navigation';
 
 // Skeleton component for better loading experience
 function MemberPageSkeleton() {
@@ -143,7 +144,8 @@ function MemberPageSkeleton() {
   );
 }
 
-export default function MemberPage({ params }: { params: { id: string } }) {
+export default function MemberPage() {
+  const params = useParams<{ id: string }>();
   const canReadHistoryPayments = usePermission(ValidModules.MEMBERS, [
     ValidActions.READ_HISTORY_PAYMENTS
   ]);

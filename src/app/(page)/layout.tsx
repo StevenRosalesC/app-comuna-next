@@ -30,8 +30,10 @@ export default function Layout({ children }: Props) {
   return (
     <>
       <NavBar />
-      <div className='container mx-auto min-h-[100dvh] px-5'>{children}</div>
-      <div className='fixed inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]'></div>
+      <main className='min-h-[100dvh]'>{children}</main>
+      <div className='fixed inset-0 -z-10 h-full w-full bg-white'></div>
+      <div className='fixed inset-0 -z-10 h-full w-full bg-[radial-gradient(60%_50%_at_20%_0%,hsl(var(--primary)/0.16)_0%,transparent_55%),radial-gradient(50%_45%_at_90%_10%,hsl(var(--primary)/0.10)_0%,transparent_60%)]'></div>
+      <div className='fixed inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]'></div>
       <FooterSection />
       <FabScroll />
     </>

@@ -1,76 +1,117 @@
 import Image from 'next/image';
 import { Title } from '../ui/atoms/title';
 import { Paragraph } from '../ui/atoms/paragraph';
-// import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import Aos from '../aos';
 import Link from 'next/link';
+import { Landmark, MapPin, Newspaper } from 'lucide-react';
 
 export default function HeroSection() {
   return (
     <>
       <Aos />
-      <div
-        className='mx-auto grid max-w-screen-xl items-center px-4 py-8 lg:grid-cols-12 lg:gap-8 lg:py-16 xl:gap-0'
+      <section
+        className='mx-auto max-w-screen-xl px-4 pb-8 pt-6 lg:px-6 lg:pb-16 lg:pt-10'
         aria-label='Sección principal de bienvenida'
       >
-        <div className='animate-fade-in mr-5 place-self-center lg:col-span-7'>
-          <Title>Bienvenido a la Comuna Bambil Collao</Title>
-          <Paragraph className='md:text-lg lg:mb-8 lg:text-xl'>
-            Un sitio web para la comunidad de Bambil Collao, donde podrás
-            encontrar información relevante sobre la comuna, noticias, eventos y
-            mucho más.
-          </Paragraph>
-          {/* <div className='flex flex-col lg:flex-row lg:items-center lg:space-x-4 mt-4'>
-            <label htmlFor="email-suscripcion" className="sr-only">Correo electrónico</label>
-            <Input
-              id="email-suscripcion"
-              type='email'
-              placeholder='Ingresa tu correo electrónico'
-              className='w-full'
-              aria-label="Ingresa tu correo electrónico para suscribirte"
-            />
-            <Button className='mt-4 w-full bg-green-700 lg:mt-0 lg:w-auto' aria-label="Suscribirse al boletín">
-              Suscribirse
-            </Button>
-          </div> */}
-          <div className='mt-6 flex gap-4'>
-            <Link href='/about' passHref legacyBehavior>
-              <Button
-                asChild
-                className='bg-primary px-6 py-3 font-semibold text-white shadow transition-colors hover:bg-primary/90'
-                aria-label='Conoce más sobre la comuna'
-              >
-                <a>Conoce más</a>
-              </Button>
-            </Link>
-            <Link href='/notices' passHref legacyBehavior>
-              <Button
-                asChild
-                variant='outline'
-                className='px-6 py-3 font-semibold'
-                aria-label='Ver noticias recientes'
-              >
-                <a>Ver noticias</a>
-              </Button>
-            </Link>
+        <div className='relative overflow-hidden rounded-3xl border bg-white/70 p-6 shadow-sm backdrop-blur md:p-10'>
+          <div className='pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(90%_70%_at_20%_0%,hsl(var(--primary)/0.20)_0%,transparent_55%),radial-gradient(70%_60%_at_90%_20%,hsl(var(--primary)/0.10)_0%,transparent_60%)]' />
+          <div className='grid items-center gap-10 lg:grid-cols-12'>
+            <div className='lg:col-span-7'>
+              <div className='inline-flex items-center gap-2 rounded-full border bg-white/80 px-3 py-1 text-sm font-medium text-muted-foreground'>
+                <Landmark className='h-4 w-4 text-primary' aria-hidden='true' />
+                Portal institucional • Turismo comunitario
+              </div>
+              <Title className='mt-4'>
+                <span className='text-primary'>Comuna Bambil Collao</span>
+              </Title>
+              <Paragraph className='max-w-2xl md:text-lg lg:text-xl'>
+                Información institucional, comunicados oficiales y guía básica
+                para visitantes en Santa Elena, Ecuador.
+              </Paragraph>
+
+              <div className='mt-6 flex flex-col gap-3 sm:flex-row'>
+                <Button
+                  asChild
+                  aria-label='Información institucional'
+                >
+                  <Link href='/about'>Información institucional</Link>
+                </Button>
+                <Button
+                  asChild
+                  variant='outline'
+                  aria-label='Comunicados y noticias'
+                >
+                  <Link href='/notices'>Comunicados y noticias</Link>
+                </Button>
+                <Button
+                  asChild
+                  variant='secondary'
+                  aria-label='Cómo llegar'
+                >
+                  <Link href='/#location'>Cómo llegar</Link>
+                </Button>
+              </div>
+
+              <div className='mt-8 grid gap-3 sm:grid-cols-2'>
+                <div className='flex items-start gap-3 rounded-2xl border bg-white/60 p-4'>
+                  <Newspaper
+                    className='mt-0.5 h-5 w-5 text-primary'
+                    aria-hidden='true'
+                  />
+                  <div>
+                    <p className='font-semibold'>Comunicados oficiales</p>
+                    <p className='text-sm text-muted-foreground'>
+                      Publicaciones y novedades de interés comunitario.
+                    </p>
+                  </div>
+                </div>
+                <div className='flex items-start gap-3 rounded-2xl border bg-white/60 p-4'>
+                  <MapPin
+                    className='mt-0.5 h-5 w-5 text-primary'
+                    aria-hidden='true'
+                  />
+                  <div>
+                    <p className='font-semibold'>Visita la comuna</p>
+                    <p className='text-sm text-muted-foreground'>
+                      Ubicación, contacto y referencia para planificar tu viaje.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className='lg:col-span-5' aria-label='Imagen de la comuna'>
+              <div className='relative'>
+                <Image
+                  src='https://ik.imagekit.io/stevenrosales/app-comuna/comuna.webp?updatedAt=1737254562322'
+                  width={800}
+                  height={1000}
+                  className='aspect-[4/5] w-full rounded-2xl object-cover shadow-lg'
+                  alt='Comuna Bambil Collao'
+                  loading='lazy'
+                  priority={false}
+                />
+                <div className='absolute bottom-4 left-4 right-4 rounded-2xl border bg-white/80 p-4 shadow-sm backdrop-blur'>
+                  <p className='text-sm font-semibold'>Santa Elena, Ecuador</p>
+                  <p className='text-sm text-muted-foreground'>
+                    Parroquia Colonche • Bambil Collao
+                  </p>
+                  <Button
+                    asChild
+                    size='sm'
+                    variant='secondary'
+                    className='mt-3 w-full'
+                    aria-label='Contacto institucional'
+                  >
+                    <Link href='/contact'>Contacto institucional</Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div
-          className='animate-fade-in-img hidden lg:col-span-5 lg:mt-0 lg:flex'
-          aria-label='Imagen de la comuna'
-        >
-          <Image
-            src='https://ik.imagekit.io/stevenrosales/app-comuna/comuna.webp?updatedAt=1737254562322'
-            width={600}
-            height={800}
-            className='rounded-lg object-cover shadow-lg'
-            alt='Comuna Bambil Collao'
-            loading='lazy'
-            priority={false}
-          />
-        </div>
-      </div>
+      </section>
     </>
   );
 }

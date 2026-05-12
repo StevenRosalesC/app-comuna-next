@@ -1,5 +1,4 @@
 'use client';
-// import { useCallback, useEffect, useRef, useState } from 'react';
 import TiptapEditor, { type TiptapEditorRef } from '@/components/TiptapEditor';
 import { createNotice, getNotice, updateNotice } from '@/services/notices';
 import {
@@ -27,6 +26,15 @@ import { Switch } from '@/components/ui/switch';
 import { Link } from 'next-view-transitions';
 import { usePermissionsStore } from '@/store/permissionsStore';
 import { ValidActions, ValidModules } from '@/constants/permissions';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface PostForm {
   title: string;
@@ -41,17 +49,28 @@ interface Props {
   id?: string;
 }
 
+const NOTICE_CREATE_DRAFT_KEY = 'notices:create:draft:v1';
+
 export default function EditNoticeForm({ id }: Props) {
   const { permissions } = usePermissionsStore();
   const canCreateNotice = permissions?.[ValidModules.NOTICES]?.includes(
     ValidActions.CREATE
   );
   const editorRef = useRef<TiptapEditorRef>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const draftTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
+  const [saveState, setSaveState] = useState<
+    'idle' | 'pending' | 'saving' | 'saved' | 'error'
+  >('idle');
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const [draftState, setDraftState] = useState<'idle' | 'dirty' | 'saved'>(
+    'idle'
+  );
+  const [lastDraftAt, setLastDraftAt] = useState<Date | null>(null);
+  const [draftHydrated, setDraftHydrated] = useState(false);
 
-  const { control, reset, watch } = useForm<PostForm>({
+  const { control, reset, watch, getValues, formState } = useForm<PostForm>({
     defaultValues: {
       title: '',
       content: '',
@@ -64,6 +83,7 @@ export default function EditNoticeForm({ id }: Props) {
 
   const pathname = usePathname();
   const router = useRouter();
+  const isCreateMode = pathname.includes('create');
 
   const handleClose = useCallback(() => {
     setOpenDialog(false);
@@ -89,15 +109,62 @@ export default function EditNoticeForm({ id }: Props) {
     }
   };
 
+  const handleSave = useCallback(async () => {
+    const values = getValues();
+    if (!values.title || !values.description || !values.content) {
+      toast.error('Completa título, descripción y contenido para guardar');
+      return;
+    }
+
+    setSaveState('saving');
+    if (isCreateMode) {
+      const notice = await create({
+        title: values.title || '',
+        content: values.content || '',
+        coverImageUrl: values.coverImageUrl || '',
+        description: values.description || '',
+        type: values.type || NoticeType.Noticia,
+        published: values.published ?? false
+      });
+      if (notice) {
+        try {
+          localStorage.removeItem(NOTICE_CREATE_DRAFT_KEY);
+        } catch {}
+        setSaveState('saved');
+        setLastSavedAt(new Date());
+        router.push(`/dashboard/notices/${notice.title}`);
+      } else {
+        setSaveState('error');
+      }
+      return;
+    }
+
+    if (!id) return;
+    const response = await update(id, {
+      title: values.title || '',
+      content: values.content || '',
+      coverImageUrl: values.coverImageUrl || '',
+      description: values.description || '',
+      type: values.type || NoticeType.Noticia,
+      published: values.published ?? false
+    });
+    if (response) {
+      setSaveState('saved');
+      setLastSavedAt(new Date());
+    } else {
+      setSaveState('error');
+    }
+  }, [create, getValues, id, isCreateMode, router]);
+
   useEffect(() => {
     if (id) {
       getNotice(id)
         .then((notice) => {
           reset({ ...notice });
           setIsLoading(false);
+          setSaveState('idle');
         })
         .catch((err) => {
-          // redirect to 404 page
           router.push('/dashboard/notices');
         });
     } else {
@@ -106,232 +173,309 @@ export default function EditNoticeForm({ id }: Props) {
   }, [id, reset, router]);
 
   useEffect(() => {
-    const subscription = watch((values, { type }) => {
-      if (type === 'change') {
-        if (!values.title || !values.description || !values.content) return;
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-        }
-
-        timeoutRef.current = setTimeout(async () => {
-          if (pathname.includes('create')) {
-            if (!values.title || !values.description || !values.content) return;
-            const notice = await create({
-              title: values.title || '',
-              content: values.content || '',
-              coverImageUrl: values.coverImageUrl || '',
-              description: values.description || '',
-              type: values.type || NoticeType.Noticia,
-              published: values.published ?? false
-            });
-            if (notice) {
-              router.push(`/dashboard/notices/${notice.title}`);
-            }
-          } else if (id) {
-            if (!values.title || !values.description || !values.content) return;
-            await update(id, {
-              title: values.title || '',
-              content: values.content || '',
-              coverImageUrl: values.coverImageUrl || '',
-              description: values.description || '',
-              type: values.type || NoticeType.Noticia,
-              published: values.published ?? false
-            });
-          }
-        }, 5000);
+    if (!isCreateMode) return;
+    try {
+      const raw = localStorage.getItem(NOTICE_CREATE_DRAFT_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Partial<
+          PostForm & { __savedAt?: number }
+        >;
+        const nextValues: PostForm = {
+          title: parsed.title ?? '',
+          content: parsed.content ?? '',
+          coverImageUrl: parsed.coverImageUrl ?? '',
+          description: parsed.description ?? '',
+          type: parsed.type ?? NoticeType.Noticia,
+          published: parsed.published ?? false
+        };
+        reset(nextValues);
+        setDraftState('saved');
+        if (parsed.__savedAt) setLastDraftAt(new Date(parsed.__savedAt));
       }
+    } catch {}
+    setDraftHydrated(true);
+  }, [isCreateMode, reset]);
+
+  useEffect(() => {
+    if (!isCreateMode || !draftHydrated) return;
+
+    const subscription = watch((values, { type }) => {
+      if (type !== 'change') return;
+      if (draftTimeoutRef.current) clearTimeout(draftTimeoutRef.current);
+      setDraftState('dirty');
+
+      draftTimeoutRef.current = setTimeout(() => {
+        try {
+          const payload = { ...values, __savedAt: Date.now() };
+          localStorage.setItem(NOTICE_CREATE_DRAFT_KEY, JSON.stringify(payload));
+          setDraftState('saved');
+          setLastDraftAt(new Date(payload.__savedAt));
+        } catch {}
+      }, 300);
     });
 
     return () => {
       subscription.unsubscribe();
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+      if (draftTimeoutRef.current) clearTimeout(draftTimeoutRef.current);
     };
-  }, [watch, pathname, id, router]);
+  }, [draftHydrated, isCreateMode, watch]);
 
   if (isLoading)
     return (
-      <div className='flex min-h-[400px] items-center justify-center'>
-        <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-primary'></div>
+      <div className='mx-auto w-full max-w-6xl px-4 py-6'>
+        <div className='space-y-6'>
+          <Skeleton className='h-[92px] w-full rounded-xl' />
+          <div className='grid gap-6 lg:grid-cols-3'>
+            <div className='space-y-6 lg:col-span-2'>
+              <Skeleton className='h-[220px] w-full rounded-xl' />
+              <Skeleton className='h-[520px] w-full rounded-xl' />
+            </div>
+            <Skeleton className='h-[420px] w-full rounded-xl' />
+          </div>
+        </div>
       </div>
     );
 
   if (!canCreateNotice) return notFound();
 
   return (
-    <div className='container mx-auto px-4 py-6 '>
-      <div className='space-y-8'>
-        {/* Header con controles principales */}
-        <div className='flex flex-col items-start justify-between gap-4 rounded-lg border bg-card p-4 sm:flex-row sm:items-center'>
-          <div className='flex flex-col items-start gap-4 sm:flex-row sm:items-center'>
-            <Controller
-              control={control}
-              name='type'
-              render={({ field }) => (
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger className='w-[180px]'>
-                    <SelectValue>{field.value}</SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Tipo</SelectLabel>
-                      {Object.values(NoticeType).map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+    <div className='mx-auto w-full max-w-6xl px-4 py-6'>
+      <div className='space-y-6'>
+        <Card>
+          <CardHeader className='gap-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0'>
+            <div className='space-y-1'>
+              <h1 className='text-xl font-semibold leading-none tracking-tight'>
+                {isCreateMode ? 'Crear noticia' : 'Editar noticia'}
+              </h1>
+              <CardDescription>
+                {isCreateMode
+                  ? 'Se guarda un borrador en este navegador para no perder el progreso.'
+                  : 'Guarda los cambios cuando estés listo.'}
+              </CardDescription>
+            </div>
+            <div className='flex flex-col items-start gap-2 sm:items-end'>
+              {saveState === 'error' ? (
+                <Badge variant='destructive'>Error al guardar</Badge>
+              ) : saveState === 'saving' ? (
+                <Badge variant='secondary'>Guardando…</Badge>
+              ) : saveState === 'saved' ? (
+                <Badge variant='secondary'>
+                  Guardado{lastSavedAt ? ` · ${lastSavedAt.toLocaleTimeString()}` : ''}
+                </Badge>
+              ) : isCreateMode ? (
+                draftState === 'dirty' ? (
+                  <Badge variant='outline'>Borrador sin guardar</Badge>
+                ) : draftState === 'saved' ? (
+                  <Badge variant='secondary'>
+                    Borrador guardado
+                    {lastDraftAt ? ` · ${lastDraftAt.toLocaleTimeString()}` : ''}
+                  </Badge>
+                ) : (
+                  <Badge variant='outline'>Listo</Badge>
+                )
+              ) : formState.isDirty ? (
+                <Badge variant='outline'>Cambios sin guardar</Badge>
+              ) : (
+                <Badge variant='outline'>Listo</Badge>
               )}
-            />
-            <Controller
-              control={control}
-              name='published'
-              render={({ field }) => (
-                <div className='flex items-center gap-2'>
-                  <Label htmlFor='published'>Publicado</Label>
-                  <Switch
-                    id='published'
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </div>
-              )}
-            />
-          </div>
-          <div className='flex gap-2'>
-            {id && (
-              <Button variant='outline' asChild>
-                <Link href={`/dashboard/notices/${id}/preview`}>
-                  Previsualizar
-                </Link>
-              </Button>
-            )}
-            <Button
-              onClick={async () => {
-                if (!id) return;
-                await update(id, {
-                  title: watch('title'),
-                  description: watch('description'),
-                  coverImageUrl: watch('coverImageUrl') || '',
-                  content: watch('content'),
-                  type: watch('type'),
-                  published: watch('published')
-                });
-              }}
-            >
-              Guardar
-            </Button>
-          </div>
-        </div>
-
-        {/* Formulario principal */}
-        <div className='space-y-6'>
-          {/* Título */}
-          <div className='space-y-2'>
-            <Label className='text-base font-semibold'>Título</Label>
-            <Controller
-              control={control}
-              name='title'
-              render={({ field }) => (
-                <Input
-                  {...field}
-                  type='text'
-                  className='w-full'
-                  placeholder='Ingrese el título de la noticia...'
-                />
-              )}
-            />
-          </div>
-
-          {/* Imagen de portada */}
-          <div className='space-y-4'>
-            <Label className='text-base font-semibold'>Imagen de portada</Label>
-            <Controller
-              control={control}
-              name='coverImageUrl'
-              render={({ field }) => (
-                <div className='space-y-4'>
-                  <div className='relative aspect-video w-full overflow-hidden rounded-lg border bg-muted'>
-                    <Image
-                      src={field.value || '/not-found-1.webp'}
-                      alt='Cover image'
-                      fill
-                      className='object-cover'
-                    />
-                  </div>
-                  <Button
-                    variant='outline'
-                    onClick={() => setOpenDialog(true)}
-                    className='w-full sm:w-auto'
-                  >
-                    Seleccionar imagen
+              <div className='flex flex-wrap gap-2'>
+                <Button variant='outline' asChild>
+                  <Link href='/dashboard/notices'>Volver</Link>
+                </Button>
+                {id && (
+                  <Button variant='outline' asChild>
+                    <Link href={`/dashboard/notices/${id}/preview`}>
+                      Previsualizar
+                    </Link>
                   </Button>
-                  <Dialog
-                    key='media-library'
-                    open={openDialog}
-                    onOpenChange={handleClose}
-                  >
-                    <MediaLibrary
-                      key='media-library-content'
-                      onClose={handleClose}
-                      onInsert={(image) => {
-                        field.onChange(image.url);
-                        handleClose();
-                      }}
-                    />
-                  </Dialog>
-                </div>
-              )}
-            />
-          </div>
-
-          {/* Descripción */}
-          <div className='space-y-2'>
-            <Label className='text-base font-semibold'>Descripción</Label>
-            <Controller
-              control={control}
-              name='description'
-              render={({ field }) => (
-                <Textarea
-                  {...field}
-                  className='min-h-[100px]'
-                  placeholder='Ingrese la descripción de la noticia...'
+                )}
+                <Button onClick={handleSave} disabled={saveState === 'saving'}>
+                  Guardar
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className='pt-0'>
+            <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+              <div className='flex flex-col gap-4 sm:flex-row sm:items-center'>
+                <Controller
+                  control={control}
+                  name='type'
+                  render={({ field }) => (
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger className='w-full sm:w-[220px]'>
+                        <SelectValue>{field.value}</SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Tipo</SelectLabel>
+                          {Object.values(NoticeType).map((type) => (
+                            <SelectItem key={type} value={type}>
+                              {type}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )}
                 />
-              )}
-            />
-          </div>
+                <Controller
+                  control={control}
+                  name='published'
+                  render={({ field }) => (
+                    <div className='flex items-center gap-2'>
+                      <Label htmlFor='published'>Publicado</Label>
+                      <Switch
+                        id='published'
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </div>
+                  )}
+                />
+              </div>
+              <div className='text-sm text-muted-foreground'>
+                {isCreateMode ? (
+                  <>
+                    Borrador local
+                    {lastDraftAt ? ` · ${lastDraftAt.toLocaleTimeString()}` : ''}
+                  </>
+                ) : (
+                  'Guardado manual'
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Editor de contenido */}
-          <div className='space-y-2'>
-            <Label className='text-base font-semibold'>Contenido</Label>
-            <Controller
-              control={control}
-              name='content'
-              render={({ field }) => (
-                <div className='rounded-lg border'>
-                  <TiptapEditor
-                    ref={editorRef}
-                    ssr={true}
-                    output='html'
-                    placeholder={{
-                      paragraph: 'Escribe tu noticia aquí...',
-                      imageCaption: 'Type caption for image (optional)'
-                    }}
-                    contentMinHeight={256}
-                    contentMaxHeight={640}
-                    onContentChange={field.onChange}
-                    initialContent={field.value}
+        <div className='grid gap-6 lg:grid-cols-3'>
+          <div className='space-y-6 lg:col-span-2'>
+            <Card>
+              <CardHeader>
+                <CardTitle>Detalles</CardTitle>
+                <CardDescription>
+                  Define el título y una breve descripción.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className='space-y-4'>
+                <div className='space-y-2'>
+                  <Label htmlFor='notice-title'>Título</Label>
+                  <Controller
+                    control={control}
+                    name='title'
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        id='notice-title'
+                        type='text'
+                        className='w-full'
+                        placeholder='Ingrese el título de la noticia...'
+                      />
+                    )}
                   />
                 </div>
-              )}
-            />
+
+                <div className='space-y-2'>
+                  <Label htmlFor='notice-description'>Descripción</Label>
+                  <Controller
+                    control={control}
+                    name='description'
+                    render={({ field }) => (
+                      <Textarea
+                        {...field}
+                        id='notice-description'
+                        className='min-h-[120px]'
+                        placeholder='Ingrese la descripción de la noticia...'
+                      />
+                    )}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Contenido</CardTitle>
+                <CardDescription>
+                  Escribe el contenido principal y agrega imágenes si lo necesitas.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className='overflow-hidden rounded-lg border'>
+                  <Controller
+                    control={control}
+                    name='content'
+                    render={({ field }) => (
+                      <TiptapEditor
+                        ref={editorRef}
+                        ssr={true}
+                        output='html'
+                        placeholder={{
+                          paragraph: 'Escribe tu noticia aquí...',
+                          imageCaption: 'Type caption for image (optional)'
+                        }}
+                        contentMinHeight={320}
+                        contentMaxHeight={720}
+                        onContentChange={field.onChange}
+                        initialContent={field.value}
+                      />
+                    )}
+                  />
+                </div>
+              </CardContent>
+            </Card>
           </div>
+
+          <Card className='h-fit'>
+            <CardHeader>
+              <CardTitle>Imagen de portada</CardTitle>
+              <CardDescription>
+                Recomendado 16:9 para una mejor visualización.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className='space-y-4'>
+              <Controller
+                control={control}
+                name='coverImageUrl'
+                render={({ field }) => (
+                  <>
+                    <div className='relative aspect-video w-full overflow-hidden rounded-lg border bg-muted'>
+                      <Image
+                        src={field.value || '/not-found-1.webp'}
+                        alt='Cover image'
+                        fill
+                        className='object-cover'
+                      />
+                    </div>
+                    <Button
+                      variant='outline'
+                      onClick={() => setOpenDialog(true)}
+                      className='w-full'
+                    >
+                      Seleccionar imagen
+                    </Button>
+                    <Dialog
+                      key='media-library'
+                      open={openDialog}
+                      onOpenChange={handleClose}
+                    >
+                      <MediaLibrary
+                        key='media-library-content'
+                        onClose={handleClose}
+                        onInsert={(image) => {
+                          field.onChange(image.url);
+                          handleClose();
+                        }}
+                      />
+                    </Dialog>
+                  </>
+                )}
+              />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

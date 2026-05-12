@@ -9,8 +9,9 @@ interface Props {
   params: { id: string };
 }
 
-export default function EditNoticePage({ params }: Props) {
-  const { id } = params;
+export default async function EditNoticePage({ params }: Props) {
+  const { id } = await params;
+  console.log(id);
   return (
     <>
       <EditNoticeView id={id} />

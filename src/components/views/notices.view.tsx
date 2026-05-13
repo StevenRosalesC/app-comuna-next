@@ -86,7 +86,7 @@ export default function NoticesView() {
           {notices.slice(0, 1).map((notice, index) => (
             <Link
               rel='noopener noreferrer'
-              href={`/notices/${notice.title}`}
+              href={`/notices/${notice.slug || notice.title}`}
               key={index}
               className='group mx-auto block max-w-6xl gap-3 hover:no-underline focus:no-underline dark:bg-gray-50 sm:max-w-full lg:grid lg:grid-cols-12'
               aria-label={`Leer noticia: ${notice.title}`}
@@ -133,30 +133,6 @@ export default function NoticesView() {
                   por {notice.createdBy}
                 </span>
                 <p className='line-clamp-6'>{notice.description}</p>
-                {/* Datos estructurados SEO tipo NewsArticle */}
-                <script
-                  type='application/ld+json'
-                  dangerouslySetInnerHTML={{
-                    __html: JSON.stringify({
-                      '@context': 'https://schema.org',
-                      '@type': 'NewsArticle',
-                      headline: notice.title,
-                      image: [notice.coverImageUrl],
-                      datePublished: notice.createdAt,
-                      dateModified: notice.updatedAt,
-                      author: [{ '@type': 'Person', name: notice.createdBy }],
-                      publisher: {
-                        '@type': 'Organization',
-                        name: 'Comuna Bambil Collao',
-                        logo: {
-                          '@type': 'ImageObject',
-                          url: `https://${process.env.NEXT_PUBLIC_APP_URL}/icon.webp`
-                        }
-                      },
-                      description: notice.description
-                    })
-                  }}
-                />
               </div>
             </Link>
           ))}

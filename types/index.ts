@@ -64,6 +64,7 @@ export interface News {
   newsId: string;
   coverImageUrl: string;
   title: string;
+  slug?: string;
   description: string;
   type: string;
   createdAt: string;

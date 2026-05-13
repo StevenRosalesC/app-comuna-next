@@ -16,6 +16,7 @@ import { Link } from 'next-view-transitions';
 interface Props {
   createdAt: string;
   title: string;
+  slug?: string;
   description: string;
   createdBy: string;
   newsId: string;
@@ -26,6 +27,7 @@ interface Props {
 export const NoticeMiniCard = ({
   createdAt,
   title,
+  slug,
   description,
   createdBy,
   newsId,
@@ -33,6 +35,7 @@ export const NoticeMiniCard = ({
   coverImageUrl
 }: Props) => {
   const relativeTime = getRelativeTime(createdAt);
+  const noticeSlug = slug;
   const handleIcon = (type: string) => {
     switch (type) {
       case NoticeType.Noticia:
@@ -69,7 +72,7 @@ export const NoticeMiniCard = ({
       <h2 className='mb-2 line-clamp-2 text-2xl font-bold tracking-tight text-green-600'>
         <Link
           rel='noopener noreferrer'
-          href={`/notices/${title}`}
+          href={`/notices/${noticeSlug}`}
           className={`hover:underline focus:outline-none focus:ring-2 focus:ring-green-600 ${
             title.length > 30 ? 'text-md' : ''
           }`}
@@ -92,7 +95,7 @@ export const NoticeMiniCard = ({
         </div>
         <Link
           rel='noopener noreferrer'
-          href={`/notices/${title}`}
+          href={`/notices/${noticeSlug}`}
           className='inline-flex items-center font-medium hover:underline focus:outline-none focus:ring-2 focus:ring-green-600'
           aria-label={`Leer más sobre: ${title}`}
         >
@@ -111,29 +114,6 @@ export const NoticeMiniCard = ({
           </svg>
         </Link>
       </div>
-      {/* Datos estructurados SEO tipo NewsArticle */}
-      <script
-        type='application/ld+json'
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'NewsArticle',
-            headline: title,
-            image: [coverImageUrl],
-            datePublished: createdAt,
-            author: [{ '@type': 'Person', name: createdBy }],
-            publisher: {
-              '@type': 'Organization',
-              name: 'Comuna Bambil Collao',
-              logo: {
-                '@type': 'ImageObject',
-                url: `https://${process.env.NEXT_PUBLIC_APP_URL}/icon.webp`
-              }
-            },
-            description: description
-          })
-        }}
-      />
     </article>
   );
 };

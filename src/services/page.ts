@@ -1,7 +1,20 @@
 import { PageData } from 'types';
 import { Notice } from 'types/dashboard';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const normalizeBaseUrl = (value?: string) => {
+  if (!value) return '';
+  return value.endsWith('/') ? value.slice(0, -1) : value;
+};
+
+const rawApiUrl = normalizeBaseUrl(
+  process.env.NEXT_PUBLIC_API_URL || process.env.API_URL
+);
+
+const API_URL = rawApiUrl
+  ? rawApiUrl.endsWith('/api')
+    ? rawApiUrl
+    : `${rawApiUrl}/api`
+  : '';
 
 export const getAllNews = async (
   limit: number,
@@ -79,16 +92,41 @@ export const getNoticeByTitle = async (
   title: string
 ): Promise<Notice | null> => {
   try {
-    const response = await fetch(`${API_URL}/news/title/${title}`, {
+    const response = await fetch(
+      `${API_URL}/news/title/${encodeURIComponent(title)}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        next: {
+          revalidate: parseInt(process.env.NEXT_PUBLIC_CACHE_REVALIDATE || '60'),
+          tags: ['news']
+        }
+      }
+    );
+    const data: Notice = await response.json();
+    return data;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const getNoticeBySlug = async (slug: string): Promise<Notice | null> => {
+  try {
+    const response = await fetch(
+      `${API_URL}/news/slug/${encodeURIComponent(slug)}`,
+      {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
       },
       next: {
         revalidate: parseInt(process.env.NEXT_PUBLIC_CACHE_REVALIDATE || '60'),
-        tags: [`news`]
+        tags: ['news']
       }
-    });
+      }
+    );
     const data: Notice = await response.json();
     return data;
   } catch (error) {

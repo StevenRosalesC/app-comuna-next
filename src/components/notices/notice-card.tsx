@@ -8,10 +8,11 @@ interface Props {
 }
 
 export const NoticeCard = ({ notice }: Props) => {
+  const noticeSlug = notice.slug || notice.title;
   return (
     <Link
       rel='noopener noreferrer'
-      href={`/notices/${notice.title}`}
+      href={`/notices/${noticeSlug}`}
       className='group mx-auto max-w-sm hover:no-underline focus:no-underline focus:outline-none focus:ring-2 focus:ring-green-600 dark:bg-gray-50 sm:block'
       aria-label={`Leer noticia: ${notice.title}`}
     >
@@ -53,30 +54,6 @@ export const NoticeCard = ({ notice }: Props) => {
           {notice.createdBy}
         </span>
         <p className='line-clamp-6'>{notice.description}</p>
-        {/* Datos estructurados SEO tipo NewsArticle */}
-        <script
-          type='application/ld+json'
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'NewsArticle',
-              headline: notice.title,
-              image: [notice.coverImageUrl],
-              datePublished: notice.createdAt,
-              dateModified: notice.updatedAt,
-              author: [{ '@type': 'Person', name: notice.createdBy }],
-              publisher: {
-                '@type': 'Organization',
-                name: 'Comuna Bambil Collao',
-                logo: {
-                  '@type': 'ImageObject',
-                  url: `https://${process.env.NEXT_PUBLIC_APP_URL}/icon.webp`
-                }
-              },
-              description: notice.description
-            })
-          }}
-        />
       </div>
     </Link>
   );

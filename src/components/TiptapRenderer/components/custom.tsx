@@ -3,20 +3,25 @@ import { Components } from 'rehype-react';
 import HeadingWithAnchor from './HeadingWithAnchor';
 import CopyButton from './CopyButton';
 import type { ReactElement } from 'react';
+import { isLocalImageUrl } from '@/utils/isLocalImageUrl';
 
 export const components: Partial<Components> = {
   h2: (props) => <HeadingWithAnchor level={2} {...props} />,
   h3: (props) => <HeadingWithAnchor level={3} {...props} />,
   h4: (props) => <HeadingWithAnchor level={4} {...props} />,
-  img: ({ src, alt, width, ...props }: any) => (
-    <Image
-      src={src}
-      alt={alt || ''}
-      width={props['data-width']}
-      height={props['data-height']}
-      className='mx-auto rounded-lg'
-    />
-  ),
+  img: ({ src, alt, width, ...props }: any) => {
+    if (!src) return null;
+    return (
+      <Image
+        src={src}
+        alt={alt || ''}
+        width={props['data-width']}
+        height={props['data-height']}
+        className='mx-auto rounded-lg'
+        unoptimized={isLocalImageUrl(src)}
+      />
+    );
+  },
   iframe: ({ ...props }) => (
     <div>
       <iframe

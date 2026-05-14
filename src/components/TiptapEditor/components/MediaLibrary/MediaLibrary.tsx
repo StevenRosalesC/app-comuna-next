@@ -46,25 +46,6 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onInsert, onClose }) => {
     });
   };
 
-  const uploadImage = async (file: File) => {
-    if (!file.type.startsWith('image/')) return;
-
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('filename', file.name);
-    formData.append('folder', '/app-comuna/news-images');
-
-    try {
-      const response = await fetch('/api/images', {
-        method: 'POST',
-        body: formData
-      });
-      return await response.json();
-    } catch (error) {
-      throw error;
-    }
-  };
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -74,7 +55,20 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onInsert, onClose }) => {
     const loadedPreviews = await Promise.all(previewPromises);
     setPreviews(loadedPreviews);
 
-    const uploadPromises = Array.from(files).map(uploadImage);
+    const uploadPromises = Array.from(files).map((file, index) => {
+      const preview = loadedPreviews[index];
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('filename', file.name);
+      formData.append('folder', '/app-comuna/news-images');
+      formData.append('width', String(preview.width));
+      formData.append('height', String(preview.height));
+      formData.append('format', preview.format);
+      formData.append('display_name', preview.display_name);
+      return fetch('/api/images', { method: 'POST', body: formData }).then((r) =>
+        r.json()
+      );
+    });
     const uploadImages = await Promise.all(uploadPromises);
     loadedPreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
     setPreviews([]);

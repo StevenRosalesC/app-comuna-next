@@ -2,6 +2,7 @@ import { getRelativeTime } from '@/utils/date';
 import { Link } from 'next-view-transitions';
 import Image from 'next/image';
 import { Notice } from 'types/dashboard';
+import { isLocalImageUrl } from '@/utils/isLocalImageUrl';
 
 interface Props {
   notice: Notice;
@@ -9,6 +10,7 @@ interface Props {
 
 export const NoticeCard = ({ notice }: Props) => {
   const noticeSlug = notice.slug || notice.title;
+  const cover = notice.coverImageUrl || '/not-found-1.webp';
   return (
     <Link
       rel='noopener noreferrer'
@@ -25,8 +27,9 @@ export const NoticeCard = ({ notice }: Props) => {
             : 'Imagen de noticia'
         }
         className='h-44 w-full rounded object-cover dark:bg-gray-500'
-        src={notice.coverImageUrl || '/not-found-1.webp'}
+        src={cover}
         loading='lazy'
+        unoptimized={isLocalImageUrl(cover)}
       />
       <div className='space-y-2 p-6'>
         <div className='mb-2 flex items-center gap-2'>

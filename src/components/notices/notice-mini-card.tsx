@@ -12,6 +12,7 @@ import { getRelativeTime } from '@/utils/date';
 import Image from 'next/image';
 import { NoticeType } from 'types/notices';
 import { Link } from 'next-view-transitions';
+import { isLocalImageUrl } from '@/utils/isLocalImageUrl';
 
 interface Props {
   createdAt: string;
@@ -36,6 +37,7 @@ export const NoticeMiniCard = ({
 }: Props) => {
   const relativeTime = getRelativeTime(createdAt);
   const noticeSlug = slug;
+  const cover = coverImageUrl || '/not-found.webp';
   const handleIcon = (type: string) => {
     switch (type) {
       case NoticeType.Noticia:
@@ -62,12 +64,13 @@ export const NoticeMiniCard = ({
         <span className='text-sm'>{relativeTime}</span>
       </div>
       <Image
-        src={coverImageUrl || '/not-found.webp'}
+        src={cover}
         alt={title ? `Imagen de la noticia: ${title}` : 'Imagen de noticia'}
         width={600}
         height={400}
         className='aspect-video rounded-lg object-cover'
         loading='lazy'
+        unoptimized={isLocalImageUrl(cover)}
       />
       <h2 className='mb-2 line-clamp-2 text-2xl font-bold tracking-tight text-green-600'>
         <Link

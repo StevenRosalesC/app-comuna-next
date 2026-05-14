@@ -2,6 +2,7 @@ import React from 'react';
 import { LuCheck } from 'react-icons/lu';
 import clsx from 'clsx';
 import Image from 'next/image';
+import { isLocalImageUrl } from '@/utils/isLocalImageUrl';
 
 interface MediaGalleryProps {
   data: any[];
@@ -38,6 +39,7 @@ const MediaGallery: React.FC<MediaGalleryProps> = ({
               // only show firs 10 characters of the image display name
               src={image.url}
               alt={image.display_name.slice(0, 10)}
+              unoptimized={isLocalImageUrl(image.url)}
             />
           </div>
 

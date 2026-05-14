@@ -8,6 +8,7 @@ import { Button } from '../ui/button';
 import { getAllNews } from '@/services/page';
 import { Link } from 'next-view-transitions';
 import { Loader2 } from 'lucide-react';
+import { isLocalImageUrl } from '@/utils/isLocalImageUrl';
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'NewsMediaOrganization',
@@ -102,6 +103,7 @@ export default function NoticesView() {
                 src={notice.coverImageUrl || '/not-found-1.webp'}
                 className='h-96 w-full rounded object-cover dark:bg-gray-500 sm:h-96 lg:col-span-7'
                 loading='lazy'
+                unoptimized={isLocalImageUrl(notice.coverImageUrl)}
               />
               <div className='space-y-2 p-6 lg:col-span-5'>
                 <div className='mb-2 flex items-center gap-2'>

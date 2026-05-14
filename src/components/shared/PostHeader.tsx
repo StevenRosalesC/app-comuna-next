@@ -2,6 +2,7 @@ import { getRelativeTime } from '@/utils/date';
 import Image from 'next/image';
 import React from 'react';
 import { LuCalendarDays, LuClock } from 'react-icons/lu';
+import { isLocalImageUrl } from '@/utils/isLocalImageUrl';
 
 interface PostHeaderProps {
   title: string;
@@ -18,6 +19,7 @@ const PostHeader = ({
   createdAt,
   readingTime
 }: PostHeaderProps) => {
+  const coverSrc = cover || '/not-found-1.webp';
   return (
     <div className='mx-auto lg:max-w-[45rem]'>
       <h1 className='text-3xl font-bold leading-snug md:text-4xl md:leading-normal'>
@@ -51,12 +53,13 @@ const PostHeader = ({
       </div>
 
       <Image
-        src={cover}
+        src={coverSrc}
         alt={title}
         width={1932}
         height={1087}
         className='my-10 aspect-video rounded-lg object-cover'
         priority
+        unoptimized={isLocalImageUrl(coverSrc)}
       />
     </div>
   );

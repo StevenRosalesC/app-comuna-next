@@ -26,6 +26,7 @@ import { Switch } from '@/components/ui/switch';
 import { Link } from 'next-view-transitions';
 import { usePermissionsStore } from '@/store/permissionsStore';
 import { ValidActions, ValidModules } from '@/constants/permissions';
+import { isLocalImageUrl } from '@/utils/isLocalImageUrl';
 import {
   Card,
   CardContent,
@@ -448,6 +449,7 @@ export default function EditNoticeForm({ id }: Props) {
                         alt='Cover image'
                         fill
                         className='object-cover'
+                        unoptimized={isLocalImageUrl(field.value)}
                       />
                     </div>
                     <Button

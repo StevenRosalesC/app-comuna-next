@@ -7,6 +7,7 @@ import { Calendar, ExternalLink, FileText, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
+import { isLocalImageUrl } from '@/utils/isLocalImageUrl';
 
 interface LatestNewsProps {
   limit?: number;
@@ -112,6 +113,7 @@ export function LatestNews({ limit = 5, dateRange }: LatestNewsProps) {
                     alt={item.title}
                     fill
                     className="rounded object-cover"
+                    unoptimized={isLocalImageUrl(item.coverImageUrl)}
                   />
                 ) : (
                   <div className="h-16 w-16 bg-muted rounded flex items-center justify-center">

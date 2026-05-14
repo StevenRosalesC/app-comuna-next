@@ -27,12 +27,15 @@ const assertMinioConfig = () => {
 
 const getS3Client = () => {
   assertMinioConfig();
+  const endpoint = MINIO_ENDPOINT as string;
+  const accessKeyId = MINIO_ACCESS_KEY as string;
+  const secretAccessKey = MINIO_SECRET_KEY as string;
   return new S3Client({
-    endpoint: MINIO_ENDPOINT,
+    endpoint,
     region: MINIO_REGION || 'us-east-1',
     credentials: {
-      accessKeyId: MINIO_ACCESS_KEY,
-      secretAccessKey: MINIO_SECRET_KEY
+      accessKeyId,
+      secretAccessKey
     },
     forcePathStyle: true
   });
@@ -46,9 +49,8 @@ const encodePath = (value: string) =>
 
 const getPublicObjectUrl = (key: string) => {
   assertMinioConfig();
-  const base = MINIO_PUBLIC_URL.endsWith('/')
-    ? MINIO_PUBLIC_URL.slice(0, -1)
-    : MINIO_PUBLIC_URL;
+  const publicUrl = MINIO_PUBLIC_URL as string;
+  const base = publicUrl.endsWith('/') ? publicUrl.slice(0, -1) : publicUrl;
   return `${base}/${MINIO_BUCKET}/${encodePath(key)}`;
 };
 
@@ -82,6 +84,32 @@ const getImageMetaFromBuffer = async (buffer: Buffer) => {
   }
 };
 
+const getMimeTypeFromFilename = (filename: string) => {
+  const ext = (filename.split('.').pop() || '').toLowerCase();
+  switch (ext) {
+    case 'jpg':
+    case 'jpeg':
+      return 'image/jpeg';
+    case 'png':
+      return 'image/png';
+    case 'gif':
+      return 'image/gif';
+    case 'webp':
+      return 'image/webp';
+    case 'avif':
+      return 'image/avif';
+    case 'svg':
+      return 'image/svg+xml';
+    case 'bmp':
+      return 'image/bmp';
+    case 'tif':
+    case 'tiff':
+      return 'image/tiff';
+    default:
+      return undefined;
+  }
+};
+
 export const uploadImageToMinio = async (input: {
   file: File;
   folder: string;
@@ -103,13 +131,14 @@ export const uploadImageToMinio = async (input: {
   const height = input.height ?? bufferMeta.height;
   const format = input.format ?? bufferMeta.format;
   const displayName = input.displayName || safeBase.replace(/\.[^/.]+$/, '');
+  const contentType = input.file.type || getMimeTypeFromFilename(safeBase);
 
   await client.send(
     new PutObjectCommand({
       Bucket: MINIO_BUCKET,
       Key: key,
       Body: buffer,
-      ContentType: input.file.type || undefined,
+      ContentType: contentType,
       Metadata: {
         width: width ? String(width) : '',
         height: height ? String(height) : '',

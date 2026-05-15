@@ -97,7 +97,7 @@ export default function InsertPersonForm({
       gender: 1,
       neighborhoodId: '',
       hasDisability: false,
-      disabilityPercentage: 0
+      disabilityPercentage: undefined
     }
   });
 
@@ -124,10 +124,12 @@ export default function InsertPersonForm({
         gender: data.gender,
         birthDate: data.birthDate || '',
         email: data.email || '',
-        neighborhoodId: data.neighborhoodId,
         hasDisability: data.hasDisability,
         disabilityPercentage: data.disabilityPercentage
       };
+      if (data.neighborhoodId) {
+        person.neighborhoodId = data.neighborhoodId;
+      }
       const response = await personsService.createPerson(person);
       if (response.status) {
         const event = new CustomEvent(Events.PERSONS_CREATED, {
@@ -352,7 +354,7 @@ export default function InsertPersonForm({
                             onCheckedChange={(checked) => {
                               field.onChange(checked);
                               if (!checked) {
-                                form.setValue('disabilityPercentage', 0);
+                                form.setValue('disabilityPercentage', undefined);
                               }
                             }}
                           />
@@ -375,10 +377,15 @@ export default function InsertPersonForm({
                               max='100'
                               placeholder='Ingrese el porcentaje de discapacidad'
                               {...field}
-                              value={field.value === 0 ? '' : field.value}
+                              value={
+                                field.value === undefined ? '' : String(field.value)
+                              }
                               onChange={(e) => {
-                                const value = Number(e.target.value);
-                                field.onChange(value);
+                                if (e.target.value === '') {
+                                  field.onChange(undefined);
+                                  return;
+                                }
+                                field.onChange(Number(e.target.value));
                               }}
                             />
                           </FormControl>

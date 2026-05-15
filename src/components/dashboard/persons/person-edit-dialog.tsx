@@ -125,7 +125,7 @@
           lastName: data.lastName,
           email: data.email || '',
           birthDate: new Date(data.birthDate),
-          neighborhoodId: data.neighborhoodId || '',
+          neighborhoodId: data.neighborhoodId || null,
           status: data.status ?? true,
           hasDisability: data.hasDisability ?? false,
           disabilityPercentage: data.disabilityPercentage ?? 0

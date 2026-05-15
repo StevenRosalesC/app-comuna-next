@@ -16,7 +16,7 @@ export interface Person {
   status: boolean;
   email: string;
   memberCount?: number;
-  neighborhoodId: string;
+  neighborhoodId: string | null;
   hasDisability?: boolean;
   disabilityPercentage?: number;
   personRequirement?: PersonRequirement[];
@@ -29,7 +29,7 @@ export interface IPerson {
   firstName: string;
   gender: number;
   birthDate: string;
-  neighborhoodId?: string;
+  neighborhoodId?: string | null;
   phoneNumber?: string;
   email?: string;
   hasDisability?: boolean;

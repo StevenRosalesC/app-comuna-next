@@ -150,9 +150,12 @@ export function usePersonsTableColumns({ actions }: PersonsTableColumnsProps) {
         </Button>
       ),
       cell: ({ row }) => {
-        const neighborhoodId = row.getValue('neighborhoodId') as string;
+        const neighborhoodId = row.getValue('neighborhoodId') as
+          | string
+          | null
+          | undefined;
         const neighborhood = neighborhoods?.find(
-          (n) => n.neighborhoodId === neighborhoodId
+          (n) => Boolean(neighborhoodId) && n.neighborhoodId === neighborhoodId
         );
         return (
           <div className='w-full min-w-25'>

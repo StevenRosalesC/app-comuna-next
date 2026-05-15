@@ -133,18 +133,19 @@ export const uploadImageToMinio = async (input: {
   const displayName = input.displayName || safeBase.replace(/\.[^/.]+$/, '');
   const contentType = input.file.type || getMimeTypeFromFilename(safeBase);
 
+  const metadata: Record<string, string> = {};
+  if (width) metadata.width = String(width);
+  if (height) metadata.height = String(height);
+  if (format) metadata.format = format;
+  if (displayName) metadata.display_name = displayName;
+
   await client.send(
     new PutObjectCommand({
       Bucket: MINIO_BUCKET,
       Key: key,
       Body: buffer,
       ContentType: contentType,
-      Metadata: {
-        width: width ? String(width) : '',
-        height: height ? String(height) : '',
-        format: format || '',
-        display_name: displayName || ''
-      }
+      Metadata: metadata
     })
   );
 

@@ -31,6 +31,7 @@ export async function GET(request: NextRequest) {
     );
     return NextResponse.json(convertedData);
   } catch (error) {
+    console.error('Error listing images:', error);
     const message =
       error instanceof Error
         ? error.message
@@ -53,34 +54,56 @@ export async function POST(request: NextRequest) {
     STORAGE_PROVIDER ||
     'imagekit';
   const formData = await request.formData();
-  const file = formData.get('file');
-  const fileName = formData.get('filename') as string;
-  const folder = formData.get('folder') as string;
-  const width = formData.get('width') as string | null;
-  const height = formData.get('height') as string | null;
-  const format = formData.get('format') as string | null;
-  const displayName = formData.get('display_name') as string | null;
+  const fileValue = formData.get('file');
+  const fileNameValue = formData.get('filename');
+  const folderValue = formData.get('folder');
+  const widthValue = formData.get('width');
+  const heightValue = formData.get('height');
+  const formatValue = formData.get('format');
+  const displayNameValue = formData.get('display_name');
+
+  if (!(fileValue instanceof File)) {
+    return NextResponse.json({ error: 'File is required' }, { status: 400 });
+  }
+  if (typeof fileNameValue !== 'string' || !fileNameValue.trim()) {
+    return NextResponse.json({ error: 'Filename is required' }, { status: 400 });
+  }
+  if (typeof folderValue !== 'string' || !folderValue.trim()) {
+    return NextResponse.json({ error: 'Folder is required' }, { status: 400 });
+  }
+
+  const width =
+    typeof widthValue === 'string' && Number.isFinite(Number(widthValue))
+      ? Number(widthValue)
+      : undefined;
+  const height =
+    typeof heightValue === 'string' && Number.isFinite(Number(heightValue))
+      ? Number(heightValue)
+      : undefined;
+  const format = typeof formatValue === 'string' ? formatValue : undefined;
+  const displayName =
+    typeof displayNameValue === 'string' ? displayNameValue : undefined;
 
   try {
     if (provider === 'minio') {
       const uploaded = await uploadImageToMinio({
-        file: file as File,
-        filename: fileName,
-        folder,
-        width: width ? parseInt(width, 10) : undefined,
-        height: height ? parseInt(height, 10) : undefined,
-        format: format || undefined,
-        displayName: displayName || undefined
+        file: fileValue,
+        filename: fileNameValue,
+        folder: folderValue,
+        width,
+        height,
+        format,
+        displayName
       });
       return NextResponse.json(uploaded);
     }
     const { default: imageKitApi } = await import('@/utils/imagekitApi');
     const { transformImageKitData } = await import('@/utils/images');
-    const fileBuffer = await (file as File).arrayBuffer();
+    const fileBuffer = await fileValue.arrayBuffer();
     const response = await imageKitApi.upload({
       file: Buffer.from(fileBuffer),
-      fileName: fileName,
-      folder: folder,
+      fileName: fileNameValue,
+      folder: folderValue,
       tags: ['app-comuna'],
       useUniqueFileName: true
     });

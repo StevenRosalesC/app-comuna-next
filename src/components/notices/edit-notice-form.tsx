@@ -161,11 +161,31 @@ export default function EditNoticeForm({ id }: Props) {
     if (id) {
       getNotice(id)
         .then((notice) => {
-          reset({ ...notice });
+          if (!notice) {
+            router.push('/dashboard/notices');
+            return;
+          }
+
+          const resolvedType = Object.values(NoticeType).includes(
+            notice.type as NoticeType
+          )
+            ? (notice.type as NoticeType)
+            : NoticeType.Noticia;
+
+          const nextValues: PostForm = {
+            title: notice.title ?? '',
+            content: notice.content ?? '',
+            coverImageUrl: notice.coverImageUrl ?? '',
+            description: notice.description ?? '',
+            type: resolvedType,
+            published: notice.published ?? false
+          };
+
+          reset(nextValues);
           setIsLoading(false);
           setSaveState('idle');
         })
-        .catch((err) => {
+        .catch((_err) => {
           router.push('/dashboard/notices');
         });
     } else {

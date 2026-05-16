@@ -15,7 +15,7 @@ export function NavBar() {
         <SheetTrigger asChild>
           <Button variant='outline' size='icon' className='lg:hidden'>
             <MenuIcon className='h-6 w-6' />
-            <span className='sr-only'>Toggle navigation menu</span>
+            <span className='sr-only'>Abrir menú de navegación</span>
           </Button>
         </SheetTrigger>
         <SheetContent side='left'>

@@ -41,23 +41,23 @@ export const NoticeMiniCard = ({
   const handleIcon = (type: string) => {
     switch (type) {
       case NoticeType.Noticia:
-        return <Newspaper className='text-green-600' />;
+        return <Newspaper className='text-primary' />;
       case NoticeType.Evento:
-        return <ListCheck className='text-green-600' />;
+        return <ListCheck className='text-primary' />;
       case NoticeType.Anuncio:
-        return <MessageCircleWarning className='text-green-600' />;
+        return <MessageCircleWarning className='text-primary' />;
       case NoticeType.Blog:
-        return <NotebookPen className='text-green-600' />;
+        return <NotebookPen className='text-primary' />;
       case NoticeType.Aviso:
-        return <Globe className='text-green-600' />;
+        return <Globe className='text-primary' />;
       default:
-        return <StickyNote className='text-green-600' />;
+        return <StickyNote className='text-primary' />;
     }
   };
   return (
-    <article className='mb-10 flex h-full flex-1 flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-md focus-within:ring-2 focus-within:ring-green-600'>
-      <div className='mb-5 flex items-center justify-between text-gray-500'>
-        <span className='bg-primary-100 text-primary-800 inline-flex items-center rounded px-2.5 py-0.5 text-xs font-medium'>
+    <article className='mb-10 flex h-full flex-1 flex-col rounded-3xl border border-border/60 bg-background/70 p-6 shadow-sm backdrop-blur focus-within:ring-2 focus-within:ring-ring dark:bg-background/40'>
+      <div className='mb-5 flex items-center justify-between text-muted-foreground'>
+        <span className='inline-flex items-center rounded bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary'>
           {handleIcon(type)}
           <span className='ml-1'>{type}</span>
         </span>
@@ -72,11 +72,11 @@ export const NoticeMiniCard = ({
         loading='lazy'
         unoptimized={isLocalImageUrl(cover)}
       />
-      <h2 className='mb-2 line-clamp-2 text-2xl font-bold tracking-tight text-green-600'>
+      <h2 className='mb-2 line-clamp-2 text-2xl font-bold tracking-tight text-primary'>
         <Link
           rel='noopener noreferrer'
           href={`/notices/${noticeSlug}`}
-          className={`hover:underline focus:outline-none focus:ring-2 focus:ring-green-600 ${
+          className={`hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
             title.length > 30 ? 'text-md' : ''
           }`}
           aria-label={`Leer noticia: ${title}`}
@@ -90,7 +90,7 @@ export const NoticeMiniCard = ({
       <div className='mt-auto flex items-center justify-between'>
         <div className='flex items-center space-x-4'>
           <span
-            className='font-medium dark:text-white'
+            className='font-medium'
             aria-label={`Autor: ${createdBy}`}
           >
             {createdBy}
@@ -99,7 +99,7 @@ export const NoticeMiniCard = ({
         <Link
           rel='noopener noreferrer'
           href={`/notices/${noticeSlug}`}
-          className='inline-flex items-center font-medium hover:underline focus:outline-none focus:ring-2 focus:ring-green-600'
+          className='inline-flex items-center font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
           aria-label={`Leer más sobre: ${title}`}
         >
           Leer más

@@ -35,7 +35,7 @@ const PostHeader = ({
           className='rounded-full'
         /> */}
         <div className=''>
-          <div className='mb-3 font-semibold'>
+          <div className='mb-3 font-semibold text-muted-foreground'>
             Por <u>{author}</u>
           </div>
           <div className='flex items-center'>
@@ -43,7 +43,7 @@ const PostHeader = ({
               <LuCalendarDays size={18} />
               <span>{getRelativeTime(createdAt)}</span>
             </div>
-            <div className='mx-3 h-1.5 w-1.5 rounded-full bg-gray-500 dark:bg-gray-300'></div>
+            <div className='mx-3 h-1.5 w-1.5 rounded-full bg-muted-foreground/60'></div>
             <div className='flex items-center gap-2 text-sm'>
               <LuClock size={18} />
               <span>{readingTime} minutos de lectura</span>

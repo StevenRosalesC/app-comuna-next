@@ -88,13 +88,13 @@ export default function ContactView() {
   return (
     <section className='mx-auto w-full max-w-screen-xl px-4 py-10 lg:px-6 lg:py-16'>
       <div
-        className='relative overflow-hidden rounded-3xl border bg-white/70 p-6 shadow-sm backdrop-blur md:p-10'
+        className='relative overflow-hidden rounded-3xl border border-border/60 bg-background/70 p-6 shadow-sm backdrop-blur dark:bg-background/40 md:p-10'
         data-aos='fade-up'
       >
         <div className='pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(90%_70%_at_20%_0%,hsl(var(--primary)/0.18)_0%,transparent_55%),radial-gradient(70%_60%_at_90%_20%,hsl(var(--primary)/0.10)_0%,transparent_60%)]' />
         <div className='grid items-start gap-10 lg:grid-cols-12'>
           <div className='lg:col-span-7'>
-            <div className='inline-flex items-center gap-2 rounded-full border bg-white/80 px-3 py-1 text-sm font-medium text-muted-foreground'>
+            <div className='inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-3 py-1 text-sm font-medium text-muted-foreground dark:bg-background/50'>
               <MapPin className='h-4 w-4 text-primary' aria-hidden='true' />
               Atención e información oficial
             </div>
@@ -105,7 +105,7 @@ export default function ContactView() {
             </Paragraph>
 
             <div className='mt-6 grid gap-3 sm:grid-cols-2'>
-              <div className='rounded-2xl border bg-white/60 p-4'>
+              <div className='rounded-2xl border border-border/60 bg-background/60 p-4 dark:bg-background/30'>
                 <div className='flex items-center gap-3'>
                   <div className='flex h-10 w-10 items-center justify-center rounded-full bg-primary'>
                     <Mail className='h-5 w-5 text-primary-foreground' />
@@ -122,7 +122,7 @@ export default function ContactView() {
                   </div>
                 </div>
               </div>
-              <div className='rounded-2xl border bg-white/60 p-4'>
+              <div className='rounded-2xl border border-border/60 bg-background/60 p-4 dark:bg-background/30'>
                 <div className='flex items-center gap-3'>
                   <div className='flex h-10 w-10 items-center justify-center rounded-full bg-primary'>
                     <Phone className='h-5 w-5 text-primary-foreground' />
@@ -139,7 +139,7 @@ export default function ContactView() {
                   </div>
                 </div>
               </div>
-              <div className='rounded-2xl border bg-white/60 p-4 sm:col-span-2'>
+              <div className='rounded-2xl border border-border/60 bg-background/60 p-4 dark:bg-background/30 sm:col-span-2'>
                 <div className='flex items-start gap-3'>
                   <div className='flex h-10 w-10 items-center justify-center rounded-full bg-primary'>
                     <MapPin className='h-5 w-5 text-primary-foreground' />
@@ -152,7 +152,7 @@ export default function ContactView() {
                   </div>
                 </div>
               </div>
-              <div className='rounded-2xl border bg-white/60 p-4 sm:col-span-2'>
+              <div className='rounded-2xl border border-border/60 bg-background/60 p-4 dark:bg-background/30 sm:col-span-2'>
                 <div className='flex items-start gap-3'>
                   <div className='flex h-10 w-10 items-center justify-center rounded-full bg-primary'>
                     <Clock className='h-5 w-5 text-primary-foreground' />
@@ -198,7 +198,7 @@ export default function ContactView() {
                 priority
               />
             </div>
-            <div className='mt-4 rounded-3xl border bg-white/70 p-4 shadow-sm backdrop-blur'>
+            <div className='mt-4 rounded-3xl border border-border/60 bg-background/70 p-4 shadow-sm backdrop-blur dark:bg-background/40'>
               <SubTitle className='mb-2 text-primary'>Visita la comuna</SubTitle>
               <p className='text-sm text-muted-foreground'>
                 Encuentra el mapa, rutas y referencias para planificar tu visita
@@ -211,7 +211,7 @@ export default function ContactView() {
 
       <div className='mt-8 grid gap-6 lg:grid-cols-12'>
         <div className='lg:col-span-7' data-aos='fade-up'>
-          <Card className='rounded-3xl border bg-white/70 shadow-sm backdrop-blur'>
+          <Card className='rounded-3xl border border-border/60 bg-background/70 shadow-sm backdrop-blur dark:bg-background/40'>
             <CardHeader>
               <CardTitle>Enviar un mensaje</CardTitle>
               <CardDescription>
@@ -290,7 +290,7 @@ export default function ContactView() {
         </div>
 
         <div className='lg:col-span-5' data-aos='fade-up'>
-          <div className='rounded-3xl border bg-white/70 p-4 shadow-sm backdrop-blur md:p-5'>
+          <div className='rounded-3xl border border-border/60 bg-background/70 p-4 shadow-sm backdrop-blur dark:bg-background/40 md:p-5'>
             <SubTitle className='mb-2 text-primary'>Mapa</SubTitle>
             <p className='mb-4 text-sm text-muted-foreground'>
               Ubicación referencial para coordinar visitas y orientación.

@@ -59,14 +59,14 @@ import { cn } from '@/lib/utils';
 // export { Button, buttonVariants };
 
 const paragraphVariants = cva(
-  'mb-5 font-light text-gray-500 dark:text-gray-400',
+  'mb-5 font-light text-muted-foreground',
   {
     variants: {
       variant: {
-        default: 'mb-5 font-light text-gray-500 dark:text-gray-400',
-        secondary: 'mb-5 font-light text-gray-500 dark:text-gray-400',
-        destructive: 'mb-5 font-light text-gray-500 dark:text-gray-400',
-        outline: 'mb-5 font-light text-gray-500 dark:text-gray-400'
+        default: 'mb-5 font-light text-muted-foreground',
+        secondary: 'mb-5 font-light text-muted-foreground',
+        destructive: 'mb-5 font-light text-muted-foreground',
+        outline: 'mb-5 font-light text-muted-foreground'
       },
       size: {
         default: 'text-base lg:text-lg xl:text-xl',

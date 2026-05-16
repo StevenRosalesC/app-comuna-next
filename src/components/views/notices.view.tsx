@@ -71,7 +71,7 @@ export default function NoticesView() {
   }, []);
 
   return (
-    <section className='dark:bg-gray-100 dark:text-gray-800'>
+    <section className='text-foreground'>
       {notices.length < 1 && !loading ? (
         <div className='flex h-[100dvh] items-center justify-center'>
           <h2 className='text-2xl font-semibold'>
@@ -89,7 +89,7 @@ export default function NoticesView() {
               rel='noopener noreferrer'
               href={`/notices/${notice.slug || notice.title}`}
               key={index}
-              className='group mx-auto block max-w-6xl gap-3 hover:no-underline focus:no-underline dark:bg-gray-50 sm:max-w-full lg:grid lg:grid-cols-12'
+              className='group mx-auto block max-w-6xl gap-3 overflow-hidden rounded-3xl border border-border/60 bg-background/70 shadow-sm backdrop-blur hover:no-underline focus:no-underline dark:bg-background/40 sm:max-w-full lg:grid lg:grid-cols-12'
               aria-label={`Leer noticia: ${notice.title}`}
             >
               <Image
@@ -101,20 +101,20 @@ export default function NoticesView() {
                     : 'Imagen de noticia'
                 }
                 src={notice.coverImageUrl || '/not-found-1.webp'}
-                className='h-96 w-full rounded object-cover dark:bg-gray-500 sm:h-96 lg:col-span-7'
+                className='h-96 w-full object-cover sm:h-96 lg:col-span-7'
                 loading='lazy'
                 unoptimized={isLocalImageUrl(notice.coverImageUrl)}
               />
               <div className='space-y-2 p-6 lg:col-span-5'>
                 <div className='mb-2 flex items-center gap-2'>
                   <span
-                    className='text-xs text-gray-500'
+                    className='text-xs text-muted-foreground'
                     aria-label={`Autor: ${notice.createdBy}`}
                   >
                     {notice.createdBy}
                   </span>
                   <span
-                    className='text-xs text-gray-500'
+                    className='text-xs text-muted-foreground'
                     aria-label={`Fecha de publicación: ${getRelativeTime(
                       notice.createdAt ?? new Date().toISOString()
                     )}`}
@@ -124,7 +124,7 @@ export default function NoticesView() {
                     )}
                   </span>
                 </div>
-                <h3 className='line-clamp-2 text-2xl font-semibold text-green-600 group-hover:underline group-focus:underline sm:text-4xl '>
+                <h3 className='line-clamp-2 text-2xl font-semibold text-primary group-hover:underline group-focus:underline sm:text-4xl'>
                   {notice.title}
                 </h3>
                 <span className='sr-only'>
@@ -134,7 +134,9 @@ export default function NoticesView() {
                   )}{' '}
                   por {notice.createdBy}
                 </span>
-                <p className='line-clamp-6'>{notice.description}</p>
+                <p className='line-clamp-6 text-muted-foreground'>
+                  {notice.description}
+                </p>
               </div>
             </Link>
           ))}
@@ -150,7 +152,8 @@ export default function NoticesView() {
               {notices.length < total && (
                 <Button
                   type='button'
-                  className='flex items-center gap-2 rounded-md px-6 py-3 text-sm hover:underline dark:bg-gray-50 dark:text-gray-600'
+                  variant='outline'
+                  className='flex items-center gap-2'
                   onClick={handleLoadMore}
                   aria-label='Cargar más noticias'
                   disabled={loading}

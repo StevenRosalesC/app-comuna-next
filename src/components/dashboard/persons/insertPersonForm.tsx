@@ -22,8 +22,8 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { CalendarIcon } from 'lucide-react';
-import { personsService } from '@/services/persons';
 import { IPerson } from '@/interfaces/persons';
+import { useCreatePersonMutation } from '@/hooks/persons/usePersonMutations';
 import {
   Select,
   SelectContent,
@@ -101,6 +101,32 @@ export default function InsertPersonForm({
     }
   });
 
+  const createPersonMutation = useCreatePersonMutation<{ toastId: string | number }>({
+    onMutate: () => {
+      const toastId = toast.loading('Guardando persona...');
+      return { toastId };
+    },
+    onSuccess: async (response, person, context) => {
+      toast.dismiss(context?.toastId);
+      if (response.status) {
+        const event = new CustomEvent(Events.PERSONS_CREATED, {
+          bubbles: true,
+          composed: true,
+          detail: { person }
+        });
+        document.dispatchEvent(event);
+        toast.success('Persona guardada exitosamente');
+        form.reset();
+        return;
+      }
+      toast.error(response.message);
+    },
+    onError: (_error, _vars, context) => {
+      toast.dismiss(context?.toastId);
+      toast.error('Error al guardar la persona');
+    }
+  });
+
   // Neighborhood options for Select
   // This variable is outside the JSX for better readability
   const neighborhoodsOptions = neighborhoods?.map(
@@ -114,38 +140,22 @@ export default function InsertPersonForm({
     )
   );
 
-  async function onSubmit(data: FormValues) {
-    try {
-      const person: IPerson = {
-        lastName: data.lastName,
-        firstName: data.firstName,
-        phoneNumber: data.phone,
-        identification: data.identification,
-        gender: data.gender,
-        birthDate: data.birthDate || '',
-        email: data.email || '',
-        hasDisability: data.hasDisability,
-        disabilityPercentage: data.disabilityPercentage
-      };
-      if (data.neighborhoodId) {
-        person.neighborhoodId = data.neighborhoodId;
-      }
-      const response = await personsService.createPerson(person);
-      if (response.status) {
-        const event = new CustomEvent(Events.PERSONS_CREATED, {
-          bubbles: true,
-          composed: true,
-          detail: { person }
-        });
-        document.dispatchEvent(event);
-        toast.success('Persona guardada exitosamente');
-        form.reset();
-      } else {
-        toast.error(response.message);
-      }
-    } catch (error) {
-      toast.error('Error al guardar la persona');
+  function onSubmit(data: FormValues) {
+    const person: IPerson = {
+      lastName: data.lastName,
+      firstName: data.firstName,
+      phoneNumber: data.phone,
+      identification: data.identification,
+      gender: data.gender,
+      birthDate: data.birthDate || '',
+      email: data.email || '',
+      hasDisability: data.hasDisability,
+      disabilityPercentage: data.disabilityPercentage
+    };
+    if (data.neighborhoodId) {
+      person.neighborhoodId = data.neighborhoodId;
     }
+    createPersonMutation.mutate(person);
   }
 
   return (
@@ -406,7 +416,9 @@ export default function InsertPersonForm({
               >
                 Cancelar
               </Button>
-              <Button type='submit'>Guardar</Button>
+              <Button type='submit' disabled={createPersonMutation.isPending}>
+                Guardar
+              </Button>
             </div>
           </form>
         </Form>

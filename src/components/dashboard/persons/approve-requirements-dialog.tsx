@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { requirementsService } from '@/services/requirements';
 import { toast } from 'sonner';
+import { personsKeys } from '@/lib/queryKeys/persons';
 
 interface ApproveRequirementsDialogProps {
   person: Person;
@@ -42,7 +43,7 @@ export const ApproveRequirementsDialog = ({
     }) => requirementsService.approve(personId, requirementId, { observation }),
     onSuccess: () => {
       toast.success('Requisito aprobado correctamente');
-      queryClient.invalidateQueries({ queryKey: ['persons'] });
+      queryClient.invalidateQueries({ queryKey: personsKeys.all });
     },
     onError: () => {
       toast.error('Error al aprobar el requisito');

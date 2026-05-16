@@ -9,8 +9,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { personsService } from '@/services/persons';
+import { usePersonsPaginatedQuery } from '@/hooks/persons/usePersonsPaginatedQuery';
 import { Person } from '@/interfaces/persons';
 
 interface SelectPersonDialogProps {
@@ -42,16 +41,10 @@ export function SelectPersonDialog({
   const [pageSize, setPageSize] = useState(10);
   const isMobile = useIsMobile();
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['persons', search, page, pageSize],
-    queryFn: async () => {
-      const response = await personsService.getPersonsPaginated({
-        pageParam: page,
-        search,
-        pageSize
-      });
-      return response;
-    }
+  const { data, isLoading } = usePersonsPaginatedQuery({
+    page,
+    pageSize,
+    search
   });
 
   const persons = data?.data || [];

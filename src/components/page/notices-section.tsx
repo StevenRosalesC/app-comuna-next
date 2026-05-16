@@ -36,7 +36,7 @@ export default function NoticesSection({ notices }: Props) {
           </div>
         </div>
         <div data-aos='fade-up'>
-          <div className='rounded-3xl border bg-white/70 p-4 shadow-sm backdrop-blur md:p-6'>
+          <div className='rounded-3xl border border-border/60 bg-background/70 p-4 shadow-sm backdrop-blur dark:bg-background/40 md:p-6'>
             <Carousel>
               <CarouselContent>
                 {recentNotices.map((notice, index) => (
@@ -58,7 +58,7 @@ export default function NoticesSection({ notices }: Props) {
           <Link
             type='button'
             href='/notices'
-            className='rounded-md border border-primary bg-primary px-6 py-3 text-sm font-semibold text-white shadow transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
+            className='rounded-md border border-primary bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background'
             aria-label='Ver todas las noticias'
           >
             Ver todas las publicaciones

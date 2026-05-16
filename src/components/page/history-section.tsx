@@ -1,7 +1,7 @@
 export default function HistorySection() {
   return (
-    <div className=' mx-auto px-4 py-12 sm:px-6 lg:px-8'>
-      <h2 className='mb-8 text-center text-3xl font-bold text-green-600'>
+    <div className='mx-auto px-4 py-12 sm:px-6 lg:px-8'>
+      <h2 className='mb-8 text-center text-3xl font-bold text-primary'>
         Historia De La Comuna Bambil Collao
       </h2>
 
@@ -12,7 +12,7 @@ export default function HistorySection() {
           través de lomas blanquecinas que se extendían suavemente hacia la
           cordillera de Colonche. En aquel entonces, las casas eran construidas
           con caña guadúa y techadas con cade (
-          <strong className='text-green-700'>
+          <strong className='text-primary'>
             techos con hojas de palma secas
           </strong>
           ), reflejando la arquitectura tradicional de la época.
@@ -26,18 +26,18 @@ export default function HistorySection() {
           la región.
         </p>
 
-        <div className='rounded-lg bg-green-50 p-6 shadow-sm'>
-          <h2 className='mb-4 text-2xl font-semibold text-green-800'>
+        <div className='rounded-lg border border-border/60 bg-primary/10 p-6 shadow-sm'>
+          <h2 className='mb-4 text-2xl font-semibold text-primary'>
             Primeros Pobladores
           </h2>
           <p className=' leading-relaxed'>
             Los primeros habitantes que fundaron esta población fueron las
             familias{' '}
-            <strong className='text-green-700'>
+            <strong className='text-primary'>
               Tomalá, Teran, Caiche y Rosales
             </strong>
             , personas de nombre{' '}
-            <strong className='text-green-700'>
+            <strong className='text-primary'>
               Pavin Catuto, Tamayo Tomalá, Jacobo Catuto, Pedro Caiche, Jose
               Bacilio Tomala, Pedro Del Pezo
             </strong>
@@ -45,80 +45,80 @@ export default function HistorySection() {
           </p>
           <ul className='mt-4 list-disc space-y-2 pl-6'>
             <li>
-              <strong className='text-green-700'>Presidente:</strong> Tamayo
+              <strong className='text-primary'>Presidente:</strong> Tamayo
               Tomalá
             </li>
             <li>
-              <strong className='text-green-700'>Secretario:</strong> Aurelio
+              <strong className='text-primary'>Secretario:</strong> Aurelio
               Tomalá
             </li>
             <li>
-              <strong className='text-green-700'>Inspector:</strong> Florencio
+              <strong className='text-primary'>Inspector:</strong> Florencio
               Tomalá
             </li>
           </ul>
         </div>
 
-        <section className='border-l-4 border-green-500 pl-6'>
-          <h2 className='mb-4 text-2xl font-semibold text-green-800'>
+        <section className='border-l-4 border-primary pl-6'>
+          <h2 className='mb-4 text-2xl font-semibold text-primary'>
             Límites De La Comuna
           </h2>
           <div className='space-y-4'>
             <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
-              <div className='rounded-lg bg-white p-4 shadow-sm'>
-                <h3 className='mb-2 font-bold text-green-700'>Norte</h3>
+              <div className='rounded-lg border border-border/60 bg-background/70 p-4 shadow-sm dark:bg-background/40'>
+                <h3 className='mb-2 font-bold text-primary'>Norte</h3>
                 <p className=''>
                   Con las posesiones de la{' '}
-                  <strong className='text-green-700'>Comuna Loma Alta</strong>,
+                  <strong className='text-primary'>Comuna Loma Alta</strong>,
                   desde el punto conocido como{' '}
-                  <strong className='text-green-700'>Cerro Verde</strong>,
+                  <strong className='text-primary'>Cerro Verde</strong>,
                   continuando por el camino llamado{' '}
-                  <strong className='text-green-700'>Cauchero</strong>
+                  <strong className='text-primary'>Cauchero</strong>
                   hasta llegar al{' '}
-                  <strong className='text-green-700'>Camino Barbasco</strong>.
+                  <strong className='text-primary'>Camino Barbasco</strong>.
                 </p>
               </div>
-              <div className='rounded-lg bg-white p-4 shadow-sm'>
-                <h3 className='mb-2 font-bold text-green-700'>Sur</h3>
+              <div className='rounded-lg border border-border/60 bg-background/70 p-4 shadow-sm dark:bg-background/40'>
+                <h3 className='mb-2 font-bold text-primary'>Sur</h3>
                 <p className=''>
                   Con la{' '}
-                  <strong className='text-green-700'>
+                  <strong className='text-primary'>
                     Comuna Manantial de Colonche
                   </strong>
                   , desde el punto conocido como{' '}
-                  <strong className='text-green-700'>Las Crucitas</strong>, un
+                  <strong className='text-primary'>Las Crucitas</strong>, un
                   pequeño caserío que separa al{' '}
-                  <strong className='text-green-700'>
+                  <strong className='text-primary'>
                     Recinto Bambil Desecho
                   </strong>
                   , cruzando el{' '}
-                  <strong className='text-green-700'>río Botella</strong>.
+                  <strong className='text-primary'>río Botella</strong>.
                 </p>
               </div>
-              <div className='rounded-lg bg-white p-4 shadow-sm'>
-                <h3 className='mb-2 font-bold text-green-700'>Este</h3>
+              <div className='rounded-lg border border-border/60 bg-background/70 p-4 shadow-sm dark:bg-background/40'>
+                <h3 className='mb-2 font-bold text-primary'>Este</h3>
                 <p className=''>
                   Con la{' '}
-                  <strong className='text-green-700'>Comuna Río Seco</strong>,
+                  <strong className='text-primary'>Comuna Río Seco</strong>,
                   desde el punto{' '}
-                  <strong className='text-green-700'>Barbasco</strong>, pasando
+                  <strong className='text-primary'>Barbasco</strong>, pasando
                   por el sector denominado{' '}
-                  <strong className='text-green-700'>Sabaneta</strong>.
+                  <strong className='text-primary'>Sabaneta</strong>.
                 </p>
               </div>
-              <div className='rounded-lg bg-white p-4 shadow-sm'>
-                <h3 className='mb-2 font-bold text-green-700'>Oeste</h3>
+              <div className='rounded-lg border border-border/60 bg-background/70 p-4 shadow-sm dark:bg-background/40'>
+                <h3 className='mb-2 font-bold text-primary'>Oeste</h3>
                 <p className=''>
                   Con la{' '}
-                  <strong className='text-green-700'>
+                  <strong className='text-primary'>
                     Comuna Sinchal-Barcelona
                   </strong>
                   , desde{' '}
-                  <strong className='text-green-700'>Cerro Verde</strong>,
+                  <strong className='text-primary'>Cerro Verde</strong>,
                   siguiendo aproximadamente{' '}
-                  <strong className='text-green-700'>4.000 metros</strong>
+                  <strong className='text-primary'>4.000 metros</strong>
                   hasta la{' '}
-                  <strong className='text-green-700'>Loma del Mate</strong>.
+                  <strong className='text-primary'>Loma del Mate</strong>.
                 </p>
               </div>
             </div>
@@ -126,73 +126,73 @@ export default function HistorySection() {
         </section>
 
         <section className='mt-12'>
-          <h2 className='mb-6 text-2xl font-semibold text-green-800'>
+          <h2 className='mb-6 text-2xl font-semibold text-primary'>
             Fiestas Religiosas
           </h2>
-          <div className='space-y-6 rounded-lg bg-white p-6 shadow-md'>
+          <div className='space-y-6 rounded-lg border border-border/60 bg-background/70 p-6 shadow-md dark:bg-background/40'>
             <p className=' leading-relaxed'>
               La comuna{' '}
-              <strong className='text-green-700'>Bambil Collao</strong> celebra
+              <strong className='text-primary'>Bambil Collao</strong> celebra
               anualmente sus{' '}
-              <strong className='text-green-700'>fiestas patronales</strong> en
+              <strong className='text-primary'>fiestas patronales</strong> en
               honor a su patrona, la{' '}
-              <strong className='text-green-700'>
+              <strong className='text-primary'>
                 Virgen María Auxiliadora
               </strong>
               , del{' '}
-              <strong className='text-green-700'>1 al 8 de septiembre</strong>.
+              <strong className='text-primary'>1 al 8 de septiembre</strong>.
             </p>
 
             <div className='space-y-4'>
               <p className=' leading-relaxed'>
                 Las festividades inician el{' '}
-                <strong className='text-green-700'>1 de septiembre</strong> con
-                el <strong className='text-green-700'>Pregón</strong>, evento en
+                <strong className='text-primary'>1 de septiembre</strong> con el{' '}
+                <strong className='text-primary'>Pregón</strong>, evento en
                 el que todos los barrios participan en la elección de la reina.
                 Del{' '}
-                <strong className='text-green-700'>2 al 6 de septiembre</strong>{' '}
+                <strong className='text-primary'>2 al 6 de septiembre</strong>{' '}
                 , se realizan diversas actividades recreativas, como:
               </p>
 
               <ul className='list-disc space-y-2 pl-6'>
                 <li>
-                  <strong className='text-green-700'>Juegos deportivos</strong>
+                  <strong className='text-primary'>Juegos deportivos</strong>
                 </li>
                 <li>
-                  <strong className='text-green-700'>Palo encebado</strong>
+                  <strong className='text-primary'>Palo encebado</strong>
                 </li>
                 <li>
-                  <strong className='text-green-700'>Ollas encantadas</strong>
+                  <strong className='text-primary'>Ollas encantadas</strong>
                 </li>
                 <li>
-                  <strong className='text-green-700'>
+                  <strong className='text-primary'>
                     Despescuezado de gallos
                   </strong>
                 </li>
                 <li>
-                  <strong className='text-green-700'>
+                  <strong className='text-primary'>
                     Otros juegos tradicionales
                   </strong>
                 </li>
               </ul>
 
               <p className=' leading-relaxed'>
-                El <strong className='text-green-700'>7 de septiembre</strong>{' '}
+                El <strong className='text-primary'>7 de septiembre</strong>{' '}
                 se celebra la{' '}
-                <strong className='text-green-700'>Santa Misa</strong>, seguida
+                <strong className='text-primary'>Santa Misa</strong>, seguida
                 de una procesión por las principales calles de la comunidad, con
                 la imagen de la Virgen María portada por los feligreses. La
                 jornada culmina con un{' '}
-                <strong className='text-green-700'>gran baile público</strong>.
+                <strong className='text-primary'>gran baile público</strong>.
               </p>
 
               <p className=' leading-relaxed'>
                 Finalmente, el{' '}
-                <strong className='text-green-700'>8 de septiembre</strong> ,
+                <strong className='text-primary'>8 de septiembre</strong> ,
                 las festividades concluyen con otra{' '}
-                <strong className='text-green-700'>Santa Misa</strong> y el
+                <strong className='text-primary'>Santa Misa</strong> y el
                 tradicional baile conocido como{' '}
-                <strong className='text-green-700'>
+                <strong className='text-primary'>
                   &ldquo;Pela Rabo&rdquo;
                 </strong>
                 .
@@ -202,56 +202,56 @@ export default function HistorySection() {
         </section>
 
         <section className='mt-12'>
-          <h2 className='mb-6 text-2xl font-semibold text-green-800'>
+          <h2 className='mb-6 text-2xl font-semibold text-primary'>
             Bienes De La Comuna
           </h2>
-          <div className='rounded-lg bg-green-50 p-6 shadow-sm'>
+          <div className='rounded-lg border border-border/60 bg-primary/10 p-6 shadow-sm'>
             <p className=' leading-relaxed'>
               La comuna{' '}
-              <strong className='text-green-700'>Bambil Collao</strong> cuenta
+              <strong className='text-primary'>Bambil Collao</strong> cuenta
               con diversas infraestructuras para el bienestar de sus habitantes,
               entre ellas:
             </p>
             <ul className='mt-4 list-disc space-y-2 pl-6'>
               <li>
-                <strong className='text-green-700'>Iglesia</strong>
+                <strong className='text-primary'>Iglesia</strong>
               </li>
               <li>
-                <strong className='text-green-700'>Casa comunal</strong>
+                <strong className='text-primary'>Casa comunal</strong>
               </li>
               <li>
-                <strong className='text-green-700'>Escuela</strong>
+                <strong className='text-primary'>Escuela</strong>
               </li>
               <li>
-                <strong className='text-green-700'>Cementerio</strong>
+                <strong className='text-primary'>Cementerio</strong>
               </li>
               <li>
-                <strong className='text-green-700'>Mercadillo</strong>
+                <strong className='text-primary'>Mercadillo</strong>
               </li>
               <li>
-                <strong className='text-green-700'>Cancha de fútbol</strong>
+                <strong className='text-primary'>Cancha de fútbol</strong>
               </li>
               <li>
-                <strong className='text-green-700'>Dispensario médico</strong>
+                <strong className='text-primary'>Dispensario médico</strong>
               </li>
               <li>
-                <strong className='text-green-700'>
+                <strong className='text-primary'>
                   Centro educativo (C.P.R.)
                 </strong>
               </li>
               <li>
-                <strong className='text-green-700'>Guardería (C.D.I.)</strong>
+                <strong className='text-primary'>Guardería (C.D.I.)</strong>
               </li>
               <li>
-                <strong className='text-green-700'>Capilla ardiente</strong>
+                <strong className='text-primary'>Capilla ardiente</strong>
               </li>
               <li>
-                <strong className='text-green-700'>
+                <strong className='text-primary'>
                   Cancha de uso múltiple
                 </strong>
               </li>
               <li>
-                <strong className='text-green-700'>
+                <strong className='text-primary'>
                   Ciudadela Narcisa de Jesús
                 </strong>
               </li>

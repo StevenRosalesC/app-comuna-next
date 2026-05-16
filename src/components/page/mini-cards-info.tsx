@@ -62,7 +62,7 @@ export default function MiniCardsInfo({ data }: Props) {
         {cardInfo.map((info) => (
           <div
             key={info.key}
-            className='flex flex-col items-center justify-center gap-2 rounded-2xl border bg-white/70 p-4 shadow-sm backdrop-blur transition will-change-transform hover:-translate-y-0.5 hover:shadow-md'
+            className='flex flex-col items-center justify-center gap-2 rounded-2xl border border-border/60 bg-background/70 p-4 shadow-sm backdrop-blur transition will-change-transform hover:-translate-y-0.5 hover:shadow-md dark:bg-background/40'
             tabIndex={0}
             aria-label={`${info.label}: ${data[info.key as keyof Data]}`}
           >

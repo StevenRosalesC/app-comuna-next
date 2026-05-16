@@ -14,11 +14,11 @@ export default function HeroSection() {
         className='mx-auto max-w-screen-xl px-4 pb-8 pt-6 lg:px-6 lg:pb-16 lg:pt-10'
         aria-label='Sección principal de bienvenida'
       >
-        <div className='relative overflow-hidden rounded-3xl border bg-white/70 p-6 shadow-sm backdrop-blur md:p-10'>
+        <div className='relative overflow-hidden rounded-3xl border border-border/60 bg-background/70 p-6 shadow-sm backdrop-blur dark:bg-background/40 md:p-10'>
           <div className='pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(90%_70%_at_20%_0%,hsl(var(--primary)/0.20)_0%,transparent_55%),radial-gradient(70%_60%_at_90%_20%,hsl(var(--primary)/0.10)_0%,transparent_60%)]' />
           <div className='grid items-center gap-10 lg:grid-cols-12'>
             <div className='lg:col-span-7'>
-              <div className='inline-flex items-center gap-2 rounded-full border bg-white/80 px-3 py-1 text-sm font-medium text-muted-foreground'>
+              <div className='inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-3 py-1 text-sm font-medium text-muted-foreground dark:bg-background/50'>
                 <Landmark className='h-4 w-4 text-primary' aria-hidden='true' />
                 Portal institucional • Turismo comunitario
               </div>
@@ -54,7 +54,7 @@ export default function HeroSection() {
               </div>
 
               <div className='mt-8 grid gap-3 sm:grid-cols-2'>
-                <div className='flex items-start gap-3 rounded-2xl border bg-white/60 p-4'>
+                <div className='flex items-start gap-3 rounded-2xl border border-border/60 bg-background/60 p-4 dark:bg-background/30'>
                   <Newspaper
                     className='mt-0.5 h-5 w-5 text-primary'
                     aria-hidden='true'
@@ -66,7 +66,7 @@ export default function HeroSection() {
                     </p>
                   </div>
                 </div>
-                <div className='flex items-start gap-3 rounded-2xl border bg-white/60 p-4'>
+                <div className='flex items-start gap-3 rounded-2xl border border-border/60 bg-background/60 p-4 dark:bg-background/30'>
                   <MapPin
                     className='mt-0.5 h-5 w-5 text-primary'
                     aria-hidden='true'
@@ -92,7 +92,7 @@ export default function HeroSection() {
                   loading='lazy'
                   priority={false}
                 />
-                <div className='absolute bottom-4 left-4 right-4 rounded-2xl border bg-white/80 p-4 shadow-sm backdrop-blur'>
+                <div className='absolute bottom-4 left-4 right-4 rounded-2xl border border-border/60 bg-background/80 p-4 shadow-sm backdrop-blur dark:bg-background/60'>
                   <p className='text-sm font-semibold'>Santa Elena, Ecuador</p>
                   <p className='text-sm text-muted-foreground'>
                     Parroquia Colonche • Bambil Collao

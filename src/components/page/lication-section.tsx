@@ -29,9 +29,9 @@ export default function LocationSection() {
       </div>
       <div className='grid gap-6 lg:grid-cols-12'>
         <div className='lg:col-span-5' data-aos='fade-up'>
-          <div className='rounded-3xl border bg-white/70 p-6 shadow-sm backdrop-blur'>
+          <div className='rounded-3xl border border-border/60 bg-background/70 p-6 shadow-sm backdrop-blur dark:bg-background/40'>
             <div className='grid gap-4'>
-              <div className='rounded-2xl border bg-white/60 p-4'>
+              <div className='rounded-2xl border border-border/60 bg-background/60 p-4 dark:bg-background/30'>
                 <div className='flex items-center gap-3'>
                   <Mail size={22} aria-label='Icono correo' />
                   <h4 className='text-lg font-bold'>Correo</h4>
@@ -48,7 +48,7 @@ export default function LocationSection() {
                 </Link>
               </div>
 
-              <div className='rounded-2xl border bg-white/60 p-4'>
+              <div className='rounded-2xl border border-border/60 bg-background/60 p-4 dark:bg-background/30'>
                 <div className='flex items-center gap-3'>
                   <MapPin size={22} aria-label='Icono ubicación' />
                   <h4 className='text-lg font-bold'>Oficina</h4>
@@ -83,7 +83,7 @@ export default function LocationSection() {
         </div>
 
         <div className='lg:col-span-7' data-aos='fade-up'>
-          <div className='rounded-3xl border bg-white/70 p-3 shadow-sm backdrop-blur md:p-4'>
+          <div className='rounded-3xl border border-border/60 bg-background/70 p-3 shadow-sm backdrop-blur dark:bg-background/40 md:p-4'>
             <iframe
               src='https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3987.4845036976058!2d-80.65723262576253!3d-1.9598173980224185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x902dd00ad3b3106d%3A0x18ff9cc5561eac86!2sBambil%20Collao!5e0!3m2!1ses-419!2sec!4v1698342874224!5m2!1ses-419!2sec'
               className='min-h-96 w-full rounded-2xl border-0 shadow-sm'

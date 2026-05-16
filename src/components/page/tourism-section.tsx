@@ -40,7 +40,7 @@ export default function TourismSection() {
       className='mx-auto max-w-screen-xl px-4 py-10 lg:px-6 lg:py-16'
       aria-label='Sección turística e institucional'
     >
-      <div className='grid gap-6 rounded-3xl border bg-white/70 p-6 shadow-sm backdrop-blur md:p-10'>
+      <div className='grid gap-6 rounded-3xl border border-border/60 bg-background/70 p-6 shadow-sm backdrop-blur dark:bg-background/40 md:p-10'>
         <div className='mx-auto max-w-2xl text-center'>
           <SubTitle className='text-primary'>
             Institución, territorio y turismo
@@ -57,7 +57,7 @@ export default function TourismSection() {
               <Link
                 key={item.title}
                 href={item.href}
-                className='rounded-2xl border bg-white/60 p-5 shadow-sm transition hover:-translate-y-0.5 hover:bg-white/80 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2'
+                className='rounded-2xl border border-border/60 bg-background/60 p-5 shadow-sm transition hover:-translate-y-0.5 hover:bg-background/80 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:bg-background/30 dark:hover:bg-background/40'
               >
                 <div className='flex items-center gap-2'>
                   {item.icon}
@@ -70,7 +70,7 @@ export default function TourismSection() {
             ) : (
               <div
                 key={item.title}
-                className='rounded-2xl border bg-white/60 p-5 shadow-sm'
+                className='rounded-2xl border border-border/60 bg-background/60 p-5 shadow-sm dark:bg-background/30'
               >
                 <div className='flex items-center gap-2'>
                   {item.icon}

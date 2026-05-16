@@ -36,7 +36,7 @@ export default function FaqSection() {
       className='mx-auto w-full max-w-screen-xl px-4 py-10 lg:px-6 lg:py-16'
     >
       <div
-        className='grid gap-4 rounded-3xl border bg-white/70 p-6 shadow-sm backdrop-blur md:gap-6 md:p-10'
+        className='grid gap-4 rounded-3xl border border-border/60 bg-background/70 p-6 shadow-sm backdrop-blur dark:bg-background/40 md:gap-6 md:p-10'
         data-aos='fade-up'
       >
         <div className='space-y-2'>
@@ -68,7 +68,9 @@ export default function FaqSection() {
           </Accordion>
         </div>
         <div className='mt-4 text-center'>
-          <span className='text-gray-600'>¿No encontraste tu respuesta?</span>{' '}
+          <span className='text-muted-foreground'>
+            ¿No encontraste tu respuesta?
+          </span>{' '}
           <Link
             href='/contact'
             className='ml-1 font-semibold text-primary underline'

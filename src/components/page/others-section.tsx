@@ -45,12 +45,12 @@ export const OthersSection = () => {
           />
         </div>
         <div className='lg:col-span-7' data-aos='fade-up'>
-          <div className='rounded-3xl border bg-white/70 p-6 shadow-sm backdrop-blur'>
+          <div className='rounded-3xl border border-border/60 bg-background/70 p-6 shadow-sm backdrop-blur dark:bg-background/40'>
             <div className='grid gap-3 sm:grid-cols-2'>
               {leaders.map((leader) => (
                 <div
                   key={leader.name}
-                  className='rounded-2xl border bg-white/60 p-4'
+                  className='rounded-2xl border border-border/60 bg-background/60 p-4 dark:bg-background/30'
                 >
                   <p className='text-sm font-semibold text-muted-foreground'>
                     {leader.role}
@@ -72,7 +72,7 @@ export const OthersSection = () => {
         </Paragraph>
       </div>
       <div data-aos='fade-up' data-aos-anchor-placement='top-bottom'>
-        <div className='rounded-3xl border bg-white/70 p-4 shadow-sm backdrop-blur md:p-6'>
+        <div className='rounded-3xl border border-border/60 bg-background/70 p-4 shadow-sm backdrop-blur dark:bg-background/40 md:p-6'>
           <Carousel>
             <CarouselContent>
               {Array.from({ length: 5 }).map((_, index) => (

@@ -146,6 +146,7 @@ function MemberPageSkeleton() {
 
 export default function MemberPage() {
   const params = useParams<{ id: string }>();
+  console.log(params.id);
   const canReadHistoryPayments = usePermission(ValidModules.MEMBERS, [
     ValidActions.READ_HISTORY_PAYMENTS
   ]);

@@ -73,7 +73,7 @@ export default function NoticesView() {
   return (
     <section className='text-foreground'>
       {notices.length < 1 && !loading ? (
-        <div className='flex h-[100dvh] items-center justify-center'>
+        <div className='flex h-dvh items-center justify-center'>
           <h2 className='text-2xl font-semibold'>
             No hay noticias disponibles
           </h2>

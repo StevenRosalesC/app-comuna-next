@@ -21,7 +21,7 @@ const PostHeader = ({
 }: PostHeaderProps) => {
   const coverSrc = cover || '/not-found-1.webp';
   return (
-    <div className='mx-auto lg:max-w-[45rem]'>
+    <div className='mx-auto lg:max-w-180'>
       <h1 className='text-3xl font-bold leading-snug md:text-4xl md:leading-normal'>
         {title}
       </h1>

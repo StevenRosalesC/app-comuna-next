@@ -54,8 +54,8 @@ export default function DocumentTypesTable() {
   const { permissions } = usePermissionsStore();
   const queryClient = useQueryClient();
   const canCreateDocumentType = permissions?.[
-    ValidModules.DOCUMENT_TYPES
-  ]?.includes(ValidActions.CREATE);
+    ValidModules.ADMIN
+  ]?.includes(ValidActions.CREATE_DOCUMENT_TYPE);
 
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);

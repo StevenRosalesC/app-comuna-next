@@ -8,8 +8,11 @@ import { ViewTransitions } from 'next-view-transitions';
 import Providers from '@/components/layout/providers';
 import { Toaster } from '@/components/ui/sonner';
 import type { Metadata } from 'next';
-import { Lato } from 'next/font/google';
+import { Lato, Geist } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: 'Comuna Bambil Collao | App',
@@ -33,7 +36,7 @@ export default function RootLayout({
     <ViewTransitions>
       <html
         lang='es'
-        className={`${lato.className}`}
+        className={cn(lato.className, "font-sans", geist.variable)}
         suppressHydrationWarning={true}
       >
         <body>

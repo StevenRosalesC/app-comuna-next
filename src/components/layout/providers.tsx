@@ -6,6 +6,7 @@ import { AuthResponse } from 'types/response';
 import { NeighborhoodsStoreProvider } from '@/hooks/store/useNeighborhoodsStore';
 import { PersonsStoreProvider } from '@/hooks/store/usePersonsStore';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { TooltipProvider } from '@/components/ui/tooltip';
 // import { MembersStoreProvider } from '@/hooks/store/useMembersStore';
 export default function Providers({
   session,
@@ -27,16 +28,18 @@ export default function Providers({
   );
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute='class' defaultTheme='light' enableSystem>
-        <NeighborhoodsStoreProvider>
-          <PersonsStoreProvider>
-            {/* <MembersStoreProvider> */}
-            <SessionProvider initialSession={session}>
-              {children}
-            </SessionProvider>
-            {/* </MembersStoreProvider> */}
-          </PersonsStoreProvider>
-        </NeighborhoodsStoreProvider>
+      <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
+        <TooltipProvider>
+          <NeighborhoodsStoreProvider>
+            <PersonsStoreProvider>
+              {/* <MembersStoreProvider> */}
+              <SessionProvider initialSession={session}>
+                {children}
+              </SessionProvider>
+              {/* </MembersStoreProvider> */}
+            </PersonsStoreProvider>
+          </NeighborhoodsStoreProvider>
+        </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

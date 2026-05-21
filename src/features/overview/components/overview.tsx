@@ -14,43 +14,43 @@ import { DateRangeFilter } from './date-range-filter';
 export default function OverViewPage() {
   const { session } = useSessionContext();
   const [dateRange, setDateRange] = useState<string | undefined>();
+  const fullName = [session?.firstName, session?.lastName]
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <PageContainer scrollable>
-      <div className='space-y-6'>
-        <div className='flex items-center justify-between space-y-2'>
-          <h2 className='text-2xl font-bold tracking-tight'>
-            Hola, bienvenido de nuevo 👋{' '}
-            <span className='font-semibold capitalize'>
-              {session?.lastName + ' ' + session?.firstName}
-            </span>
-          </h2>
-        </div>
-
-        {/* Date Range Filter */}
-        <div className="max-w-md">
-          <DateRangeFilter onDateRangeChange={setDateRange} />
+      <div className='mx-auto max-w-7xl space-y-6'>
+        <div className='flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between'>
+          <div className='space-y-1'>
+            <h2 className='text-2xl font-bold tracking-tight md:text-3xl'>
+              {fullName ? `Hola, ${fullName}` : 'Hola'}
+            </h2>
+            <p className='text-sm text-muted-foreground'>
+              Resumen de actividad y métricas del sistema.
+            </p>
+          </div>
+          <div className='w-full sm:w-auto sm:min-w-[420px]'>
+            <DateRangeFilter onDateRangeChange={setDateRange} />
+          </div>
         </div>
 
         {/* Dashboard Summary Cards */}
         <DashboardSummary />
 
         {/* Main Dashboard Grid */}
-        <div
-          className="grid grid-cols-1 lg:grid-cols-3 gap-6"
-          style={{ alignItems: 'start' }}
-        >
+        <div className='grid grid-cols-1 gap-6 lg:grid-cols-3'>
           {/* Columna 1: Noticias y Requisitos */}
-          <div className="space-y-6 lg:col-span-2">
+          <div className='space-y-6 lg:col-span-2'>
             <LatestNews limit={5} dateRange={dateRange} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
               <PendingRequirements limit={5} dateRange={dateRange} />
               <MembersOverdueFees limit={5} dateRange={dateRange} />
             </div>
             <RecentMovements limit={8} dateRange={dateRange} />
           </div>
           {/* Columna 2: Gráficos */}
-          <div className="space-y-6">
+          <div className='space-y-6'>
             <MembersByNeighborhood dateRange={dateRange} />
             <UsersByRole dateRange={dateRange} />
           </div>

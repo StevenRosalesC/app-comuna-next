@@ -7,21 +7,24 @@ import TiptapRenderer from '@/components/TiptapRenderer/ServerRenderer';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { NEXT_PUBLIC_APP_URL } from '@/lib/env.config';
-import { getNoticeByTitle } from '@/services/page';
+import { getNoticeBySlug } from '@/services/page.server';
+import Script from 'next/script';
+import { Notice } from 'types/dashboard';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = params;
-  const notice = await getNoticeByTitle(slug[0]);
+  const { slug } = await params;
+  const notice = await getNoticeBySlug(slug[0]);
+  const canonicalSlug = notice?.slug || slug[0];
   return {
     title: `Comuna Bambil Collao | ${notice?.title}`,
     description: notice?.description,
     alternates: {
-      canonical: `https://${NEXT_PUBLIC_APP_URL}/notices/${notice?.title}`
+      canonical: `https://${NEXT_PUBLIC_APP_URL}/notices/${canonicalSlug}`
     },
     openGraph: {
       title: `Comuna Bambil Collao | ${notice?.title}`,
       description: notice?.description,
-      url: `https://${NEXT_PUBLIC_APP_URL}/notices/${notice?.title}`,
+      url: `https://${NEXT_PUBLIC_APP_URL}/notices/${canonicalSlug}`,
       images: [
         {
           url: notice?.coverImageUrl || '/not-found.jpg',
@@ -33,14 +36,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-const jsonLd = async (slug: string[]) => {
-  const notice = await getNoticeByTitle(slug[0]);
+const buildJsonLd = (notice: Notice, canonicalSlug: string) => {
   return {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
     mainEntityOfPage: {
       '@type': 'WebPage',
-      url: `https://${NEXT_PUBLIC_APP_URL}/notices/${notice?.title}`
+      url: `https://${NEXT_PUBLIC_APP_URL}/notices/${canonicalSlug}`
     },
     headline: notice?.title,
     image: notice?.coverImageUrl || '/not-found.jpg',
@@ -51,25 +53,29 @@ const jsonLd = async (slug: string[]) => {
 };
 
 interface Props {
-  params: { slug: string; id: string };
+  params: Promise<{ slug: string[] }>;
 }
 
 export default async function PreviewNotice({ params }: Props) {
-  const { slug } = params;
-  let notice;
-  let readingTime = 1;
-  try {
-    notice = await getNoticeByTitle(slug[0]);
-    if (!notice) return notFound();
-    const allCharacters = notice.content.replace(/<[^>]*>/g, '').trim().length;
-    readingTime = Math.ceil(allCharacters / 1000) || 1;
-  } catch (error) {
-    return notFound();
-  }
+  const { slug } = await params;
+  const notice = await getNoticeBySlug(slug[0]);
+  if (!notice) return notFound();
+
+  const contentPlainText = (notice.content || '')
+    .replace(/<[^>]*>/g, '')
+    .trim();
+  const readingTime = Math.ceil(contentPlainText.length / 1000) || 1;
+
+  const canonicalSlug = notice.slug || slug[0];
+  const jsonLd = buildJsonLd(notice, canonicalSlug);
 
   return (
     <>
-      <script type='application/ld+json'>{JSON.stringify(jsonLd)}</script>
+      <Script
+        id={`notice-jsonld-${notice.newsId}`}
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className='flex flex-col items-center px-6 py-10 '>
         <PostHeader
           title={notice.title}

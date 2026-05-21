@@ -41,13 +41,12 @@ export const SessionProvider = ({
 
   // Helper para extraer el módulo de la ruta
   const getModuleFromPath = (pathname: string) => {
-    const parts = pathname.split('/');
-    if (parts.length > 2) {
-      const route = parts[2];
-      const moduleConfig = modulesPermissions.find((m) => m.route === route);
-      return moduleConfig?.module || route;
-    }
-    return 'dashboard'; // Por defecto para /dashboard
+    const parts = pathname.split('/').filter(Boolean);
+    if (parts[0] !== 'dashboard') return 'dashboard';
+    if (parts.length < 2) return 'dashboard';
+    const baseRoute = `/${parts[0]}/${parts[1]}`;
+    const moduleConfig = modulesPermissions.find((m) => m.route === baseRoute);
+    return moduleConfig?.module || parts[1];
   };
 
   // Rutas que no requieren validación de permisos

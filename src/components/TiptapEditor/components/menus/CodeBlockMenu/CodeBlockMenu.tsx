@@ -9,7 +9,7 @@ import useCopyToClipboard from '../../../hooks/useCopyToClipboard';
 import { getNodeContainer } from '../../../utils/getNodeContainer';
 
 export const CodeBlockMenu = () => {
-  const { editor, contentElement } = useTiptapContext();
+  const { editor } = useTiptapContext();
   const { isCopied, copy } = useCopyToClipboard();
 
   const language = useEditorState({
@@ -43,23 +43,12 @@ export const CodeBlockMenu = () => {
     editor.chain().focus().deleteNode('codeBlock').run();
   }, [editor]);
 
-  const getReferenceClientRect = useCallback(() => {
-    const node = getNodeContainer(editor, 'pre');
-    return node?.getBoundingClientRect() || new DOMRect(-1000, -1000, 0, 0);
-  }, [editor]);
-
   return (
     <BubbleMenu
       editor={editor}
       pluginKey={'code-block-bubble'}
       shouldShow={shouldShow}
       updateDelay={100}
-      tippyOptions={{
-        placement: 'top',
-        maxWidth: 'auto',
-        appendTo: () => contentElement.current!,
-        getReferenceClientRect
-      }}
     >
       <Toolbar>
         <CodeDropdown value={language} onSelect={handleSelect} />

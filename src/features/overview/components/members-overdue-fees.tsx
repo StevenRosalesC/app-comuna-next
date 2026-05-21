@@ -1,10 +1,12 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { dashboardService, type MemberOverdueFee } from '@/services/dashboard';
-import { Calendar, User, AlertTriangle, DollarSign } from 'lucide-react';
+import { Calendar, User, AlertTriangle, DollarSign, BadgeAlert } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
 
 interface MembersOverdueFeesProps {
   limit?: number;
@@ -20,8 +22,11 @@ export function MembersOverdueFees({ limit = 5, dateRange }: MembersOverdueFeesP
   if (isLoading) {
     return (
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
           <CardTitle>Miembros con cuotas atrasadas</CardTitle>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/dashboard/annual-fee">Ver cuotas</Link>
+          </Button>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -43,11 +48,30 @@ export function MembersOverdueFees({ limit = 5, dateRange }: MembersOverdueFeesP
   if (isError || !Array.isArray(members) || members.length === 0) {
     return (
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
           <CardTitle>Miembros con cuotas atrasadas</CardTitle>
+          <Button asChild variant="ghost" size="sm">
+            <Link href="/dashboard/annual-fee">Ver cuotas</Link>
+          </Button>
         </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">No hay miembros con cuotas atrasadas</p>
+        <CardContent className="py-10">
+          <div className="flex flex-col items-center gap-2 text-center">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+              <BadgeAlert className="h-5 w-5 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-medium">Sin cuotas atrasadas</p>
+            <p className="text-xs text-muted-foreground">
+              Las cuotas pendientes y vencidas se mostrarán aquí.
+            </p>
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+              <Button asChild size="sm">
+                <Link href="/dashboard/annual-fee">Ir a cuotas</Link>
+              </Button>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/dashboard/members">Ver comuneros</Link>
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
     );
@@ -91,15 +115,21 @@ export function MembersOverdueFees({ limit = 5, dateRange }: MembersOverdueFeesP
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
         <CardTitle>Miembros con cuotas atrasadas</CardTitle>
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/dashboard/annual-fee">Ver cuotas</Link>
+        </Button>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {members.map((member, index) => {
             const daysOverdue = getDaysOverdue(member.dueDate);
             return (
-              <div key={index} className="flex items-start space-x-4 p-3 rounded-lg border">
+              <div
+                key={index}
+                className="flex items-start space-x-4 rounded-lg border p-3 transition-colors hover:bg-muted/40"
+              >
                 <div className="h-10 w-10 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
                   <User className="h-5 w-5 text-red-600" />
                 </div>

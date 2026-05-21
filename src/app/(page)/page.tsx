@@ -2,13 +2,13 @@ import FaqSection from '@/components/page/faq-section';
 import LocationSection from '@/components/page/lication-section';
 import MiniCardsInfo from '@/components/page/mini-cards-info';
 import { OthersSection } from '@/components/page/others-section';
+import TourismSection from '@/components/page/tourism-section';
 import { NEXT_PUBLIC_APP_URL } from '@/lib/env.config';
 import { getPageInfo } from '@/services/page';
 import { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import { PageData } from 'types';
 
-// dynamic import for better performance
 const HeroSection = dynamic(() => import('@/components/page/hero-section'));
 const NoticesSection = dynamic(
   () => import('@/components/page/notices-section')
@@ -70,7 +70,6 @@ export default async function HomePage() {
   const data: PageData = await getPageInfo();
   return (
     <>
-      {/* Structured Data para SEO local */}
       <script type='application/ld+json' suppressHydrationWarning>{`
         {
           "@context": "https://schema.org",
@@ -90,6 +89,7 @@ export default async function HomePage() {
         }
       `}</script>
       <HeroSection />
+      <TourismSection />
       <MiniCardsInfo
         data={{
           persons: data.totalPersons,

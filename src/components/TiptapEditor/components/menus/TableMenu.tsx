@@ -6,16 +6,11 @@ import MenuButton from '../MenuButton';
 import { Toolbar } from '../ui/Toolbar';
 
 const TableMenu = () => {
-  const { editor, contentElement } = useTiptapContext();
+  const { editor } = useTiptapContext();
 
   const shouldShow = useCallback(({ editor }: any) => {
     return editor.isActive('table');
   }, []);
-
-  const getReferenceClientRect = useCallback(() => {
-    const node = getNodeContainer(editor, 'table');
-    return node?.getBoundingClientRect() || new DOMRect(-1000, -1000, 0, 0);
-  }, [editor]);
 
   const addRowOrColumn = useCallback(
     (type: 'Row' | 'Column', position: 'Before' | 'After') => {
@@ -60,12 +55,6 @@ const TableMenu = () => {
       pluginKey={'table-bubble'}
       shouldShow={shouldShow}
       updateDelay={100}
-      tippyOptions={{
-        placement: 'top',
-        maxWidth: 'auto',
-        appendTo: () => contentElement.current!,
-        getReferenceClientRect
-      }}
     >
       <Toolbar>
         <MenuButton

@@ -113,10 +113,10 @@ export default function AboutView() {
             className='flex w-full flex-col justify-center lg:w-5/12'
             data-aos='zoom-in-up'
           >
-            <h2 className='pb-4 text-3xl font-bold leading-9 text-green-600 lg:text-4xl'>
+            <h2 className='pb-4 text-3xl font-bold leading-9 text-primary lg:text-4xl'>
               Misión
             </h2>
-            <p className='text-base font-normal leading-6 text-gray-600 '>
+            <p className='text-base font-normal leading-6 text-muted-foreground'>
               Nuestra misión es promover la colaboración y el bienestar dentro
               de nuestra comunidad, creando un ambiente inclusivo y solidario en
               el que todos los miembros puedan prosperar. Nos esforzamos por
@@ -142,10 +142,10 @@ export default function AboutView() {
             className='flex w-full flex-col justify-center lg:w-5/12'
             data-aos='zoom-in-up'
           >
-            <h2 className='pb-4 text-3xl font-bold leading-9 text-green-600 lg:text-4xl'>
+            <h2 className='pb-4 text-3xl font-bold leading-9 text-primary lg:text-4xl'>
               Visión
             </h2>
-            <p className='text-base font-normal leading-6 text-gray-600 '>
+            <p className='text-base font-normal leading-6 text-muted-foreground'>
               Nuestra visión es convertir a Bambil Collao en un refugio de
               armonía y sostenibilidad, donde los lazos entre los residentes y
               la naturaleza se fortalezcan con el tiempo. Buscamos crear un
@@ -171,20 +171,20 @@ export default function AboutView() {
 
         {/* Valores */}
         <section className='py-12'>
-          <h2 className='mb-8 text-center text-3xl font-bold text-green-600'>
+          <h2 className='mb-8 text-center text-3xl font-bold text-primary'>
             Valores
           </h2>
           <div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4'>
             {valores.map((valor, idx) => (
               <div
                 key={idx}
-                className='animate-fade-in-card flex flex-col items-center rounded-lg bg-white p-6 shadow-md'
+                className='animate-fade-in-card flex flex-col items-center rounded-lg border border-border/60 bg-background/70 p-6 shadow-md backdrop-blur dark:bg-background/40'
                 tabIndex={0}
                 aria-label={valor.label}
               >
                 {valor.icon}
                 <h3 className='mt-2 text-xl font-semibold'>{valor.label}</h3>
-                <p className='text-center text-gray-600'>{valor.desc}</p>
+                <p className='text-center text-muted-foreground'>{valor.desc}</p>
               </div>
             ))}
           </div>
@@ -243,10 +243,10 @@ export default function AboutView() {
         {/* Himno y galería */}
         <section className='mx-auto max-w-screen-xl items-center gap-16 px-4 py-8 lg:grid lg:grid-cols-2 lg:px-6 lg:py-16'>
           <div
-            className='font-light text-gray-500 dark:text-gray-400 sm:text-lg'
+            className='font-light text-muted-foreground sm:text-lg'
             data-aos='zoom-in-up'
           >
-            <h2 className='mb-4 text-4xl font-extrabold tracking-tight  text-green-600 dark:text-white'>
+            <h2 className='mb-4 text-4xl font-extrabold tracking-tight text-primary'>
               Nuestro himno
             </h2>
             <p className='mb-4'>

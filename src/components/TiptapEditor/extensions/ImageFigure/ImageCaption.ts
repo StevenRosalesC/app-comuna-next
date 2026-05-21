@@ -11,7 +11,7 @@ export const ImageCaption = Figcaption.extend({
       new Plugin({
         key: new PluginKey('imageCaptionFocus'),
         props: {
-          decorations: ({ doc, selection }) => {
+          decorations: (({ doc, selection }: any) => {
             const { isEditable, isFocused } = this.editor;
             const { $anchor } = selection;
 
@@ -40,7 +40,7 @@ export const ImageCaption = Figcaption.extend({
                 class: 'ProseMirror-selectednode' // Apply class to figcaption
               })
             ]);
-          }
+          }) as any
         }
       })
     ];

@@ -70,7 +70,7 @@ export const CreateUserForm = () => {
         firstName: selectedPerson.firstName,
         gender: selectedPerson.gender,
         birthDate: selectedPerson.birthDate,
-        neighborhoodId: selectedPerson.neighborhoodId,
+        neighborhoodId: selectedPerson.neighborhoodId ?? null,
         phoneNumber: selectedPerson.phoneNumber,
         status: selectedPerson.status,
         email: values.email

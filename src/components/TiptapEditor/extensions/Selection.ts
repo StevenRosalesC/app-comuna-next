@@ -1,6 +1,6 @@
 import { Extension } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
-import { Decoration, DecorationSet } from '@tiptap/pm/view';
+import { Decoration, DecorationSet, DecorationSource } from '@tiptap/pm/view';
 
 export const Selection = Extension.create({
   name: 'selection',
@@ -25,7 +25,7 @@ export const Selection = Extension.create({
               Decoration.inline(state.selection.from, state.selection.to, {
                 class: 'selection'
               })
-            ]);
+            ]) as any;
           }
         }
       })

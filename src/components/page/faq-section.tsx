@@ -31,16 +31,22 @@ export default function FaqSection() {
     }
   ];
   return (
-    <section className='w-full py-4'>
-      <div className='container grid gap-4 px-4 md:gap-6' data-aos='fade-up'>
+    <section
+      id='faq'
+      className='mx-auto w-full max-w-screen-xl px-4 py-10 lg:px-6 lg:py-16'
+    >
+      <div
+        className='grid gap-4 rounded-3xl border border-border/60 bg-background/70 p-6 shadow-sm backdrop-blur dark:bg-background/40 md:gap-6 md:p-10'
+        data-aos='fade-up'
+      >
         <div className='space-y-2'>
-          <SubTitle className='text-center'>Preguntas Frecuentes</SubTitle>
+          <SubTitle className='text-center'>Atención e información</SubTitle>
           <Paragraph
             size={'sm'}
-            className='text-gray-500 dark:text-gray-400 md:text-xl/relaxed'
+            className='text-muted-foreground md:text-xl/relaxed'
           >
-            ¿Tienes alguna pregunta? Encuentra respuestas o contacta con
-            nosotros.
+            Respuestas rápidas y canales oficiales para comunicarte con la
+            comuna.
           </Paragraph>
         </div>
         <div data-aos='fade-up'>
@@ -62,7 +68,9 @@ export default function FaqSection() {
           </Accordion>
         </div>
         <div className='mt-4 text-center'>
-          <span className='text-gray-600'>¿No encontraste tu respuesta?</span>{' '}
+          <span className='text-muted-foreground'>
+            ¿No encontraste tu respuesta?
+          </span>{' '}
           <Link
             href='/contact'
             className='ml-1 font-semibold text-primary underline'

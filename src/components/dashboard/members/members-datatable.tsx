@@ -15,6 +15,7 @@ import { useMembersTable } from './useMembersTable';
 import { SortingState } from '@tanstack/react-table';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
 import {
   Table,
   TableBody,
@@ -23,6 +24,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table';
+import { Search, X } from 'lucide-react';
 
 // Skeleton component for better loading experience
 function MembersDataTableSkeleton() {
@@ -228,6 +230,7 @@ export default function MembersDataTable() {
 
   // Action handlers for table actions
   const handleEdit = (member: any) => {
+    console.log({member});
     router.push(`/dashboard/members/${member.memberId}/edit`);
   };
   const handleView = (member: any) => {
@@ -257,39 +260,56 @@ export default function MembersDataTable() {
   return (
     <Card>
       <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-        <CardTitle>Comuneros</CardTitle>
+        <div className='flex items-center gap-2'>
+          <CardTitle>Comuneros</CardTitle>
+          <Badge variant='secondary'>{totalCount}</Badge>
+        </div>
         <Button
           variant='outline'
           size='sm'
           className='ml-2'
-          title='Reload'
+          title='Recargar'
           onClick={() => refetch()}
           disabled={isFetching}
         >
           <RefreshCcw
             className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`}
           />
-          <span className='ml-1'>Reload</span>
+          <span className='ml-1 hidden sm:inline'>Recargar</span>
         </Button>
       </CardHeader>
       <CardContent>
-        <div className='mb-4 flex w-full flex-row items-center justify-between gap-2'>
-          <Input
-            placeholder='Buscar comunero'
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            className='max-w-sm'
-          />
+        <div className='mb-4 flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
+          <div className='relative w-full sm:max-w-sm'>
+            <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground' />
+            <Input
+              placeholder='Buscar comunero...'
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              className='pl-9'
+            />
+            {search && (
+              <Button
+                type='button'
+                variant='ghost'
+                size='sm'
+                className='absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 p-0'
+                onClick={() => setSearch('')}
+                aria-label='Limpiar búsqueda'
+              >
+                <X className='h-4 w-4' />
+              </Button>
+            )}
+          </div>
         </div>
         <MembersTable
           table={table}
           columns={columns}
           isLoading={isLoading}
-          pageSize={pageSize}
         />
         <div className='mt-4'>
           <div className='mb-2 text-center text-sm text-muted-foreground sm:text-left'>
-            {totalCount} total records.
+            {totalCount} registros en total.
           </div>
           <MembersTablePagination
             pageIndex={pageIndex}

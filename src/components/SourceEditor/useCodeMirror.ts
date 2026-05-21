@@ -1,9 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { EditorState } from '@codemirror/state';
-import { EditorView } from 'codemirror';
 import { html } from '@codemirror/lang-html';
 import { theme } from './theme';
-import { lineNumbers } from '@codemirror/view';
+import { EditorView, lineNumbers } from '@codemirror/view';
 
 interface UseCodeMirrorProps {
   initialContent: string;

@@ -7,6 +7,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon, Filter, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { DateRange } from 'react-day-picker';
 import { useQueryClient } from '@tanstack/react-query';
@@ -23,6 +24,7 @@ export function DateRangeFilter({ onDateRangeChange, className }: DateRangeFilte
   });
   const [isOpen, setIsOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [quickDays, setQuickDays] = useState<number | null>(null);
   const queryClient = useQueryClient();
 
   // Set default date range to current year
@@ -35,6 +37,7 @@ export function DateRangeFilter({ onDateRangeChange, className }: DateRangeFilte
       from: startOfYear,
       to: endOfYear
     });
+    setQuickDays(null);
 
     // Set initial date range
     const dateRange = `${format(startOfYear, 'yyyy-MM-dd')},${format(endOfYear, 'yyyy-MM-dd')}`;
@@ -43,10 +46,12 @@ export function DateRangeFilter({ onDateRangeChange, className }: DateRangeFilte
 
   const handleDateChange = (newDate: DateRange | undefined) => {
     setDate(newDate);
+    setQuickDays(null);
 
     if (newDate?.from && newDate?.to) {
       const dateRange = `${format(newDate.from, 'yyyy-MM-dd')},${format(newDate.to, 'yyyy-MM-dd')}`;
       onDateRangeChange(dateRange);
+      setIsOpen(false);
     } else {
       onDateRangeChange(undefined);
     }
@@ -61,6 +66,8 @@ export function DateRangeFilter({ onDateRangeChange, className }: DateRangeFilte
       from,
       to: now
     });
+    setQuickDays(days);
+    setIsOpen(false);
 
     const dateRange = `${format(from, 'yyyy-MM-dd')},${format(now, 'yyyy-MM-dd')}`;
     onDateRangeChange(dateRange);
@@ -68,15 +75,18 @@ export function DateRangeFilter({ onDateRangeChange, className }: DateRangeFilte
 
   const clearFilter = () => {
     setDate(undefined);
+    setQuickDays(null);
     onDateRangeChange(undefined);
   };
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
-      // Invalidate all dashboard queries
       await queryClient.invalidateQueries({
-        queryKey: ['dashboard-']
+        predicate: (query) => {
+          const key = query.queryKey?.[0];
+          return typeof key === 'string' && key.startsWith('dashboard-');
+        }
       });
     } finally {
       setIsRefreshing(false);
@@ -118,11 +128,11 @@ export function DateRangeFilter({ onDateRangeChange, className }: DateRangeFilte
                 {date?.from ? (
                   date.to ? (
                     <>
-                      {format(date.from, "LLL dd, y")} -{" "}
-                      {format(date.to, "LLL dd, y")}
+                      {format(date.from, "dd MMM, y", { locale: es })} -{" "}
+                      {format(date.to, "dd MMM, y", { locale: es })}
                     </>
                   ) : (
-                    format(date.from, "LLL dd, y")
+                    format(date.from, "dd MMM, y", { locale: es })
                   )
                 ) : (
                   <span>Selecciona un rango de fechas</span>
@@ -131,7 +141,6 @@ export function DateRangeFilter({ onDateRangeChange, className }: DateRangeFilte
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
-                initialFocus
                 mode="range"
                 defaultMonth={date?.from}
                 selected={date}
@@ -144,7 +153,7 @@ export function DateRangeFilter({ onDateRangeChange, className }: DateRangeFilte
 
         <div className="flex flex-wrap gap-2">
           <Button
-            variant="outline"
+            variant={quickDays === 7 ? "default" : "outline"}
             size="sm"
             onClick={() => handleQuickFilter(7)}
             className="text-xs"
@@ -152,7 +161,7 @@ export function DateRangeFilter({ onDateRangeChange, className }: DateRangeFilte
             Últimos 7 días
           </Button>
           <Button
-            variant="outline"
+            variant={quickDays === 30 ? "default" : "outline"}
             size="sm"
             onClick={() => handleQuickFilter(30)}
             className="text-xs"
@@ -160,7 +169,7 @@ export function DateRangeFilter({ onDateRangeChange, className }: DateRangeFilte
             Últimos 30 días
           </Button>
           <Button
-            variant="outline"
+            variant={quickDays === 90 ? "default" : "outline"}
             size="sm"
             onClick={() => handleQuickFilter(90)}
             className="text-xs"

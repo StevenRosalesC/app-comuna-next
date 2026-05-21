@@ -151,7 +151,7 @@ export function LowlightPlugin({
 
     props: {
       decorations(this, state) {
-        return this.getState(state);
+        return this.getState(state) as any;
       }
     }
   });

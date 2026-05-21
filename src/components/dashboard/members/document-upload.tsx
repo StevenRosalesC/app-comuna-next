@@ -305,7 +305,7 @@ export default function DocumentUpload({
               </SelectTrigger>
               <SelectContent>
                 {availableDocumentTypes.length === 0 ? (
-                  <SelectItem value='' disabled>
+                  <SelectItem value='__no_document_types__' disabled>
                     {loadingTypes
                       ? 'Cargando...'
                       : 'No hay tipos de documento disponibles'}

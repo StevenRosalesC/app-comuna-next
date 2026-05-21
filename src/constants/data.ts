@@ -86,7 +86,7 @@ export const pageNavItems: NavItem[] = [
     url: '/'
   },
   {
-    title: 'Aceca de',
+    title: 'Acerca de',
     url: '/about'
   },
   {

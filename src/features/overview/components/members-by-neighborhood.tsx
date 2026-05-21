@@ -77,7 +77,7 @@ export function MembersByNeighborhood({ dateRange }: MembersByNeighborhoodProps)
               />
               <YAxis tick={{ fontSize: 12 }} />
               <Tooltip
-                formatter={(value: number) => [`${value} miembros`, 'Miembros']}
+                formatter={(value) => [`${value ?? 0} miembros`, 'Miembros']}
                 labelFormatter={(label) => `Barrio: ${label}`}
               />
               <Bar
@@ -88,7 +88,7 @@ export function MembersByNeighborhood({ dateRange }: MembersByNeighborhoodProps)
             </BarChart>
           </ResponsiveContainer>
 
-          <div className="grid grid-cols-2 gap-4 mt-4">
+          <div className="grid grid-cols-1 gap-4 mt-4 sm:grid-cols-2">
             {data.map((item, index) => (
               <div key={index} className="flex items-center space-x-3 p-3 rounded-lg border">
                 <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">

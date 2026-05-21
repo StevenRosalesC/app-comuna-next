@@ -44,8 +44,8 @@ import { DataTablePagination } from '@/components/ui/table/data-table-pagination
 
 const formSchema = z.object({
   requirement: z.string().min(1, { message: 'Requisito es requerido' }),
-  observation: z.string().optional().default('Ninguna'),
-  status: z.boolean().default(true)
+  observation: z.string().min(1, { message: 'Observación es requerida' }),
+  status: z.boolean()
 });
 
 type FormValue = z.infer<typeof formSchema>;

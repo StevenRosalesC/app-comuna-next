@@ -21,13 +21,15 @@ export const signIn = async ({
     }
   );
   const token = response.token;
-  cookies().set(AUTH_CONFIG.COOKIE_NAME, token, AUTH_CONFIG.COOKIE_SETTINGS);
+  const cookieStore = await cookies();
+  cookieStore.set(AUTH_CONFIG.COOKIE_NAME, token, AUTH_CONFIG.COOKIE_SETTINGS);
 };
 
 export const signOut = async () => {
+  const cookieStore = await cookies();
   await apiCommunity.get('/auth/logout', {
     headers: {
-      Authorization: `Bearer ${cookies().get(AUTH_CONFIG.COOKIE_NAME)?.value}`
+      Authorization: `Bearer ${cookieStore.get(AUTH_CONFIG.COOKIE_NAME)?.value}`
     }
   });
 };
@@ -37,7 +39,8 @@ export const auth = async (): Promise<{
   data: AuthResponse | null;
 }> => {
   // get token from cookies
-  const token = cookies().get(AUTH_CONFIG.COOKIE_NAME)?.value;
+  const cookieStore = await cookies();
+  const token = cookieStore.get(AUTH_CONFIG.COOKIE_NAME)?.value;
   if (!token) {
     redirect(AUTH_CONFIG.PATHS.LOGIN);
   }

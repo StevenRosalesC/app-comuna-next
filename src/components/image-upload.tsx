@@ -8,6 +8,7 @@ import { IoCloudUploadOutline } from 'react-icons/io5';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ImageData } from 'types/dashboard';
+import { isLocalImageUrl } from '@/utils/isLocalImageUrl';
 
 interface ImageUploadProps {
   onUploadComplete?: (url: string) => void;
@@ -31,6 +32,22 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onUploadComplete }) => {
     setUploadedImagePath(null);
   };
 
+  const getImageDimensions = (file: File): Promise<{ width: number; height: number }> => {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new window.Image();
+      img.onload = () => {
+        resolve({ width: img.width, height: img.height });
+        URL.revokeObjectURL(url);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        reject(new Error('Failed to load image'));
+      };
+      img.src = url;
+    });
+  };
+
   const handleImageUpload = async (image: File) => {
     if (!image) return;
     setLoading(true);
@@ -41,6 +58,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onUploadComplete }) => {
     formData.append('folder', '/app-comuna/news-images');
 
     try {
+      const { width, height } = await getImageDimensions(image);
+      formData.append('width', String(width));
+      formData.append('height', String(height));
       const response = await fetch('/api/images', {
         method: 'POST',
         body: formData
@@ -111,6 +131,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onUploadComplete }) => {
                 src={uploadedImagePath}
                 className='max-h-16 w-full object-contain opacity-70'
                 alt='uploaded image'
+                unoptimized={isLocalImageUrl(uploadedImagePath)}
               />
               <div className='space-y-1'>
                 <p className='text-sm font-semibold'>Image Uploaded</p>

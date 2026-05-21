@@ -1,8 +1,4 @@
-import {
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
-} from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
@@ -17,7 +13,8 @@ interface PersonsTableColumnsProps {
 }
 
 export function usePersonsTableColumns({ actions }: PersonsTableColumnsProps) {
-  const { neighborhoods, isLoading } = useNeighborhoodsStore((state) => state);
+  const neighborhoods = useNeighborhoodsStore((state) => state.neighborhoods);
+  const isLoading = useNeighborhoodsStore((state) => state.isLoading);
   const columns: ColumnDef<Person>[] = [
     {
       id: 'selection',
@@ -48,7 +45,7 @@ export function usePersonsTableColumns({ actions }: PersonsTableColumnsProps) {
         <Button
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className='flex w-full min-w-[110px] items-center justify-start'
+          className='flex w-full min-w-27.5 items-center justify-start'
         >
           Cédula
           {column.getIsSorted() === 'asc' ? (
@@ -61,7 +58,7 @@ export function usePersonsTableColumns({ actions }: PersonsTableColumnsProps) {
         </Button>
       ),
       cell: ({ row }) => (
-        <div className='w-full min-w-[110px]'>
+        <div className='w-full min-w-27.5'>
           {row.getValue('identification')}
         </div>
       ),
@@ -73,7 +70,7 @@ export function usePersonsTableColumns({ actions }: PersonsTableColumnsProps) {
         <Button
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className='flex w-full min-w-[120px] items-center justify-start'
+          className='flex w-full min-w-30 items-center justify-start'
         >
           Apellidos
           {column.getIsSorted() === 'asc' ? (
@@ -86,7 +83,7 @@ export function usePersonsTableColumns({ actions }: PersonsTableColumnsProps) {
         </Button>
       ),
       cell: ({ row }) => (
-        <div className='w-full min-w-[120px]'>{row.getValue('lastName')}</div>
+        <div className='w-full min-w-30'>{row.getValue('lastName')}</div>
       ),
       size: 120
     },
@@ -96,7 +93,7 @@ export function usePersonsTableColumns({ actions }: PersonsTableColumnsProps) {
         <Button
           variant='ghost'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className='flex w-full min-w-[120px] items-center justify-start'
+          className='flex w-full min-w-30 items-center justify-start'
         >
           Nombres
           {column.getIsSorted() === 'asc' ? (
@@ -109,7 +106,7 @@ export function usePersonsTableColumns({ actions }: PersonsTableColumnsProps) {
         </Button>
       ),
       cell: ({ row }) => (
-        <p className='w-full min-w-[120px] text-left'>
+        <p className='w-full min-w-30 text-left'>
           {row.getValue('firstName')}
         </p>
       ),
@@ -121,22 +118,22 @@ export function usePersonsTableColumns({ actions }: PersonsTableColumnsProps) {
       header: () => (
         <Button
           variant='ghost'
-          className='flex w-full min-w-[90px] items-center justify-start'
+          className='flex w-full min-w-22.5 items-center justify-start'
         >
           Fecha de nacimiento
         </Button>
       ),
       cell: ({ row }) => {
         const date = row.getValue('birthDate');
-        if (!date) return <div className='w-full min-w-[90px]'>-</div>;
+        if (!date) return <div className='w-full min-w-22.5'>-</div>;
         try {
           return (
-            <div className='w-full min-w-[90px] text-right'>
+            <div className='w-full min-w-22.5 text-right'>
               {new Date(date as string).toLocaleDateString('es-ES')}
             </div>
           );
         } catch (error) {
-          return <div className='w-full min-w-[90px]'>Fecha inválida</div>;
+          return <div className='w-full min-w-22.5'>Fecha inválida</div>;
         }
       },
       size: 90
@@ -147,22 +144,25 @@ export function usePersonsTableColumns({ actions }: PersonsTableColumnsProps) {
       header: () => (
         <Button
           variant='ghost'
-          className='flex w-full min-w-[100px] items-center justify-start'
+          className='flex w-full min-w-25 items-center justify-start'
         >
           Barrio
         </Button>
       ),
       cell: ({ row }) => {
-        const neighborhoodId = row.getValue('neighborhoodId') as string;
+        const neighborhoodId = row.getValue('neighborhoodId') as
+          | string
+          | null
+          | undefined;
         const neighborhood = neighborhoods?.find(
-          (n) => n.neighborhoodId === neighborhoodId
+          (n) => Boolean(neighborhoodId) && n.neighborhoodId === neighborhoodId
         );
         return (
-          <div className='w-full min-w-[100px]'>
+          <div className='w-full min-w-25'>
             {isLoading ? (
               <Skeleton className='h-4 w-full' />
             ) : (
-              <div className='w-full min-w-[100px]'>
+              <div className='w-full min-w-25'>
                 {neighborhood?.neighborhoodName ?? '-'}
               </div>
             )}
@@ -177,13 +177,13 @@ export function usePersonsTableColumns({ actions }: PersonsTableColumnsProps) {
       header: () => (
         <Button
           variant='ghost'
-          className='flex w-full min-w-[140px] items-center justify-start'
+          className='flex w-full min-w-35 items-center justify-start'
         >
           Email
         </Button>
       ),
       cell: ({ row }) => (
-        <div className='w-full min-w-[140px]'>{row.getValue('email')}</div>
+        <div className='w-full min-w-35'>{row.getValue('email')}</div>
       ),
       size: 140
     },
@@ -193,7 +193,7 @@ export function usePersonsTableColumns({ actions }: PersonsTableColumnsProps) {
       header: () => (
         <Button
           variant='ghost'
-          className='flex w-full min-w-[70px] items-center justify-start'
+          className='flex w-full min-w-17.5 items-center justify-start'
         >
           Estado
         </Button>
@@ -203,7 +203,7 @@ export function usePersonsTableColumns({ actions }: PersonsTableColumnsProps) {
         return (
           <Badge
             variant={status ? 'default' : 'destructive'}
-            className='w-full min-w-[70px]'
+            className='w-full min-w-17.5'
           >
             {status ? 'Activo' : 'Inactivo'}
           </Badge>
@@ -215,7 +215,7 @@ export function usePersonsTableColumns({ actions }: PersonsTableColumnsProps) {
       id: 'actions',
       enableSorting: false,
       header: () => (
-        <div className='w-full min-w-[60px] text-right'>Acciones</div>
+        <div className='w-full min-w-15 text-right'>Acciones</div>
       ),
       cell: ({ row }) => {
         const person = row.original;

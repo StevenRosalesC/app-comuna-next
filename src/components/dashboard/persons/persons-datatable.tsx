@@ -2,16 +2,14 @@
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { PersonsTableToolbar } from './persons-table-toolbar';
 import { PersonsTablePagination } from './persons-table-pagination';
 import { PersonsTable } from './persons-table';
-import { personsService } from '@/services/persons';
 import { Person } from '@/interfaces/persons';
 import { Switch } from '@/components/ui/switch';
-import { useQuery } from '@tanstack/react-query';
-import { ServiceResponse } from '@/interfaces/common';
-import { IPersonsRequestResponse } from '@/interfaces/persons';
+import { usePersonsListQuery } from '@/hooks/persons/usePersonsListQuery';
+import { useUpdatePersonMutation } from '@/hooks/persons/usePersonMutations';
 import { Button } from '@/components/ui/button';
 import { RefreshCcw } from 'lucide-react';
 import { useDebounce } from './useDebounce';
@@ -21,6 +19,7 @@ export default function PersonsDataTable() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [showActive, setShowActive] = useState(true);
+  const isInitialMount = useRef(true);
 
   const [sorting, setSorting] = useState(() => {
     const sortField = searchParams.get('sort');
@@ -38,32 +37,41 @@ export default function PersonsDataTable() {
   const [search, setSearch] = useState(() => searchParams.get('search') || '');
   const debouncedSearch = useDebounce(search, 400);
 
+  const orderBy = sorting.length ? sorting[0].id : 'lastName';
+  const order = sorting.length && sorting[0].desc ? 'desc' : 'asc';
+
   const {
     data: persons,
     isLoading: personsLoading,
     error,
     refetch,
     isFetching
-  } = useQuery<ServiceResponse<IPersonsRequestResponse | null>, Error>({
-    queryKey: [
-      'persons',
-      {
-        pageSize,
-        pageIndex,
-        sorting,
-        search: debouncedSearch,
-        showActive
+  } = usePersonsListQuery({
+    pageSize,
+    pageIndex,
+    orderBy,
+    order,
+    search: debouncedSearch,
+    status: showActive
+  });
+
+  const updatePersonMutation = useUpdatePersonMutation<{ toastId: string | number }>({
+    onMutate: () => {
+      const toastId = toast.loading('Actualizando persona...');
+      return { toastId };
+    },
+    onSuccess: async (response, _vars, context) => {
+      toast.dismiss(context?.toastId);
+      if (response.status) {
+        toast.success(response.message);
+        return;
       }
-    ],
-    queryFn: () =>
-      personsService.getPersons(
-        pageSize,
-        pageIndex * pageSize,
-        sorting.length ? sorting[0].id : 'lastName',
-        sorting.length && sorting[0].desc ? 'desc' : 'asc',
-        debouncedSearch,
-        showActive
-      )
+      toast.error(response.message);
+    },
+    onError: (_error, _vars, context) => {
+      toast.dismiss(context?.toastId);
+      toast.error('Error al actualizar la persona');
+    }
   });
   const updateUrl = useCallback(
     (updates: Record<string, string | null>) => {
@@ -75,7 +83,14 @@ export default function PersonsDataTable() {
           params.set(key, value);
         }
       });
-      router.replace(`${pathname}?${params.toString()}`, {
+      const nextUrl = `${pathname}?${params.toString()}`;
+      const currentUrl = `${pathname}?${searchParams.toString()}`;
+
+      if (nextUrl === currentUrl) {
+        return;
+      }
+
+      router.replace(nextUrl, {
         scroll: false
       });
     },
@@ -117,26 +132,9 @@ export default function PersonsDataTable() {
     [updateUrl]
   );
 
-  const handleEditPerson = async (person: Person) => {
-    try {
-      toast.loading('Actualizando persona...');
-      const { personId, ...personToUpdate } = person;
-      const response = await personsService.updatePerson(
-        personId,
-        personToUpdate
-      );
-      if (response.status) {
-        toast.dismiss();
-        toast.success(response.message);
-        await refetch();
-      } else {
-        toast.dismiss();
-        toast.error(response.message);
-      }
-    } catch (error) {
-      toast.dismiss();
-      toast.error('Error al actualizar la persona');
-    }
+  const handleEditPerson = (person: Person) => {
+    const { personId, ...data } = person;
+    updatePersonMutation.mutate({ personId, data });
   };
 
   useEffect(() => {
@@ -146,6 +144,11 @@ export default function PersonsDataTable() {
   }, [error]);
 
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
     updateUrl({
       search: debouncedSearch || null,
       page: '1'

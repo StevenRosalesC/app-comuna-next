@@ -1,18 +1,21 @@
+'use client';
+
 import { Sheet, SheetTrigger, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { JSX, SVGProps } from 'react';
 import { pageNavItems } from '@/constants/data';
 import Image from 'next/image';
 import { Link } from 'next-view-transitions';
+import ThemeToggle from '@/components/layout/ThemeToggle/theme-toggle';
 
 export function NavBar() {
   return (
-    <header className='sticky top-0 z-50 flex h-20 w-full shrink-0 items-center border bg-white px-4 md:px-6'>
+    <header className='sticky top-0 z-50 flex h-20 w-full shrink-0 items-center border-b bg-background/80 px-4 backdrop-blur md:px-6'>
       <Sheet>
         <SheetTrigger asChild>
           <Button variant='outline' size='icon' className='lg:hidden'>
             <MenuIcon className='h-6 w-6' />
-            <span className='sr-only'>Toggle navigation menu</span>
+            <span className='sr-only'>Abrir menú de navegación</span>
           </Button>
         </SheetTrigger>
         <SheetContent side='left'>
@@ -49,18 +52,21 @@ export function NavBar() {
         />
         <span className='sr-only'>Comuna Bambil Collao</span>
       </Link>
-      <nav className='ml-auto hidden gap-6 lg:flex '>
-        {pageNavItems.map((item, index) => (
-          <Link
-            key={index}
-            href={item.url}
-            className='text-md group inline-flex h-9 w-max items-center justify-center rounded-md bg-white px-4 py-2 font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50'
-            prefetch={false}
-          >
-            {item.title}
-          </Link>
-        ))}
-      </nav>
+      <div className='ml-auto flex items-center gap-2'>
+        <nav className='hidden items-center gap-2 lg:flex'>
+          {pageNavItems.map((item, index) => (
+            <Link
+              key={index}
+              href={item.url}
+              className='inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50'
+              prefetch={false}
+            >
+              {item.title}
+            </Link>
+          ))}
+        </nav>
+        <ThemeToggle />
+      </div>
     </header>
   );
 }

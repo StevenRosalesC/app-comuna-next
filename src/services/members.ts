@@ -61,8 +61,19 @@ export const getMembers = async (
   return data;
 };
 
-export const createMember = async (data: Partial<Member>) => {
-  const response = await apiCommunity.post('/members', data);
+export type CreateMemberPayload = {
+  personId: string;
+  houseNumber?: string;
+};
+
+export const createMember = async (data: CreateMemberPayload) => {
+  const payload: CreateMemberPayload = {
+    personId: String(data.personId)
+  };
+  if (data.houseNumber) {
+    payload.houseNumber = data.houseNumber;
+  }
+  const response = await apiCommunity.post('/members', payload);
   return response.data;
 };
 

@@ -12,7 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date()
     },
     ...notices.data.map((notice: Notice) => ({
-      url: `https://${NEXT_PUBLIC_APP_URL}/notices/${notice.title}`
+      url: `https://${NEXT_PUBLIC_APP_URL}/notices/${notice.slug || notice.title}`
     }))
   ];
 }

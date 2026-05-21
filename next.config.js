@@ -1,22 +1,43 @@
 /** @type {import('next').NextConfig} */
+const parseImageRemotePatterns = () => {
+  const raw = process.env.NEXT_IMAGE_REMOTE_HOSTS || '';
+  const items = raw
+    .split(',')
+    .map((v) => v.trim())
+    .filter(Boolean);
+
+  if (items.length === 0) return null;
+
+  const patterns = [];
+
+  for (const item of items) {
+    try {
+      const asUrl =
+        item.startsWith('http://') || item.startsWith('https://')
+          ? new URL(item)
+          : new URL(`https://${item}`);
+
+      patterns.push({
+        protocol: asUrl.protocol.replace(':', ''),
+        hostname: asUrl.hostname,
+        ...(asUrl.port ? { port: asUrl.port } : {})
+      });
+    } catch {}
+  }
+
+  return patterns.length ? patterns : null;
+};
+
 const nextConfig = {
   images: {
-    remotePatterns: [
-  {
-        protocol: 'https', 
-        hostname: '**', 
-      },
-      {
-        protocol: 'http',
-        hostname: '**',
-      },
-    ]
+    remotePatterns:
+      parseImageRemotePatterns()
   },
   reactStrictMode: false,
-  transpilePackages: ['geist'],
+  transpilePackages: ['geist', 'shiki'],
   output: process.env.NODE_ENV !== 'production' ? undefined : 'standalone',
   experimental: {
-    optimizeCss: false,
+    optimizeCss: false
   },
   // module: {
   //   rules: [
@@ -30,14 +51,11 @@ const nextConfig = {
   //     }
   //   ]
   // },
-  //  serverComponentsExternalPackages: ["shiki"],
-    transpilePackages: ['shiki'],
-    
-    ...(process.env.NODE_ENV === 'production' && {
-      compiler: {
-        removeConsole: true
-      }
-    })
+  ...(process.env.NODE_ENV === 'production' && {
+    compiler: {
+      removeConsole: true
+    }
+  })
 };
 
 module.exports = nextConfig;

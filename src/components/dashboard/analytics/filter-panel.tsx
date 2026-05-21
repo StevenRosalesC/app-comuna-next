@@ -27,9 +27,10 @@ export const FilterPanel = ({
   onApplyFilters,
   onClearFilters,
   neighborhoods,
-  requirements,
   loading = false
 }: FilterPanelProps) => {
+  const ALL_VALUE = '__all__';
+
   // Sync local state with value prop
   const [filters, setFilters] = useState<AnalyticsQuery>(value || {});
 
@@ -111,14 +112,23 @@ export const FilterPanel = ({
             <div className="space-y-2">
               <Label>Género</Label>
               <Select
-                value={filters.gender?.toString() || ''}
-                onValueChange={(value) => handleFilterChange('gender', value ? parseInt(value) : undefined)}
+                value={
+                  filters.gender === undefined || filters.gender === null
+                    ? ALL_VALUE
+                    : filters.gender.toString()
+                }
+                onValueChange={(value) =>
+                  handleFilterChange(
+                    'gender',
+                    value === ALL_VALUE ? undefined : parseInt(value)
+                  )
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona género" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value={ALL_VALUE}>Todos</SelectItem>
                   <SelectItem value="1">Masculino</SelectItem>
                   <SelectItem value="2">Femenino</SelectItem>
                 </SelectContent>
@@ -129,17 +139,25 @@ export const FilterPanel = ({
             <div className="space-y-2">
               <Label>Barrio</Label>
               <Select
-                value={filters.membershipFilter?.neighborhoodId || ''}
-                onValueChange={(value) => handleFilterChange('membershipFilter', {
-                  ...filters.membershipFilter,
-                  neighborhoodId: value || undefined
-                })}
+                value={
+                  filters.membershipFilter?.neighborhoodId === undefined ||
+                  filters.membershipFilter?.neighborhoodId === null ||
+                  filters.membershipFilter?.neighborhoodId === ''
+                    ? ALL_VALUE
+                    : filters.membershipFilter.neighborhoodId
+                }
+                onValueChange={(value) =>
+                  handleFilterChange('membershipFilter', {
+                    ...filters.membershipFilter,
+                    neighborhoodId: value === ALL_VALUE ? undefined : value
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona barrio" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos los barrios</SelectItem>
+                  <SelectItem value={ALL_VALUE}>Todos los barrios</SelectItem>
                   {(Array.isArray(neighborhoods) ? neighborhoods : []).map((neighborhood) => (
                     <SelectItem key={neighborhood.neighborhoodId} value={neighborhood.neighborhoodId}>
                       {neighborhood.neighborhoodName}
@@ -158,17 +176,24 @@ export const FilterPanel = ({
             <div className="space-y-2">
               <Label>Estado de membresía</Label>
               <Select
-                value={filters.membershipFilter?.status || ''}
-                onValueChange={(value) => handleFilterChange('membershipFilter', {
-                  ...filters.membershipFilter,
-                  status: value || undefined
-                })}
+                value={
+                  filters.membershipFilter?.status === undefined ||
+                  filters.membershipFilter?.status === null
+                    ? ALL_VALUE
+                    : filters.membershipFilter.status
+                }
+                onValueChange={(value) =>
+                  handleFilterChange('membershipFilter', {
+                    ...filters.membershipFilter,
+                    status: value === ALL_VALUE ? undefined : value
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona estado" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value={ALL_VALUE}>Todos</SelectItem>
                   <SelectItem value="active">Activos</SelectItem>
                   <SelectItem value="inactive">No comuneros</SelectItem>
                 </SelectContent>
@@ -198,17 +223,24 @@ export const FilterPanel = ({
             <div className="space-y-2">
               <Label>Rango de porcentaje</Label>
               <Select
-                value={filters.disabilityFilter?.percentageRange || ''}
-                onValueChange={(value) => handleFilterChange('disabilityFilter', {
-                  ...filters.disabilityFilter,
-                  percentageRange: value || undefined
-                })}
+                value={
+                  filters.disabilityFilter?.percentageRange === undefined ||
+                  filters.disabilityFilter?.percentageRange === null
+                    ? ALL_VALUE
+                    : filters.disabilityFilter.percentageRange
+                }
+                onValueChange={(value) =>
+                  handleFilterChange('disabilityFilter', {
+                    ...filters.disabilityFilter,
+                    percentageRange: value === ALL_VALUE ? undefined : value
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona rango" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos los rangos</SelectItem>
+                  <SelectItem value={ALL_VALUE}>Todos los rangos</SelectItem>
                   <SelectItem value="low">Bajo (1-25%)</SelectItem>
                   <SelectItem value="medium">Medio (26-50%)</SelectItem>
                   <SelectItem value="high">Alto (51-75%)</SelectItem>
@@ -226,17 +258,24 @@ export const FilterPanel = ({
             <div className="space-y-2">
               <Label>Estado de cuota</Label>
               <Select
-                value={filters.financialFilter?.feeStatus || ''}
-                onValueChange={(value) => handleFilterChange('financialFilter', {
-                  ...filters.financialFilter,
-                  feeStatus: value || undefined
-                })}
+                value={
+                  filters.financialFilter?.feeStatus === undefined ||
+                  filters.financialFilter?.feeStatus === null
+                    ? ALL_VALUE
+                    : filters.financialFilter.feeStatus
+                }
+                onValueChange={(value) =>
+                  handleFilterChange('financialFilter', {
+                    ...filters.financialFilter,
+                    feeStatus: value === ALL_VALUE ? undefined : value
+                  })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona estado" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value={ALL_VALUE}>Todos</SelectItem>
                   <SelectItem value="PENDING">Pendiente</SelectItem>
                   <SelectItem value="PAID">Pagado</SelectItem>
                   <SelectItem value="PARTIAL">Parcial</SelectItem>

@@ -43,7 +43,7 @@ export default function OpenCashRegister({
 }) {
   const queryClient = useQueryClient();
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<z.input<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       initialAmount: 0,
@@ -63,8 +63,9 @@ export default function OpenCashRegister({
     }
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    openRegisterMutation.mutate(values);
+  const onSubmit = (values: z.input<typeof formSchema>) => {
+    const parsed = formSchema.parse(values);
+    openRegisterMutation.mutate(parsed);
   };
 
   // If user doesn't have permission to open cash register, show access denied
@@ -105,7 +106,19 @@ export default function OpenCashRegister({
                 <FormItem>
                   <FormLabel>Monto Inicial ($)</FormLabel>
                   <FormControl>
-                    <Input type='number' {...field} />
+                    <Input
+                      type='number'
+                      value={
+                        typeof field.value === 'number'
+                          ? field.value
+                          : Number(field.value ?? 0)
+                      }
+                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                      disabled={field.disabled}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

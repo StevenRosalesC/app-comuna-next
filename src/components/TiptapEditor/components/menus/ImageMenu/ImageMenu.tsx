@@ -6,14 +6,12 @@ import MenuButton from '../../MenuButton';
 import { useEditorState } from '@tiptap/react';
 import { getNodeContainer } from '@/components/TiptapEditor/utils/getNodeContainer';
 import AltTextEdit from './AltTextEdit';
-import type { Instance } from 'tippy.js';
 import SizeDropdown from './SizeDropdown';
 import { NodeSelection, Selection, TextSelection } from '@tiptap/pm/state';
 import { Node } from '@tiptap/pm/model';
 
 export const ImageMenu = () => {
-  const tippyInstance = useRef<Instance | null>(null);
-  const { editor, isResizing, contentElement } = useTiptapContext();
+  const { editor, isResizing } = useTiptapContext();
   const [isEditText, setIsEditText] = useState(false);
 
   const image = useEditorState({
@@ -39,13 +37,6 @@ export const ImageMenu = () => {
     }
   });
 
-  // Get reference bounding box for Tippy
-  const getReferenceClientRect = useCallback(() => {
-    const selector = editor.isActive('imageFigure') ? 'figure' : 'img';
-    const node = getNodeContainer(editor, selector);
-    return node?.getBoundingClientRect() || new DOMRect(-1000, -1000, 0, 0);
-  }, [editor]);
-
   const updateImageAttr = (name: string, value: any) => {
     const {
       state: { selection }
@@ -67,15 +58,12 @@ export const ImageMenu = () => {
     editor
       .chain()
       .focus()
-    [image?.hasCaption ? 'figureToImage' : 'imageToFigure']()
+      [image?.hasCaption ? 'figureToImage' : 'imageToFigure']()
       .run();
 
-  // Toggle alt text edit form and update Tippy position
+  // Toggle alt text edit form
   const toggleEditAltText = () => {
     setIsEditText((prev) => !prev);
-    requestAnimationFrame(
-      () => tippyInstance.current?.popperInstance?.update()
-    );
   };
 
   const setAltText = (value: string) => {
@@ -120,20 +108,6 @@ export const ImageMenu = () => {
         editor.isActive('imageFigure') || editor.isActive('image')
       }
       updateDelay={100}
-      tippyOptions={{
-        maxWidth: 'auto',
-        offset: [0, 15],
-        //   offset: ({ placement }) => {
-        //     return placement == "top" ? [0, 15] : [0, 10];
-        //   },
-        appendTo: () => contentElement.current!,
-        getReferenceClientRect,
-        onShow: (instance) => {
-          tippyInstance.current = instance;
-        },
-        onDestroy: () => (tippyInstance.current = null),
-        onHidden: () => setIsEditText(false)
-      }}
     >
       {isEditText ? (
         <AltTextEdit

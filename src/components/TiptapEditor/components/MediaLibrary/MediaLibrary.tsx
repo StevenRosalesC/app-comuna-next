@@ -46,25 +46,6 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onInsert, onClose }) => {
     });
   };
 
-  const uploadImage = async (file: File) => {
-    if (!file.type.startsWith('image/')) return;
-
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('filename', file.name);
-    formData.append('folder', '/app-comuna/news-images');
-
-    try {
-      const response = await fetch('/api/images', {
-        method: 'POST',
-        body: formData
-      });
-      return await response.json();
-    } catch (error) {
-      throw error;
-    }
-  };
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -74,12 +55,54 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onInsert, onClose }) => {
     const loadedPreviews = await Promise.all(previewPromises);
     setPreviews(loadedPreviews);
 
-    const uploadPromises = Array.from(files).map(uploadImage);
-    const uploadImages = await Promise.all(uploadPromises);
-    loadedPreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
-    setPreviews([]);
-    setImages((prev) => [...uploadImages, ...prev]);
-    setUploading(false);
+    try {
+      const uploadPromises = Array.from(files).map((file, index) => {
+        const preview = loadedPreviews[index];
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('filename', file.name);
+        formData.append('folder', '/app-comuna/news-images');
+        formData.append('width', String(preview.width));
+        formData.append('height', String(preview.height));
+        formData.append('format', preview.format);
+        formData.append('display_name', preview.display_name);
+        return fetch('/api/images', { method: 'POST', body: formData }).then(
+          async (r) => {
+            const data = await r.json().catch(() => null);
+            if (!r.ok) {
+              const message =
+                typeof data?.error === 'string'
+                  ? data.error
+                  : `Upload failed (${r.status})`;
+              throw new Error(message);
+            }
+            return data as ImageData;
+          }
+        );
+      });
+
+      const results = await Promise.allSettled(uploadPromises);
+      const uploadedImages = results
+        .filter((r) => r.status === 'fulfilled')
+        .map((r) => r.value);
+      const failed = results.filter((r) => r.status === 'rejected');
+
+      if (failed.length > 0) {
+        const firstError = failed[0];
+        window.alert(
+          firstError.status === 'rejected'
+            ? firstError.reason?.message || 'Some uploads failed'
+            : 'Some uploads failed'
+        );
+      }
+
+      setImages((prev) => [...uploadedImages, ...prev]);
+    } finally {
+      loadedPreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
+      setPreviews([]);
+      setUploading(false);
+      if (fileInput.current) fileInput.current.value = '';
+    }
   };
 
   const handleFinish = () => selected !== null && onInsert?.(selected);
@@ -89,10 +112,18 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onInsert, onClose }) => {
       try {
         setLoading(true);
         const response = await fetch('/api/images');
-        const data = await response.json();
-        setImages(data);
+        const data = await response.json().catch(() => null);
+        if (!response.ok) {
+          const message =
+            typeof data?.error === 'string'
+              ? data.error
+              : `Failed to load images (${response.status})`;
+          throw new Error(message);
+        }
+        setImages(Array.isArray(data) ? data : []);
       } catch (error) {
-        throw error;
+        console.error(error);
+        setImages([]);
       } finally {
         setLoading(false);
       }

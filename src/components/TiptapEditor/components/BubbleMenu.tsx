@@ -31,7 +31,6 @@ export const BubbleMenu = ({
 
     const {
       pluginKey = 'bubbleMenu',
-      tippyOptions = {},
       updateDelay,
       shouldShow = null
     } = props;
@@ -47,8 +46,7 @@ export const BubbleMenu = ({
       editor: menuEditor || editor,
       element: menuEl.current,
       pluginKey,
-      shouldShow,
-      tippyOptions
+      shouldShow
     });
 
     menuEditor.registerPlugin(plugin);

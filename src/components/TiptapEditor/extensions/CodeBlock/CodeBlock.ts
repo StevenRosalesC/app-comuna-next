@@ -19,8 +19,16 @@ lowlight.register('plaintext', plaintext);
 
 export const CodeBlock = TiptapCodeBlockLowlight.extend({
   addOptions() {
+    const parent = this.parent?.();
     return {
-      ...this.parent?.(),
+      ...parent,
+      lowlight: parent?.lowlight ?? lowlight,
+      languageClassPrefix: parent?.languageClassPrefix ?? 'language-',
+      exitOnTripleEnter: parent?.exitOnTripleEnter ?? true,
+      exitOnArrowDown: parent?.exitOnArrowDown ?? true,
+      enableTabIndentation: parent?.enableTabIndentation ?? false,
+      tabSize: parent?.tabSize ?? 4,
+      HTMLAttributes: parent?.HTMLAttributes ?? {},
       defaultLanguage: CODE_BLOCK_LANGUAGUE_SYNTAX_DEFAULT
     };
   },

@@ -31,9 +31,9 @@ export default async function DashboardLayout({
           <AppSidebar />
           <SidebarInset>
             <Header />
-            <MobileDebug />
+            {/*<MobileDebug />*/}
             {/* page main content */}
-            <div className='container mx-auto max-w-[1400px]  px-2 sm:px-4'>
+            <div className='container mx-auto max-w-350 px-2 sm:px-4'>
               <ErrorBoundary>
                 <MobileErrorFallback>
                   {children}

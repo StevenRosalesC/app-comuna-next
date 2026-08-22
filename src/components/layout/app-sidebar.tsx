@@ -82,7 +82,7 @@ function SidebarMenuItemWithPermission({
 
   const canAccess = hasPermission(mod, ['read']);
   if (!canAccess) return null;
-  const Icon = item.icon ? Icons[item.icon] : Icons.logo;
+  const Icon = item.icon ? (Icons as Record<string, any>)[item.icon] : Icons.logo;
   return item?.items && item?.items?.length > 0 ? (
     <Collapsible
       key={item.title}
@@ -103,7 +103,7 @@ function SidebarMenuItemWithPermission({
         </CollapsibleTrigger>
         <CollapsibleContent>
           <SidebarMenuSub>
-            {item.items?.map((subItem) => (
+            {item.items?.map((subItem: NavItem) => (
               <SidebarMenuSubItem key={subItem.title}>
                 <SidebarMenuSubButton
                   asChild

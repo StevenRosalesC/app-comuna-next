@@ -1,49 +1,56 @@
 'use client';
-import { useState, useMemo } from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
+
+import { useState, useMemo, useEffect } from 'react';
+import PageContainer from '@/components/layout/page-container';
+import { Heading } from '@/components/ui/heading';
+import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
+import { Skeleton } from '@/components/ui/skeleton';
+import { AlertModal } from '@/components/modal/alert-modal';
+import { CreateRoleDialog } from './create-role-dialog';
 import { IUserRolesResponse } from '@/interfaces/roles';
 import { rolesService } from '@/services/roles';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowLeftIcon, Loader2 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Switch } from '@/components/ui/switch';
+import { usePermissionsStore } from '@/store/permissionsStore';
 import {
   ValidModules,
   ValidActions,
   getModuleActions,
   modulesPermissions
 } from '@/constants/permissions';
-import { toast } from 'sonner';
 import {
   MODULES_TRANSLATIONS,
   ACTIONS_TRANSLATIONS
 } from '@/constants/permissions-translations';
+import { toast } from 'sonner';
 import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogAction,
-  AlertDialogCancel
-} from '@/components/ui/alert-dialog';
-import { usePermissionsStore } from '@/store/permissionsStore';
+  Shield,
+  ShieldCheck,
+  ShieldPlus,
+  Layers,
+  KeyRound,
+  Lock,
+  Search,
+  Save,
+  Trash2,
+  Loader2,
+  CheckCircle2,
+  SlidersHorizontal,
+  Check,
+  Plus
+} from 'lucide-react';
 
 export default function RolesView() {
   const {
     data: roles,
     isLoading,
-    refetch
+    refetch,
+    isFetching
   } = useQuery({
     queryKey: ['roles'],
     queryFn: () => rolesService.getRoles()
@@ -52,11 +59,28 @@ export default function RolesView() {
   const [selectedRoleId, setSelectedRoleId] = useState<string | null>(null);
   const [permissions, setPermissions] = useState<Record<string, string[]>>({});
   const [saving, setSaving] = useState(false);
-  const [showCreateConfirm, setShowCreateConfirm] = useState(false);
+  const [searchRole, setSearchRole] = useState('');
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const { permissions: permissionsStore } = usePermissionsStore();
   const canCreateRole = permissionsStore?.[ValidModules.ROLES]?.includes(
     ValidActions.CREATE
   );
+  const canUpdateRole = permissionsStore?.[ValidModules.ROLES]?.includes(
+    ValidActions.UPDATE
+  );
+  const canDeleteRole = permissionsStore?.[ValidModules.ROLES]?.includes(
+    ValidActions.DELETE
+  );
+
+  // Auto-select first role once data is loaded if none is selected
+  useEffect(() => {
+    if (roles && roles.length > 0 && !selectedRoleId) {
+      setSelectedRoleId(roles[0].roleId);
+    }
+  }, [roles, selectedRoleId]);
 
   // Find the selected role
   const selectedRole = useMemo(
@@ -65,14 +89,23 @@ export default function RolesView() {
     [roles, selectedRoleId]
   );
 
-  // When the selected role changes, update the permissions
-  useMemo(() => {
+  // When selected role changes, synchronize permissions state
+  useEffect(() => {
     if (selectedRole) {
       setPermissions(selectedRole.permissions || {});
     }
   }, [selectedRole]);
 
-  // Handle the change of a checkbox
+  // Filter roles by search input
+  const filteredRoles = useMemo(() => {
+    if (!roles) return [];
+    if (!searchRole.trim()) return roles;
+    return roles.filter((role: IUserRolesResponse) =>
+      role.name.toLowerCase().includes(searchRole.toLowerCase())
+    );
+  }, [roles, searchRole]);
+
+  // Handle checking a single permission
   const handleCheck = (module: string, action: string, checked: boolean) => {
     setPermissions((prev) => {
       const current = prev[module] || [];
@@ -86,21 +119,19 @@ export default function RolesView() {
     });
   };
 
-  // Handle select all permissions for a module (existing role)
-  const handleSelectAllModuleExisting = (module: string, checked: boolean) => {
+  // Select all permissions for a module
+  const handleSelectAllModule = (module: string, checked: boolean) => {
     setPermissions((prev) => {
       if (checked) {
-        // Select all available actions for this module
         return { ...prev, [module]: getModuleActions(module) };
       } else {
-        // Deselect all actions for this module
         return { ...prev, [module]: [] };
       }
     });
   };
 
-  // Check if all permissions for a module are selected (existing role)
-  const isAllModuleSelectedExisting = (module: string) => {
+  // Check if all permissions for a module are active
+  const isAllModuleSelected = (module: string) => {
     const moduleActions = getModuleActions(module);
     const selectedActions = permissions[module] || [];
     return (
@@ -109,391 +140,497 @@ export default function RolesView() {
     );
   };
 
+  // Global toggle all permissions
+  const handleSelectAllGlobally = () => {
+    const allPerms = Object.fromEntries(
+      modulesPermissions.map((m) => [m.module, m.actions])
+    );
+    setPermissions(allPerms);
+  };
 
+  const handleClearAllGlobally = () => {
+    const emptyPerms = Object.fromEntries(
+      modulesPermissions.map((m) => [m.module, []])
+    );
+    setPermissions(emptyPerms);
+  };
 
-  // Save changes
+  // Count active permissions on selected role
+  const activePermissionsCount = useMemo(() => {
+    return Object.values(permissions).reduce(
+      (acc, curr) => acc + (Array.isArray(curr) ? curr.length : 0),
+      0
+    );
+  }, [permissions]);
+
+  // Total possible permissions in the whole system
+  const totalPossiblePermissions = useMemo(() => {
+    return modulesPermissions.reduce(
+      (acc, curr) => acc + curr.actions.length,
+      0
+    );
+  }, []);
+
+  // Save changes to current role
   const handleSave = async () => {
     if (!selectedRole) return;
     setSaving(true);
-    // Validate that at least one permission is selected
-    const hasPerms = Object.values(permissions).some((arr) => arr.length > 0);
+
+    const hasPerms = Object.values(permissions).some(
+      (arr) => Array.isArray(arr) && arr.length > 0
+    );
     if (!hasPerms) {
       toast.error('Debes seleccionar al menos un permiso');
       setSaving(false);
       return;
     }
+
     try {
       await rolesService.updateRolePermissions(
         selectedRole.roleId,
         permissions
       );
       toast.success('Permisos actualizados correctamente');
-      refetch();
-    } catch (e) {
-      toast.error('Error al actualizar los permisos');
+      await refetch();
+    } catch (e: any) {
+      toast.error(
+        e?.response?.data?.message || 'Error al actualizar los permisos'
+      );
     } finally {
       setSaving(false);
     }
   };
 
-  // Default permissions for new role
-  const defaultNewPermissions: Record<string, string[]> = useMemo(() => {
-    return Object.fromEntries(
-      modulesPermissions.map((moduleConfig) => {
-        if (
-          moduleConfig.module === ValidModules.ADMIN ||
-          moduleConfig.module === ValidModules.DASHBOARD
-        ) {
-          return [moduleConfig.module, []];
-        }
-        // For other modules, default to read permission if available
-        return [
-          moduleConfig.module,
-          moduleConfig.actions.includes(ValidActions.READ)
-            ? [ValidActions.READ]
-            : []
-        ];
-      })
-    );
-  }, []);
-
-  const [newRoleName, setNewRoleName] = useState('');
-  const [newRolePermissions, setNewRolePermissions] = useState<
-    Record<string, string[]>
-  >(defaultNewPermissions);
-  const [creating, setCreating] = useState(false);
-
-  const handleNewCheck = (module: string, action: string, checked: boolean) => {
-    setNewRolePermissions((prev) => {
-      const current = prev[module] || [];
-      let updated: string[];
-      if (checked) {
-        updated = Array.from(new Set([...current, action]));
-      } else {
-        updated = current.filter((a) => a !== action);
-      }
-      return { ...prev, [module]: updated };
-    });
-  };
-
-  // Handle select all permissions for a module
-  const handleSelectAllModule = (module: string, checked: boolean) => {
-    setNewRolePermissions((prev) => {
-      if (checked) {
-        // Select all available actions for this module
-        return { ...prev, [module]: getModuleActions(module) };
-      } else {
-        // Deselect all actions for this module
-        return { ...prev, [module]: [] };
-      }
-    });
-  };
-
-  // Check if all permissions for a module are selected
-  const isAllModuleSelected = (module: string) => {
-    const moduleActions = getModuleActions(module);
-    const selectedActions = newRolePermissions[module] || [];
-    return (
-      moduleActions.length > 0 &&
-      moduleActions.every((action) => selectedActions.includes(action))
-    );
-  };
-
-  const handleCreateRole = async () => {
-    if (!newRoleName.trim()) {
-      toast.error('El nombre del rol es obligatorio');
-      return;
-    }
-    setCreating(true);
-    // Validate that at least one permission is selected
-    const hasPerms = Object.values(newRolePermissions).some(
-      (arr) => arr.length > 0
-    );
-    if (!hasPerms) {
-      toast.error('Debes seleccionar al menos un permiso');
-      setCreating(false);
-      return;
-    }
+  // Delete current role
+  const handleDeleteRole = async () => {
+    if (!selectedRole) return;
+    setIsDeleting(true);
     try {
-      const created = await rolesService.createRole({
-        name: newRoleName,
-        permissions: newRolePermissions
-      });
-      toast.success('Rol creado correctamente');
-      setNewRoleName('');
-      setNewRolePermissions(defaultNewPermissions);
+      await rolesService.deleteRole(selectedRole.roleId);
+      toast.success('Rol eliminado correctamente');
+      setDeleteModalOpen(false);
+      setSelectedRoleId(null);
       await refetch();
-      // Select the new role automatically
-      if (created && created.roleId) {
-        setSelectedRoleId(created.roleId);
-      } else if (created && created.id) {
-        setSelectedRoleId(created.id);
-      }
-    } catch (e) {
-      toast.error('Error al crear el rol');
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message || 'Error al eliminar el rol');
     } finally {
-      setCreating(false);
+      setIsDeleting(false);
     }
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Editar permisos de roles</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {isLoading ? (
-          <div className='flex h-full items-center justify-center'>
-            <Loader2 className='h-4 w-4 animate-spin' />
-          </div>
-        ) : (
-          <>
-            <div className='mb-4'>
-              <p className='text-sm text-muted-foreground'>
-                Selecciona un rol para editar sus permisos
-              </p>
-            </div>
-            <Select
-              value={selectedRoleId || ''}
-              onValueChange={setSelectedRoleId}
+    <PageContainer scrollable>
+      <div className='space-y-6'>
+        {/* Header */}
+        <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+          <Heading
+            title='Roles y Permisos'
+            description='Administración centralizada de roles de usuario y control de acceso basado en roles (RBAC) para cada módulo del sistema.'
+          />
+          {canCreateRole && (
+            <Button
+              onClick={() => setCreateDialogOpen(true)}
+              className='shrink-0'
             >
-              <SelectTrigger>
-                <SelectValue placeholder='Selecciona un rol' />
-              </SelectTrigger>
-              <SelectContent>
-                {roles?.map((role: IUserRolesResponse) => (
-                  <SelectItem key={role.roleId} value={role.roleId}>
-                    {role.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {!selectedRole && canCreateRole && (
-              <form
-                className='mt-6 space-y-4'
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  setShowCreateConfirm(true);
-                }}
-              >
-                <div>
-                  <p className='text-center text-lg font-semibold'>
-                    Crea un nuevo rol con los permisos que desees
-                  </p>
+              <Plus className='mr-2 h-4 w-4' />
+              Nuevo Rol
+            </Button>
+          )}
+        </div>
+        <Separator />
+
+        {/* KPI Metric Summary Cards */}
+        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+          {/* Card 1: Total Roles */}
+          <Card className='transition-all hover:shadow-md'>
+            <CardHeader className='flex flex-row items-center justify-between pb-2'>
+              <CardTitle className='text-sm font-medium'>Roles Registrados</CardTitle>
+              <Shield className='h-4 w-4 text-muted-foreground' />
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <Skeleton className='h-7 w-16' />
+              ) : (
+                <div className='text-2xl font-bold'>{roles?.length ?? 0}</div>
+              )}
+              <CardDescription className='text-xs'>
+                Perfiles de autorización
+              </CardDescription>
+            </CardContent>
+          </Card>
+
+          {/* Card 2: Modules Covered */}
+          <Card className='transition-all hover:shadow-md'>
+            <CardHeader className='flex flex-row items-center justify-between pb-2'>
+              <CardTitle className='text-sm font-medium'>Módulos del Sistema</CardTitle>
+              <Layers className='h-4 w-4 text-muted-foreground' />
+            </CardHeader>
+            <CardContent>
+              <div className='text-2xl font-bold'>{modulesPermissions.length}</div>
+              <CardDescription className='text-xs'>
+                Módulos parametrizados
+              </CardDescription>
+            </CardContent>
+          </Card>
+
+          {/* Card 3: Active Permissions in Selected Role */}
+          <Card className='transition-all hover:shadow-md'>
+            <CardHeader className='flex flex-row items-center justify-between pb-2'>
+              <CardTitle className='text-sm font-medium'>Permisos Asignados</CardTitle>
+              <KeyRound className='h-4 w-4 text-primary' />
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <Skeleton className='h-7 w-16' />
+              ) : (
+                <div className='text-2xl font-bold text-primary'>
+                  {activePermissionsCount}{' '}
+                  <span className='text-xs font-normal text-muted-foreground'>
+                    / {totalPossiblePermissions}
+                  </span>
                 </div>
-                <div>
-                  <label className='mb-2 block font-semibold'>
-                    Nombre del nuevo rol
-                  </label>
-                  <input
-                    className='w-full rounded border px-3 py-2 text-sm'
-                    value={newRoleName}
-                    onChange={(e) => setNewRoleName(e.target.value)}
-                    placeholder='Nombre del rol'
-                  />
+              )}
+              <CardDescription className='text-xs'>
+                {selectedRole ? `En rol: ${selectedRole.name}` : 'Selecciona un rol'}
+              </CardDescription>
+            </CardContent>
+          </Card>
+
+          {/* Card 4: Access Control Mode */}
+          <Card className='transition-all hover:shadow-md'>
+            <CardHeader className='flex flex-row items-center justify-between pb-2'>
+              <CardTitle className='text-sm font-medium'>Control de Acceso</CardTitle>
+              <Lock className='h-4 w-4 text-emerald-500' />
+            </CardHeader>
+            <CardContent>
+              <div className='flex items-center gap-2'>
+                <span className='h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]' />
+                <div className='text-lg font-bold text-foreground'>RBAC Activo</div>
+              </div>
+              <CardDescription className='text-xs'>
+                Seguridad granular por acción
+              </CardDescription>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Master-Detail 2-Column Interface */}
+        <div className='grid grid-cols-1 gap-6 lg:grid-cols-12'>
+          {/* Left Column: Roles List Sidebar (4 cols) */}
+          <Card className='lg:col-span-4 h-fit border shadow-sm'>
+            <CardHeader className='pb-3 border-b'>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-2'>
+                  <ShieldCheck className='h-5 w-5 text-primary' />
+                  <CardTitle className='text-base font-semibold'>
+                    Roles de Usuario
+                  </CardTitle>
                 </div>
-                {modulesPermissions.map((moduleConfig) => (
-                  <div key={moduleConfig.module} className='rounded border p-4'>
-                    <div className='mb-2 flex items-center justify-between'>
-                      <div className='font-semibold'>
-                        {MODULES_TRANSLATIONS[moduleConfig.module] ||
-                          moduleConfig.label}
-                      </div>
-                      <div className='flex items-center gap-2'>
-                        <Checkbox
-                          checked={isAllModuleSelected(moduleConfig.module)}
-                          onCheckedChange={(checked) =>
-                            handleSelectAllModule(
-                              moduleConfig.module,
-                              Boolean(checked)
-                            )
-                          }
-                        />
-                        <span className='text-sm text-muted-foreground'>
-                          Seleccionar todos
-                        </span>
-                      </div>
-                    </div>
-                    <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
-                      {getModuleActions(moduleConfig.module).map((action) => (
-                        <label
-                          key={action}
-                          className='col-span-1 flex items-center justify-between'
+                <Badge variant='secondary' className='text-xs'>
+                  {filteredRoles.length}
+                </Badge>
+              </div>
+              <div className='relative mt-3'>
+                <Search className='absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground' />
+                <Input
+                  placeholder='Buscar rol...'
+                  value={searchRole}
+                  onChange={(e) => setSearchRole(e.target.value)}
+                  className='pl-8 h-8 text-xs'
+                />
+              </div>
+            </CardHeader>
+
+            <CardContent className='p-2 pt-3 space-y-1.5'>
+              {isLoading ? (
+                Array.from({ length: 4 }).map((_, i) => (
+                  <Skeleton key={i} className='h-14 w-full rounded-lg' />
+                ))
+              ) : filteredRoles.length === 0 ? (
+                <div className='p-6 text-center text-xs text-muted-foreground'>
+                  No se encontraron roles.
+                </div>
+              ) : (
+                filteredRoles.map((role: IUserRolesResponse) => {
+                  const isSelected = role.roleId === selectedRoleId;
+                  const rolePermCount = Object.values(role.permissions || {}).reduce(
+                    (acc, curr) => acc + (Array.isArray(curr) ? curr.length : 0),
+                    0
+                  );
+
+                  return (
+                    <button
+                      key={role.roleId}
+                      type='button'
+                      onClick={() => setSelectedRoleId(role.roleId)}
+                      className={`w-full text-left flex items-center justify-between rounded-xl p-3 transition-all ${
+                        isSelected
+                          ? 'bg-primary/10 border-2 border-primary text-primary shadow-xs font-semibold'
+                          : 'hover:bg-muted/60 border border-transparent text-foreground'
+                      }`}
+                    >
+                      <div className='flex items-center gap-3'>
+                        <div
+                          className={`flex h-9 w-9 items-center justify-center rounded-lg ${
+                            isSelected
+                              ? 'bg-primary text-primary-foreground shadow-xs'
+                              : 'bg-muted text-muted-foreground'
+                          }`}
                         >
-                          <span className='capitalize'>
-                            {ACTIONS_TRANSLATIONS[action] || action}
-                          </span>
-                          <Switch
-                            checked={
-                              newRolePermissions[moduleConfig.module]?.includes(
-                                action
-                              ) || false
-                            }
-                            onCheckedChange={(checked) =>
-                              handleNewCheck(
-                                moduleConfig.module,
-                                action,
-                                checked
-                              )
-                            }
-                          />
-                        </label>
-                      ))}
+                          <Shield className='h-4 w-4' />
+                        </div>
+                        <div>
+                          <p className='text-sm leading-none font-medium'>
+                            {role.name}
+                          </p>
+                          <p className='text-[11px] text-muted-foreground mt-1'>
+                            {rolePermCount} permisos activos
+                          </p>
+                        </div>
+                      </div>
+                      {isSelected && (
+                        <Check className='h-4 w-4 text-primary shrink-0' />
+                      )}
+                    </button>
+                  );
+                })
+              )}
+
+              {canCreateRole && (
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={() => setCreateDialogOpen(true)}
+                  className='w-full mt-3 text-xs border-dashed'
+                >
+                  <Plus className='mr-1.5 h-3.5 w-3.5' />
+                  Crear Nuevo Rol
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Right Column: Permissions Matrix for Selected Role (8 cols) */}
+          <Card className='lg:col-span-8 border shadow-sm'>
+            {selectedRole ? (
+              <>
+                <CardHeader className='pb-4 border-b flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+                  <div className='space-y-1'>
+                    <div className='flex items-center gap-2.5'>
+                      <div className='flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+                        <SlidersHorizontal className='h-4 w-4' />
+                      </div>
+                      <div>
+                        <div className='flex items-center gap-2'>
+                          <CardTitle className='text-lg font-semibold tracking-tight'>
+                            {selectedRole.name}
+                          </CardTitle>
+                          <Badge variant='outline' className='text-[11px] font-mono'>
+                            {activePermissionsCount} / {totalPossiblePermissions}
+                          </Badge>
+                        </div>
+                        <CardDescription className='text-xs text-muted-foreground'>
+                          Configura las acciones y accesos permitidos para este rol.
+                        </CardDescription>
+                      </div>
                     </div>
                   </div>
-                ))}
-                <div className='flex justify-end'>
-                  <AlertDialog
-                    open={showCreateConfirm}
-                    onOpenChange={setShowCreateConfirm}
-                  >
-                    <AlertDialogTrigger asChild>
-                      <Button type='submit' disabled={creating}>
-                        {creating ? 'Creando...' : 'Crear rol'}
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>¿Crear este rol?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          ¿Seguro que deseas crear el rol <b>{newRoleName}</b>{' '}
-                          con los permisos seleccionados?
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleCreateRole}>
-                          Crear
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              </form>
-            )}
-            {selectedRole && (
-              <>
-                <div className='mb-4 mt-4 flex items-center gap-2'>
-                  <Button
-                    type='button'
-                    variant='outline'
-                    onClick={() => setSelectedRoleId(null)}
-                  >
-                    <ArrowLeftIcon className='h-4 w-4' /> Añadir nuevo rol
-                  </Button>
-                </div>
-                <form className='mt-2 space-y-4'>
-                  {modulesPermissions.map((moduleConfig) => (
-                    <div
-                      key={moduleConfig.module}
-                      className='rounded border p-4'
-                    >
-                      <div className='mb-2 flex items-center justify-between'>
-                        <div className='font-semibold'>
-                          {MODULES_TRANSLATIONS[moduleConfig.module] ||
-                            moduleConfig.label}
-                        </div>
-                        <div className='flex items-center gap-2'>
-                          <Checkbox
-                            checked={isAllModuleSelectedExisting(
-                              moduleConfig.module
-                            )}
-                            onCheckedChange={(checked) =>
-                              handleSelectAllModuleExisting(
-                                moduleConfig.module,
-                                Boolean(checked)
-                              )
-                            }
-                          />
-                          <span className='text-sm text-muted-foreground'>
-                            Seleccionar todos
-                          </span>
-                        </div>
-                      </div>
-                      <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
-                        {getModuleActions(moduleConfig.module).map((action) => (
-                          <label
-                            key={action}
-                            className='col-span-1 flex items-center justify-between'
-                          >
-                            <span className='capitalize'>
-                              {ACTIONS_TRANSLATIONS[action] || action}
-                            </span>
-                            <Switch
-                              checked={
-                                permissions[moduleConfig.module]?.includes(
-                                  action
-                                ) || false
-                              }
-                              onCheckedChange={(checked) =>
-                                handleCheck(
-                                  moduleConfig.module,
-                                  action,
-                                  checked
-                                )
-                              }
-                            />
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                  <div className='flex justify-end gap-2'>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button type='button' variant='destructive'>
-                          Eliminar rol
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            ¿Eliminar este rol?
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Esta acción no se puede deshacer. ¿Seguro que deseas
-                            eliminar el rol <b>{selectedRole?.name}</b>?
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={async () => {
-                              if (!selectedRole) return;
-                              try {
-                                await rolesService.deleteRole(
-                                  selectedRole.roleId
-                                );
-                                toast.success('Rol eliminado correctamente');
-                                setSelectedRoleId(null);
-                                refetch();
-                              } catch (e: unknown) {
-                                const errorMessage = e instanceof Error ? e.message : 'Unknown error occurred';
-                                toast.error(
-                                  `Error al eliminar el rol: ${errorMessage}`
-                                );
-                              }
-                            }}
-                          >
-                            Eliminar
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+
+                  {/* Bulk Select Actions */}
+                  <div className='flex items-center gap-2'>
                     <Button
                       type='button'
-                      onClick={handleSave}
-                      disabled={saving}
+                      variant='outline'
+                      size='sm'
+                      onClick={handleSelectAllGlobally}
+                      disabled={!canUpdateRole}
+                      className='h-8 text-xs'
                     >
-                      {saving ? 'Guardando...' : 'Guardar cambios'}
+                      <CheckCircle2 className='mr-1.5 h-3.5 w-3.5 text-emerald-500' />
+                      Marcar todos
+                    </Button>
+                    <Button
+                      type='button'
+                      variant='outline'
+                      size='sm'
+                      onClick={handleClearAllGlobally}
+                      disabled={!canUpdateRole}
+                      className='h-8 text-xs text-muted-foreground'
+                    >
+                      Desmarcar
                     </Button>
                   </div>
-                </form>
+                </CardHeader>
+
+                <CardContent className='p-6 space-y-4'>
+                  {/* Module Cards Grid */}
+                  <div className='space-y-4'>
+                    {modulesPermissions.map((moduleConfig) => {
+                      const moduleName =
+                        MODULES_TRANSLATIONS[moduleConfig.module] ||
+                        moduleConfig.label;
+                      const isAllSelected = isAllModuleSelected(
+                        moduleConfig.module
+                      );
+                      const actions = getModuleActions(moduleConfig.module);
+                      const selectedInModule =
+                        permissions[moduleConfig.module] || [];
+
+                      return (
+                        <div
+                          key={moduleConfig.module}
+                          className='rounded-xl border bg-card p-4 transition-all hover:border-primary/40'
+                        >
+                          <div className='mb-3 flex items-center justify-between border-b pb-2.5'>
+                            <div className='flex items-center gap-2.5'>
+                              <span className='font-semibold text-sm text-foreground'>
+                                {moduleName}
+                              </span>
+                              <Badge
+                                variant={
+                                  selectedInModule.length === actions.length &&
+                                  actions.length > 0
+                                    ? 'default'
+                                    : 'secondary'
+                                }
+                                className='text-[10px] py-0'
+                              >
+                                {selectedInModule.length}/{actions.length}
+                              </Badge>
+                            </div>
+                            {canUpdateRole && (
+                              <div className='flex items-center gap-1.5'>
+                                <Checkbox
+                                  id={`select-all-${moduleConfig.module}`}
+                                  checked={isAllSelected}
+                                  onCheckedChange={(checked) =>
+                                    handleSelectAllModule(
+                                      moduleConfig.module,
+                                      Boolean(checked)
+                                    )
+                                  }
+                                />
+                                <label
+                                  htmlFor={`select-all-${moduleConfig.module}`}
+                                  className='cursor-pointer text-xs text-muted-foreground hover:text-foreground select-none'
+                                >
+                                  Todo el módulo
+                                </label>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className='grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3'>
+                            {actions.map((action) => {
+                              const isChecked =
+                                selectedInModule.includes(action);
+                              const actionLabel =
+                                ACTIONS_TRANSLATIONS[action] || action;
+
+                              return (
+                                <label
+                                  key={action}
+                                  className={`flex items-center justify-between rounded-lg border p-2.5 text-xs transition-colors cursor-pointer select-none ${
+                                    isChecked
+                                      ? 'border-primary/40 bg-primary/5 text-foreground font-medium'
+                                      : 'border-muted bg-muted/20 text-muted-foreground hover:bg-muted/40'
+                                  }`}
+                                >
+                                  <span className='capitalize'>
+                                    {actionLabel}
+                                  </span>
+                                  <Switch
+                                    checked={isChecked}
+                                    disabled={!canUpdateRole}
+                                    onCheckedChange={(checked) =>
+                                      handleCheck(
+                                        moduleConfig.module,
+                                        action,
+                                        checked
+                                      )
+                                    }
+                                  />
+                                </label>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Sticky Actions Footer */}
+                  <div className='sticky bottom-0 -mx-6 -mb-6 mt-6 flex items-center justify-between border-t bg-background/95 backdrop-blur-sm p-4 px-6 rounded-b-xl shadow-lg'>
+                    <div>
+                      {canDeleteRole && (
+                        <Button
+                          type='button'
+                          variant='outline'
+                          size='sm'
+                          onClick={() => setDeleteModalOpen(true)}
+                          className='text-destructive hover:bg-destructive/10 hover:text-destructive'
+                        >
+                          <Trash2 className='mr-1.5 h-3.5 w-3.5' />
+                          Eliminar Rol
+                        </Button>
+                      )}
+                    </div>
+                    {canUpdateRole && (
+                      <Button
+                        type='button'
+                        size='sm'
+                        onClick={handleSave}
+                        disabled={saving}
+                      >
+                        {saving ? (
+                          <Loader2 className='mr-2 size-4 animate-spin' />
+                        ) : (
+                          <Save className='mr-2 size-4' />
+                        )}
+                        Guardar Cambios
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
               </>
+            ) : (
+              <CardContent className='flex min-h-[400px] flex-col items-center justify-center p-8 text-center'>
+                <Shield className='h-12 w-12 text-muted-foreground/40 mb-3' />
+                <p className='text-base font-semibold'>Ningún rol seleccionado</p>
+                <p className='text-xs text-muted-foreground max-w-sm mt-1'>
+                  Selecciona un rol del menú lateral para consultar o editar sus permisos.
+                </p>
+              </CardContent>
             )}
-          </>
-        )}
-      </CardContent>
-    </Card>
+          </Card>
+        </div>
+      </div>
+
+      {/* Create Role Modal */}
+      {canCreateRole && (
+        <CreateRoleDialog
+          open={createDialogOpen}
+          onOpenChange={setCreateDialogOpen}
+          onRoleCreated={(newRoleId) => {
+            refetch();
+            if (newRoleId) {
+              setSelectedRoleId(newRoleId);
+            }
+          }}
+        />
+      )}
+
+      {/* Delete Confirmation Alert Modal */}
+      <AlertModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleDeleteRole}
+        loading={isDeleting}
+        confirmText='Eliminar Rol'
+        cancelText='Cancelar'
+        title={`¿Eliminar el rol "${selectedRole?.name}"?`}
+        description='Esta acción no se puede deshacer y revocará todos los permisos asignados a este rol.'
+      />
+    </PageContainer>
   );
 }

@@ -138,6 +138,7 @@ export const modulesPermissions: ModulePermissionConfig[] = [
     route: '/dashboard/users',
     actions: [
       ValidActions.READ,
+      ValidActions.CREATE,
       ValidActions.UPDATE,
       ValidActions.DELETE,
     ],
@@ -148,6 +149,7 @@ export const modulesPermissions: ModulePermissionConfig[] = [
     route: '/dashboard/roles',
     actions: [
       ValidActions.READ,
+      ValidActions.CREATE,
       ValidActions.UPDATE,
       ValidActions.DELETE,
     ],

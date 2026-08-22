@@ -1,6 +1,14 @@
 'use client';
 import React, { useState, useMemo } from 'react';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogHeader,
+  DialogDescription,
+  DialogFooter
+} from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
@@ -34,7 +42,18 @@ import { AlertModal } from '@/components/modal/alert-modal';
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus, RotateCw } from 'lucide-react';
+import {
+  ListChecks,
+  Loader2,
+  Plus,
+  RotateCw,
+  Save,
+  Sparkles,
+  CheckSquare,
+  FileText,
+  Pencil,
+  Trash2
+} from 'lucide-react';
 import { usePermissionsStore } from '@/store/permissionsStore';
 import { ValidActions, ValidModules } from '@/constants/permissions';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -149,9 +168,16 @@ export default function RequirementsTable() {
 
   return (
     <>
-      <div className='mb-4 flex items-center justify-between'>
-        <h2 className='text-2xl font-bold'>Requisitos para ser comunero</h2>
-        <div className='flex gap-2'>
+      <div className='mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+        <div>
+          <h2 className='text-xl font-semibold tracking-tight'>
+            Requisitos para ser comunero
+          </h2>
+          <p className='text-sm text-muted-foreground'>
+            Administra los requisitos y documentos necesarios para el registro de comuneros.
+          </p>
+        </div>
+        <div className='flex items-center gap-2'>
           {canCreateRequirement && canUpdateRequirement && (
             <Button onClick={() => openModal(null)}>
               <Plus className='mr-2 h-4 w-4' /> Nuevo requisito
@@ -190,15 +216,13 @@ export default function RequirementsTable() {
                   <TableCell className='font-medium'>
                     {req.requirement}
                   </TableCell>
-                  <TableCell>{req.observation}</TableCell>
+                  <TableCell className='text-muted-foreground'>
+                    {req.observation || 'Ninguna'}
+                  </TableCell>
                   <TableCell>
-                    {req.status ? (
-                      <span className='font-semibold text-green-600'>
-                        Activo
-                      </span>
-                    ) : (
-                      <span className='text-gray-400'>Inactivo</span>
-                    )}
+                    <Badge variant={req.status ? 'default' : 'secondary'}>
+                      {req.status ? 'Activo' : 'Inactivo'}
+                    </Badge>
                   </TableCell>
                   <TableCell className='text-right'>
                     <TooltipProvider>
@@ -210,7 +234,7 @@ export default function RequirementsTable() {
                               size='icon'
                               onClick={() => openModal(req)}
                             >
-                              <Icons.userPen className='h-4 w-4' />
+                              <Pencil className='h-4 w-4' />
                             </Button>
                           )}
                         </TooltipTrigger>
@@ -229,7 +253,7 @@ export default function RequirementsTable() {
                                 setDeleteModalOpen(true);
                               }}
                             >
-                              <Icons.trash className='h-4 w-4 text-red-600' />
+                              <Trash2 className='h-4 w-4 text-destructive' />
                             </Button>
                           )}
                         </TooltipTrigger>
@@ -243,7 +267,7 @@ export default function RequirementsTable() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={4} className='h-24 text-center'>
+                <TableCell colSpan={4} className='h-24 text-center text-muted-foreground'>
                   No hay requisitos registrados.
                 </TableCell>
               </TableRow>
@@ -266,65 +290,156 @@ export default function RequirementsTable() {
       </div>
       {/* Modal for Add/Edit */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent>
-          <DialogTitle>
-            {editReq ? 'Editar requisito' : 'Nuevo requisito'}
-          </DialogTitle>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className='mt-2 space-y-4'
-            >
-              <FormField
-                control={form.control}
-                name='requirement'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Requisito</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder='Ej: Partida de nacimiento'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+        <DialogContent className='sm:max-w-[480px] p-0 overflow-hidden'>
+          {/* Enhanced Header */}
+          <div className={`p-6 pb-4 border-b ${editReq ? 'bg-amber-500/5' : 'bg-primary/5'}`}>
+            <DialogHeader className='flex flex-row items-center gap-3 space-y-0'>
+              <div
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border shadow-xs ${
+                  editReq
+                    ? 'border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                    : 'border-primary/20 bg-primary/10 text-primary'
+                }`}
+              >
+                {editReq ? (
+                  <ListChecks className='h-5 w-5' />
+                ) : (
+                  <Sparkles className='h-5 w-5' />
                 )}
-              />
-              <FormField
-                control={form.control}
-                name='observation'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Observación</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Ej: Opcional' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='status'
-                render={({ field }) => (
-                  <FormItem className='flex items-center gap-2 space-y-0'>
-                    <FormLabel>Estado</FormLabel>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type='submit' disabled={mutation.isPending}>
-                {mutation.isPending ? 'Guardando...' : 'Guardar'}
-              </Button>
-            </form>
-          </Form>
+              </div>
+              <div className='flex flex-1 flex-col gap-1'>
+                <div className='flex items-center gap-2'>
+                  <DialogTitle className='text-lg font-semibold tracking-tight'>
+                    {editReq ? 'Editar Requisito' : 'Nuevo Requisito'}
+                  </DialogTitle>
+                  <Badge
+                    variant='outline'
+                    className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0 ${
+                      editReq
+                        ? 'border-amber-500/30 text-amber-600 dark:text-amber-400 bg-amber-500/10'
+                        : 'border-primary/30 text-primary bg-primary/10'
+                    }`}
+                  >
+                    {editReq ? 'Edición' : 'Creación'}
+                  </Badge>
+                </div>
+                <DialogDescription className='text-xs text-muted-foreground leading-relaxed'>
+                  {editReq
+                    ? 'Actualiza los datos y obligatoriedad del requisito.'
+                    : 'Ingresa los datos para registrar un nuevo requisito de membresía.'}
+                </DialogDescription>
+              </div>
+            </DialogHeader>
+          </div>
+
+          {/* Form Body */}
+          <div className='p-6 pt-4'>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+                <FormField
+                  control={form.control}
+                  name='requirement'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='text-xs font-semibold'>
+                        Requisito <span className='text-destructive'>*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <div className='relative'>
+                          <CheckSquare className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+                          <Input
+                            placeholder='Ej: Partida de nacimiento original'
+                            className='pl-9'
+                            autoFocus
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <p className='text-[11px] text-muted-foreground'>
+                        Nombre descriptivo del requisito solicitado.
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='observation'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='text-xs font-semibold'>
+                        Observación / Instrucciones
+                      </FormLabel>
+                      <FormControl>
+                        <div className='relative'>
+                          <FileText className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+                          <Input
+                            placeholder='Ej: Documento original o copia notariada'
+                            className='pl-9'
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <p className='text-[11px] text-muted-foreground'>
+                        Indicaciones adicionales para la presentación del documento.
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='status'
+                  render={({ field }) => (
+                    <FormItem className='flex items-center justify-between rounded-xl border bg-muted/30 p-3.5'>
+                      <div className='space-y-0.5'>
+                        <div className='flex items-center gap-2'>
+                          <FormLabel className='text-sm font-medium'>
+                            Estado del Requisito
+                          </FormLabel>
+                          <Badge variant={field.value ? 'default' : 'secondary'} className='text-[10px] py-0'>
+                            {field.value ? 'Activo' : 'Inactivo'}
+                          </Badge>
+                        </div>
+                        <p className='text-xs text-muted-foreground'>
+                          Habilitar para exigencia activa a comuneros
+                        </p>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <DialogFooter className='gap-2 sm:gap-0 pt-2 border-t mt-4'>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={() => setModalOpen(false)}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    type='submit'
+                    disabled={mutation.isPending}
+                    className={editReq ? 'bg-amber-600 hover:bg-amber-700 text-white' : ''}
+                  >
+                    {mutation.isPending ? (
+                      <Loader2 className='mr-2 size-4 animate-spin' />
+                    ) : editReq ? (
+                      <Save className='mr-2 size-4' />
+                    ) : (
+                      <Plus className='mr-2 size-4' />
+                    )}
+                    {editReq ? 'Guardar Cambios' : 'Crear Requisito'}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </div>
         </DialogContent>
       </Dialog>
       <AlertModal
@@ -332,8 +447,10 @@ export default function RequirementsTable() {
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleDelete}
         loading={false}
+        confirmText='Eliminar'
+        cancelText='Cancelar'
         title='¿Estás seguro de eliminar este requisito?'
-        description='Esta acción no se puede deshacer.'
+        description='Esta acción eliminará el requisito de forma permanente.'
       />
     </>
   );

@@ -1,6 +1,14 @@
 'use client';
 import React, { useState, useEffect, useMemo } from 'react';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogHeader,
+  DialogDescription,
+  DialogFooter
+} from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
@@ -34,7 +42,18 @@ import { AlertModal } from '@/components/modal/alert-modal';
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus, RotateCw } from 'lucide-react';
+import {
+  Plus,
+  RotateCw,
+  Files,
+  Loader2,
+  Save,
+  Sparkles,
+  FileText,
+  FileCheck,
+  Pencil,
+  Trash2
+} from 'lucide-react';
 import { usePermissionsStore } from '@/store/permissionsStore';
 import { ValidActions, ValidModules } from '@/constants/permissions';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -79,16 +98,8 @@ export default function DocumentTypesTable() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteDocType, setDeleteDocType] = useState<DocumentType | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [addModalOpen, setAddModalOpen] = useState(false);
 
-  // Edit form
   const form = useForm<FormValue>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { name: '', status: true }
-  });
-
-  // Add form
-  const addForm = useForm<FormValue>({
     resolver: zodResolver(formSchema),
     defaultValues: { name: '', status: true }
   });
@@ -98,61 +109,54 @@ export default function DocumentTypesTable() {
     setPageIndex(0);
   }, [debouncedSearch]);
 
-  // Mutation for editing
   const mutation = useMutation({
     mutationFn: async (data: FormValue) => {
       if (editDocType) {
         return documentTypesService.update(editDocType.documentTypeId, data);
+      } else {
+        return documentTypesService.create(data);
       }
     },
     onSuccess: () => {
-      toast.success('Tipo de documento actualizado correctamente');
+      toast.success(
+        editDocType
+          ? 'Tipo de documento actualizado correctamente'
+          : 'Tipo de documento añadido correctamente'
+      );
       queryClient.invalidateQueries({ queryKey: ['documentTypes'] });
       setModalOpen(false);
+      setEditDocType(null);
       form.reset();
     },
     onError: () => {
-      toast.error('Error al actualizar el tipo de documento');
+      toast.error(
+        editDocType
+          ? 'Error al actualizar el tipo de documento'
+          : 'Error al añadir el tipo de documento'
+      );
     }
   });
 
-  // Mutation for adding
-  const addMutation = useMutation({
-    mutationFn: async (data: FormValue) => {
-      return documentTypesService.create(data);
-    },
-    onSuccess: () => {
-      toast.success('Tipo de documento añadido correctamente');
-      queryClient.invalidateQueries({ queryKey: ['documentTypes'] });
-      setAddModalOpen(false);
-      addForm.reset();
-    },
-    onError: () => {
-      toast.error('Error al añadir el tipo de documento');
-    }
-  });
-
-  // Open modal for edit
-  const openEditModal = (docType: DocumentType) => {
+  const openModal = (docType: DocumentType | null = null) => {
     setEditDocType(docType);
-    form.reset({
-      name: docType.name,
-      status: docType.status
-    });
+    if (docType) {
+      form.reset({
+        name: docType.name,
+        status: docType.status
+      });
+    } else {
+      form.reset({
+        name: '',
+        status: true
+      });
+    }
     setModalOpen(true);
   };
 
-  // Handle edit form submission
   const onSubmit = (data: FormValue) => {
     mutation.mutate(data);
   };
 
-  // Handle add form submission
-  const onAddSubmit = (data: FormValue) => {
-    addMutation.mutate(data);
-  };
-
-  // Delete document type
   const handleDelete = async () => {
     if (!deleteDocType) return;
     setIsDeleting(true);
@@ -170,11 +174,18 @@ export default function DocumentTypesTable() {
 
   return (
     <>
-      <div className='mb-4 flex items-center justify-between'>
-        <h2 className='text-2xl font-bold'>Tipos de documentos</h2>
-        <div className='flex gap-2'>
+      <div className='mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+        <div>
+          <h2 className='text-xl font-semibold tracking-tight'>
+            Tipos de documentos
+          </h2>
+          <p className='text-sm text-muted-foreground'>
+            Documentos oficiales admitidos para trámites y validación de comuneros.
+          </p>
+        </div>
+        <div className='flex items-center gap-2'>
           {canCreateDocumentType && (
-            <Button onClick={() => setAddModalOpen(true)}>
+            <Button onClick={() => openModal(null)}>
               <Plus className='mr-2 h-4 w-4' /> Nuevo tipo
             </Button>
           )}
@@ -196,14 +207,8 @@ export default function DocumentTypesTable() {
           placeholder='Buscar por nombre...'
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className='max-w-sm'
+          className='w-full sm:max-w-sm'
         />
-      </div>
-
-      <div className='mb-2 flex items-center justify-between'>
-        <span className='text-sm text-muted-foreground'>
-          {totalCount} registro{totalCount === 1 ? '' : 's'} en total.
-        </span>
       </div>
 
       <div className='rounded-md border'>
@@ -229,13 +234,9 @@ export default function DocumentTypesTable() {
                     {docType.alias}
                   </TableCell>
                   <TableCell>
-                    {docType.status ? (
-                      <span className='font-semibold text-green-600'>
-                        Activo
-                      </span>
-                    ) : (
-                      <span className='text-gray-400'>Inactivo</span>
-                    )}
+                    <Badge variant={docType.status ? 'default' : 'secondary'}>
+                      {docType.status ? 'Activo' : 'Inactivo'}
+                    </Badge>
                   </TableCell>
                   <TableCell className='text-right'>
                     <TooltipProvider>
@@ -244,10 +245,10 @@ export default function DocumentTypesTable() {
                           <Button
                             variant='ghost'
                             size='icon'
-                            onClick={() => openEditModal(docType)}
+                            onClick={() => openModal(docType)}
                             title='Editar tipo de documento'
                           >
-                            <Icons.edit className='h-4 w-4' />
+                            <Pencil className='h-4 w-4' />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -265,7 +266,7 @@ export default function DocumentTypesTable() {
                             }}
                             title='Eliminar tipo de documento'
                           >
-                            <Icons.trash className='h-4 w-4' />
+                            <Trash2 className='h-4 w-4 text-destructive' />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -280,7 +281,7 @@ export default function DocumentTypesTable() {
               <TableRow>
                 <TableCell
                   colSpan={4}
-                  className='text-center text-muted-foreground'
+                  className='h-24 text-center text-muted-foreground'
                 >
                   No se encontraron tipos de documentos
                 </TableCell>
@@ -290,8 +291,10 @@ export default function DocumentTypesTable() {
         </Table>
       </div>
 
-      {/* Pagination always visible, like annual fees table */}
-      <div className='mt-2'>
+      <div className='mt-4'>
+        <div className='mb-2 text-center text-sm text-muted-foreground sm:text-left'>
+          {totalCount} registros en total.
+        </div>
         <DataTablePagination
           pageCount={pageCount}
           pageIndex={pageIndex}
@@ -302,118 +305,131 @@ export default function DocumentTypesTable() {
         />
       </div>
 
-      {/* Add Modal */}
-      <Dialog open={addModalOpen} onOpenChange={setAddModalOpen}>
-        <DialogContent>
-          <DialogTitle>Nuevo tipo de documento</DialogTitle>
-          <Form {...addForm}>
-            <form
-              onSubmit={addForm.handleSubmit(onAddSubmit)}
-              className='space-y-4'
-            >
-              <FormField
-                control={addForm.control}
-                name='name'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nombre</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Ej: Cédula de identidad' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={addForm.control}
-                name='status'
-                render={({ field }) => (
-                  <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
-                    <div className='space-y-0.5'>
-                      <FormLabel className='text-base'>Estado</FormLabel>
-                      <div className='text-sm text-muted-foreground'>
-                        Activar o desactivar este tipo de documento
-                      </div>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <div className='flex justify-end gap-2'>
-                <Button
-                  type='button'
-                  variant='outline'
-                  onClick={() => setAddModalOpen(false)}
-                >
-                  Cancelar
-                </Button>
-                <Button type='submit' disabled={addMutation.isPending}>
-                  {addMutation.isPending ? 'Guardando...' : 'Guardar'}
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Modal */}
+      {/* Unified Add/Edit Modal */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent>
-          <DialogTitle>Editar tipo de documento</DialogTitle>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-              <FormField
-                control={form.control}
-                name='name'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nombre</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Ej: Cédula de identidad' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+        <DialogContent className='sm:max-w-[480px] p-0 overflow-hidden'>
+          {/* Enhanced Header */}
+          <div className={`p-6 pb-4 border-b ${editDocType ? 'bg-amber-500/5' : 'bg-primary/5'}`}>
+            <DialogHeader className='flex flex-row items-center gap-3 space-y-0'>
+              <div
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border shadow-xs ${
+                  editDocType
+                    ? 'border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                    : 'border-primary/20 bg-primary/10 text-primary'
+                }`}
+              >
+                {editDocType ? (
+                  <FileText className='h-5 w-5' />
+                ) : (
+                  <Sparkles className='h-5 w-5' />
                 )}
-              />
-              <FormField
-                control={form.control}
-                name='status'
-                render={({ field }) => (
-                  <FormItem className='flex flex-row items-center justify-between rounded-lg border p-4'>
-                    <div className='space-y-0.5'>
-                      <FormLabel className='text-base'>Estado</FormLabel>
-                      <div className='text-sm text-muted-foreground'>
-                        Activar o desactivar este tipo de documento
-                      </div>
-                    </div>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <div className='flex justify-end gap-2'>
-                <Button
-                  type='button'
-                  variant='outline'
-                  onClick={() => setModalOpen(false)}
-                >
-                  Cancelar
-                </Button>
-                <Button type='submit' disabled={mutation.isPending}>
-                  {mutation.isPending ? 'Guardando...' : 'Guardar'}
-                </Button>
               </div>
-            </form>
-          </Form>
+              <div className='flex flex-1 flex-col gap-1'>
+                <div className='flex items-center gap-2'>
+                  <DialogTitle className='text-lg font-semibold tracking-tight'>
+                    {editDocType ? 'Editar Tipo de Documento' : 'Nuevo Tipo de Documento'}
+                  </DialogTitle>
+                  <Badge
+                    variant='outline'
+                    className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0 ${
+                      editDocType
+                        ? 'border-amber-500/30 text-amber-600 dark:text-amber-400 bg-amber-500/10'
+                        : 'border-primary/30 text-primary bg-primary/10'
+                    }`}
+                  >
+                    {editDocType ? 'Edición' : 'Creación'}
+                  </Badge>
+                </div>
+                <DialogDescription className='text-xs text-muted-foreground leading-relaxed'>
+                  {editDocType
+                    ? 'Actualiza el nombre y estado del documento oficial.'
+                    : 'Registra un nuevo tipo de documento para trámites comunales.'}
+                </DialogDescription>
+              </div>
+            </DialogHeader>
+          </div>
+
+          {/* Form Body */}
+          <div className='p-6 pt-4'>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-5'>
+                <FormField
+                  control={form.control}
+                  name='name'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='text-xs font-semibold'>
+                        Nombre del documento <span className='text-destructive'>*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <div className='relative'>
+                          <FileCheck className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+                          <Input
+                            placeholder='Ej: Cédula de ciudadanía, Pasaporte, etc.'
+                            className='pl-9'
+                            autoFocus
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <p className='text-[11px] text-muted-foreground'>
+                        Denominación oficial del documento aceptado.
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='status'
+                  render={({ field }) => (
+                    <FormItem className='flex flex-row items-center justify-between rounded-xl border bg-muted/30 p-3.5'>
+                      <div className='space-y-0.5'>
+                        <div className='flex items-center gap-2'>
+                          <FormLabel className='text-sm font-medium'>Estado del Documento</FormLabel>
+                          <Badge variant={field.value ? 'default' : 'secondary'} className='text-[10px] py-0'>
+                            {field.value ? 'Activo' : 'Inactivo'}
+                          </Badge>
+                        </div>
+                        <div className='text-xs text-muted-foreground'>
+                          Habilitar para recepción y carga en solicitudes
+                        </div>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <DialogFooter className='gap-2 sm:gap-0 pt-2 border-t mt-4'>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={() => setModalOpen(false)}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    type='submit'
+                    disabled={mutation.isPending}
+                    className={editDocType ? 'bg-amber-600 hover:bg-amber-700 text-white' : ''}
+                  >
+                    {mutation.isPending ? (
+                      <Loader2 className='mr-2 size-4 animate-spin' />
+                    ) : editDocType ? (
+                      <Save className='mr-2 size-4' />
+                    ) : (
+                      <Plus className='mr-2 size-4' />
+                    )}
+                    {editDocType ? 'Guardar Cambios' : 'Crear Documento'}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -423,6 +439,8 @@ export default function DocumentTypesTable() {
         onClose={() => setDeleteModalOpen(false)}
         onConfirm={handleDelete}
         loading={isDeleting}
+        confirmText='Eliminar'
+        cancelText='Cancelar'
         title='Eliminar tipo de documento'
         description={`¿Estás seguro de que quieres eliminar "${deleteDocType?.name}"? Esta acción no se puede deshacer.`}
       />

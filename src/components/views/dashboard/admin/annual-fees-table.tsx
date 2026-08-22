@@ -1,10 +1,19 @@
 'use client';
-import React, { useState, useMemo } from 'react';
+
+import React, { useState, useMemo, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogHeader,
+  DialogDescription,
+  DialogFooter
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import {
   Table,
@@ -27,18 +36,49 @@ import {
   updateAnnualFee,
   deleteAnnualFee
 } from '@/services/annual-fee';
-import {
-  AnnualFee,
-  CreateAnnualFee,
-  UpdateAnnualFee
-} from '@/interfaces/annual-fee';
+import { AnnualFee } from '@/interfaces/annual-fee';
 import { AnnualFeesTableRowSkeleton } from './annual-fees-table-row-skeleton';
 import { DataTablePagination } from '@/components/ui/table/data-table-pagination';
 import { useDebounce } from '@/hooks/use-debounce';
 import { AxiosError } from 'axios';
-import { RotateCw } from 'lucide-react';
+import {
+  RotateCw,
+  Plus,
+  DollarSign,
+  Loader2,
+  Save,
+  Sparkles,
+  Tag,
+  FileText,
+  Calendar,
+  CircleDollarSign,
+  Pencil,
+  Trash2
+} from 'lucide-react';
 import { usePermissionsStore } from '@/store/permissionsStore';
 import { ValidActions, ValidModules } from '@/constants/permissions';
+import { AlertModal } from '@/components/modal/alert-modal';
+import * as z from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form';
+
+const formSchema = z.object({
+  name: z.string().min(1, { message: 'El nombre es requerido' }),
+  description: z.string(),
+  amount: z.number().min(0, { message: 'El monto no puede ser negativo' }),
+  status: z.boolean(),
+  year: z.number().int().min(2000, { message: 'Año no válido' })
+});
+
+type FormValue = z.infer<typeof formSchema>;
 
 export default function AnnualFeesTable() {
   const queryClient = useQueryClient();
@@ -52,9 +92,9 @@ export default function AnnualFeesTable() {
   const canDeleteAnnualFee = permissions?.[ValidModules.ADMIN]?.includes(
     ValidActions.DELETE_ANNUAL_FEE
   );
+
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
-
   const [search, setSearch] = useState('');
   const [year, setYear] = useState<string>('');
 
@@ -62,21 +102,22 @@ export default function AnnualFeesTable() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editFee, setEditFee] = useState<AnnualFee | null>(null);
-  const [form, setForm] = useState<UpdateAnnualFee>({
-    description: '',
-    amount: 0,
-    status: true
-  });
-  const [addModalOpen, setAddModalOpen] = useState(false);
-  const [addForm, setAddForm] = useState<CreateAnnualFee>({
-    description: '',
-    amount: 0,
-    status: true,
-    name: '',
-    year: new Date().getFullYear()
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteFeeId, setDeleteFeeId] = useState<string | null>(null);
+
+  const form = useForm<FormValue>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: '',
+      description: '',
+      amount: 0,
+      status: true,
+      year: new Date().getFullYear()
+    }
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     setPageIndex(0);
   }, [debouncedSearch, year]);
 
@@ -101,35 +142,29 @@ export default function AnnualFeesTable() {
     [totalCount, pageSize]
   );
 
-  const createMutation = useMutation({
-    mutationFn: createAnnualFee,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['annualFees'] });
-      toast.success('Cuota añadida correctamente');
-      setAddModalOpen(false);
-      setAddForm({
-        description: '',
-        amount: 0,
-        status: true,
-        name: '',
-        year: new Date().getFullYear()
-      });
+  const mutation = useMutation({
+    mutationFn: async (values: FormValue) => {
+      if (editFee) {
+        return updateAnnualFee(editFee.feeId, values);
+      } else {
+        return createAnnualFee(values);
+      }
     },
-    onError: () => {
-      toast.error('Error al añadir la cuota');
-    }
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ feeId, fee }: { feeId: string; fee: UpdateAnnualFee }) =>
-      updateAnnualFee(feeId, fee),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['annualFees'] });
-      toast.success('Cuota actualizada correctamente');
+      toast.success(
+        editFee
+          ? 'Cuota actualizada correctamente'
+          : 'Cuota añadida correctamente'
+      );
       setModalOpen(false);
+      setEditFee(null);
+      form.reset();
     },
     onError: () => {
-      toast.error('Error al actualizar la cuota');
+      toast.error(
+        editFee ? 'Error al actualizar la cuota' : 'Error al añadir la cuota'
+      );
     }
   });
 
@@ -137,7 +172,9 @@ export default function AnnualFeesTable() {
     mutationFn: deleteAnnualFee,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['annualFees'] });
-      toast.success('Cuota eliminada');
+      toast.success('Cuota eliminada correctamente');
+      setDeleteModalOpen(false);
+      setDeleteFeeId(null);
     },
     onError: (error: AxiosError<{ message: string }>) => {
       const errorMessage =
@@ -146,59 +183,62 @@ export default function AnnualFeesTable() {
     }
   });
 
-  // Open modal for edit
   const openModal = (fee: AnnualFee | null = null) => {
     setEditFee(fee);
-    setForm(
-      fee
-        ? {
-            description: fee.description,
-            amount: fee.amount,
-            status: fee.status,
-            name: fee.name,
-            year: fee.year
-          }
-        : {
-            description: '',
-            amount: 0,
-            status: true,
-            name: '',
-            year: new Date().getFullYear()
-          }
-    );
+    if (fee) {
+      form.reset({
+        name: fee.name,
+        description: fee.description || '',
+        amount: fee.amount,
+        status: fee.status,
+        year: fee.year
+      });
+    } else {
+      form.reset({
+        name: '',
+        description: '',
+        amount: 0,
+        status: true,
+        year: new Date().getFullYear()
+      });
+    }
     setModalOpen(true);
   };
 
-  // Save annual fee (edit)
-  const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (editFee) {
-      updateMutation.mutate({ feeId: editFee.feeId, fee: form });
+  const onSubmit = (values: FormValue) => {
+    mutation.mutate(values);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deleteFeeId) {
+      deleteMutation.mutate(deleteFeeId);
     }
   };
 
-  // Delete annual fee
-  const handleDelete = (feeId: string) => {
-    deleteMutation.mutate(feeId);
-  };
-
-  // Add annual fee
-  const handleAdd = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    createMutation.mutate(addForm);
-  };
-
   if (isError) {
-    return <div>Error al cargar las cuotas anuales.</div>;
+    return (
+      <div className='p-4 text-center text-destructive'>
+        Error al cargar las cuotas anuales.
+      </div>
+    );
   }
 
   return (
     <>
-      <div className='mb-4 flex items-center justify-between'>
-        <h2 className='text-2xl font-bold'>Cuotas anuales</h2>
+      <div className='mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+        <div>
+          <h2 className='text-xl font-semibold tracking-tight'>
+            Cuotas Anuales
+          </h2>
+          <p className='text-sm text-muted-foreground'>
+            Configuración y montos de cuotas anuales por periodo.
+          </p>
+        </div>
         <div className='flex items-center gap-2'>
           {canCreateAnnualFee && canUpdateAnnualFee && (
-            <Button onClick={() => setAddModalOpen(true)}>+ Nueva cuota</Button>
+            <Button onClick={() => openModal(null)}>
+              <Plus className='mr-2 h-4 w-4' /> Nueva cuota
+            </Button>
           )}
           <Button
             onClick={() => refetch()}
@@ -212,21 +252,23 @@ export default function AnnualFeesTable() {
           </Button>
         </div>
       </div>
-      <div className='mb-4 flex items-center gap-2'>
+
+      <div className='mb-4 flex flex-col gap-2 sm:flex-row sm:items-center'>
         <Input
           placeholder='Buscar por nombre...'
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className='max-w-sm'
+          className='w-full sm:max-w-sm'
         />
         <Input
           type='number'
           placeholder='Filtrar por año...'
           value={year}
           onChange={(e) => setYear(e.target.value)}
-          className='max-w-xs'
+          className='w-full sm:max-w-xs'
         />
       </div>
+
       <div className='rounded-md border'>
         <Table>
           <TableHeader>
@@ -247,17 +289,17 @@ export default function AnnualFeesTable() {
             ) : annualFees.length > 0 ? (
               annualFees.map((fee) => (
                 <TableRow key={fee.feeId}>
-                  <TableCell>{fee.name}</TableCell>
-                  <TableCell>{fee.description || 'N/A'}</TableCell>
-                  <TableCell>$ {fee.amount}</TableCell>
+                  <TableCell className='font-medium'>{fee.name}</TableCell>
+                  <TableCell className='text-muted-foreground'>
+                    {fee.description || 'N/A'}
+                  </TableCell>
+                  <TableCell className='font-semibold'>
+                    ${Number(fee.amount).toFixed(2)}
+                  </TableCell>
                   <TableCell>
-                    {fee.status ? (
-                      <span className='font-semibold text-green-600'>
-                        Activo
-                      </span>
-                    ) : (
-                      <span className='text-gray-400'>Inactivo</span>
-                    )}
+                    <Badge variant={fee.status ? 'default' : 'secondary'}>
+                      {fee.status ? 'Activo' : 'Inactivo'}
+                    </Badge>
                   </TableCell>
                   <TableCell>{fee.year}</TableCell>
                   <TableCell className='text-right'>
@@ -270,7 +312,7 @@ export default function AnnualFeesTable() {
                               size='icon'
                               onClick={() => openModal(fee)}
                             >
-                              <Icons.userPen className='h-4 w-4' />
+                              <Pencil className='h-4 w-4' />
                             </Button>
                           )}
                         </TooltipTrigger>
@@ -284,10 +326,13 @@ export default function AnnualFeesTable() {
                             <Button
                               variant='ghost'
                               size='icon'
-                              onClick={() => handleDelete(fee.feeId)}
+                              onClick={() => {
+                                setDeleteFeeId(fee.feeId);
+                                setDeleteModalOpen(true);
+                              }}
                               disabled={deleteMutation.isPending}
                             >
-                              <Icons.trash className='h-4 w-4 text-red-600' />
+                              <Trash2 className='h-4 w-4 text-destructive' />
                             </Button>
                           )}
                         </TooltipTrigger>
@@ -301,7 +346,10 @@ export default function AnnualFeesTable() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={4} className='h-24 text-center'>
+                <TableCell
+                  colSpan={6}
+                  className='h-24 text-center text-muted-foreground'
+                >
                   No hay cuotas anuales registradas.
                 </TableCell>
               </TableRow>
@@ -309,6 +357,7 @@ export default function AnnualFeesTable() {
           </TableBody>
         </Table>
       </div>
+
       <div className='mt-4'>
         <div className='mb-2 text-center text-sm text-muted-foreground sm:text-left'>
           {totalCount} registros en total.
@@ -322,144 +371,221 @@ export default function AnnualFeesTable() {
           onPageSizeChange={setPageSize}
         />
       </div>
-      {/* Modal for edit */}
+
+      {/* Modal for create/edit */}
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent>
-          <DialogTitle>{editFee ? 'Editar cuota' : 'Nueva cuota'}</DialogTitle>
-          <form onSubmit={handleSave} className='mt-2 space-y-4'>
-            <div>
-              <label className='mb-1 block text-sm font-medium'>
-                Descripción
-              </label>
-              <Input
-                value={form.description}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, description: e.target.value }))
-                }
-                required
-              />
-            </div>
-            <div>
-              <label className='mb-1 block text-sm font-medium'>
-                Monto ($)
-              </label>
-              <Input
-                type='number'
-                value={form.amount}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, amount: Number(e.target.value) }))
-                }
-                required
-              />
-            </div>
-            <div className='flex items-center space-x-2'>
-              <label className='text-sm font-medium'>Estado</label>
-              <Switch
-                checked={form.status}
-                onCheckedChange={(checked) =>
-                  setForm((f) => ({ ...f, status: checked }))
-                }
-              />
-            </div>
-            <div>
-              <label className='mb-1 block text-sm font-medium'>Año</label>
-              <Input
-                type='number'
-                value={form.year}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, year: Number(e.target.value) }))
-                }
-                required
-              />
-            </div>
-            <div className='flex justify-end gap-2'>
-              <Button
-                type='button'
-                variant='outline'
-                onClick={() => setModalOpen(false)}
+        <DialogContent className='sm:max-w-[520px] p-0 overflow-hidden'>
+          {/* Enhanced Header */}
+          <div className={`p-6 pb-4 border-b ${editFee ? 'bg-amber-500/5' : 'bg-primary/5'}`}>
+            <DialogHeader className='flex flex-row items-center gap-3 space-y-0'>
+              <div
+                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border shadow-xs ${
+                  editFee
+                    ? 'border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                    : 'border-primary/20 bg-primary/10 text-primary'
+                }`}
               >
-                Cancelar
-              </Button>
-              <Button type='submit' disabled={updateMutation.isPending}>
-                {updateMutation.isPending ? 'Guardando...' : 'Guardar'}
-              </Button>
-            </div>
-          </form>
+                {editFee ? (
+                  <CircleDollarSign className='h-5 w-5' />
+                ) : (
+                  <Sparkles className='h-5 w-5' />
+                )}
+              </div>
+              <div className='flex flex-1 flex-col gap-1'>
+                <div className='flex items-center gap-2'>
+                  <DialogTitle className='text-lg font-semibold tracking-tight'>
+                    {editFee ? 'Editar Cuota Anual' : 'Nueva Cuota Anual'}
+                  </DialogTitle>
+                  <Badge
+                    variant='outline'
+                    className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0 ${
+                      editFee
+                        ? 'border-amber-500/30 text-amber-600 dark:text-amber-400 bg-amber-500/10'
+                        : 'border-primary/30 text-primary bg-primary/10'
+                    }`}
+                  >
+                    {editFee ? 'Edición' : 'Creación'}
+                  </Badge>
+                </div>
+                <DialogDescription className='text-xs text-muted-foreground leading-relaxed'>
+                  {editFee
+                    ? 'Actualiza los valores, monto y periodo de la cuota seleccionada.'
+                    : 'Ingresa los datos para registrar y parametrizar una nueva cuota anual.'}
+                </DialogDescription>
+              </div>
+            </DialogHeader>
+          </div>
+
+          {/* Form Body */}
+          <div className='p-6 pt-4'>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+                <FormField
+                  control={form.control}
+                  name='name'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='text-xs font-semibold'>
+                        Nombre de la cuota <span className='text-destructive'>*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <div className='relative'>
+                          <Tag className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+                          <Input
+                            placeholder='Ej: Cuota Anual 2026'
+                            className='pl-9'
+                            autoFocus
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='description'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='text-xs font-semibold'>Descripción</FormLabel>
+                      <FormControl>
+                        <div className='relative'>
+                          <FileText className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+                          <Input
+                            placeholder='Ej: Pago ordinario de mantenimiento y servicios'
+                            className='pl-9'
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className='grid grid-cols-2 gap-3'>
+                  <FormField
+                    control={form.control}
+                    name='amount'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className='text-xs font-semibold'>
+                          Monto ($) <span className='text-destructive'>*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <div className='relative'>
+                            <DollarSign className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+                            <Input
+                              type='number'
+                              step='0.01'
+                              placeholder='0.00'
+                              className='pl-9'
+                              value={field.value}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value === '' ? 0 : Number(e.target.value)
+                                )
+                              }
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name='year'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className='text-xs font-semibold'>
+                          Año <span className='text-destructive'>*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <div className='relative'>
+                            <Calendar className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+                            <Input
+                              type='number'
+                              placeholder='2026'
+                              className='pl-9'
+                              value={field.value}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value === '' ? 0 : Number(e.target.value)
+                                )
+                              }
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <FormField
+                  control={form.control}
+                  name='status'
+                  render={({ field }) => (
+                    <FormItem className='flex items-center justify-between rounded-xl border bg-muted/30 p-3.5'>
+                      <div className='space-y-0.5'>
+                        <div className='flex items-center gap-2'>
+                          <FormLabel className='text-sm font-medium'>Cuota Habilitada</FormLabel>
+                          <Badge variant={field.value ? 'default' : 'secondary'} className='text-[10px] py-0'>
+                            {field.value ? 'Activo' : 'Inactivo'}
+                          </Badge>
+                        </div>
+                        <p className='text-xs text-muted-foreground'>
+                          Habilitar para cobro y asignación a comuneros
+                        </p>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <DialogFooter className='gap-2 sm:gap-0 pt-2 border-t mt-4'>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={() => setModalOpen(false)}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    type='submit'
+                    disabled={mutation.isPending}
+                    className={editFee ? 'bg-amber-600 hover:bg-amber-700 text-white' : ''}
+                  >
+                    {mutation.isPending ? (
+                      <Loader2 className='mr-2 size-4 animate-spin' />
+                    ) : editFee ? (
+                      <Save className='mr-2 size-4' />
+                    ) : (
+                      <Plus className='mr-2 size-4' />
+                    )}
+                    {editFee ? 'Guardar Cambios' : 'Crear Cuota'}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </div>
         </DialogContent>
       </Dialog>
-      {/* Modal for add */}
-      <Dialog open={addModalOpen} onOpenChange={setAddModalOpen}>
-        <DialogContent>
-          <DialogTitle>Añadir nueva cuota</DialogTitle>
-          <form onSubmit={handleAdd} className='mt-2 space-y-4'>
-            <div>
-              <label className='mb-1 block text-sm font-medium'>Nombre</label>
-              <Input
-                value={addForm.name}
-                onChange={(e) =>
-                  setAddForm((f) => ({ ...f, name: e.target.value }))
-                }
-                required
-              />
-              <label className='mb-1 block text-sm font-medium'>
-                Descripción
-              </label>
-              <Input
-                value={addForm.description}
-                onChange={(e) =>
-                  setAddForm((f) => ({ ...f, description: e.target.value }))
-                }
-                required
-              />
-            </div>
-            <div>
-              <label className='mb-1 block text-sm font-medium'>
-                Monto ($)
-              </label>
-              <Input
-                type='number'
-                value={addForm.amount}
-                onChange={(e) =>
-                  setAddForm((f) => ({ ...f, amount: Number(e.target.value) }))
-                }
-                required
-              />
-            </div>
-            <div className='flex items-center space-x-2'>
-              <label className='text-sm font-medium'>Estado</label>
-              <Switch
-                checked={addForm.status}
-                onCheckedChange={(checked) =>
-                  setAddForm((f) => ({ ...f, status: checked }))
-                }
-              />
-            </div>
-            <div>
-              <label className='mb-1 block text-sm font-medium'>Año</label>
-              <Input
-                type='number'
-                value={addForm.year}
-                onChange={(e) =>
-                  setAddForm((f) => ({ ...f, year: Number(e.target.value) }))
-                }
-                required
-              />
-            </div>
-            <div className='flex justify-end gap-2'>
-              <Button
-                type='button'
-                variant='outline'
-                onClick={() => setAddModalOpen(false)}
-              >
-                Cancelar
-              </Button>
-              <Button type='submit' disabled={createMutation.isPending}>
-                {createMutation.isPending ? 'Añadiendo...' : 'Añadir'}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+
+      <AlertModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        loading={deleteMutation.isPending}
+        confirmText='Eliminar'
+        cancelText='Cancelar'
+        title='¿Estás seguro de eliminar esta cuota?'
+        description='Esta acción eliminará el registro de la cuota anual.'
+      />
     </>
   );
 }

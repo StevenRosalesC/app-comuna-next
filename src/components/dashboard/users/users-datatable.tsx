@@ -1,27 +1,27 @@
 'use client';
+
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { useState, useEffect, useCallback, useMemo } from 'react';
-
-import { PersonsTablePagination } from '../persons/persons-table-pagination';
+import { DataTablePagination } from '@/components/ui/table/data-table-pagination';
 import { UsersTable } from './users-table';
 import { usersService } from '@/services/users';
-import { User } from '@/interfaces/users';
-import { Switch } from '@/components/ui/switch';
-import { useQuery } from '@tanstack/react-query';
+import { User, IUsersRequestResponse } from '@/interfaces/users';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ServiceResponse } from '@/interfaces/common';
-import { IUsersRequestResponse } from '@/interfaces/users';
-import { Button } from '@/components/ui/button';
-import { RefreshCcw } from 'lucide-react';
 import { useDebounce } from './useDebounce';
 import { UsersTableToolbar } from './users-table-toolbar';
+import { Users as UsersIcon } from 'lucide-react';
 
 export default function UsersDataTable() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [showActive, setShowActive] = useState(true);
+  const queryClient = useQueryClient();
+
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
 
   const [sorting, setSorting] = useState(() => {
     const sortField = searchParams.get('sort');
@@ -30,17 +30,26 @@ export default function UsersDataTable() {
       ? [{ id: sortField, desc: sortDir === 'desc' }]
       : [];
   });
+
   const [pageSize, setPageSize] = useState(
     () => Number(searchParams.get('size')) || 10
   );
+
   const [pageIndex, setPageIndex] = useState(() =>
     Math.max(Number(searchParams.get('page') || 1) - 1, 0)
   );
+
   const [search, setSearch] = useState(() => searchParams.get('search') || '');
   const debouncedSearch = useDebounce(search, 400);
 
+  const statusParam = useMemo(() => {
+    if (statusFilter === 'active') return true;
+    if (statusFilter === 'inactive') return false;
+    return undefined;
+  }, [statusFilter]);
+
   const {
-    data: users,
+    data: usersResponse,
     isLoading: usersLoading,
     error,
     refetch,
@@ -53,7 +62,7 @@ export default function UsersDataTable() {
         pageIndex,
         sorting,
         search: debouncedSearch,
-        showActive
+        statusFilter
       }
     ],
     queryFn: () =>
@@ -63,9 +72,10 @@ export default function UsersDataTable() {
         sorting.length ? sorting[0].id : 'username',
         sorting.length && sorting[0].desc ? 'desc' : 'asc',
         debouncedSearch,
-        showActive
+        statusParam
       )
   });
+
   const updateUrl = useCallback(
     (updates: Record<string, string | null>) => {
       const params = new URLSearchParams(searchParams.toString());
@@ -104,7 +114,7 @@ export default function UsersDataTable() {
       setPageIndex(0);
       updateUrl({
         size: newSize.toString(),
-        page: '0'
+        page: '1'
       });
     },
     [updateUrl]
@@ -120,19 +130,16 @@ export default function UsersDataTable() {
 
   const handleEditUser = async (user: User) => {
     try {
-      toast.loading('Actualizando usuario...');
       const { userId, ...userToUpdate } = user;
       const response = await usersService.updateUser(userId, userToUpdate);
       if (response.status) {
-        toast.dismiss();
-        toast.success(response.message);
-        await refetch();
+        toast.success(response.message || 'Usuario actualizado correctamente');
+        queryClient.invalidateQueries({ queryKey: ['users'] });
+        queryClient.invalidateQueries({ queryKey: ['users-stats'] });
       } else {
-        toast.dismiss();
-        toast.error(response.message);
+        toast.error(response.message || 'Error al actualizar el usuario');
       }
     } catch (error) {
-      toast.dismiss();
       toast.error('Error al actualizar el usuario');
     }
   };
@@ -153,59 +160,58 @@ export default function UsersDataTable() {
   }, [debouncedSearch]);
 
   const totalCount = useMemo(() => {
-    return users?.data?.count ?? 0;
-  }, [users?.data?.count]);
+    return usersResponse?.data?.count ?? 0;
+  }, [usersResponse?.data?.count]);
+
+  const rawUsers = usersResponse?.data?.data || [];
+  const pageCount = Math.max(Math.ceil(totalCount / pageSize), 1);
 
   return (
-    <Card>
-      <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-        <CardTitle>Usuarios</CardTitle>
-        <div className='flex items-center gap-2'>
-          <span className='text-sm'>
-            {showActive ? 'Activos' : 'Inactivos'}
-          </span>
-          <Switch
-            checked={showActive}
-            onCheckedChange={(checked) => setShowActive(checked)}
-          />
-          <Button
-            variant='outline'
-            size='sm'
-            className='ml-2'
-            title='Recargar'
-            onClick={() => {
-              refetch();
-            }}
-            disabled={isFetching}
-          >
-            <RefreshCcw
-              className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`}
-            />
-            Recargar
-          </Button>
+    <Card className='border shadow-sm'>
+      <CardHeader className='flex flex-row items-center justify-between pb-4 border-b space-y-0'>
+        <div className='flex items-center gap-3'>
+          <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary'>
+            <UsersIcon className='h-5 w-5' />
+          </div>
+          <div>
+            <div className='flex items-center gap-2'>
+              <CardTitle className='text-lg font-semibold tracking-tight'>
+                Directorio de Usuarios
+              </CardTitle>
+              <Badge variant='secondary' className='text-xs font-semibold'>
+                {totalCount} {totalCount === 1 ? 'usuario' : 'usuarios'}
+              </Badge>
+            </div>
+            <CardDescription className='text-xs text-muted-foreground'>
+              Lista de cuentas con acceso activo o inactivo al sistema.
+            </CardDescription>
+          </div>
         </div>
       </CardHeader>
-      <CardContent>
-        <UsersTableToolbar search={search} onSearchChange={setSearch} />
+
+      <CardContent className='pt-5'>
+        <UsersTableToolbar
+          search={search}
+          onSearchChange={setSearch}
+          statusFilter={statusFilter}
+          onStatusFilterChange={setStatusFilter}
+          onRefresh={() => refetch()}
+          isRefreshing={isFetching}
+        />
+
         <UsersTable
-          data={
-            users?.data?.data.filter((u) =>
-              showActive ? u.status : !u.status
-            ) || []
-          }
+          data={rawUsers}
           isLoading={usersLoading}
           pageSize={pageSize}
           sorting={sorting}
           onSortingChange={handleSortingChange}
           updateUser={handleEditUser}
         />
-        <div className='mt-4'>
-          <div className='mb-2 text-center text-sm text-muted-foreground sm:text-left'>
-            {totalCount} registros en total.
-          </div>
-          <PersonsTablePagination
+
+        <div className='mt-5 pt-4 border-t'>
+          <DataTablePagination
             pageIndex={pageIndex}
-            pageCount={Math.ceil(totalCount / pageSize)}
+            pageCount={pageCount}
             pageSize={pageSize}
             isLoading={usersLoading}
             onPageIndexChange={handlePageIndexChange}

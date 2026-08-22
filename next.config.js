@@ -6,7 +6,7 @@ const parseImageRemotePatterns = () => {
     .map((v) => v.trim())
     .filter(Boolean);
 
-  if (items.length === 0) return null;
+  if (items.length === 0) return [];
 
   const patterns = [];
 
@@ -25,7 +25,7 @@ const parseImageRemotePatterns = () => {
     } catch {}
   }
 
-  return patterns.length ? patterns : null;
+  return patterns;
 };
 
 const nextConfig = {

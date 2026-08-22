@@ -17,13 +17,18 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"
       ],
       "~/*": [
         "./public/*"
+      ],
+      "types": [
+        "./types/index.ts"
+      ],
+      "types/*": [
+        "./types/*"
       ]
     },
     "incremental": true,

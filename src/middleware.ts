@@ -39,6 +39,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(AUTH_CONFIG.PATHS.LOGIN, request.url));
   }
 
+  // Bypass redundant background refresh for Server Actions and prefetch/RSC requests
+  if (
+    request.headers.has('next-action') ||
+    request.headers.get('accept')?.includes('text/x-component') ||
+    request.headers.get('purpose') === 'prefetch'
+  ) {
+    return NextResponse.next();
+  }
+
   try {
     const refreshResponse = await authenticateOrRefresh(token);
     if (!refreshResponse) {

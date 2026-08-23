@@ -12,10 +12,28 @@ const apiCommunity = axios.create({
   timeout: 10000 // 10 seconds timeout
 });
 
+let cachedClientToken: string | null = null;
+
+export const setClientToken = (token: string | null) => {
+  cachedClientToken = token;
+};
+
+export const getClientToken = () => cachedClientToken;
+
 // Request interceptor
 apiCommunity.interceptors.request.use(
   async (config) => {
-    const token = await getToken();
+    let token = cachedClientToken;
+    if (!token && typeof window !== 'undefined') {
+      const serverToken = await getToken();
+      token = serverToken || null;
+      if (token) {
+        cachedClientToken = token;
+      }
+    } else if (!token && typeof window === 'undefined') {
+      const serverToken = await getToken();
+      token = serverToken || null;
+    }
     
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

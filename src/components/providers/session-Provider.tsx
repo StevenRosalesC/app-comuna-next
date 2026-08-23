@@ -7,6 +7,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import { modulesPermissions } from '@/constants/permissions';
 import { usePermission } from '@/hooks/usePermission';
 
+import { setClientToken } from '@/utils/communityApi';
+
 interface SessionContextProps {
   session: AuthResponse | null;
   loading: boolean;
@@ -31,6 +33,12 @@ export const SessionProvider = ({
   useEffect(() => {
     if (initialSession) {
       setSession(initialSession);
+      if (initialSession.token) {
+        setClientToken(initialSession.token);
+      }
+      if (initialSession.permissions) {
+        usePermissionsStore.getState().setPermissions(initialSession.permissions);
+      }
     }
   }, [initialSession]);
 
@@ -39,11 +47,11 @@ export const SessionProvider = ({
   const pathname = usePathname();
 
   useEffect(() => {
-    if (pathname.startsWith('/dashboard')) {
+    if (pathname.startsWith('/dashboard') && !permissions && !isLoading) {
       fetchPermissions();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+  }, [pathname, permissions, isLoading]);
 
   // Helper to extract module from pathname
   const getModuleFromPath = (pathname: string) => {

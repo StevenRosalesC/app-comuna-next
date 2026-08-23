@@ -6,17 +6,44 @@ export const requirementsService = {
     limit: number,
     offset: number
   ): Promise<{ data: Requirement[]; count: number }> {
-    const response = await apiCommunity.get<Requirement[]>('/requirements', {
+    const response = await apiCommunity.get<any>('/requirements', {
       params: { limit, offset }
     });
-    const count = Number(response.headers['x-total-count']) || 0;
-    return { data: response.data, count };
+
+    const resData = response.data;
+    if (resData && typeof resData === 'object' && !Array.isArray(resData)) {
+      const items: Requirement[] = Array.isArray(resData.data)
+        ? resData.data
+        : Array.isArray(resData.requirements)
+        ? resData.requirements
+        : [];
+      const count =
+        typeof resData.count === 'number'
+          ? resData.count
+          : typeof resData.total === 'number'
+          ? resData.total
+          : Number(response.headers?.['x-total-count']) || items.length;
+      return { data: items, count };
+    }
+
+    if (Array.isArray(resData)) {
+      const count =
+        Number(response.headers?.['x-total-count']) ||
+        Number(response.headers?.['content-range']?.split('/')?.[1]) ||
+        resData.length;
+      return { data: resData, count };
+    }
+
+    return { data: [], count: 0 };
   },
   async listAll(): Promise<Requirement[]> {
-    const { data } = await apiCommunity.get<Requirement[]>(
+    const { data } = await apiCommunity.get<any>(
       '/requirements?limit=1000'
     );
-    return data;
+    if (Array.isArray(data)) return data;
+    if (data && Array.isArray(data.data)) return data.data;
+    if (data && Array.isArray(data.requirements)) return data.requirements;
+    return [];
   },
   async create(data: Omit<Requirement, 'requirementId'>): Promise<Requirement> {
     try {

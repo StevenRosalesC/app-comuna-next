@@ -161,6 +161,7 @@ export const modulesPermissions: ModulePermissionConfig[] = [
     actions: [
       ValidActions.READ,
       ValidActions.UPDATE,
+      ValidActions.OPEN_CASH_REGISTER,
       ValidActions.CLOSE_CASH_REGISTER,
       ValidActions.VIEW_HISTORY,
       ValidActions.DELETE_PAYMENT,

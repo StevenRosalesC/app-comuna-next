@@ -73,8 +73,8 @@ export default function RequirementsTable() {
   const { permissions } = usePermissionsStore();
   const queryClient = useQueryClient();
   const canCreateRequirement = permissions?.[
-    ValidModules.REQUIREMENTS
-  ]?.includes(ValidActions.CREATE);
+    ValidModules.ADMIN
+  ]?.includes(ValidActions.CREATE_REQUIREMENTS);
   const canUpdateRequirement = permissions?.[
     ValidModules.REQUIREMENTS
   ]?.includes(ValidActions.UPDATE);

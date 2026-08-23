@@ -15,6 +15,7 @@
   import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -23,7 +24,10 @@
   import { Input } from '@/components/ui/input';
   import { Button } from '@/components/ui/button';
   import { toast } from 'sonner';
-  import { useEffect } from 'react';
+  import { useEffect, useMemo } from 'react';
+  import { useQuery } from '@tanstack/react-query';
+  import { requirementsService } from '@/services/requirements';
+  import { Requirement } from '@/interfaces/requirements';
   import {
     SelectContent,
     SelectItem,
@@ -148,6 +152,60 @@
         </SelectItem>
       )
     );
+
+    const { data: allRequirements = [] } = useQuery<Requirement[]>({
+      queryKey: ['requirements-all'],
+      queryFn: () => requirementsService.listAll(),
+      enabled: open
+    });
+
+    const approvedRequirements = useMemo(() => {
+      if (!person) return [];
+      return (person.personRequirement || [])
+        .filter((req) => req.status === 'APPROVED')
+        .map((req) => ({
+          requirementId: req.requirement.requirementId,
+          requirementName: req.requirement.requirement,
+          approvedByUser: req.approvedByUser
+        }));
+    }, [person]);
+
+    const pendingRequirements = useMemo(() => {
+      if (!person) return [];
+      const activeSysReqs = allRequirements.filter((req) => req.status !== false);
+
+      if (activeSysReqs.length > 0) {
+        return activeSysReqs
+          .filter((sysReq) => {
+            const pr = person.personRequirement?.find(
+              (r) =>
+                r.requirement?.requirementId === sysReq.requirementId ||
+                (r as any).requirementId === sysReq.requirementId
+            );
+            return !pr || pr.status !== 'APPROVED';
+          })
+          .map((sysReq) => {
+            const pr = person.personRequirement?.find(
+              (r) =>
+                r.requirement?.requirementId === sysReq.requirementId ||
+                (r as any).requirementId === sysReq.requirementId
+            );
+            return {
+              requirementId: sysReq.requirementId,
+              requirementName: sysReq.requirement,
+              observation: pr?.observation || sysReq.observation || null
+            };
+          });
+      }
+
+      return (person.personRequirement || [])
+        .filter((req) => req.status !== 'APPROVED')
+        .map((req) => ({
+          requirementId: req.requirement.requirementId,
+          requirementName: req.requirement.requirement,
+          observation: req.observation || null
+        }));
+    }, [allRequirements, person]);
 
     if (!person) return null;
     return (
@@ -296,10 +354,10 @@
                     <FormItem className='mt-4 flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm'>
                       <div className='space-y-0.5'>
                         <FormLabel>Tiene Discapacidad</FormLabel>
-                        <DialogDescription>
+                        <FormDescription>
                           Activa esta opción si el comunero tiene un carnet de
                           discapacidad.
-                        </DialogDescription>
+                        </FormDescription>
                       </div>
                       <FormControl>
                         <Switch
@@ -346,63 +404,56 @@
                 )}
                 {person.status && isAdult(new Date(person.birthDate)) && (
                   <div className='flex flex-col gap-2'>
-                    {person.personRequirement &&
-                      person.personRequirement.filter(
-                        (req) => req.status === 'APPROVED'
-                      ).length > 0 && (
-                        <div className='mt-4 flex flex-col gap-2 rounded-lg border p-4'>
-                          <span className='w-full text-center text-sm font-bold'>
-                            Requisitos aprobados
-                          </span>
-                          <ul className='flex flex-col gap-3 pl-2'>
-                            {person.personRequirement
-                              .filter((req) => req.status === 'APPROVED')
-                              .map((req) => (
-                                <li
-                                  key={req.personRequirementId}
-                                  className='text-sm'
-                                >
-                                  <p className='font-semibold'>
-                                    {req.requirement.requirement}
-                                  </p>
-                                  <p className='text-xs text-gray-500'>
-                                    Aprobado por:{' '}
-                                    {req.approvedByUser?.person.firstName}{' '}
-                                    {req.approvedByUser?.person.lastName}
-                                  </p>
-                                </li>
-                              ))}
-                          </ul>
-                        </div>
-                      )}
-                    {person.personRequirement &&
-                      person.personRequirement.filter(
-                        (req) => req.status === 'PENDING'
-                      ).length > 0 && (
-                        <div className='mt-4 flex flex-col gap-2 rounded-lg border p-4'>
-                          <span className='w-full text-center text-sm font-bold'>
-                            Requisitos pendientes
-                          </span>
-                          <ul className='flex flex-col gap-3 pl-2'>
-                            {person.personRequirement
-                              .filter((req) => req.status === 'PENDING')
-                              .map((req) => (
-                                <li
-                                  key={req.personRequirementId}
-                                  className='text-sm'
-                                >
-                                  <p className='font-semibold'>
-                                    {req.requirement.requirement}
-                                  </p>
-                                  <p className='text-xs text-gray-500'>
-                                    Observación:
-                                    {req.observation || ' Ninguna'}
-                                  </p>
-                                </li>
-                              ))}
-                          </ul>
-                        </div>
-                      )}
+                    {approvedRequirements.length > 0 && (
+                      <div className='mt-4 flex flex-col gap-2 rounded-lg border border-green-200 bg-green-50/20 dark:border-green-900 p-4'>
+                        <span className='w-full text-center text-sm font-bold text-green-700 dark:text-green-400'>
+                          Requisitos aprobados ({approvedRequirements.length})
+                        </span>
+                        <ul className='flex flex-col gap-3 pl-2'>
+                          {approvedRequirements.map((req) => (
+                            <li
+                              key={req.requirementId}
+                              className='text-sm'
+                            >
+                              <p className='font-semibold'>
+                                {req.requirementName}
+                              </p>
+                              {req.approvedByUser && (
+                                <p className='text-xs text-muted-foreground'>
+                                  Aprobado por:{' '}
+                                  {req.approvedByUser.person?.firstName}{' '}
+                                  {req.approvedByUser.person?.lastName}
+                                </p>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {pendingRequirements.length > 0 && (
+                      <div className='mt-4 flex flex-col gap-2 rounded-lg border border-amber-200 bg-amber-50/20 dark:border-amber-900 p-4'>
+                        <span className='w-full text-center text-sm font-bold text-amber-700 dark:text-amber-400'>
+                          Requisitos pendientes ({pendingRequirements.length})
+                        </span>
+                        <ul className='flex flex-col gap-3 pl-2'>
+                          {pendingRequirements.map((req) => (
+                            <li
+                              key={req.requirementId}
+                              className='text-sm'
+                            >
+                              <p className='font-semibold'>
+                                {req.requirementName}
+                              </p>
+                              {req.observation && (
+                                <p className='text-xs text-muted-foreground'>
+                                  Observación: {req.observation}
+                                </p>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 )}
               <DialogFooter>

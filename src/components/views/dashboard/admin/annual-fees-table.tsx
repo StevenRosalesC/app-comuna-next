@@ -83,15 +83,15 @@ type FormValue = z.infer<typeof formSchema>;
 export default function AnnualFeesTable() {
   const queryClient = useQueryClient();
   const { permissions } = usePermissionsStore();
-  const canCreateAnnualFee = permissions?.[ValidModules.ADMIN]?.includes(
-    ValidActions.CREATE_ANNUAL_FEE
-  );
-  const canUpdateAnnualFee = permissions?.[ValidModules.ADMIN]?.includes(
-    ValidActions.UPDATE_ANNUAL_FEE
-  );
-  const canDeleteAnnualFee = permissions?.[ValidModules.ADMIN]?.includes(
-    ValidActions.DELETE_ANNUAL_FEE
-  );
+  const canCreateAnnualFee =
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.CREATE_ANNUAL_FEE) ||
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.CREATE);
+  const canUpdateAnnualFee =
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.UPDATE_ANNUAL_FEE) ||
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.UPDATE);
+  const canDeleteAnnualFee =
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.DELETE_ANNUAL_FEE) ||
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.DELETE);
 
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
@@ -138,7 +138,7 @@ export default function AnnualFeesTable() {
   const annualFees = useMemo(() => data?.data ?? [], [data]);
   const totalCount = useMemo(() => data?.count ?? 0, [data]);
   const pageCount = useMemo(
-    () => Math.ceil(totalCount / pageSize),
+    () => Math.max(Math.ceil(totalCount / pageSize), 1),
     [totalCount, pageSize]
   );
 
@@ -152,6 +152,7 @@ export default function AnnualFeesTable() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['annualFees'] });
+      queryClient.invalidateQueries({ queryKey: ['annual-fees-stats'] });
       toast.success(
         editFee
           ? 'Cuota actualizada correctamente'
@@ -172,6 +173,7 @@ export default function AnnualFeesTable() {
     mutationFn: deleteAnnualFee,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['annualFees'] });
+      queryClient.invalidateQueries({ queryKey: ['annual-fees-stats'] });
       toast.success('Cuota eliminada correctamente');
       setDeleteModalOpen(false);
       setDeleteFeeId(null);
@@ -235,7 +237,7 @@ export default function AnnualFeesTable() {
           </p>
         </div>
         <div className='flex items-center gap-2'>
-          {canCreateAnnualFee && canUpdateAnnualFee && (
+          {canCreateAnnualFee && (
             <Button onClick={() => openModal(null)}>
               <Plus className='mr-2 h-4 w-4' /> Nueva cuota
             </Button>

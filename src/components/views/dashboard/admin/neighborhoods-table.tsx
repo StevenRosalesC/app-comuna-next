@@ -57,15 +57,15 @@ type FormValue = z.infer<typeof formSchema>;
 export default function NeighborhoodsTable() {
   const queryClient = useQueryClient();
   const { permissions } = usePermissionsStore();
-  const canCreateNeighborhood = permissions?.[ValidModules.ADMIN]?.includes(
-    ValidActions.CREATE_NEIGHBORHOOD
-  );
-  const canUpdateNeighborhood = permissions?.[ValidModules.ADMIN]?.includes(
-    ValidActions.UPDATE_NEIGHBORHOOD
-  );
-  const canDeleteNeighborhood = permissions?.[ValidModules.ADMIN]?.includes(
-    ValidActions.DELETE_NEIGHBORHOOD
-  );
+  const canCreateNeighborhood =
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.CREATE_NEIGHBORHOOD) ||
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.CREATE);
+  const canUpdateNeighborhood =
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.UPDATE_NEIGHBORHOOD) ||
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.UPDATE);
+  const canDeleteNeighborhood =
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.DELETE_NEIGHBORHOOD) ||
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.DELETE);
 
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
@@ -101,7 +101,7 @@ export default function NeighborhoodsTable() {
   const neighborhoods = useMemo(() => data?.neighborhoods ?? [], [data]);
   const totalCount = useMemo(() => data?.count ?? 0, [data]);
   const pageCount = useMemo(
-    () => Math.ceil(totalCount / pageSize),
+    () => Math.max(Math.ceil(totalCount / pageSize), 1),
     [totalCount, pageSize]
   );
 
@@ -118,6 +118,7 @@ export default function NeighborhoodsTable() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['neighborhoods'] });
+      queryClient.invalidateQueries({ queryKey: ['neighborhoods-stats'] });
       toast.success(
         editNeighborhood
           ? 'Barrio actualizado correctamente'
@@ -141,6 +142,7 @@ export default function NeighborhoodsTable() {
     mutationFn: (id: string) => neighborhoodsService.deleteNeighborhood(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['neighborhoods'] });
+      queryClient.invalidateQueries({ queryKey: ['neighborhoods-stats'] });
       toast.success('Barrio eliminado correctamente');
       setDeleteModalOpen(false);
       setDeleteNeighborhood(null);

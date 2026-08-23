@@ -72,9 +72,15 @@ type FormValue = z.infer<typeof formSchema>;
 export default function DocumentTypesTable() {
   const { permissions } = usePermissionsStore();
   const queryClient = useQueryClient();
-  const canCreateDocumentType = permissions?.[
-    ValidModules.ADMIN
-  ]?.includes(ValidActions.CREATE_DOCUMENT_TYPE);
+  const canCreateDocumentType =
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.CREATE_DOCUMENT_TYPE) ||
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.CREATE);
+  const canUpdateDocumentType =
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.UPDATE_DOCUMENT_TYPE) ||
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.UPDATE);
+  const canDeleteDocumentType =
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.DELETE_DOCUMENT_TYPE) ||
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.DELETE);
 
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
@@ -89,7 +95,7 @@ export default function DocumentTypesTable() {
   const documentTypes = useMemo(() => data?.data ?? [], [data]);
   const totalCount = useMemo(() => data?.count ?? 0, [data]);
   const pageCount = useMemo(
-    () => Math.ceil(totalCount / pageSize),
+    () => Math.max(Math.ceil(totalCount / pageSize), 1),
     [totalCount, pageSize]
   );
 
@@ -124,6 +130,7 @@ export default function DocumentTypesTable() {
           : 'Tipo de documento añadido correctamente'
       );
       queryClient.invalidateQueries({ queryKey: ['documentTypes'] });
+      queryClient.invalidateQueries({ queryKey: ['doc-types-stats'] });
       setModalOpen(false);
       setEditDocType(null);
       form.reset();
@@ -163,7 +170,8 @@ export default function DocumentTypesTable() {
     try {
       await documentTypesService.remove(deleteDocType.documentTypeId);
       toast.success('Tipo de documento eliminado correctamente');
-      refetch();
+      queryClient.invalidateQueries({ queryKey: ['documentTypes'] });
+      queryClient.invalidateQueries({ queryKey: ['doc-types-stats'] });
       setDeleteModalOpen(false);
     } catch (error: any) {
       toast.error(error.message || 'Error al eliminar el tipo de documento');
@@ -240,39 +248,43 @@ export default function DocumentTypesTable() {
                   </TableCell>
                   <TableCell className='text-right'>
                     <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant='ghost'
-                            size='icon'
-                            onClick={() => openModal(docType)}
-                            title='Editar tipo de documento'
-                          >
-                            <Pencil className='h-4 w-4' />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Editar</p>
-                        </TooltipContent>
-                      </Tooltip>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant='ghost'
-                            size='icon'
-                            onClick={() => {
-                              setDeleteDocType(docType);
-                              setDeleteModalOpen(true);
-                            }}
-                            title='Eliminar tipo de documento'
-                          >
-                            <Trash2 className='h-4 w-4 text-destructive' />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Eliminar</p>
-                        </TooltipContent>
-                      </Tooltip>
+                      {canUpdateDocumentType && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant='ghost'
+                              size='icon'
+                              onClick={() => openModal(docType)}
+                              title='Editar tipo de documento'
+                            >
+                              <Pencil className='h-4 w-4' />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Editar</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
+                      {canDeleteDocumentType && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant='ghost'
+                              size='icon'
+                              onClick={() => {
+                                setDeleteDocType(docType);
+                                setDeleteModalOpen(true);
+                              }}
+                              title='Eliminar tipo de documento'
+                            >
+                              <Trash2 className='h-4 w-4 text-destructive' />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Eliminar</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
                     </TooltipProvider>
                   </TableCell>
                 </TableRow>

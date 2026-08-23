@@ -72,15 +72,20 @@ type FormValue = z.infer<typeof formSchema>;
 export default function RequirementsTable() {
   const { permissions } = usePermissionsStore();
   const queryClient = useQueryClient();
-  const canCreateRequirement = permissions?.[
-    ValidModules.ADMIN
-  ]?.includes(ValidActions.CREATE_REQUIREMENTS);
-  const canUpdateRequirement = permissions?.[
-    ValidModules.REQUIREMENTS
-  ]?.includes(ValidActions.UPDATE);
-  const canDeleteRequirement = permissions?.[
-    ValidModules.REQUIREMENTS
-  ]?.includes(ValidActions.DELETE);
+  const canCreateRequirement =
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.CREATE_REQUIREMENTS) ||
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.CREATE) ||
+    permissions?.[ValidModules.REQUIREMENTS]?.includes(ValidActions.CREATE);
+
+  const canUpdateRequirement =
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.UPDATE_REQUIREMENTS) ||
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.UPDATE) ||
+    permissions?.[ValidModules.REQUIREMENTS]?.includes(ValidActions.UPDATE);
+
+  const canDeleteRequirement =
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.DELETE_REQUIREMENTS) ||
+    permissions?.[ValidModules.ADMIN]?.includes(ValidActions.DELETE) ||
+    permissions?.[ValidModules.REQUIREMENTS]?.includes(ValidActions.DELETE);
 
   const [pageSize, setPageSize] = useState(5);
   const [pageIndex, setPageIndex] = useState(0);
@@ -92,7 +97,7 @@ export default function RequirementsTable() {
   const requirements = useMemo(() => data?.data ?? [], [data]);
   const totalCount = useMemo(() => data?.count ?? 0, [data]);
   const pageCount = useMemo(
-    () => Math.ceil(totalCount / pageSize),
+    () => Math.max(Math.ceil(totalCount / pageSize), 1),
     [totalCount, pageSize]
   );
 
@@ -122,6 +127,7 @@ export default function RequirementsTable() {
           : 'Requisito añadido correctamente'
       );
       queryClient.invalidateQueries({ queryKey: ['requirements'] });
+      queryClient.invalidateQueries({ queryKey: ['requirements-stats'] });
       setModalOpen(false);
       form.reset();
     },
@@ -157,12 +163,14 @@ export default function RequirementsTable() {
   // Delete requirement
   const handleDelete = async () => {
     if (!deleteReq) return;
-    toast.promise(requirementsService.remove(deleteReq.requirementId), {
-      loading: 'Eliminando requisito...',
-      success: 'Requisito eliminado correctamente',
-      error: 'Error al eliminar el requisito'
-    });
-    refetch();
+    try {
+      await requirementsService.remove(deleteReq.requirementId);
+      toast.success('Requisito eliminado correctamente');
+      queryClient.invalidateQueries({ queryKey: ['requirements'] });
+      queryClient.invalidateQueries({ queryKey: ['requirements-stats'] });
+    } catch {
+      toast.error('Error al eliminar el requisito');
+    }
     setDeleteModalOpen(false);
   };
 
@@ -178,7 +186,7 @@ export default function RequirementsTable() {
           </p>
         </div>
         <div className='flex items-center gap-2'>
-          {canCreateRequirement && canUpdateRequirement && (
+          {canCreateRequirement && (
             <Button onClick={() => openModal(null)}>
               <Plus className='mr-2 h-4 w-4' /> Nuevo requisito
             </Button>

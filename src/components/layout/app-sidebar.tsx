@@ -80,7 +80,7 @@ function SidebarMenuItemWithPermission({
     return actions.some((action) => userPermissions[module].includes(action));
   }
 
-  const canAccess = hasPermission(mod, ['read']);
+  const canAccess = hasPermission(mod, ['read', 'read_collection', 'read_fund']) || (userPermissions[mod] && userPermissions[mod].length > 0);
   if (!canAccess) return null;
   const Icon = item.icon ? (Icons as Record<string, any>)[item.icon] : Icons.logo;
   return item?.items && item?.items?.length > 0 ? (

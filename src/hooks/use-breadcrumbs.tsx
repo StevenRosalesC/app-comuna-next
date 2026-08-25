@@ -16,6 +16,8 @@ const segmentTranslations: Record<string, string> = {
   analytics: 'Analíticas',
   'annual-fee': 'Cuotas Anuales',
   'cash-management': 'Gestión de Caja',
+  collections: 'Colectas Solidarias',
+  funds: 'Fondos Comunitarios',
   history: 'Historial',
   members: 'Comuneros',
   persons: 'Personas',
@@ -100,6 +102,14 @@ const routeMapping: Record<string, BreadcrumbItem[]> = {
     { title: 'Panel', link: '/dashboard' },
     { title: 'Gestión de Caja', link: '/dashboard/cash-management' },
     { title: 'Historial de Cajas', link: '/dashboard/cash-management/history' }
+  ],
+  '/dashboard/collections': [
+    { title: 'Panel', link: '/dashboard' },
+    { title: 'Colectas Solidarias', link: '/dashboard/collections' }
+  ],
+  '/dashboard/funds': [
+    { title: 'Panel', link: '/dashboard' },
+    { title: 'Fondos Comunitarios', link: '/dashboard/funds' }
   ],
   '/dashboard/members': [
     { title: 'Panel', link: '/dashboard' },

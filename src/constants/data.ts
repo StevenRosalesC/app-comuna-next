@@ -37,6 +37,27 @@ export const navItems: NavItem[] = [
     shortcut: ['u', 'u']
   },
   {
+    title: 'Colectas',
+    url: '/dashboard/collections',
+    icon: 'collections',
+    isActive: false,
+    shortcut: ['c', 'o']
+  },
+  {
+    title: 'Fondos',
+    url: '/dashboard/funds',
+    icon: 'funds',
+    isActive: false,
+    shortcut: ['f', 'f']
+  },
+  {
+    title: 'Caja',
+    url: '/dashboard/cash-management',
+    icon: 'dollar',
+    isActive: false,
+    shortcut: ['c', 'c']
+  },
+  {
     title: 'Noticias',
     url: '/dashboard/notices',
     icon: 'bookOpenText',
@@ -63,13 +84,6 @@ export const navItems: NavItem[] = [
     icon: 'shieldQuestion',
     isActive: false,
     shortcut: ['r', 'r']
-  },
-  {
-    title: 'Caja',
-    url: '/dashboard/cash-management',
-    icon: 'dollar',
-    isActive: false,
-    shortcut: ['c', 'c']
   },
   {
     title: 'Lista de personas',

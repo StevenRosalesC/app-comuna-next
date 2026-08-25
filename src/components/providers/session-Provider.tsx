@@ -68,7 +68,13 @@ export const SessionProvider = ({
   const isPublicRoute = publicDashboardRoutes.includes(pathname);
 
   const mod = getModuleFromPath(pathname);
-  const hasPermission = usePermission(mod, ['read']);
+  const hasPermission = usePermission(mod, [
+    'read',
+    'read_collection',
+    'read_fund',
+    'view_summary',
+    'list_all'
+  ]);
 
   // Redirect to /unauthorized if the user does not have permission
   useEffect(() => {

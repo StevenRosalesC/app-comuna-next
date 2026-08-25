@@ -9,6 +9,8 @@ export const MODULES_TRANSLATIONS: Record<string, string> = {
   roles: 'Roles',
   requirements: 'Requisitos para ser comunero',
   'cash-management': 'Caja',
+  collections: 'Colectas Solidarias',
+  funds: 'Fondos Comunitarios',
   reports: 'Reportes',
   document_types: 'Tipos de documentos'
 };
@@ -61,5 +63,17 @@ export const ACTIONS_TRANSLATIONS: Record<string, string> = {
   create_neighborhood: 'Crear barrio',
   update_neighborhood: 'Actualizar barrio',
   delete_neighborhood: 'Eliminar barrio',
-  read_neighborhood: 'Ver barrio'
+  read_neighborhood: 'Ver barrio',
+  // Collections & Funds translations
+  create_collection: 'Crear colecta',
+  read_collection: 'Ver colectas',
+  update_collection: 'Actualizar colecta',
+  close_collection: 'Cerrar y liquidar colecta',
+  pay_contribution: 'Cobrar aporte',
+  announce_contribution: 'Anunciar por altavoz',
+  delete_collection: 'Eliminar colecta',
+  create_fund: 'Crear fondo',
+  read_fund: 'Ver fondos',
+  update_fund: 'Actualizar fondo',
+  create_fund_movement: 'Registrar movimiento en fondo'
 };

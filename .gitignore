@@ -130,3 +130,4 @@ dist
 .pnp.*
 
 src/components/ui.backup-*/
+.dev

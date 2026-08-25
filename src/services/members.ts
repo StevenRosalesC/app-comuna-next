@@ -45,10 +45,14 @@ export const getMembers = async (
   limit: number,
   offset: number,
   search: string = '',
-  sorting: SortingState
+  sorting: SortingState = [],
+  neighborhoodId?: string
 ): Promise<{ data: Member[]; count: number }> => {
   const params: any = { limit, offset, search };
-  if (sorting.length > 0) {
+  if (neighborhoodId && neighborhoodId !== 'ALL') {
+    params.neighborhoodId = neighborhoodId;
+  }
+  if (sorting && sorting.length > 0) {
     params.orderBy = sorting[0].id;
     params.order = sorting[0].desc ? 'desc' : 'asc';
   }

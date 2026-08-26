@@ -13,6 +13,32 @@ import {
 } from '@/interfaces/collections';
 import apiCommunity from '@/utils/communityApi';
 
+function normalizeCollection(c: any): Collection {
+  if (!c) return c;
+  const collectionId = c.collectionId || c.collection_id || c.id || '';
+  const status = c.collectionStatus || c.collection_status || c.status || 'ACTIVE';
+  const reasonType = c.reasonType || c.reason_type || 'OTHER';
+
+  return {
+    ...c,
+    collectionId: String(collectionId),
+    collectionStatus: status,
+    reasonType,
+    baseAmount: Number(c.baseAmount ?? c.base_amount ?? 5),
+    fundRetentionPercentage: Number(c.fundRetentionPercentage ?? c.fund_retention_percentage ?? 10),
+    summary: c.summary ? {
+      totalExpected: Number(c.summary.totalExpected ?? c.summary.total_expected ?? 0),
+      totalCollected: Number(c.summary.totalCollected ?? c.summary.total_collected ?? 0),
+      retainedForFund: Number(c.summary.retainedForFund ?? c.summary.retained_for_fund ?? 0),
+      netForBeneficiary: Number(c.summary.netForBeneficiary ?? c.summary.net_for_beneficiary ?? 0),
+      countTotal: Number(c.summary.countTotal ?? c.summary.count_total ?? 0),
+      countPending: Number(c.summary.countPending ?? c.summary.count_pending ?? 0),
+      countPaid: Number(c.summary.countPaid ?? c.summary.count_paid ?? 0),
+      countAnnounced: Number(c.summary.countAnnounced ?? c.summary.count_announced ?? 0)
+    } : undefined
+  };
+}
+
 class CollectionsService {
   /**
    * Get all collections with filters
@@ -37,11 +63,12 @@ class CollectionsService {
 
     // Support both direct array and { data: [], count: number } response structures
     if (Array.isArray(data)) {
-      return { data, count: data.length };
+      return { data: data.map(normalizeCollection), count: data.length };
     }
+    const rawList = data?.data || data?.collections || [];
     return {
-      data: data?.data || data?.collections || [],
-      count: data?.count ?? (data?.data || []).length
+      data: rawList.map(normalizeCollection),
+      count: data?.count ?? rawList.length
     };
   }
 
@@ -49,16 +76,16 @@ class CollectionsService {
    * Get a single collection by ID including its calculated financial summary
    */
   async getCollectionById(id: string): Promise<Collection> {
-    const { data } = await apiCommunity.get<Collection>(`/collections/${id}`);
-    return data;
+    const { data } = await apiCommunity.get<any>(`/collections/${id}`);
+    return normalizeCollection(data);
   }
 
   /**
    * Create a new collection
    */
   async createCollection(dto: CreateCollectionDto): Promise<Collection> {
-    const { data } = await apiCommunity.post<Collection>('/collections', dto);
-    return data;
+    const { data } = await apiCommunity.post<any>('/collections', dto);
+    return normalizeCollection(data);
   }
 
   /**
@@ -68,11 +95,11 @@ class CollectionsService {
     id: string,
     dto: UpdateCollectionDto
   ): Promise<Collection> {
-    const { data } = await apiCommunity.patch<Collection>(
+    const { data } = await apiCommunity.patch<any>(
       `/collections/${id}`,
       dto
     );
-    return data;
+    return normalizeCollection(data);
   }
 
   /**
@@ -179,11 +206,52 @@ class CollectionsService {
     collectionId: string,
     dto: CloseCollectionDto
   ): Promise<Collection> {
-    const { data } = await apiCommunity.patch<Collection>(
+    const { data } = await apiCommunity.patch<any>(
       `/collections/${collectionId}/close`,
       dto
     );
-    return data;
+    return normalizeCollection(data);
+  }
+
+  /**
+   * Download the official detailed PDF report for a specific collection
+   * Endpoints: GET /collections/:id/report/pdf or GET /reports/collections/:id
+   */
+  async downloadCollectionReportPdf(collectionId: string, title?: string): Promise<void> {
+    const response = await apiCommunity.get(`/collections/${collectionId}/report/pdf`, {
+      responseType: 'blob'
+    });
+
+    const blob = new Blob([response.data], { type: 'application/pdf' });
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    const cleanTitle = (title || collectionId).replace(/[^a-zA-Z0-9_-]/g, '_');
+    link.download = `Informe_Colecta_${cleanTitle}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(downloadUrl);
+  }
+
+  /**
+   * Download the general consolidated PDF report of all collections
+   * Endpoints: GET /collections/report/pdf or GET /reports/collections
+   */
+  async downloadCollectionsGeneralReportPdf(): Promise<void> {
+    const response = await apiCommunity.get('/collections/report/pdf', {
+      responseType: 'blob'
+    });
+
+    const blob = new Blob([response.data], { type: 'application/pdf' });
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = 'Informe_General_Colectas_Solidarias.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(downloadUrl);
   }
 }
 

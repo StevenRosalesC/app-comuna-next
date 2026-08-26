@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
   SelectContent,
@@ -18,28 +18,25 @@ import {
 } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from 'sonner';
 import {
-  HeartHandshake,
   Plus,
   Search,
   DollarSign,
   Heart,
   PiggyBank,
-  Users,
-  Calendar,
-  ArrowRight,
   Megaphone,
   CheckCircle2,
   Lock,
-  Clock,
-  Sparkles,
   UserCheck,
-  User
+  User,
+  FileText,
+  Loader2
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { collectionsService } from '@/services/collections';
 import { CreateCollectionDialog } from './create-collection-dialog';
-import { Collection, CollectionReasonType } from '@/interfaces/collections';
+import { CollectionReasonType } from '@/interfaces/collections';
 import { usePermissionsStore } from '@/store/permissionsStore';
 import { ValidModules, ValidActions } from '@/constants/permissions';
 
@@ -53,6 +50,8 @@ export function CollectionsView() {
   const [activeTab, setActiveTab] = useState<string>('ALL');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedReason, setSelectedReason] = useState<string>('ALL');
+  const [isExportingGeneralPdf, setIsExportingGeneralPdf] = useState(false);
+  const [exportingCardId, setExportingCardId] = useState<string | null>(null);
 
   // Fetch collections
   const {
@@ -65,6 +64,40 @@ export function CollectionsView() {
   });
 
   const collections = collectionsData?.data || [];
+
+  // General PDF Report Download
+  const handleExportGeneralPdf = async () => {
+    setIsExportingGeneralPdf(true);
+    try {
+      await collectionsService.downloadCollectionsGeneralReportPdf();
+      toast.success('¡Informe General Consolidado PDF descargado! 📄');
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          'Error al descargar el informe consolidado en PDF'
+      );
+    } finally {
+      setIsExportingGeneralPdf(false);
+    }
+  };
+
+  // Specific Collection PDF Report Download
+  const handleExportCardPdf = async (collectionId: string, title?: string) => {
+    setExportingCardId(collectionId);
+    try {
+      await collectionsService.downloadCollectionReportPdf(collectionId, title);
+      toast.success(`¡Informe PDF de "${title || 'Colecta'}" descargado! 📄`);
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          'Error al descargar el informe PDF de la colecta'
+      );
+    } finally {
+      setExportingCardId(null);
+    }
+  };
 
   // Filter collections
   const filteredCollections = useMemo(() => {
@@ -147,15 +180,31 @@ export function CollectionsView() {
             title='Colectas Solidarias'
             description='Módulo para gestión de colectas, mesa de recaudación en vivo, locución y liquidación hacia fondos comunales.'
           />
-          {canCreate && (
+          <div className='flex items-center gap-2.5 flex-wrap'>
             <Button
-              onClick={() => setCreateDialogOpen(true)}
-              className='shadow-sm'
+              variant='outline'
+              onClick={handleExportGeneralPdf}
+              disabled={isExportingGeneralPdf}
+              className='shadow-xs border-blue-500/30 text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 font-semibold text-xs sm:text-sm'
             >
-              <Plus className='mr-2 h-4 w-4' />
-              Nueva Colecta
+              {isExportingGeneralPdf ? (
+                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+              ) : (
+                <FileText className='mr-2 h-4 w-4' />
+              )}
+              Informe General PDF
             </Button>
-          )}
+
+            {canCreate && (
+              <Button
+                onClick={() => setCreateDialogOpen(true)}
+                className='shadow-sm text-xs sm:text-sm'
+              >
+                <Plus className='mr-2 h-4 w-4' />
+                Nueva Colecta
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Financial KPI Summary Cards */}
@@ -263,50 +312,56 @@ export function CollectionsView() {
               </TabsList>
             </Tabs>
 
-            {/* Filters */}
-            <div className='flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1 sm:justify-end'>
-              <div className='relative w-full sm:max-w-xs'>
-                <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground' />
+            {/* Filter controls */}
+            <div className='flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 flex-1 sm:justify-end'>
+              <div className='relative w-full sm:w-64'>
+                <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
                 <Input
-                  placeholder='Buscar por título o beneficiario...'
+                  placeholder='Buscar por título, beneficiario...'
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className='pl-8 h-9 text-xs'
+                  className='pl-9 h-9 text-xs rounded-xl'
                 />
               </div>
 
-              <div className='w-full sm:w-48'>
-                <Select value={selectedReason} onValueChange={setSelectedReason}>
-                  <SelectTrigger className='h-9 text-xs'>
-                    <SelectValue placeholder='Filtrar motivo' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='ALL'>Todos los motivos</SelectItem>
-                    <SelectItem value='HEALTH'>Salud / Enfermedad</SelectItem>
-                    <SelectItem value='DEATH'>Fallecimiento</SelectItem>
-                    <SelectItem value='OTHER'>Otros motivos</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <Select
+                value={selectedReason}
+                onValueChange={setSelectedReason}
+              >
+                <SelectTrigger className='w-full sm:w-48 h-9 text-xs rounded-xl'>
+                  <SelectValue placeholder='Motivo' />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='ALL'>Todos los motivos</SelectItem>
+                  <SelectItem value='HEALTH'>Salud / Enfermedad</SelectItem>
+                  <SelectItem value='DEATH'>Fallecimiento</SelectItem>
+                  <SelectItem value='OTHER'>Otros motivos</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>
 
-        {/* Grid of Collection Cards */}
+        {/* Collection Cards Grid */}
         {isLoading ? (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5'>
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Skeleton key={i} className='h-64 rounded-2xl' />
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className='p-5 space-y-4 rounded-2xl'>
+                <Skeleton className='h-6 w-3/4' />
+                <Skeleton className='h-4 w-1/2' />
+                <Skeleton className='h-20 w-full rounded-xl' />
+                <Skeleton className='h-9 w-full rounded-xl' />
+              </Card>
             ))}
           </div>
         ) : filteredCollections.length === 0 ? (
-          <div className='rounded-2xl border bg-card p-12 text-center text-muted-foreground space-y-3'>
-            <HeartHandshake className='mx-auto h-12 w-12 text-muted-foreground/40' />
+          <div className='rounded-2xl border bg-card p-12 text-center text-muted-foreground space-y-3 shadow-xs'>
+            <Megaphone className='mx-auto h-12 w-12 text-muted-foreground/30' />
             <h3 className='font-semibold text-foreground text-base'>
               No se encontraron colectas
             </h3>
             <p className='text-xs max-w-sm mx-auto'>
-              No hay colectas que coincidan con los filtros seleccionados o aún no se ha creado ninguna.
+              No hay registros que coincidan con los filtros de búsqueda seleccionados.
             </p>
             {canCreate && (
               <Button
@@ -327,26 +382,26 @@ export function CollectionsView() {
               const totalCollected = Number(c.summary?.totalCollected || 0);
               const totalExpected = Number(c.summary?.totalExpected || 1);
               const progressPercentage = Math.min(
-                Math.round((totalCollected / (totalExpected || 1)) * 100),
-                100
+                100,
+                Math.round((totalCollected / (totalExpected || 1)) * 100)
               );
+              const isExportingThis = exportingCardId === c.collectionId;
 
               return (
                 <Card
                   key={c.collectionId}
-                  className={`flex flex-col justify-between overflow-hidden rounded-2xl transition-all hover:border-primary/40 hover:shadow-md ${
-                    !isClosed ? 'border-primary/30 shadow-xs' : 'opacity-90'
+                  className={`rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col ${
+                    isClosed
+                      ? 'border-slate-300 dark:border-slate-800 bg-card/60'
+                      : 'border-emerald-500/30 bg-card'
                   }`}
                 >
-                  <CardHeader className='p-5 pb-3 space-y-3'>
-                    <div className='flex items-start justify-between gap-2'>
+                  <CardHeader className='p-5 pb-3 space-y-2.5'>
+                    <div className='flex items-center justify-between gap-2'>
                       {getReasonBadge(c.reasonType)}
                       {isClosed ? (
-                        <Badge
-                          variant='secondary'
-                          className='bg-muted text-muted-foreground text-[10px]'
-                        >
-                          <Lock className='mr-1 h-3 w-3' />
+                        <Badge variant='secondary' className='text-[10px] text-muted-foreground gap-1'>
+                          <Lock className='h-3 w-3' />
                           Cerrada
                         </Badge>
                       ) : (
@@ -421,10 +476,10 @@ export function CollectionsView() {
                     )}
                   </CardContent>
 
-                  <div className='p-4 pt-0 border-t bg-muted/10'>
+                  <div className='p-4 pt-0 border-t bg-muted/10 flex items-center gap-2'>
                     <Button
                       asChild
-                      className={`w-full text-xs font-semibold h-9 ${
+                      className={`flex-1 text-xs font-semibold h-9 ${
                         !isClosed
                           ? 'bg-primary hover:bg-primary/90 text-primary-foreground'
                           : 'variant-outline'
@@ -434,15 +489,30 @@ export function CollectionsView() {
                         {!isClosed ? (
                           <>
                             <Megaphone className='mr-1.5 h-3.5 w-3.5' />
-                            Abrir Panel de Recaudación 📢
+                            Abrir Mesa 📢
                           </>
                         ) : (
                           <>
                             <CheckCircle2 className='mr-1.5 h-3.5 w-3.5' />
-                            Ver Reporte y Balance 📊
+                            Ver Balance 📊
                           </>
                         )}
                       </Link>
+                    </Button>
+
+                    <Button
+                      variant='outline'
+                      size='icon'
+                      title='Descargar Informe PDF Oficial'
+                      onClick={() => handleExportCardPdf(c.collectionId, c.title)}
+                      disabled={isExportingThis}
+                      className='h-9 w-9 shrink-0 border-blue-500/30 text-blue-600 hover:bg-blue-500/10'
+                    >
+                      {isExportingThis ? (
+                        <Loader2 className='h-4 w-4 animate-spin' />
+                      ) : (
+                        <FileText className='h-4 w-4' />
+                      )}
                     </Button>
                   </div>
                 </Card>

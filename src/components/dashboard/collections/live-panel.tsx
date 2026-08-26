@@ -7,8 +7,7 @@ import PageContainer from '@/components/layout/page-container';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -37,7 +36,9 @@ import {
   Users,
   Star,
   Check,
-  Building2
+  Building2,
+  FileText,
+  Loader2
 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { collectionsService } from '@/services/collections';
@@ -175,6 +176,27 @@ export function LiveCollectionPanel({ collectionId: propCollectionId }: { collec
   const [externalDialogOpen, setExternalDialogOpen] = useState(false);
   const [closeDialogOpen, setCloseDialogOpen] = useState(false);
   const [announcingId, setAnnouncingId] = useState<string | null>(null);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
+
+  const handleExportPdf = async () => {
+    if (!collectionId) return;
+    setIsExportingPdf(true);
+    try {
+      await collectionsService.downloadCollectionReportPdf(
+        collectionId,
+        collection?.title || 'Colecta'
+      );
+      toast.success('¡Informe PDF descargado correctamente! 📄');
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          'Error al descargar el informe PDF de la colecta'
+      );
+    } finally {
+      setIsExportingPdf(false);
+    }
+  };
 
   // Debounce search
   useEffect(() => {
@@ -270,7 +292,11 @@ export function LiveCollectionPanel({ collectionId: propCollectionId }: { collec
     enabled: Boolean(collectionId)
   });
 
-  const isClosed = collection?.collectionStatus === 'CLOSED';
+  // Strict closed check supporting all backend properties
+  const isClosed =
+    collection?.collectionStatus === 'CLOSED' ||
+    (collection as any)?.status === 'CLOSED' ||
+    (collection as any)?.collection_status === 'CLOSED';
 
   // Announce mutation
   const announceMutation = useMutation({
@@ -362,6 +388,11 @@ export function LiveCollectionPanel({ collectionId: propCollectionId }: { collec
   }, [allKnownContributions]);
 
   const handlePayClick = (item: UnifiedComuneroItem) => {
+    if (isClosed) {
+      toast.error('Esta colecta ya se encuentra cerrada y liquidada. No se admiten nuevos pagos.');
+      return;
+    }
+
     // 1. Direct rawContribution
     if (item.rawContribution?.contributionId) {
       setSelectedContribution(item.rawContribution);
@@ -414,7 +445,7 @@ export function LiveCollectionPanel({ collectionId: propCollectionId }: { collec
       }
     }
 
-    // 6. Guaranteed Fallback - always open the payment dialog with the comunero data
+    // 6. Guaranteed Fallback
     const synth: Contribution = {
       contributionId: item.contributionId || `temp-${item.memberId || Date.now()}`,
       collectionId: collectionId,
@@ -443,7 +474,7 @@ export function LiveCollectionPanel({ collectionId: propCollectionId }: { collec
     announceMutation.mutate(contributionId);
   };
 
-  // Build unified items from members filtered by neighborhood + real contribution UUIDs
+  // Build unified items from members
   const unifiedComuneros = useMemo<UnifiedComuneroItem[]>(() => {
     const rawMembers = membersData?.data || [];
     const baseAmount = Number(collection?.baseAmount || 5.0);
@@ -514,7 +545,6 @@ export function LiveCollectionPanel({ collectionId: propCollectionId }: { collec
         ? 'EXONERATED'
         : existing?.contributionStatus || 'PENDING';
 
-      // Real contribution UUID
       const realContributionId = existing?.contributionId || '';
 
       return {
@@ -581,19 +611,19 @@ export function LiveCollectionPanel({ collectionId: propCollectionId }: { collec
     switch (reason) {
       case 'HEALTH':
         return (
-          <Badge className='bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30 text-xs'>
+          <Badge className='bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30 text-[10px] sm:text-xs shrink-0'>
             Salud / Enfermedad
           </Badge>
         );
       case 'DEATH':
         return (
-          <Badge className='bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30 text-xs'>
+          <Badge className='bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30 text-[10px] sm:text-xs shrink-0'>
             Fallecimiento
           </Badge>
         );
       default:
         return (
-          <Badge variant='outline' className='text-xs'>
+          <Badge variant='outline' className='text-[10px] sm:text-xs shrink-0'>
             Solidario
           </Badge>
         );
@@ -619,193 +649,212 @@ export function LiveCollectionPanel({ collectionId: propCollectionId }: { collec
 
   return (
     <PageContainer scrollable>
-      <div className='space-y-6 pb-12'>
-        {/* Top Back Nav & Quick Header */}
-        <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
-          <div className='flex items-center gap-3'>
-            <Button variant='outline' size='icon' asChild className='h-9 w-9'>
+      <div className='space-y-4 sm:space-y-6 pb-12 w-full max-w-full min-w-0'>
+        {/* Top Header Card */}
+        <div className='rounded-2xl border bg-card p-3.5 sm:p-5 shadow-xs space-y-3.5 w-full min-w-0'>
+          <div className='flex items-start sm:items-center gap-3 min-w-0'>
+            <Button variant='outline' size='icon' asChild className='h-9 w-9 shrink-0 mt-0.5 sm:mt-0'>
               <Link href='/dashboard/collections'>
                 <ArrowLeft className='h-4 w-4' />
               </Link>
             </Button>
-            <div>
+            <div className='min-w-0 flex-1 space-y-1'>
               <div className='flex items-center gap-2 flex-wrap'>
-                <h1 className='text-2xl font-bold tracking-tight text-foreground'>
-                  {collection?.title || 'Panel de Recaudación en Vivo'}
+                <h1 className='text-lg sm:text-2xl font-bold tracking-tight text-foreground break-words'>
+                  {collection?.title || 'Panel de Recaudación'}
                 </h1>
                 {getReasonBadge(collection?.reasonType)}
                 {isClosed ? (
-                  <Badge variant='secondary' className='bg-slate-500/10 text-slate-600 dark:text-slate-400'>
-                    Cerrada & Liquidada
+                  <Badge variant='secondary' className='bg-slate-500/15 text-slate-700 dark:text-slate-300 text-xs shrink-0 font-bold border border-slate-500/30 gap-1'>
+                    <Lock className='h-3 w-3' /> Cerrada & Liquidada
                   </Badge>
                 ) : (
-                  <Badge className='bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 animate-pulse'>
+                  <Badge className='bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 animate-pulse text-xs shrink-0'>
                     En Vivo 📢
                   </Badge>
                 )}
               </div>
-              <p className='text-xs text-muted-foreground mt-0.5'>
-                Beneficiario:{' '}
-                <span className='font-medium text-foreground'>
-                  {collection?.beneficiaryName}
-                </span>{' '}
-                {collection?.beneficiaryRelation && `(${collection.beneficiaryRelation})`}
-                {' • '}
-                Cuota Base: ${Number(collection?.baseAmount || 5).toFixed(2)}
-                {' • '}
-                Retención Fondo: {collection?.fundRetentionPercentage || 10}%
+              <p className='text-xs text-muted-foreground flex flex-wrap items-center gap-x-2 gap-y-1'>
+                <span>
+                  Beneficiario:{' '}
+                  <span className='font-semibold text-foreground'>
+                    {collection?.beneficiaryName}
+                  </span>{' '}
+                  {collection?.beneficiaryRelation && `(${collection.beneficiaryRelation})`}
+                </span>
+                <span>•</span>
+                <span>Cuota: <strong>${Number(collection?.baseAmount || 5).toFixed(2)}</strong></span>
+                <span>•</span>
+                <span>Retención: <strong>{collection?.fundRetentionPercentage || 10}%</strong></span>
               </p>
             </div>
           </div>
 
-          <div className='flex items-center gap-2 flex-wrap'>
-            <Button
-              variant='outline'
-              size='sm'
-              onClick={handleRefreshAll}
-              disabled={isFetchingNeighborhoodContribs || isFetchingMembers}
-              className='h-9'
-            >
-              <RefreshCw className={`mr-1.5 h-3.5 w-3.5 ${isFetchingNeighborhoodContribs || isFetchingMembers ? 'animate-spin' : ''}`} />
-              Actualizar
-            </Button>
-
-            {!isClosed && canPay && (
+          {/* Action Buttons Toolbar */}
+          <div className='flex items-center justify-between gap-2 pt-2 border-t w-full flex-wrap sm:flex-nowrap'>
+            <div className='flex items-center gap-2 flex-wrap w-full sm:w-auto'>
               <Button
                 variant='outline'
                 size='sm'
-                onClick={() => setExternalDialogOpen(true)}
-                className='h-9 border-purple-500/30 text-purple-600 dark:text-purple-400 hover:bg-purple-500/10 font-semibold'
+                onClick={handleRefreshAll}
+                disabled={isFetchingNeighborhoodContribs || isFetchingMembers}
+                className='h-9 text-xs flex-1 sm:flex-none'
               >
-                <UserPlus className='mr-1.5 h-3.5 w-3.5' />
-                + Aporte Externo
+                <RefreshCw className={`mr-1.5 h-3.5 w-3.5 ${isFetchingNeighborhoodContribs || isFetchingMembers ? 'animate-spin' : ''}`} />
+                Actualizar
               </Button>
-            )}
 
-            {!isClosed && canClose && (
               <Button
+                variant='outline'
                 size='sm'
-                onClick={() => setCloseDialogOpen(true)}
-                className='h-9 bg-amber-600 hover:bg-amber-700 text-white'
+                onClick={handleExportPdf}
+                disabled={isExportingPdf}
+                className='h-9 text-xs flex-1 sm:flex-none border-blue-500/30 text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 font-semibold'
               >
-                <Lock className='mr-1.5 h-3.5 w-3.5' />
-                Cerrar y Liquidar
+                {isExportingPdf ? (
+                  <Loader2 className='mr-1.5 h-3.5 w-3.5 animate-spin' />
+                ) : (
+                  <FileText className='mr-1.5 h-3.5 w-3.5' />
+                )}
+                Descargar Acta PDF
               </Button>
+
+              {!isClosed && canPay && (
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={() => setExternalDialogOpen(true)}
+                  className='h-9 text-xs flex-1 sm:flex-none border-purple-500/30 text-purple-600 dark:text-purple-400 hover:bg-purple-500/10 font-semibold'
+                >
+                  <UserPlus className='mr-1.5 h-3.5 w-3.5' />
+                  + Aporte Ext.
+                </Button>
+              )}
+
+              {!isClosed && canClose && (
+                <Button
+                  size='sm'
+                  onClick={() => setCloseDialogOpen(true)}
+                  className='h-9 text-xs w-full sm:w-auto bg-amber-600 hover:bg-amber-700 text-white font-medium'
+                >
+                  <Lock className='mr-1.5 h-3.5 w-3.5' />
+                  Cerrar y Liquidar
+                </Button>
+              )}
+            </div>
+
+            {isClosed && (
+              <div className='flex items-center gap-1.5 text-xs text-amber-800 dark:text-amber-300 bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 rounded-xl font-medium'>
+                <Lock className='h-3.5 w-3.5 text-amber-600 shrink-0' />
+                <span>Colecta cerrada • No se aceptan nuevos cobros</span>
+              </div>
             )}
           </div>
         </div>
 
-        {/* 4 Financial KPI Summary Cards ("esto deja igual") */}
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
+        {/* 4 Financial KPI Summary Cards (2x2 on mobile, 4 in a row on desktop) */}
+        <div className='grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 w-full min-w-0'>
           {/* Card 1: Total Recaudado */}
-          <Card className='border-emerald-500/30 bg-emerald-500/5 shadow-xs'>
-            <CardHeader className='flex flex-row items-center justify-between pb-2'>
-              <CardTitle className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
-                Total Recaudado
-              </CardTitle>
-              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'>
-                <DollarSign className='h-4 w-4' />
+          <Card className='border-emerald-500/30 bg-emerald-500/5 shadow-xs p-3 sm:p-4 min-w-0 overflow-hidden'>
+            <div className='flex items-center justify-between gap-1'>
+              <span className='text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground truncate'>
+                Recaudado
+              </span>
+              <div className='flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 shrink-0'>
+                <DollarSign className='h-3.5 w-3.5 sm:h-4 sm:w-4' />
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className='text-2xl font-black text-emerald-600 dark:text-emerald-400'>
-                ${Number(summary.totalCollected || 0).toFixed(2)}
-              </div>
-              <p className='text-[11px] text-muted-foreground mt-1'>
-                Estimado meta: ${Number(summary.totalExpected || 0).toFixed(2)}
-              </p>
-            </CardContent>
+            </div>
+            <div className='mt-1.5 text-base sm:text-2xl lg:text-3xl font-black text-emerald-600 dark:text-emerald-400 truncate'>
+              ${Number(summary.totalCollected || 0).toFixed(2)}
+            </div>
+            <p className='text-[10px] sm:text-[11px] text-muted-foreground mt-0.5 truncate'>
+              Meta: ${Number(summary.totalExpected || 0).toFixed(2)}
+            </p>
           </Card>
 
           {/* Card 2: Para la Familia */}
-          <Card className='border-rose-500/30 bg-rose-500/5 shadow-xs'>
-            <CardHeader className='flex flex-row items-center justify-between pb-2'>
-              <CardTitle className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
-                Para la Familia (Neto)
-              </CardTitle>
-              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-rose-500/20 text-rose-600 dark:text-rose-400'>
-                <Heart className='h-4 w-4' />
+          <Card className='border-rose-500/30 bg-rose-500/5 shadow-xs p-3 sm:p-4 min-w-0 overflow-hidden'>
+            <div className='flex items-center justify-between gap-1'>
+              <span className='text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground truncate'>
+                Para Familia
+              </span>
+              <div className='flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-rose-500/20 text-rose-600 dark:text-rose-400 shrink-0'>
+                <Heart className='h-3.5 w-3.5 sm:h-4 sm:w-4' />
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className='text-2xl font-black text-rose-600 dark:text-rose-400'>
-                ${Number(summary.netForBeneficiary || 0).toFixed(2)}
-              </div>
-              <p className='text-[11px] text-muted-foreground mt-1'>
-                {100 - (collection?.fundRetentionPercentage || 10)}% de entrega directa
-              </p>
-            </CardContent>
+            </div>
+            <div className='mt-1.5 text-base sm:text-2xl lg:text-3xl font-black text-rose-600 dark:text-rose-400 truncate'>
+              ${Number(summary.netForBeneficiary || 0).toFixed(2)}
+            </div>
+            <p className='text-[10px] sm:text-[11px] text-muted-foreground mt-0.5 truncate'>
+              {100 - (collection?.fundRetentionPercentage || 10)}% neto directo
+            </p>
           </Card>
 
           {/* Card 3: Para Fondo Común */}
-          <Card className='border-blue-500/30 bg-blue-500/5 shadow-xs'>
-            <CardHeader className='flex flex-row items-center justify-between pb-2'>
-              <CardTitle className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
-                Fondo Comunitario
-              </CardTitle>
-              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/20 text-blue-600 dark:text-blue-400'>
-                <PiggyBank className='h-4 w-4' />
+          <Card className='border-blue-500/30 bg-blue-500/5 shadow-xs p-3 sm:p-4 min-w-0 overflow-hidden'>
+            <div className='flex items-center justify-between gap-1'>
+              <span className='text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground truncate'>
+                Fondo Comunal
+              </span>
+              <div className='flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-blue-500/20 text-blue-600 dark:text-blue-400 shrink-0'>
+                <PiggyBank className='h-3.5 w-3.5 sm:h-4 sm:w-4' />
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className='text-2xl font-black text-blue-600 dark:text-blue-400'>
-                ${Number(summary.retainedForFund || 0).toFixed(2)}
-              </div>
-              <p className='text-[11px] text-muted-foreground mt-1'>
-                Retención comunal ({collection?.fundRetentionPercentage || 10}%)
-              </p>
-            </CardContent>
+            </div>
+            <div className='mt-1.5 text-base sm:text-2xl lg:text-3xl font-black text-blue-600 dark:text-blue-400 truncate'>
+              ${Number(summary.retainedForFund || 0).toFixed(2)}
+            </div>
+            <p className='text-[10px] sm:text-[11px] text-muted-foreground mt-0.5 truncate'>
+              {collection?.fundRetentionPercentage || 10}% retención
+            </p>
           </Card>
 
           {/* Card 4: Avance General */}
-          <Card className='shadow-xs'>
-            <CardHeader className='flex flex-row items-center justify-between pb-2'>
-              <CardTitle className='text-xs font-semibold uppercase tracking-wider text-muted-foreground'>
+          <Card className='shadow-xs p-3 sm:p-4 min-w-0 overflow-hidden'>
+            <div className='flex items-center justify-between gap-1'>
+              <span className='text-[10px] sm:text-xs font-bold uppercase tracking-wider text-muted-foreground truncate'>
                 Avance General
-              </CardTitle>
-              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-                <Users className='h-4 w-4' />
+              </span>
+              <div className='flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0'>
+                <Users className='h-3.5 w-3.5 sm:h-4 sm:w-4' />
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className='flex items-center gap-2 text-sm font-semibold'>
-                <span className='text-emerald-600'>{Number(summary.countPaid || 0) + Number(summary.countAnnounced || 0)} Pagados</span>
-                <span>•</span>
-                <span className='text-amber-600'>{Number(summary.countPending || 0)} Pendientes</span>
-              </div>
-              <p className='text-[11px] text-muted-foreground mt-1'>
-                Total comuneros: {summary.countTotal || 0}
-              </p>
-            </CardContent>
+            </div>
+            <div className='mt-1.5 flex items-center gap-1 text-xs sm:text-sm font-bold truncate'>
+              <span className='text-emerald-600'>{Number(summary.countPaid || 0) + Number(summary.countAnnounced || 0)} Pag.</span>
+              <span>•</span>
+              <span className='text-amber-600'>{Number(summary.countPending || 0)} Pend.</span>
+            </div>
+            <p className='text-[10px] sm:text-[11px] text-muted-foreground mt-0.5 truncate'>
+              Total: {summary.countTotal || 0} socios
+            </p>
           </Card>
         </div>
 
-        {/* Search & Barrio Selector Bar ("buscar" + "barrio1") */}
-        <div className='rounded-2xl border bg-card p-4 space-y-3.5 shadow-xs'>
+        {/* Search & Barrio Selector Bar */}
+        <div className='rounded-2xl border bg-card p-3.5 sm:p-4 space-y-3 shadow-xs w-full min-w-0 overflow-hidden'>
           {/* Main search and dropdown row */}
-          <div className='flex flex-col sm:flex-row items-stretch sm:items-center gap-3'>
-            {/* Live Search Input ("buscar") */}
-            <div className='relative flex-1'>
+          <div className='flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full min-w-0'>
+            {/* Live Search Input */}
+            <div className='relative flex-1 min-w-0'>
               <Search className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
               <Input
-                placeholder={`Buscar comunero en ${activeNeighborhoodName} por nombre, cédula o casa...`}
+                placeholder={`Buscar en ${activeNeighborhoodName}...`}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className='pl-9 h-10 text-sm font-medium'
+                className='pl-9 h-10 text-xs sm:text-sm font-medium rounded-xl w-full'
               />
             </div>
 
-            {/* Neighborhood Filter Dropdown ("barrio1") */}
-            <div className='w-full sm:w-64'>
+            {/* Neighborhood Filter Dropdown */}
+            <div className='w-full sm:w-60 shrink-0'>
               <Select
                 value={activeNeighborhoodId}
                 onValueChange={setSelectedNeighborhoodId}
               >
-                <SelectTrigger className='h-10 text-xs font-semibold'>
-                  <Building2 className='h-3.5 w-3.5 mr-2 text-primary' />
+                <SelectTrigger className='h-10 text-xs font-semibold rounded-xl w-full'>
+                  <Building2 className='h-3.5 w-3.5 mr-2 text-primary shrink-0' />
                   <SelectValue placeholder='Seleccionar Barrio' />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className='rounded-xl'>
                   {neighborhoodsList.map((n) => (
                     <SelectItem key={n.neighborhoodId} value={n.neighborhoodId}>
                       {n.neighborhoodName}
@@ -816,120 +865,83 @@ export function LiveCollectionPanel({ collectionId: propCollectionId }: { collec
             </div>
           </div>
 
-          {/* Quick Barrio Chips Filter */}
-          {neighborhoodsList.length > 1 && (
-            <div className='flex items-center gap-1.5 overflow-x-auto pb-1 text-xs'>
-              <span className='text-muted-foreground font-semibold shrink-0 mr-1 flex items-center gap-1'>
-                <MapPin className='h-3 w-3 text-primary' /> Barrio:
-              </span>
-              {neighborhoodsList.map((n) => {
-                const isSelected = activeNeighborhoodId === n.neighborhoodId;
-                return (
-                  <Button
-                    key={n.neighborhoodId}
-                    variant={isSelected ? 'default' : 'outline'}
-                    size='sm'
-                    onClick={() => setSelectedNeighborhoodId(n.neighborhoodId)}
-                    className={`h-7 text-xs px-3 rounded-full shrink-0 ${
-                      isSelected
-                        ? 'bg-primary text-primary-foreground font-bold shadow-xs'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    {n.neighborhoodName}
-                  </Button>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Status Segmented Tabs */}
-          <Tabs
-            value={statusFilter}
-            onValueChange={setStatusFilter}
-            className='w-full pt-1 border-t'
-          >
-            <TabsList className='grid grid-cols-2 sm:grid-cols-5 w-full h-auto p-1 gap-1'>
-              <TabsTrigger value='ALL' className='text-xs py-2'>
-                Todos ({counts.total})
-              </TabsTrigger>
-              <TabsTrigger
-                value='PENDING'
-                className='text-xs py-2 data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-700 dark:data-[state=active]:text-amber-300'
-              >
-                Pendientes ({counts.pending})
-              </TabsTrigger>
-              <TabsTrigger
-                value='PAID'
-                className='text-xs py-2 data-[state=active]:bg-emerald-500/20 data-[state=active]:text-emerald-700 dark:data-[state=active]:text-emerald-300'
-              >
-                Por Anunciar ({counts.paid})
-              </TabsTrigger>
-              <TabsTrigger
-                value='ANNOUNCED'
-                className='text-xs py-2 data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-700 dark:data-[state=active]:text-blue-300'
-              >
-                Anunciados ({counts.announced})
-              </TabsTrigger>
-              <TabsTrigger
-                value='EXTERNAL'
-                className='text-xs py-2 data-[state=active]:bg-purple-500/20 data-[state=active]:text-purple-700 dark:data-[state=active]:text-purple-300'
-              >
-                Donantes Ext. ({counts.external})
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+          {/* Status Filter Chips */}
+          <div className='flex flex-wrap items-center gap-1.5 pt-1 border-t w-full min-w-0'>
+            {[
+              { id: 'ALL', label: `Todos (${counts.total})` },
+              { id: 'PENDING', label: `Pendientes (${counts.pending})`, color: 'text-amber-700 dark:text-amber-300' },
+              { id: 'PAID', label: `Por Anunciar (${counts.paid})`, color: 'text-emerald-700 dark:text-emerald-300' },
+              { id: 'ANNOUNCED', label: `Anunciados (${counts.announced})`, color: 'text-blue-700 dark:text-blue-300' },
+              { id: 'EXTERNAL', label: `Donantes Ext. (${counts.external})`, color: 'text-purple-700 dark:text-purple-300' },
+            ].map((tab) => {
+              const isSelected = statusFilter === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type='button'
+                  onClick={() => setStatusFilter(tab.id)}
+                  className={`text-xs px-2.5 py-1 rounded-lg font-medium transition-all ${
+                    isSelected
+                      ? 'bg-primary text-primary-foreground font-bold shadow-xs'
+                      : 'bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Lista de Comuneros del Barrio Seleccionado */}
+        {/* Members List */}
         {isLoading ? (
-          <div className='space-y-4'>
+          <div className='space-y-3 w-full min-w-0'>
             <div className='rounded-2xl border bg-card p-5 space-y-3'>
               <Skeleton className='h-6 w-48' />
-              <Skeleton className='h-16 w-full' />
-              <Skeleton className='h-16 w-full' />
+              <Skeleton className='h-16 w-full rounded-xl' />
+              <Skeleton className='h-16 w-full rounded-xl' />
             </div>
           </div>
         ) : filteredComuneros.length === 0 ? (
-          <div className='rounded-2xl border bg-card p-12 text-center text-muted-foreground space-y-2 shadow-xs'>
-            <Users className='mx-auto h-12 w-12 text-muted-foreground/40' />
-            <h3 className='font-semibold text-foreground text-base'>
+          <div className='rounded-2xl border bg-card p-8 sm:p-12 text-center text-muted-foreground space-y-2 shadow-xs w-full min-w-0'>
+            <Users className='mx-auto h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground/40' />
+            <h3 className='font-semibold text-foreground text-sm sm:text-base'>
               No se encontraron comuneros en {activeNeighborhoodName}
             </h3>
             <p className='text-xs max-w-sm mx-auto'>
-              No hay comuneros que coincidan con la búsqueda o el estado seleccionado en {activeNeighborhoodName}.
+              No hay comuneros que coincidan con la búsqueda o el estado seleccionado.
             </p>
           </div>
         ) : (
-          <div className='rounded-2xl border bg-card overflow-hidden shadow-xs'>
+          <div className='rounded-2xl border bg-card overflow-hidden shadow-xs w-full min-w-0'>
             {/* Barrio Header Bar */}
-            <div className='p-4 bg-muted/20 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2'>
-              <div className='flex items-center gap-2.5'>
-                <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary font-bold text-xs'>
+            <div className='p-3.5 sm:p-4 bg-muted/20 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2 w-full'>
+              <div className='flex items-center gap-2.5 min-w-0'>
+                <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary font-bold text-xs shrink-0'>
                   <Building2 className='h-4 w-4' />
                 </div>
-                <div>
-                  <h3 className='font-bold text-sm text-foreground flex items-center gap-2'>
-                    {statusFilter === 'EXTERNAL' ? 'Donantes Externos Voluntarios' : activeNeighborhoodName}
-                    <Badge variant='outline' className='text-xs font-semibold'>
-                      {filteredComuneros.length} comunero{filteredComuneros.length !== 1 ? 's' : ''}
+                <div className='min-w-0'>
+                  <h3 className='font-bold text-xs sm:text-sm text-foreground flex items-center gap-2 truncate'>
+                    <span>{statusFilter === 'EXTERNAL' ? 'Donantes Externos Voluntarios' : activeNeighborhoodName}</span>
+                    <Badge variant='outline' className='text-[11px] font-semibold shrink-0'>
+                      {filteredComuneros.length} socio{filteredComuneros.length !== 1 ? 's' : ''}
                     </Badge>
                   </h3>
                 </div>
               </div>
 
-              <div className='flex items-center gap-2 text-xs font-medium'>
-                <Badge className='bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20 text-[11px]'>
+              <div className='flex items-center gap-2 text-xs font-medium shrink-0'>
+                <Badge className='bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20 text-[10px] sm:text-[11px]'>
                   {filteredComuneros.filter((i) => i.contributionStatus === 'PAID' || i.contributionStatus === 'ANNOUNCED').length} Pagados
                 </Badge>
-                <Badge variant='secondary' className='bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20 text-[11px]'>
+                <Badge variant='secondary' className='bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/20 text-[10px] sm:text-[11px]'>
                   {filteredComuneros.filter((i) => i.contributionStatus === 'PENDING').length} Pendientes
                 </Badge>
               </div>
             </div>
 
-            {/* List of Comuneros in this Barrio */}
-            <div className='divide-y'>
+            {/* List of Comuneros with Mobile Card and Desktop Row Layout */}
+            <div className='divide-y w-full min-w-0'>
               {filteredComuneros.map((item) => {
                 const isPending = item.contributionStatus === 'PENDING';
                 const isPaid = item.contributionStatus === 'PAID';
@@ -940,7 +952,7 @@ export function LiveCollectionPanel({ collectionId: propCollectionId }: { collec
                 return (
                   <div
                     key={item.key}
-                    className={`p-4 transition-colors flex flex-col md:flex-row items-start md:items-center justify-between gap-4 ${
+                    className={`p-3.5 sm:p-4 transition-colors w-full min-w-0 space-y-2.5 md:space-y-0 md:flex md:items-center md:justify-between md:gap-4 ${
                       isPending
                         ? 'hover:bg-amber-500/5 bg-background'
                         : isPaid
@@ -951,9 +963,9 @@ export function LiveCollectionPanel({ collectionId: propCollectionId }: { collec
                     }`}
                   >
                     {/* Comunero Identity & Details */}
-                    <div className='flex items-start gap-3.5 flex-1 min-w-0'>
+                    <div className='flex items-start gap-3 min-w-0 flex-1'>
                       <div
-                        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl font-bold text-sm shadow-xs ${
+                        className={`flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl font-bold text-xs sm:text-sm shadow-xs ${
                           item.isExternal
                             ? 'bg-purple-500/10 text-purple-600 border border-purple-500/20'
                             : isExonerated
@@ -964,31 +976,31 @@ export function LiveCollectionPanel({ collectionId: propCollectionId }: { collec
                         }`}
                       >
                         {item.isExternal ? (
-                          <User className='h-5 w-5' />
+                          <User className='h-4 w-4 sm:h-5 sm:w-5' />
                         ) : isExonerated ? (
-                          <Star className='h-5 w-5 fill-amber-500 text-amber-500' />
+                          <Star className='h-4 w-4 sm:h-5 sm:w-5 fill-amber-500 text-amber-500' />
                         ) : (
                           `${item.person?.firstName?.[0] || ''}${item.person?.lastName?.[0] || ''}`.toUpperCase() || 'C'
                         )}
                       </div>
 
                       <div className='space-y-1 min-w-0 flex-1'>
-                        <div className='flex items-center gap-2 flex-wrap'>
-                          <span className='font-bold text-sm text-foreground'>
+                        <div className='flex items-center gap-1.5 flex-wrap'>
+                          <span className='font-bold text-xs sm:text-sm text-foreground break-words'>
                             {item.fullName}
                           </span>
 
                           {item.isBeneficiary && (
-                            <Badge className='bg-amber-500 text-white font-bold text-[10px] gap-1'>
-                              <Star className='h-3 w-3 fill-white' />
-                              Beneficiario (Exonerado)
+                            <Badge className='bg-amber-500 text-white font-bold text-[10px] gap-1 px-1.5 py-0'>
+                              <Star className='h-2.5 w-2.5 fill-white' />
+                              Beneficiario
                             </Badge>
                           )}
 
                           {item.isSenior && (
                             <Badge
                               variant='secondary'
-                              className='bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30 text-[10px] font-semibold'
+                              className='bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30 text-[10px] font-semibold px-1.5 py-0'
                             >
                               3ra Edad - 50%
                             </Badge>
@@ -997,7 +1009,7 @@ export function LiveCollectionPanel({ collectionId: propCollectionId }: { collec
                           {item.isDisability && (
                             <Badge
                               variant='secondary'
-                              className='bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30 text-[10px] font-semibold'
+                              className='bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30 text-[10px] font-semibold px-1.5 py-0'
                             >
                               Discapacidad - 50%
                             </Badge>
@@ -1008,139 +1020,149 @@ export function LiveCollectionPanel({ collectionId: propCollectionId }: { collec
                               variant='outline'
                               className='bg-purple-500/10 text-purple-700 border-purple-500/30 text-[10px]'
                             >
-                              Donante Externo
+                              Donante Ext.
                             </Badge>
                           )}
                         </div>
 
-                        <div className='flex items-center gap-3 text-xs text-muted-foreground flex-wrap'>
+                        <div className='flex items-center gap-x-2 gap-y-0.5 text-[11px] sm:text-xs text-muted-foreground flex-wrap'>
                           {!item.isExternal && (
                             <>
                               <span className='font-mono'>CI: {item.identification}</span>
                               <span>•</span>
-                              <span className='flex items-center gap-1 font-medium text-foreground'>
-                                <Home className='h-3.5 w-3.5 text-muted-foreground' /> Casa #{item.houseNumber}
-                              </span>
+                              <span>Casa #{item.houseNumber}</span>
                               <span>•</span>
                             </>
                           )}
                           <span className='flex items-center gap-1'>
-                            <MapPin className='h-3 w-3 text-primary' /> {item.neighborhoodName}
+                            <MapPin className='h-3 w-3 text-primary shrink-0' /> {item.neighborhoodName}
                           </span>
                         </div>
 
                         {item.notes && (
-                          <p className='text-[11px] text-muted-foreground italic truncate'>
+                          <p className='text-[10px] sm:text-[11px] text-muted-foreground italic truncate'>
                             &quot;{item.notes}&quot;
                           </p>
                         )}
                       </div>
                     </div>
 
-                    {/* Tariff & Financial Column */}
-                    <div className='flex md:flex-col items-center md:items-end justify-between md:justify-center w-full md:w-36 gap-1 border-t md:border-t-0 pt-2 md:pt-0'>
-                      <div className='text-xs text-muted-foreground font-medium'>
-                        {isPending ? 'Cuota a recaudar' : 'Monto aportado'}
-                      </div>
-                      <div className='text-base font-black'>
-                        {isExonerated ? (
-                          <span className='text-amber-600 font-bold text-sm'>$0.00 (Exonerado)</span>
-                        ) : isPending ? (
-                          <span className='text-foreground'>
-                            ${item.suggestedAmount.toFixed(2)}
-                          </span>
-                        ) : (
-                          <span className='text-emerald-600 dark:text-emerald-400'>
-                            ${Number(item.paidAmount).toFixed(2)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Status & Immediate Action Button */}
-                    <div className='flex items-center justify-between md:justify-end gap-3 w-full md:w-64 border-t md:border-t-0 pt-2 md:pt-0'>
-                      {/* Status Badge */}
-                      <div>
-                        {isPending && (
-                          <Badge
-                            variant='secondary'
-                            className='bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30 text-xs py-1 px-2.5 font-semibold'
-                          >
-                            <Clock className='h-3.5 w-3.5 mr-1 text-amber-600' />
-                            Pendiente
-                          </Badge>
-                        )}
-                        {isPaid && (
-                          <Badge
-                            className='bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 text-xs py-1 px-2.5 font-semibold'
-                          >
-                            <CheckCircle2 className='h-3.5 w-3.5 mr-1 text-emerald-600' />
-                            Pagado en Mesa
-                          </Badge>
-                        )}
-                        {isAnnounced && (
-                          <Badge
-                            className='bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30 text-xs py-1 px-2.5 font-semibold'
-                          >
-                            <Volume2 className='h-3.5 w-3.5 mr-1 text-blue-600' />
-                            Anunciado ✓
-                          </Badge>
-                        )}
-                        {isExonerated && (
-                          <Badge
-                            className='bg-amber-500/20 text-amber-800 dark:text-amber-200 border-amber-500/30 text-xs py-1 px-2.5'
-                          >
-                            Exonerado
-                          </Badge>
-                        )}
-                      </div>
-
-                      {/* Action Button */}
-                      <div>
-                        {isPending && !isExonerated && (
-                          <Button
-                            size='sm'
-                            onClick={() => handlePayClick(item)}
-                            disabled={isClosed || !canPay}
-                            className='bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-10 px-5 font-bold shadow-xs'
-                          >
-                            <DollarSign className='mr-1 h-4 w-4' />
-                            Cobrar $
-                          </Button>
-                        )}
-
-                        {isPaid && (
-                          <Button
-                            size='sm'
-                            onClick={() => handleAnnounceClick(item.contributionId)}
-                            disabled={isClosed || !canAnnounce || isAnnouncingThis}
-                            className='bg-blue-600 hover:bg-blue-700 text-white text-xs h-10 px-5 font-bold shadow-xs'
-                          >
-                            <Megaphone
-                              className={`mr-1.5 h-4 w-4 ${isAnnouncingThis ? 'animate-bounce' : ''}`}
-                            />
-                            {isAnnouncingThis ? 'Anunciando...' : 'Anunciar 📢'}
-                          </Button>
-                        )}
-
-                        {isAnnounced && (
-                          <div className='text-right'>
-                            <span className='text-xs text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-1 justify-end'>
-                              <Check className='h-3.5 w-3.5' /> Agradecido
+                    {/* Bottom row on mobile / Right column on desktop */}
+                    <div className='flex items-center justify-between md:justify-end gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-border/50 w-full md:w-auto'>
+                      {/* Financial Amount */}
+                      <div className='flex items-baseline md:flex-col md:items-end gap-1 min-w-[70px] md:min-w-[110px]'>
+                        <span className='text-[10px] text-muted-foreground font-medium'>
+                          {isPending ? 'Cuota:' : 'Monto:'}
+                        </span>
+                        <span className='text-sm sm:text-base font-black'>
+                          {isExonerated ? (
+                            <span className='text-amber-600 font-bold text-xs'>$0.00 (Exon.)</span>
+                          ) : isPending ? (
+                            <span className='text-foreground'>
+                              ${item.suggestedAmount.toFixed(2)}
                             </span>
-                            {item.announcedAt && (
-                              <span className='text-[10px] text-muted-foreground'>
-                                {formatTime(item.announcedAt)}
-                              </span>
-                            )}
-                          </div>
-                        )}
+                          ) : (
+                            <span className='text-emerald-600 dark:text-emerald-400'>
+                              ${Number(item.paidAmount).toFixed(2)}
+                            </span>
+                          )}
+                        </span>
+                      </div>
 
-                        {isExonerated && (
-                          <span className='text-xs text-muted-foreground italic'>
-                            No aplica cobro
-                          </span>
-                        )}
+                      {/* Status & Immediate Action Button */}
+                      <div className='flex items-center gap-1.5 shrink-0'>
+                        {/* Status Badge */}
+                        <div className='shrink-0'>
+                          {isPending && (
+                            <Badge
+                              variant='secondary'
+                              className='bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30 text-[10px] sm:text-[11px] py-0.5 px-2 font-semibold'
+                            >
+                              <Clock className='h-3 w-3 mr-1 text-amber-600' />
+                              Pendiente
+                            </Badge>
+                          )}
+                          {isPaid && (
+                            <Badge
+                              className='bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 text-[10px] sm:text-[11px] py-0.5 px-2 font-semibold'
+                            >
+                              <CheckCircle2 className='h-3 w-3 mr-1 text-emerald-600' />
+                              Pagado
+                            </Badge>
+                          )}
+                          {isAnnounced && (
+                            <Badge
+                              className='bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30 text-[10px] sm:text-[11px] py-0.5 px-2 font-semibold'
+                            >
+                              <Volume2 className='h-3 w-3 mr-1 text-blue-600' />
+                              Anunciado ✓
+                            </Badge>
+                          )}
+                          {isExonerated && (
+                            <Badge
+                              className='bg-amber-500/20 text-amber-800 dark:text-amber-200 border-amber-500/30 text-[10px] sm:text-[11px] py-0.5 px-2'
+                            >
+                              Exonerado
+                            </Badge>
+                          )}
+                        </div>
+
+                        {/* Action Button (Hidden or Replaced when Closed) */}
+                        <div className='shrink-0'>
+                          {isPending && !isExonerated && (
+                            isClosed ? (
+                              <Badge
+                                variant='outline'
+                                className='text-[10px] sm:text-[11px] text-muted-foreground bg-muted/40 font-medium py-1 px-2.5 gap-1 border-dashed'
+                              >
+                                <Lock className='h-3 w-3 text-muted-foreground' /> Cerrada
+                              </Badge>
+                            ) : (
+                              <Button
+                                size='sm'
+                                onClick={() => handlePayClick(item)}
+                                disabled={!canPay}
+                                className='bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8 px-3 font-bold shadow-xs'
+                              >
+                                <DollarSign className='mr-0.5 h-3.5 w-3.5' />
+                                Cobrar $
+                              </Button>
+                            )
+                          )}
+
+                          {isPaid && (
+                            <Button
+                              size='sm'
+                              onClick={() => handleAnnounceClick(item.contributionId)}
+                              disabled={!canAnnounce || isAnnouncingThis}
+                              className='bg-blue-600 hover:bg-blue-700 text-white text-xs h-8 px-3 font-bold shadow-xs'
+                            >
+                              <Megaphone
+                                className={`mr-1 h-3.5 w-3.5 ${isAnnouncingThis ? 'animate-bounce' : ''}`}
+                              />
+                              {isAnnouncingThis ? '...' : 'Anunciar 📢'}
+                            </Button>
+                          )}
+
+                          {isAnnounced && (
+                            <div className='text-right'>
+                              <span className='text-xs text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-0.5 justify-end'>
+                                <Check className='h-3 w-3' /> Listo
+                              </span>
+                              {item.announcedAt && (
+                                <span className='text-[10px] text-muted-foreground'>
+                                  {formatTime(item.announcedAt)}
+                                </span>
+                              )}
+                            </div>
+                          )}
+
+                          {isExonerated && (
+                            <span className='text-[11px] text-muted-foreground italic'>
+                              Exento
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1158,6 +1180,7 @@ export function LiveCollectionPanel({ collectionId: propCollectionId }: { collec
           allContributions={allKnownContributions}
           baseAmount={Number(collection?.baseAmount || 5)}
           collectionId={collectionId}
+          isClosed={isClosed}
           onSuccess={handleRefreshAll}
         />
 
@@ -1165,6 +1188,7 @@ export function LiveCollectionPanel({ collectionId: propCollectionId }: { collec
           open={externalDialogOpen}
           onOpenChange={setExternalDialogOpen}
           collectionId={collectionId}
+          isClosed={isClosed}
           onSuccess={handleRefreshAll}
         />
 

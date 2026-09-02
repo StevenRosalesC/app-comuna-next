@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AuthService } from '@/services/auth';
 import { toast } from 'sonner';
-import { useEffect } from 'react';
+import { useEffect, use } from 'react';
 
 const resetPasswordSchema = z
   .object({
@@ -33,11 +33,11 @@ const resetPasswordSchema = z
 type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
 interface ResetPasswordPageProps {
-  params: { token: string };
+  params: Promise<{ token: string }>;
 }
 
 export default function ResetPasswordPage({ params }: ResetPasswordPageProps) {
-  const { token } = params;
+  const { token } = use(params);
   const router = useRouter();
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(resetPasswordSchema),

@@ -17,15 +17,16 @@ export const metadata = {
 };
 
 type pageProps = {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 };
 
 export default async function Page({ searchParams }: pageProps) {
+  const resolvedSearchParams = await searchParams;
   // Allow nested RSCs to access the search params (in a type-safe way)
-  searchParamsCache.parse(searchParams);
+  searchParamsCache.parse(resolvedSearchParams);
 
   // This key is used for invoke suspense if any of the search params changed (used for filters).
-  const key = serialize({ ...searchParams });
+  const key = serialize({ ...resolvedSearchParams });
 
   return (
     <PageContainer>

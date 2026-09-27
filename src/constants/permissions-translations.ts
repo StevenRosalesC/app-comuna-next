@@ -9,6 +9,8 @@ export const MODULES_TRANSLATIONS: Record<string, string> = {
   roles: 'Roles',
   requirements: 'Requisitos para ser comunero',
   'cash-management': 'Caja',
+  collections: 'Colectas Solidarias',
+  funds: 'Fondos Comunitarios',
   reports: 'Reportes',
   document_types: 'Tipos de documentos'
 };
@@ -16,9 +18,16 @@ export const MODULES_TRANSLATIONS: Record<string, string> = {
 // Traducción de acciones
 export const ACTIONS_TRANSLATIONS: Record<string, string> = {
   read: 'Ver',
+  create: 'Crear',
   write: 'Crear',
   edit: 'Editar',
+  update: 'Actualizar',
   delete: 'Eliminar',
+  filter: 'Filtrar',
+  view_summary: 'Ver resumen',
+  view_details: 'Ver detalles',
+  generate_reports: 'Generar reportes',
+  export_reports: 'Exportar reportes',
   approve_requirements: 'Aprobar requisitos',
   generate: 'Generar',
   export: 'Exportar',
@@ -51,9 +60,20 @@ export const ACTIONS_TRANSLATIONS: Record<string, string> = {
   delete_income: 'Eliminar ingreso',
   delete_expense: 'Eliminar gasto',
   cancel_invoice: 'Cancelar factura',
-  update: 'Actualizar',
   create_neighborhood: 'Crear barrio',
   update_neighborhood: 'Actualizar barrio',
   delete_neighborhood: 'Eliminar barrio',
-  read_neighborhood: 'Ver barrio'
+  read_neighborhood: 'Ver barrio',
+  // Collections & Funds translations
+  create_collection: 'Crear colecta',
+  read_collection: 'Ver colectas',
+  update_collection: 'Actualizar colecta',
+  close_collection: 'Cerrar y liquidar colecta',
+  pay_contribution: 'Cobrar aporte',
+  announce_contribution: 'Anunciar por altavoz',
+  delete_collection: 'Eliminar colecta',
+  create_fund: 'Crear fondo',
+  read_fund: 'Ver fondos',
+  update_fund: 'Actualizar fondo',
+  create_fund_movement: 'Registrar movimiento en fondo'
 };

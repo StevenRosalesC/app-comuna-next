@@ -10,7 +10,7 @@ import { flexRender, SortingState } from '@tanstack/react-table';
 import { PersonsTableSkeleton } from './persons-table-skeleton';
 import { Person } from '@/interfaces/persons';
 import { PersonEditDialog } from './person-edit-dialog';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { usePersonsTable } from './hooks/use-persons-table';
 import { ApproveRequirementsDialog } from './approve-requirements-dialog';
 
@@ -31,20 +31,29 @@ export function PersonsTable({
   onSortingChange,
   updatePerson
 }: PersonsTableProps) {
-  const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
+  const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
+  const [fallbackPerson, setFallbackPerson] = useState<Person | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [approveRequirementsDialogOpen, setApproveRequirementsDialogOpen] =
     useState(false);
+
+  const selectedPerson = useMemo(() => {
+    if (!selectedPersonId) return null;
+    return data.find((p) => p.personId === selectedPersonId) || fallbackPerson;
+  }, [data, selectedPersonId, fallbackPerson]);
+
   const { table, columns } = usePersonsTable({
     data,
     sorting,
     onSortingChange,
     onEdit: (person: Person) => {
-      setSelectedPerson(person);
+      setSelectedPersonId(person.personId);
+      setFallbackPerson(person);
       setEditDialogOpen(true);
     },
     onViewRequirements: (person: Person) => {
-      setSelectedPerson(person);
+      setSelectedPersonId(person.personId);
+      setFallbackPerson(person);
       setApproveRequirementsDialogOpen(true);
     }
   });

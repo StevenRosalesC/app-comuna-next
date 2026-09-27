@@ -42,7 +42,15 @@ import {
   UserSearchIcon,
   ShieldQuestion,
   CircleDollarSign,
-  Edit
+  Edit,
+  HeartHandshake,
+  HandHeart,
+  PiggyBank,
+  Vault,
+  Megaphone,
+  Coins,
+  Receipt,
+  Wallet
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
@@ -107,5 +115,13 @@ export const Icons = {
   userSearch: UserSearchIcon,
   shieldQuestion: ShieldQuestion,
   dollar: CircleDollarSign,
-  barChart3: BarChart3
+  barChart3: BarChart3,
+  collections: HeartHandshake,
+  funds: PiggyBank,
+  handHeart: HandHeart,
+  wallet: Wallet,
+  vault: Vault,
+  megaphone: Megaphone,
+  coins: Coins,
+  receipt: Receipt
 };

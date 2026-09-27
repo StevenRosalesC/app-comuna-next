@@ -25,8 +25,9 @@ import {
 } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { getMemberById, updateMember } from '@/services/members';
 import { personsService } from '@/services/persons';
 import { toast } from 'sonner';
@@ -53,6 +54,7 @@ const formSchema = z
     gender: z.string(),
     birthDate: z.date(),
     houseNumber: z.string().min(1, 'El número de casa es requerido'),
+    status: z.boolean(),
     hasDisability: z.boolean().optional(),
     disabilityPercentage: z
       .number()
@@ -79,6 +81,7 @@ const formSchema = z
   );
 
 export default function MemberEditForm({ memberId }: { memberId: string }) {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const {
     data: member,
@@ -86,7 +89,8 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
     error
   } = useQuery({
     queryKey: ['members', memberId],
-    queryFn: () => getMemberById(memberId)
+    queryFn: () => getMemberById(memberId),
+    enabled: !!memberId
   });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -99,6 +103,7 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
       gender: '1',
       birthDate: new Date(),
       houseNumber: '',
+      status: true,
       hasDisability: false,
       disabilityPercentage: 0
     }
@@ -108,12 +113,13 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
     mutationFn: async (values: z.infer<typeof formSchema>) => {
       if (!member) throw new Error('No se encontró el comunero');
 
-      const { houseNumber, ...personValues } = values;
+      const { houseNumber, status, ...personValues } = values;
 
       const personDataToUpdate = {
         ...member.person,
         ...personValues,
         gender: personValues.gender,
+        status: status ?? true,
         hasDisability: personValues.hasDisability,
         disabilityPercentage: personValues.disabilityPercentage
       };
@@ -129,12 +135,16 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
         phoneNumber: phoneNumber || ''
       };
 
-      const memberPromise = updateMember(memberId, { houseNumber });
+      const memberPromise = updateMember(memberId, {
+        houseNumber,
+        status: status ?? true
+      });
       const personPromise = personsService.updatePerson(
         member.person.personId,
         {
           ...updatablePersonData,
-          gender: Number(updatablePersonData.gender)
+          gender: Number(updatablePersonData.gender),
+          status: status ?? true
         }
       );
 
@@ -144,17 +154,24 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
       toast.success('Comunero actualizado con éxito');
       queryClient.invalidateQueries({ queryKey: ['members', memberId] });
       queryClient.invalidateQueries({ queryKey: ['members'] });
-      // router.push(`/dashboard/members/${memberId}`);
+      router.push(`/dashboard/members/${memberId}`);
     },
     onError: (error: any) => {
       toast.error(
-        error.response.data.message || 'Error al actualizar el comunero'
+        error.response?.data?.message || 'Error al actualizar el comunero'
       );
     }
   });
 
   useEffect(() => {
     if (member) {
+      const isMemberActive = Boolean(
+        member.status === true ||
+        member.status === 'active' ||
+        (member.status as any) === 'ACTIVE' ||
+        member.status === 1
+      );
+
       form.reset({
         firstName: member.person.firstName,
         lastName: member.person.lastName,
@@ -164,6 +181,7 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
         gender: member.person.gender.toString(),
         birthDate: new Date(member.person.birthDate),
         houseNumber: member.houseNumber ?? '',
+        status: isMemberActive,
         hasDisability: member.person.hasDisability ?? false,
         disabilityPercentage: member.person.disabilityPercentage ?? 0
       });
@@ -201,9 +219,12 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
   };
 
   return (
-    <Card>
+    <Card className='border shadow-sm'>
       <CardHeader>
-        <CardTitle>Editar Comunero</CardTitle>
+        <CardTitle className='text-xl'>Editar Información del Comunero</CardTitle>
+        <CardDescription className='text-xs'>
+          Actualiza los datos personales y de membresía del comunero.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -356,14 +377,35 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
             />
             <FormField
               control={form.control}
+              name='status'
+              render={({ field }) => (
+                <FormItem className='flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm'>
+                  <div className='space-y-0.5'>
+                    <FormLabel>Estado del Comunero</FormLabel>
+                    <div className='text-xs text-muted-foreground'>
+                      {field.value
+                        ? 'Comunero activo en el sistema.'
+                        : 'Comunero inactivo.'}
+                    </div>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name='hasDisability'
               render={({ field }) => (
                 <FormItem className='flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm'>
                   <div className='space-y-0.5'>
                     <FormLabel>Tiene Discapacidad</FormLabel>
-                    <div className='text-sm text-muted-foreground'>
-                      Activa esta opción si el comunero tiene un carnet de
-                      discapacidad.
+                    <div className='text-xs text-muted-foreground'>
+                      Activa si el comunero posee carnet de discapacidad.
                     </div>
                   </div>
                   <FormControl>
@@ -407,13 +449,23 @@ export default function MemberEditForm({ memberId }: { memberId: string }) {
                 )}
               />
             )}
-            <Button
-              type='submit'
-              disabled={mutation.isPending}
-              className='md:col-span-2'
-            >
-              {mutation.isPending ? 'Guardando...' : 'Guardar Cambios'}
-            </Button>
+            <div className='flex flex-col-reverse sm:flex-row items-center justify-end gap-3 md:col-span-2 pt-4 border-t'>
+              <Button
+                type='button'
+                variant='outline'
+                onClick={() => router.push(`/dashboard/members/${memberId}`)}
+                className='w-full sm:w-auto'
+              >
+                Cancelar
+              </Button>
+              <Button
+                type='submit'
+                disabled={mutation.isPending}
+                className='w-full sm:w-auto'
+              >
+                {mutation.isPending ? 'Guardando...' : 'Guardar Cambios'}
+              </Button>
+            </div>
           </form>
         </Form>
       </CardContent>

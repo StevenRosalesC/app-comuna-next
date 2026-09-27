@@ -6,6 +6,7 @@ interface PermissionsState {
   isLoading: boolean;
   error: string | null;
   fetchPermissions: () => Promise<void>;
+  setPermissions: (permissions: Record<string, string[]>) => void;
   clearPermissions: () => void;
 }
 
@@ -13,9 +14,12 @@ export const usePermissionsStore = create<PermissionsState>((set, get) => ({
   permissions: null,
   isLoading: false,
   error: null,
+  setPermissions: (permissions: Record<string, string[]>) => {
+    set({ permissions, isLoading: false, error: null });
+  },
   fetchPermissions: async () => {
     const { isLoading, permissions } = get();
-    if (isLoading || permissions) return; // Prevent infinite loop
+    if (isLoading || permissions) return; // Prevent redundant network requests
     
     set({ isLoading: true, error: null });
     

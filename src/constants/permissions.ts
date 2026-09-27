@@ -1,4 +1,3 @@
-
 export enum ValidModules {
   PERSONS = 'persons',
   ADMIN = 'admin',
@@ -12,6 +11,8 @@ export enum ValidModules {
   DOCUMENT_TYPES = 'document-types',
   ANALYTICS = 'analytics',
   REPORTS = 'reports',
+  COLLECTIONS = 'collections',
+  FUNDS = 'funds',
 }
 
 export enum ValidActions {
@@ -60,7 +61,18 @@ export enum ValidActions {
   READ_ANNUAL_FEE = 'read_annual_fee',
   READ_DOCUMENT_TYPE = 'read_document_type',
   READ_NEIGHBORHOOD = 'read_neighborhood',
-  
+  // Collections & Funds Actions
+  CREATE_COLLECTION = 'create_collection',
+  READ_COLLECTION = 'read_collection',
+  UPDATE_COLLECTION = 'update_collection',
+  CLOSE_COLLECTION = 'close_collection',
+  PAY_CONTRIBUTION = 'pay_contribution',
+  ANNOUNCE_CONTRIBUTION = 'announce_contribution',
+  DELETE_COLLECTION = 'delete_collection',
+  CREATE_FUND = 'create_fund',
+  READ_FUND = 'read_fund',
+  UPDATE_FUND = 'update_fund',
+  CREATE_FUND_MOVEMENT = 'create_fund_movement',
 }
 
 export const modulesPermissions: ModulePermissionConfig[] = [
@@ -138,6 +150,7 @@ export const modulesPermissions: ModulePermissionConfig[] = [
     route: '/dashboard/users',
     actions: [
       ValidActions.READ,
+      ValidActions.CREATE,
       ValidActions.UPDATE,
       ValidActions.DELETE,
     ],
@@ -148,6 +161,7 @@ export const modulesPermissions: ModulePermissionConfig[] = [
     route: '/dashboard/roles',
     actions: [
       ValidActions.READ,
+      ValidActions.CREATE,
       ValidActions.UPDATE,
       ValidActions.DELETE,
     ],
@@ -159,6 +173,7 @@ export const modulesPermissions: ModulePermissionConfig[] = [
     actions: [
       ValidActions.READ,
       ValidActions.UPDATE,
+      ValidActions.OPEN_CASH_REGISTER,
       ValidActions.CLOSE_CASH_REGISTER,
       ValidActions.VIEW_HISTORY,
       ValidActions.DELETE_PAYMENT,
@@ -171,6 +186,31 @@ export const modulesPermissions: ModulePermissionConfig[] = [
       ValidActions.CANCEL_INVOICE,
     ],
     label: 'Caja'
+  },
+  {
+    module: ValidModules.COLLECTIONS,
+    route: '/dashboard/collections',
+    actions: [
+      ValidActions.READ_COLLECTION,
+      ValidActions.CREATE_COLLECTION,
+      ValidActions.UPDATE_COLLECTION,
+      ValidActions.PAY_CONTRIBUTION,
+      ValidActions.ANNOUNCE_CONTRIBUTION,
+      ValidActions.CLOSE_COLLECTION,
+      ValidActions.DELETE_COLLECTION,
+    ],
+    label: 'Colectas Solidarias'
+  },
+  {
+    module: ValidModules.FUNDS,
+    route: '/dashboard/funds',
+    actions: [
+      ValidActions.READ_FUND,
+      ValidActions.CREATE_FUND,
+      ValidActions.UPDATE_FUND,
+      ValidActions.CREATE_FUND_MOVEMENT,
+    ],
+    label: 'Fondos Comunitarios'
   },
   {
     module: ValidModules.REPORTS,
@@ -195,9 +235,7 @@ export const modulesPermissions: ModulePermissionConfig[] = [
     ],
     label: 'Analytics'
   }
-  // Add more modules here
 ];
-
 
 export interface ModulePermission {
   module: ValidModules;
@@ -211,7 +249,6 @@ export interface ModulePermissionConfig {
   label: string;
 }
 
-
 export const validPermissions = [
   ValidModules.PERSONS,
   ValidModules.ADMIN,
@@ -220,6 +257,8 @@ export const validPermissions = [
   ValidModules.REQUIREMENTS,
   ValidModules.DOCUMENT_TYPES,
   ValidModules.CASH_MANAGEMENT,
+  ValidModules.COLLECTIONS,
+  ValidModules.FUNDS,
   ValidModules.ANALYTICS
 ];
 

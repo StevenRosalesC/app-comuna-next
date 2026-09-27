@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: 'Aplicación de la comuna Bambil Collao.'
 };
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function EditNoticePage({ params }: Props) {

@@ -21,6 +21,7 @@ export const getAllNews = async (
   offset: number
 ): Promise<{ count: number; data: Notice[] }> => {
   try {
+    if (!API_URL) return { count: 0, data: [] };
     const response = await fetch(
       `${API_URL}/news/published?limit=${limit}&offset=${offset}`,
       {
@@ -36,8 +37,17 @@ export const getAllNews = async (
         }
       }
     );
-    const data: { count: number; data: Notice[] } = await response.json();
-    return data;
+    if (!response.ok) {
+      return { count: 0, data: [] };
+    }
+    const data = await response.json();
+    if (data && Array.isArray(data.data)) {
+      return data;
+    }
+    if (Array.isArray(data)) {
+      return { count: data.length, data };
+    }
+    return { count: 0, data: [] };
   } catch (error) {
     return { count: 0, data: [] };
   }
@@ -45,6 +55,7 @@ export const getAllNews = async (
 
 export const getNew = async (id: string): Promise<Notice | null> => {
   try {
+    if (!API_URL) return null;
     const response = await fetch(`${API_URL}/news/${id}`, {
       method: 'GET',
       headers: {
@@ -55,6 +66,7 @@ export const getNew = async (id: string): Promise<Notice | null> => {
         tags: [`news`]
       }
     });
+    if (!response.ok) return null;
     const data: Notice = await response.json();
     return data;
   } catch (error) {
@@ -64,6 +76,16 @@ export const getNew = async (id: string): Promise<Notice | null> => {
 
 export const getPageInfo = async (): Promise<PageData> => {
   try {
+    if (!API_URL) {
+      return {
+        totalPersons: 0,
+        totalMembers: 0,
+        totalNeighborhoods: 0,
+        totalAssociations: 0,
+        neighborhoodsImages: [],
+        news: []
+      };
+    }
     const response = await fetch(`${API_URL}/page`, {
       method: 'GET',
       headers: {
@@ -74,6 +96,16 @@ export const getPageInfo = async (): Promise<PageData> => {
         revalidate: parseInt(process.env.NEXT_PUBLIC_CACHE_REVALIDATE || '60')
       }
     });
+    if (!response.ok) {
+      return {
+        totalPersons: 0,
+        totalMembers: 0,
+        totalNeighborhoods: 0,
+        totalAssociations: 0,
+        neighborhoodsImages: [],
+        news: []
+      };
+    }
     const data: PageData = await response.json();
     return data;
   } catch (error) {
@@ -92,6 +124,7 @@ export const getNoticeByTitle = async (
   title: string
 ): Promise<Notice | null> => {
   try {
+    if (!API_URL) return null;
     const response = await fetch(
       `${API_URL}/news/title/${encodeURIComponent(title)}`,
       {
@@ -105,6 +138,7 @@ export const getNoticeByTitle = async (
         }
       }
     );
+    if (!response.ok) return null;
     const data: Notice = await response.json();
     return data;
   } catch (error) {
@@ -114,19 +148,21 @@ export const getNoticeByTitle = async (
 
 export const getNoticeBySlug = async (slug: string): Promise<Notice | null> => {
   try {
+    if (!API_URL) return null;
     const response = await fetch(
       `${API_URL}/news/slug/${encodeURIComponent(slug)}`,
       {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      next: {
-        revalidate: parseInt(process.env.NEXT_PUBLIC_CACHE_REVALIDATE || '60'),
-        tags: ['news']
-      }
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        next: {
+          revalidate: parseInt(process.env.NEXT_PUBLIC_CACHE_REVALIDATE || '60'),
+          tags: ['news']
+        }
       }
     );
+    if (!response.ok) return null;
     const data: Notice = await response.json();
     return data;
   } catch (error) {

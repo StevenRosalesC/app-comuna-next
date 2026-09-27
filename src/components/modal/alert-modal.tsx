@@ -1,7 +1,16 @@
 'use client';
+
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Modal } from '@/components/ui/modal';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog';
+import { AlertTriangle, Loader2 } from 'lucide-react';
 
 interface AlertModalProps {
   isOpen: boolean;
@@ -10,6 +19,9 @@ interface AlertModalProps {
   loading: boolean;
   title: string;
   description: string;
+  confirmText?: string;
+  cancelText?: string;
+  variant?: 'destructive' | 'default';
 }
 
 export const AlertModal: React.FC<AlertModalProps> = ({
@@ -18,7 +30,10 @@ export const AlertModal: React.FC<AlertModalProps> = ({
   onConfirm,
   loading,
   title,
-  description
+  description,
+  confirmText = 'Continuar',
+  cancelText = 'Cancelar',
+  variant = 'destructive'
 }) => {
   const [isMounted, setIsMounted] = useState(false);
 
@@ -30,21 +45,47 @@ export const AlertModal: React.FC<AlertModalProps> = ({
     return null;
   }
 
+  const onChange = (open: boolean) => {
+    if (!open && !loading) {
+      onClose();
+    }
+  };
+
   return (
-    <Modal
-      title={title}
-      description={description}
-      isOpen={isOpen}
-      onClose={onClose}
-    >
-      <div className='flex w-full items-center justify-end space-x-2 pt-6'>
-        <Button disabled={loading} variant='outline' onClick={onClose}>
-          Cancel
-        </Button>
-        <Button disabled={loading} variant='destructive' onClick={onConfirm}>
-          Continue
-        </Button>
-      </div>
-    </Modal>
+    <Dialog open={isOpen} onOpenChange={onChange}>
+      <DialogContent className='sm:max-w-[420px]'>
+        <DialogHeader className='flex flex-col items-center gap-3 text-center sm:items-start sm:text-left'>
+          <div className='flex size-11 items-center justify-center rounded-full bg-destructive/10 text-destructive'>
+            <AlertTriangle className='size-5' />
+          </div>
+          <div>
+            <DialogTitle className='text-lg font-semibold'>{title}</DialogTitle>
+            <DialogDescription className='mt-1 text-sm text-muted-foreground'>
+              {description}
+            </DialogDescription>
+          </div>
+        </DialogHeader>
+        <DialogFooter className='mt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end'>
+          <Button
+            type='button'
+            disabled={loading}
+            variant='outline'
+            onClick={onClose}
+          >
+            {cancelText}
+          </Button>
+          <Button
+            type='button'
+            disabled={loading}
+            variant={variant}
+            onClick={onConfirm}
+          >
+            {loading && <Loader2 className='mr-2 size-4 animate-spin' />}
+            {confirmText}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
+

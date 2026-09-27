@@ -1,15 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form';
 import { toast } from 'sonner';
 import { cashRegisterService } from '@/services/cash-register';
 import { CreateIncomeDto } from '@/interfaces/cash-register';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { TrendingUp, DollarSign, FileText, Calendar, Tag, Loader2, AlertCircle } from 'lucide-react';
+
+const formSchema = z.object({
+  description: z.string().min(1, 'La descripción es requerida'),
+  amount: z.number().positive('El monto debe ser mayor a 0'),
+  incomeDate: z.string().min(1, 'La fecha es requerida'),
+  expense_code: z.number().optional()
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 interface CreateIncomeFormProps {
   onSuccess?: () => void;
@@ -17,146 +36,211 @@ interface CreateIncomeFormProps {
 }
 
 export function CreateIncomeForm({ onSuccess, onCancel }: CreateIncomeFormProps) {
-  const [formData, setFormData] = useState<CreateIncomeDto>({
-    description: '',
-    amount: 0,
-    incomeDate: new Date().toISOString().split('T')[0],
-    expense_code: undefined,
-    cashRegisterId: 0
-  });
-
-  // Get active cash register with React Query
-  const { data: activeRegister } = useQuery({
-    queryKey: ['activeCashRegister'],
-    queryFn: cashRegisterService.getActiveRegister,
-  });
-
   const queryClient = useQueryClient();
 
-  // Mutation to create income
+  const { data: activeRegister, isLoading: loadingRegister } = useQuery({
+    queryKey: ['activeCashRegister'],
+    queryFn: cashRegisterService.getActiveRegister
+  });
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      description: '',
+      amount: 0,
+      incomeDate: new Date().toISOString().split('T')[0],
+      expense_code: undefined
+    }
+  });
+
   const createIncomeMutation = useMutation({
-    mutationFn: (formData: CreateIncomeDto) => cashRegisterService.createIncome(formData),
+    mutationFn: (data: CreateIncomeDto) => cashRegisterService.createIncome(data),
     onSuccess: () => {
       toast.success('Ingreso registrado exitosamente en la caja activa');
       queryClient.invalidateQueries({ queryKey: ['incomes'] });
       queryClient.invalidateQueries({ queryKey: ['activeCashRegister'] });
+      form.reset();
       onSuccess?.();
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || 'Error al registrar el ingreso');
-    },
+    }
   });
 
-  // Update cashRegisterId when active cash register is obtained
-  const handleInputChange = (field: keyof CreateIncomeDto, value: string | number | undefined) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = (values: FormValues) => {
     if (!activeRegister) {
       toast.error('No hay una caja registradora abierta');
       return;
     }
-    if (formData.amount <= 0) {
-      toast.error('El monto debe ser mayor a 0');
-      return;
-    }
-    createIncomeMutation.mutate(formData);
+
+    createIncomeMutation.mutate({
+      ...values,
+      cashRegisterId: Number(activeRegister.cashRegisterId)
+    });
   };
+
+  if (loadingRegister) {
+    return (
+      <div className='flex items-center justify-center p-8'>
+        <Loader2 className='h-6 w-6 animate-spin text-muted-foreground' />
+      </div>
+    );
+  }
 
   if (!activeRegister) {
     return (
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Registrar Ingreso</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-center text-muted-foreground py-8">
-            No hay una caja registradora abierta. Debes abrir una caja antes de registrar ingresos.
+      <div className='flex flex-col items-center justify-center p-6 text-center space-y-3'>
+        <div className='flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/10 text-amber-600'>
+          <AlertCircle className='h-6 w-6' />
+        </div>
+        <div>
+          <h4 className='font-semibold text-base'>Caja Cerrada</h4>
+          <p className='text-xs text-muted-foreground max-w-xs mt-1'>
+            Debes abrir una caja antes de poder registrar ingresos o cobros extraordinarios.
           </p>
-        </CardContent>
-      </Card>
+        </div>
+        {onCancel && (
+          <Button variant='outline' size='sm' onClick={onCancel} className='mt-2'>
+            Cerrar
+          </Button>
+        )}
+      </div>
     );
   }
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Registrar Ingreso</CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Caja activa: {activeRegister.cashRegisterName || `Caja #${activeRegister.cashRegisterId}`}
-        </p>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="description">Descripción</Label>
-            <Textarea
-              id="description"
-              placeholder="Descripción del ingreso"
-              value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
+    <div className='space-y-4'>
+      <div className='flex items-center justify-between rounded-xl border bg-emerald-500/5 p-3 text-xs'>
+        <div className='flex items-center gap-2'>
+          <TrendingUp className='h-4 w-4 text-emerald-600 dark:text-emerald-400' />
+          <span className='font-medium text-foreground'>
+            Caja Activa: {activeRegister.cashRegisterName || `Caja #${activeRegister.cashRegisterId}`}
+          </span>
+        </div>
+        <Badge variant='outline' className='border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 text-[10px]'>
+          Abierta
+        </Badge>
+      </div>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+          <FormField
+            control={form.control}
+            name='amount'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className='text-xs font-semibold'>
+                  Monto ($) <span className='text-destructive'>*</span>
+                </FormLabel>
+                <FormControl>
+                  <div className='relative'>
+                    <DollarSign className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+                    <Input
+                      type='number'
+                      step='0.01'
+                      placeholder='0.00'
+                      className='pl-9 font-semibold text-base'
+                      autoFocus
+                      value={field.value || ''}
+                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name='description'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className='text-xs font-semibold'>
+                  Descripción <span className='text-destructive'>*</span>
+                </FormLabel>
+                <FormControl>
+                  <div className='relative'>
+                    <FileText className='absolute left-3 top-3 h-4 w-4 text-muted-foreground' />
+                    <Textarea
+                      placeholder='Detalle del ingreso o motivo del pago recibido...'
+                      className='pl-9 min-h-[80px] text-xs'
+                      {...field}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+            <FormField
+              control={form.control}
+              name='incomeDate'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className='text-xs font-semibold'>Fecha</FormLabel>
+                  <FormControl>
+                    <div className='relative'>
+                      <Calendar className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+                      <Input type='date' className='pl-9 text-xs' {...field} />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='expense_code'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className='text-xs font-semibold'>Código de Categoría</FormLabel>
+                  <FormControl>
+                    <div className='relative'>
+                      <Tag className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+                      <Input
+                        type='number'
+                        placeholder='Opcional'
+                        className='pl-9 text-xs'
+                        value={field.value ?? ''}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value === '' ? undefined : parseInt(e.target.value)
+                          )
+                        }
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="amount">Monto</Label>
-            <Input
-              id="amount"
-              type="number"
-              step="0.01"
-              min="0"
-              placeholder="0.00"
-              value={formData.amount}
-              onChange={(e) => handleInputChange('amount', parseFloat(e.target.value) || 0)}
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="incomeDate">Fecha</Label>
-            <Input
-              id="incomeDate"
-              type="date"
-              value={formData.incomeDate}
-              onChange={(e) => handleInputChange('incomeDate', e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="expense_code">Código de Categoría</Label>
-            <Input
-              id="expense_code"
-              type="number"
-              placeholder="Código opcional"
-              value={formData.expense_code || ''}
-              onChange={(e) => handleInputChange('expense_code', parseInt(e.target.value) || undefined)}
-            />
-          </div>
-
-          <div className="flex gap-2 pt-4">
-            <Button
-              type="submit"
-              className="flex-1"
-            >
-              {createIncomeMutation.isPending ? 'Registrando...' : 'Registrar Ingreso'}
-            </Button>
+          <div className='flex items-center justify-end gap-2 pt-3 border-t'>
             {onCancel && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-              >
+              <Button type='button' variant='outline' onClick={onCancel} disabled={createIncomeMutation.isPending}>
                 Cancelar
               </Button>
             )}
+            <Button
+              type='submit'
+              disabled={createIncomeMutation.isPending}
+              className='bg-emerald-600 hover:bg-emerald-700 text-white'
+            >
+              {createIncomeMutation.isPending ? (
+                <Loader2 className='mr-2 size-4 animate-spin' />
+              ) : (
+                <TrendingUp className='mr-2 size-4' />
+              )}
+              Registrar Ingreso
+            </Button>
           </div>
         </form>
-      </CardContent>
-    </Card>
+      </Form>
+    </div>
   );
-} 
+}

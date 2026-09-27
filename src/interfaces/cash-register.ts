@@ -42,6 +42,7 @@ export interface Invoice {
 }
 
 export interface CreateCashRegisterDto {
+  cashRegisterName?: string;
   initialAmount: number;
   notes?: string;
 }

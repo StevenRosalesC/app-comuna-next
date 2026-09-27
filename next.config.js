@@ -34,10 +34,11 @@ const nextConfig = {
       parseImageRemotePatterns()
   },
   reactStrictMode: false,
-  transpilePackages: ['geist', 'shiki'],
+  transpilePackages: ['shiki'],
   output: process.env.NODE_ENV !== 'production' ? undefined : 'standalone',
   experimental: {
-    optimizeCss: false
+    optimizeCss: false,
+    cpus: 1
   },
   // module: {
   //   rules: [
